@@ -3,7 +3,6 @@ package app.devper.pharm.domain.parser
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class BulkImportJsonParserTest {
@@ -73,6 +72,5 @@ class BulkImportJsonParserTest {
     fun parses_report_types_array() {
         val r = parser.parse("""[{"name":"A","sell_price":1,"report_types":["ky10","ky11"]}]""").getOrThrow()
         assertEquals(listOf("ky10", "ky11"), r[0].reportTypes)
-        assertNull(null) // no-op assertion to keep both halves
     }
 }
