@@ -6,7 +6,7 @@ import app.devper.pharm.presentation.imports.ImportsListViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val purchaseOrdersModule = module {
+val importsModule = module {
     factoryOf(::ImportsListViewModel)
     factoryOf(::ImportFormViewModel)
     factoryOf(::ImportDetailViewModel)

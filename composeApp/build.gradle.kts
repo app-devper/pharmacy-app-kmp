@@ -64,6 +64,9 @@ kotlin {
             implementation(project(":features:movements"))
             implementation(project(":features:bulkimport"))
             implementation(project(":features:stockcount"))
+            implementation(project(":features:customers"))
+            implementation(project(":features:suppliers"))
+            implementation(project(":features:imports"))
 
             implementation(compose.runtime)
             implementation(compose.material3)

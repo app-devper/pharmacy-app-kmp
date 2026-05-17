@@ -66,8 +66,8 @@ class CustomerDetailViewModelTest {
         vm.load("c1")
         advanceUntilIdle()
         val s = vm.state.value
-        assertNotNull(s.customer)
-        assertEquals("c1", s.customer.id)
+        val customer = assertNotNull(s.customer)
+        assertEquals("c1", customer.id)
         assertEquals(2, s.sales.size)
         assertEquals("c1", repo.lastSalesQuery)
         assertFalse(s.loading)

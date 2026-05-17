@@ -17,7 +17,7 @@ val appModule = module {
 
         customersModule,
         suppliersModule,
-        purchaseOrdersModule,
+        importsModule,
         bulkImportModule,
         kyModule,
 
