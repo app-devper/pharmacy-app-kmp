@@ -7,7 +7,7 @@ import app.devper.pharm.presentation.stock.StockViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val inventoryModule = module {
+val stockModule = module {
     factoryOf(::StockViewModel)
     factoryOf(::DrugFormViewModel)
     factoryOf(::DrugLotsViewModel)

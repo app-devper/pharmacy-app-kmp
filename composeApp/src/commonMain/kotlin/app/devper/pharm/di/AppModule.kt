@@ -21,7 +21,7 @@ val appModule = module {
         bulkImportModule,
         kyModule,
 
-        inventoryModule,
+        stockModule,
         stockCountModule,
         planningModule,
         labelsModule,
