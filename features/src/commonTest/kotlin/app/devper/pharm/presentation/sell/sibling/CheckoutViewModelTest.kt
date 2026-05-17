@@ -158,7 +158,7 @@ class CheckoutViewModelTest {
         assertEquals(2, sales.lastCheckout!!.items[0].qty)
 
         assertNotNull(cart.lastCommitReceipt)
-        assertTrue(cart.items.value.isEmpty())
+        assertTrue(cart.active.value.items.isEmpty())
 
         assertFalse(vm.state.value.checkingOut)
         assertNull(vm.state.value.error)

@@ -1,6 +1,7 @@
 package app.devper.pharm.domain.model
 
 sealed interface KyForm {
+    val saleId: String
     val date: String
     val drugName: String
     val regNo: String
@@ -8,6 +9,7 @@ sealed interface KyForm {
     val unit: String
 
     data class Ky10(
+        override val saleId: String,
         override val date: String,
         override val drugName: String,
         override val regNo: String,
@@ -21,6 +23,7 @@ sealed interface KyForm {
     ) : KyForm
 
     data class Ky11(
+        override val saleId: String,
         override val date: String,
         override val drugName: String,
         override val regNo: String,
@@ -32,6 +35,7 @@ sealed interface KyForm {
     ) : KyForm
 
     data class Ky12(
+        override val saleId: String,
         override val date: String,
         override val drugName: String,
         override val regNo: String,

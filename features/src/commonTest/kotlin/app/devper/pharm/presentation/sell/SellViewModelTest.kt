@@ -101,7 +101,7 @@ class SellViewModelTest {
         assertEquals(CartDiscount.Flat(10.0), s.cartDiscount)
         assertEquals("100", s.received)
 
-        assertEquals(1, cart.items.value.size)
+        assertEquals(1, cart.active.value.items.size)
     }
 
     @Test

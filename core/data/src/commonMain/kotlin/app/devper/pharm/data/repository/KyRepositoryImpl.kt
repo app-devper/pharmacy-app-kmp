@@ -23,6 +23,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
     override suspend fun submitKy10(form: KyForm.Ky10) {
         api.submitKy10(
             Ky10Request(
+                saleId = form.saleId,
                 date = form.date,
                 drugName = form.drugName,
                 regNo = form.regNo,
@@ -40,6 +41,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
     override suspend fun submitKy11(form: KyForm.Ky11) {
         api.submitKy11(
             Ky11Request(
+                saleId = form.saleId,
                 date = form.date,
                 drugName = form.drugName,
                 regNo = form.regNo,
@@ -55,6 +57,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
     override suspend fun submitKy12(form: KyForm.Ky12) {
         api.submitKy12(
             Ky12Request(
+                saleId = form.saleId,
                 date = form.date,
                 rxNo = form.rxNo,
                 patientName = form.patientName,

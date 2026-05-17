@@ -12,7 +12,6 @@ import app.devper.pharm.domain.repository.KyRepository
 class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatchers) :
     BaseUseCase<SubmitKyFormsParam, KySubmissionResult>(dispatchers) {
 
-    @Suppress("UNUSED_PARAMETER")
     suspend operator fun invoke(
         sale: Sale,
         required: KyRequired,
@@ -23,10 +22,12 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
     override suspend fun execute(param: SubmitKyFormsParam): KySubmissionResult {
         val errors = mutableListOf<String>()
         var attempted = 0
+        val saleId = param.sale.id
 
         for (line in param.required.ky10) {
             attempted++
             val form = KyForm.Ky10(
+                saleId = saleId,
                 date = param.dateYmd,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
@@ -45,6 +46,7 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
         for (line in param.required.ky11) {
             attempted++
             val form = KyForm.Ky11(
+                saleId = saleId,
                 date = param.dateYmd,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
@@ -61,6 +63,7 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
         for (line in param.required.ky12) {
             attempted++
             val form = KyForm.Ky12(
+                saleId = saleId,
                 date = param.dateYmd,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),

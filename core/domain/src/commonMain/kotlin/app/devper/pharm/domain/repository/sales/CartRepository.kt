@@ -1,7 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
-import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.ParkedCart
@@ -12,13 +12,8 @@ import app.devper.pharm.domain.param.SetLineDiscountParam
 import kotlinx.coroutines.flow.StateFlow
 
 interface CartRepository {
-    val items: StateFlow<List<CartLine>>
-    val selectedCustomer: StateFlow<Customer?>
-    val cartDiscount: StateFlow<CartDiscount>
-    val activeTier: StateFlow<String>
-    val cashReceived: StateFlow<String>
+    val active: StateFlow<ActiveCart>
     val lastReceipt: StateFlow<Sale?>
-
     val parkedSlots: StateFlow<List<ParkedCart?>>
 
     fun add(param: AddCartItemParam)

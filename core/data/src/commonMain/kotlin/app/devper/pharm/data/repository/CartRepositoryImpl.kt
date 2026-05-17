@@ -1,6 +1,7 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.storage.ParkedCartStorage
+import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
@@ -25,26 +26,13 @@ class CartRepositoryImpl(
     private val parkedCartStorage: ParkedCartStorage,
 ) : CartRepository {
 
-    private val _items = MutableStateFlow<List<CartLine>>(emptyList())
-    override val items: StateFlow<List<CartLine>> = _items.asStateFlow()
-
-    private val _selectedCustomer = MutableStateFlow<Customer?>(null)
-    override val selectedCustomer: StateFlow<Customer?> = _selectedCustomer.asStateFlow()
-
-    private val _cartDiscount = MutableStateFlow<CartDiscount>(CartDiscount.None)
-    override val cartDiscount: StateFlow<CartDiscount> = _cartDiscount.asStateFlow()
-
-    private val _activeTier = MutableStateFlow(Tier.Retail)
-    override val activeTier: StateFlow<String> = _activeTier.asStateFlow()
-
-    private val _cashReceived = MutableStateFlow("")
-    override val cashReceived: StateFlow<String> = _cashReceived.asStateFlow()
+    private val _active = MutableStateFlow(ActiveCart.Empty)
+    override val active: StateFlow<ActiveCart> = _active.asStateFlow()
 
     private val _lastReceipt = MutableStateFlow<Sale?>(null)
     override val lastReceipt: StateFlow<Sale?> = _lastReceipt.asStateFlow()
 
     private val _parkedSlots = MutableStateFlow<List<ParkedCart?>>(
-
         parkedCartStorage.loadAll(),
     )
     override val parkedSlots: StateFlow<List<ParkedCart?>> = _parkedSlots.asStateFlow()
@@ -52,74 +40,97 @@ class CartRepositoryImpl(
     override fun add(param: AddCartItemParam) {
         val factor = param.altUnit?.factor?.coerceAtLeast(1) ?: 1
         val key = CartLineKey(param.drug.id, param.altUnit?.name)
-        _items.update { current ->
-            val tier = _activeTier.value
-            val idx = current.indexOfFirst { it.key == key }
-            if (idx >= 0) {
-                val existing = current[idx]
-                current.toMutableList().apply { this[idx] = existing.copy(qty = existing.qty + factor) }
+        _active.update { current ->
+            val tier = current.activeTier
+            val idx = current.items.indexOfFirst { it.key == key }
+            val newItems = if (idx >= 0) {
+                val existing = current.items[idx]
+                current.items.toMutableList().apply {
+                    this[idx] = existing.copy(qty = existing.qty + factor)
+                }
             } else {
-                current + CartLine(
+                current.items + CartLine(
                     drug = param.drug,
                     qty = factor,
                     tier = tier,
                     selectedUnit = param.altUnit,
                 )
             }
+            current.copy(items = newItems)
         }
     }
 
     override fun setQty(param: SetCartQtyParam) {
-        _items.update { current ->
-            val idx = current.indexOfFirst { it.key == param.key }
-            if (idx < 0) current
-            else if (param.displayQty <= 0) current.toMutableList().apply { removeAt(idx) }
-            else {
-                val existing = current[idx]
-                val baseQty = param.displayQty * existing.factor
-                current.toMutableList().apply { this[idx] = existing.copy(qty = baseQty) }
+        _active.update { current ->
+            val idx = current.items.indexOfFirst { it.key == param.key }
+            val newItems = when {
+                idx < 0 -> current.items
+                param.displayQty <= 0 -> current.items.toMutableList().apply { removeAt(idx) }
+                else -> {
+                    val existing = current.items[idx]
+                    val baseQty = param.displayQty * existing.factor
+                    current.items.toMutableList().apply {
+                        this[idx] = existing.copy(qty = baseQty)
+                    }
+                }
             }
+            current.copy(items = newItems)
         }
     }
 
     override fun setLineDiscount(param: SetLineDiscountParam) {
-        _items.update { current ->
-            val idx = current.indexOfFirst { it.key == param.key }
-            if (idx < 0) current
+        _active.update { current ->
+            val idx = current.items.indexOfFirst { it.key == param.key }
+            val newItems = if (idx < 0) current.items
             else {
-                val existing = current[idx]
-
+                val existing = current.items[idx]
                 val capped = param.discount.coerceIn(0.0, existing.basePrice)
-                current.toMutableList().apply { this[idx] = existing.copy(discount = capped) }
+                current.items.toMutableList().apply {
+                    this[idx] = existing.copy(discount = capped)
+                }
             }
+            current.copy(items = newItems)
         }
     }
 
     override fun remove(key: CartLineKey) {
-        _items.update { it.filterNot { line -> line.key == key } }
+        _active.update { current ->
+            current.copy(items = current.items.filterNot { it.key == key })
+        }
     }
 
     override fun selectCustomer(customer: Customer) {
-        _selectedCustomer.value = customer
-        applyTier(customer.priceTier.takeIf { it.isNotBlank() } ?: Tier.Retail)
+        val tier = customer.priceTier.takeIf { it.isNotBlank() } ?: Tier.Retail
+        _active.update { current ->
+            current.copy(
+                customer = customer,
+                activeTier = tier,
+                items = current.items.map { it.copy(tier = tier) },
+            )
+        }
     }
 
     override fun clearCustomer() {
-        _selectedCustomer.value = null
-        applyTier(Tier.Retail)
+        _active.update { current ->
+            current.copy(
+                customer = null,
+                activeTier = Tier.Retail,
+                items = current.items.map { it.copy(tier = Tier.Retail) },
+            )
+        }
     }
 
     override fun setCartDiscount(discount: CartDiscount) {
-        _cartDiscount.value = discount
+        _active.update { it.copy(cartDiscount = discount) }
     }
 
     override fun setCashReceived(value: String) {
-        _cashReceived.value = value
+        _active.update { it.copy(cashReceived = value) }
     }
 
     override fun commitReceipt(sale: Sale) {
         _lastReceipt.value = sale
-        clearActive()
+        _active.value = ActiveCart.Empty
     }
 
     override fun dismissReceipt() {
@@ -127,26 +138,26 @@ class CartRepositoryImpl(
     }
 
     override fun clear() {
-        clearActive()
         _lastReceipt.value = null
+        _active.value = ActiveCart.Empty
     }
 
     override fun parkCart(slot: Int) {
         if (!isValidSlot(slot)) return
-        val items = _items.value
-        if (items.isEmpty()) return
+        val snapshot = _active.value
+        if (snapshot.items.isEmpty()) return
 
         val parked = ParkedCart(
-            items = items,
-            customer = _selectedCustomer.value,
-            cartDiscount = _cartDiscount.value,
-            activeTier = _activeTier.value,
-            cashReceived = _cashReceived.value,
+            items = snapshot.items,
+            customer = snapshot.customer,
+            cartDiscount = snapshot.cartDiscount,
+            activeTier = snapshot.activeTier,
+            cashReceived = snapshot.cashReceived,
             parkedAt = Clock.System.now().toEpochMilliseconds(),
         )
         parkedCartStorage.save(slot, parked)
         _parkedSlots.update { current -> current.replaceAt(slot, parked) }
-        clearActive()
+        _active.value = ActiveCart.Empty
     }
 
     override fun restoreCart(slot: Int) {
@@ -154,7 +165,7 @@ class CartRepositoryImpl(
         val parked = _parkedSlots.value.getOrNull(slot) ?: return
 
         _lastReceipt.value = null
-        replaceActive(
+        _active.value = ActiveCart(
             items = parked.items,
             customer = parked.customer,
             cartDiscount = parked.cartDiscount,
@@ -173,35 +184,6 @@ class CartRepositoryImpl(
     }
 
     private fun isValidSlot(slot: Int) = slot in 0 until PARK_SLOT_COUNT
-
-    private fun clearActive() {
-        replaceActive(
-            items = emptyList(),
-            customer = null,
-            cartDiscount = CartDiscount.None,
-            activeTier = Tier.Retail,
-            cashReceived = "",
-        )
-    }
-
-    private fun replaceActive(
-        items: List<CartLine>,
-        customer: Customer?,
-        cartDiscount: CartDiscount,
-        activeTier: String,
-        cashReceived: String,
-    ) {
-        _items.value = items
-        _selectedCustomer.value = customer
-        _cartDiscount.value = cartDiscount
-        _activeTier.value = activeTier
-        _cashReceived.value = cashReceived
-    }
-
-    private fun applyTier(tier: String) {
-        _activeTier.value = tier
-        _items.update { current -> current.map { it.copy(tier = tier) } }
-    }
 
     private fun <T> List<T>.replaceAt(index: Int, value: T): List<T> =
         toMutableList().apply { this[index] = value }

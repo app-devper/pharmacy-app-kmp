@@ -25,7 +25,8 @@ class CheckoutUseCase(
     ): Result<CheckoutOutcome> = invoke(RunCheckoutParam(received, allowOversell, clientRequestId))
 
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
-        val lines = cart.items.value
+        val snapshot = cart.active.value
+        val lines = snapshot.items
         if (lines.isEmpty()) {
             throw CheckoutFailure(ValidationException("ตะกร้าว่างเปล่า"))
         }
@@ -37,9 +38,9 @@ class CheckoutUseCase(
             }
         }
 
-        val customer = cart.selectedCustomer.value
-        val tier = cart.activeTier.value
-        val cartDiscount = cart.cartDiscount.value
+        val customer = snapshot.customer
+        val tier = snapshot.activeTier
+        val cartDiscount = snapshot.cartDiscount
         val subtotal = lines.sumOf { it.lineTotal }
         val discountAmount = cartDiscount.apply(subtotal)
 

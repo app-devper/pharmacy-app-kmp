@@ -96,7 +96,7 @@ class CustomerPickerViewModelTest {
         vm.pick(charlie)
         advanceUntilIdle()
         assertEquals(charlie, cart.lastSelectCustomer)
-        assertEquals(charlie, cart.selectedCustomer.value)
+        assertEquals(charlie, cart.active.value.customer)
         assertFalse(vm.state.value.open)
     }
 
@@ -109,7 +109,7 @@ class CustomerPickerViewModelTest {
         vm.clear()
         advanceUntilIdle()
         assertTrue(cart.clearCustomerCalled)
-        assertNull(cart.selectedCustomer.value)
+        assertNull(cart.active.value.customer)
 
         assertTrue(vm.state.value.open)
     }

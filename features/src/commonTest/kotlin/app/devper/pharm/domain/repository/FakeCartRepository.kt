@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
@@ -13,6 +14,7 @@ import app.devper.pharm.domain.pricing.Tier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class FakeCartRepository(
     initialItems: List<CartLine> = emptyList(),
@@ -24,20 +26,16 @@ class FakeCartRepository(
     initialParkedSlots: List<ParkedCart?> = List(PARK_SLOT_COUNT) { null },
 ) : CartRepository {
 
-    private val itemsState = MutableStateFlow(initialItems)
-    override val items: StateFlow<List<CartLine>> = itemsState.asStateFlow()
-
-    private val customerState = MutableStateFlow(initialCustomer)
-    override val selectedCustomer: StateFlow<Customer?> = customerState.asStateFlow()
-
-    private val discountState = MutableStateFlow(initialDiscount)
-    override val cartDiscount: StateFlow<CartDiscount> = discountState.asStateFlow()
-
-    private val tierState = MutableStateFlow(initialTier)
-    override val activeTier: StateFlow<String> = tierState.asStateFlow()
-
-    private val receivedState = MutableStateFlow(initialReceived)
-    override val cashReceived: StateFlow<String> = receivedState.asStateFlow()
+    private val activeState = MutableStateFlow(
+        ActiveCart(
+            items = initialItems,
+            customer = initialCustomer,
+            cartDiscount = initialDiscount,
+            activeTier = initialTier,
+            cashReceived = initialReceived,
+        )
+    )
+    override val active: StateFlow<ActiveCart> = activeState.asStateFlow()
 
     private val receiptState = MutableStateFlow(initialReceipt)
     override val lastReceipt: StateFlow<Sale?> = receiptState.asStateFlow()
@@ -76,34 +74,33 @@ class FakeCartRepository(
 
     override fun remove(key: CartLineKey) {
         lastRemove = key
-        itemsState.value = itemsState.value.filterNot { it.key == key }
+        activeState.update { it.copy(items = it.items.filterNot { line -> line.key == key }) }
     }
 
     override fun selectCustomer(customer: Customer) {
         lastSelectCustomer = customer
-        customerState.value = customer
+        activeState.update { it.copy(customer = customer) }
     }
 
     override fun clearCustomer() {
         clearCustomerCalled = true
-        customerState.value = null
+        activeState.update { it.copy(customer = null) }
     }
 
     override fun setCartDiscount(discount: CartDiscount) {
         lastSetCartDiscount = discount
-        discountState.value = discount
+        activeState.update { it.copy(cartDiscount = discount) }
     }
 
     override fun setCashReceived(value: String) {
         lastSetCashReceived = value
-        receivedState.value = value
+        activeState.update { it.copy(cashReceived = value) }
     }
 
     override fun commitReceipt(sale: Sale) {
         lastCommitReceipt = sale
         receiptState.value = sale
-        itemsState.value = emptyList()
-        receivedState.value = ""
+        activeState.update { it.copy(items = emptyList(), cashReceived = "") }
     }
 
     override fun dismissReceipt() {
@@ -113,42 +110,41 @@ class FakeCartRepository(
 
     override fun clear() {
         clearCalled = true
-        itemsState.value = emptyList()
-        customerState.value = null
-        discountState.value = CartDiscount.None
-        receivedState.value = ""
+        activeState.update {
+            it.copy(items = emptyList(), customer = null, cartDiscount = CartDiscount.None, cashReceived = "")
+        }
     }
 
     override fun parkCart(slot: Int) {
         lastParkSlot = slot
-        if (itemsState.value.isEmpty()) return
+        val snapshot = activeState.value
+        if (snapshot.items.isEmpty()) return
         parkClockMs += 1000L
-        val snapshot = ParkedCart(
-            items = itemsState.value,
-            customer = customerState.value,
-            cartDiscount = discountState.value,
-            activeTier = tierState.value,
-            cashReceived = receivedState.value,
+        val parked = ParkedCart(
+            items = snapshot.items,
+            customer = snapshot.customer,
+            cartDiscount = snapshot.cartDiscount,
+            activeTier = snapshot.activeTier,
+            cashReceived = snapshot.cashReceived,
             parkedAt = parkClockMs,
         )
         parkedState.value = parkedState.value.mapIndexed { i, existing ->
-            if (i == slot) snapshot else existing
+            if (i == slot) parked else existing
         }
-
-        itemsState.value = emptyList()
-        customerState.value = null
-        discountState.value = CartDiscount.None
-        receivedState.value = ""
+        activeState.value = ActiveCart.Empty
     }
 
     override fun restoreCart(slot: Int) {
         lastRestoreSlot = slot
         val parked = parkedState.value.getOrNull(slot) ?: return
-        itemsState.value = parked.items
-        customerState.value = parked.customer
-        discountState.value = parked.cartDiscount
-        tierState.value = parked.activeTier
-        receivedState.value = parked.cashReceived
+        receiptState.value = null
+        activeState.value = ActiveCart(
+            items = parked.items,
+            customer = parked.customer,
+            cartDiscount = parked.cartDiscount,
+            activeTier = parked.activeTier,
+            cashReceived = parked.cashReceived,
+        )
         parkedState.value = parkedState.value.mapIndexed { i, existing ->
             if (i == slot) null else existing
         }
@@ -161,9 +157,9 @@ class FakeCartRepository(
         }
     }
 
-    fun pushItems(items: List<CartLine>) { itemsState.value = items }
-    fun pushCashReceived(value: String) { receivedState.value = value }
-    fun pushCustomer(customer: Customer?) { customerState.value = customer }
+    fun pushItems(items: List<CartLine>) { activeState.update { it.copy(items = items) } }
+    fun pushCashReceived(value: String) { activeState.update { it.copy(cashReceived = value) } }
+    fun pushCustomer(customer: Customer?) { activeState.update { it.copy(customer = customer) } }
     fun pushReceipt(sale: Sale?) { receiptState.value = sale }
-    fun pushTier(tier: String) { tierState.value = tier }
+    fun pushTier(tier: String) { activeState.update { it.copy(activeTier = tier) } }
 }

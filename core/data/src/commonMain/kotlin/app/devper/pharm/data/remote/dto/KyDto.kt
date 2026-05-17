@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Ky10Request(
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String,
     @SerialName("drug_name") val drugName: String,
     @SerialName("reg_no") val regNo: String,
@@ -19,6 +20,7 @@ data class Ky10Request(
 
 @Serializable
 data class Ky11Request(
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String,
     @SerialName("drug_name") val drugName: String,
     @SerialName("reg_no") val regNo: String,
@@ -31,6 +33,7 @@ data class Ky11Request(
 
 @Serializable
 data class Ky12Request(
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String,
     @SerialName("rx_no") val rxNo: String,
     @SerialName("patient_name") val patientName: String,
