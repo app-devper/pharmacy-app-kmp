@@ -159,6 +159,7 @@ tasks.register("auditArchitecture") {
             root.walkTopDown()
                 .filter { it.isFile && it.name.endsWith(".kt") && !it.absolutePath.contains("/build/") }
                 .filter { f -> !f.absolutePath.let { it.contains("/commonTest/") || it.contains("/jvmTest/") || it.contains("/androidUnitTest/") } }
+                .filter { f -> !f.absolutePath.contains("/features/test-fixtures/") }
                 .forEach { f ->
                     f.useLines { lines ->
                         lines.forEachIndexed { i, line ->

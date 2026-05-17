@@ -18,6 +18,10 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
         }
+            commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(project(":features:test-fixtures"))
+        }
     }
 }
 
