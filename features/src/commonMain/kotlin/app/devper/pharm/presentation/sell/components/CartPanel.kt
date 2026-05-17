@@ -55,13 +55,11 @@ fun CartPanel(
     onReceivedChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onClearCart: () -> Unit,
-    parkedFilledCount: Int = 0,
-    onOpenParkedSheet: () -> Unit = {},
+    @Suppress("UNUSED_PARAMETER") parkedFilledCount: Int = 0,
+    @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
     compact: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    @Suppress("UNUSED_PARAMETER") val unused = parkedFilledCount
-
     val t = pharmTokens
     val cartCount = cart.sumOf { it.qty }
     val hasItems = cart.isNotEmpty()

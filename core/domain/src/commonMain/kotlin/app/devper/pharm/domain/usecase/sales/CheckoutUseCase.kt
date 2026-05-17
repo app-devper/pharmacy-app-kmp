@@ -1,6 +1,7 @@
 package app.devper.pharm.domain.usecase
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
@@ -26,7 +27,7 @@ class CheckoutUseCase(
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
         val lines = cart.items.value
         if (lines.isEmpty()) {
-            throw CheckoutFailure(IllegalStateException("ตะกร้าว่างเปล่า"))
+            throw CheckoutFailure(ValidationException("ตะกร้าว่างเปล่า"))
         }
 
         if (!param.allowOversell) {

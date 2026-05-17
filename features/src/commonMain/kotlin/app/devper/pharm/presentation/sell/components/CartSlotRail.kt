@@ -1,5 +1,4 @@
 package app.devper.pharm.presentation.sell.components
-import app.devper.pharm.presentation.sell.sibling.ParkedCartViewModel
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

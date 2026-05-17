@@ -153,11 +153,14 @@ class CartRepositoryImpl(
         if (!isValidSlot(slot)) return
         val parked = _parkedSlots.value.getOrNull(slot) ?: return
 
-        _items.value = parked.items
-        _selectedCustomer.value = parked.customer
-        _cartDiscount.value = parked.cartDiscount
-        _activeTier.value = parked.activeTier
-        _cashReceived.value = parked.cashReceived
+        _lastReceipt.value = null
+        replaceActive(
+            items = parked.items,
+            customer = parked.customer,
+            cartDiscount = parked.cartDiscount,
+            activeTier = parked.activeTier,
+            cashReceived = parked.cashReceived,
+        )
 
         parkedCartStorage.clear(slot)
         _parkedSlots.update { current -> current.replaceAt(slot, null) }
@@ -172,11 +175,27 @@ class CartRepositoryImpl(
     private fun isValidSlot(slot: Int) = slot in 0 until PARK_SLOT_COUNT
 
     private fun clearActive() {
-        _items.value = emptyList()
-        _selectedCustomer.value = null
-        _cartDiscount.value = CartDiscount.None
-        _activeTier.value = Tier.Retail
-        _cashReceived.value = ""
+        replaceActive(
+            items = emptyList(),
+            customer = null,
+            cartDiscount = CartDiscount.None,
+            activeTier = Tier.Retail,
+            cashReceived = "",
+        )
+    }
+
+    private fun replaceActive(
+        items: List<CartLine>,
+        customer: Customer?,
+        cartDiscount: CartDiscount,
+        activeTier: String,
+        cashReceived: String,
+    ) {
+        _items.value = items
+        _selectedCustomer.value = customer
+        _cartDiscount.value = cartDiscount
+        _activeTier.value = activeTier
+        _cashReceived.value = cashReceived
     }
 
     private fun applyTier(tier: String) {

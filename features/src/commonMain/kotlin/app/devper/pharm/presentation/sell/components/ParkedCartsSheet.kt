@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.tabular
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -157,7 +158,7 @@ private fun FilledSlotRow(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
-                    text = "${parked.itemCount} ชิ้น · ฿${formatBaht(parked.total)}",
+                    text = "${parked.itemCount} ชิ้น · ${fmtBaht(parked.total)}",
                     style = MaterialTheme.typography.bodyMedium.tabular(),
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
@@ -280,9 +281,3 @@ fun ParkButton(
     }
 }
 
-private fun formatBaht(value: Double): String {
-    val cents = (value * 100.0 + if (value >= 0) 0.5 else -0.5).toLong()
-    val whole = cents / 100
-    val frac = (cents % 100).toString().padStart(2, '0')
-    return "$whole.$frac"
-}

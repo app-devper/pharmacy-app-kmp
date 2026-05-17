@@ -6,8 +6,9 @@ import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.usecase.AddToCartUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
 import app.devper.pharm.domain.util.BarcodeMatcher
+import app.devper.pharm.domain.util.DrugSearch
+import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -29,12 +30,22 @@ class DrugPickerViewModel(
         setState { copy(drugsLoading = true, error = null) }
         launchResult(
             block = { getDrugs() },
-            onSuccess = { list -> setState { copy(drugsLoading = false, drugs = list) } },
+            onSuccess = { list ->
+                setState {
+                    copy(
+                        drugsLoading = false,
+                        drugs = list,
+                        filteredDrugs = DrugSearch.filter(list, query),
+                    )
+                }
+            },
             onFailure = { e -> setState { copy(drugsLoading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
         )
     }
 
-    fun onQueryChange(value: String) = setState { copy(query = value) }
+    fun onQueryChange(value: String) = setState {
+        copy(query = value, filteredDrugs = DrugSearch.filter(drugs, value))
+    }
 
     fun onTapDrug(drug: Drug) {
         if (drug.altUnits.any { !it.hidden }) {

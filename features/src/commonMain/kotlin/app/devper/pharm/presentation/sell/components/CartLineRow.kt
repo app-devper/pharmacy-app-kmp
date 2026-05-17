@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -153,9 +152,8 @@ private fun QtyStepper(
     onQtyChange: (Int) -> Unit,
     onRemove: () -> Unit,
 ) {
-    var draft by remember(qty) { mutableStateOf(qty.toString()) }
-    LaunchedEffect(qty) { draft = qty.toString() }
     var editing by remember { mutableStateOf(false) }
+    var draft by remember(qty) { mutableStateOf(qty.toString()) }
 
     fun commit() {
         val parsed = draft.toIntOrNull() ?: qty

@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.sell.sibling
 
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.util.DrugSearch
 import app.devper.pharm.ui.common.BaseUiState
 
 data class DrugPickerUiState(
@@ -10,11 +9,11 @@ data class DrugPickerUiState(
 
     val query: String = "",
 
+    val filteredDrugs: List<Drug> = emptyList(),
+
     val altUnitPickerFor: Drug? = null,
     override val error: String? = null,
 ) : BaseUiState {
 
     override val loading: Boolean get() = drugsLoading
-
-    val filteredDrugs: List<Drug> get() = DrugSearch.filter(drugs, query)
 }

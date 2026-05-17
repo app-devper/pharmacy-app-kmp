@@ -22,7 +22,6 @@ import app.devper.pharm.domain.usecase.SetLineDiscountUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class SellViewModel(
     cartState: CartStateProvider,
@@ -58,7 +57,11 @@ class SellViewModel(
             .onEach { s -> setState { copy(settings = s) } }
             .launchIn(viewModelScope)
 
-        viewModelScope.launch { refreshSettings() }
+        launchResult(
+            block = { refreshSettings() },
+            onSuccess = { },
+            onFailure = { },
+        )
     }
 
     fun onReceivedChange(value: String) = setCashReceived(value)

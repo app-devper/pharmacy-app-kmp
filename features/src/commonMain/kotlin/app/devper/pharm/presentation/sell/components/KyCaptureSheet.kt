@@ -48,7 +48,7 @@ fun KyCaptureSheet(
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var fields by remember { mutableStateOf(initial) }
+    var fields by remember(initial) { mutableStateOf(initial) }
 
     val canSubmit = !submitting && validate(required, fields)
 

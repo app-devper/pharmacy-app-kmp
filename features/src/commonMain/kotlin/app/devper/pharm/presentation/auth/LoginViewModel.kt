@@ -20,7 +20,7 @@ class LoginViewModel(
         setState { copy(loading = true, error = null) }
         launchResult(
             block = { login(s.username, s.password) },
-            onSuccess = { user -> setState { copy(loading = false, loggedInUser = user) } },
+            onSuccess = { user -> setState { copy(loading = false, loggedInUser = user, password = "") } },
             onFailure = { e -> setState { copy(loading = false, error = e.message ?: "เข้าสู่ระบบไม่สำเร็จ") } },
         )
     }
