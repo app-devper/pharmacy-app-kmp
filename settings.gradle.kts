@@ -29,4 +29,4 @@ dependencyResolutionManagement {
 rootProject.name = "PharmacyApp"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include(":composeApp", ":core:common", ":core:domain", ":core:ui", ":core:data", ":features")
+include(":composeApp", ":core:common", ":core:domain", ":core:ui", ":core:data", ":features", ":features:shared")

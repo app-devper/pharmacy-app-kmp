@@ -2,8 +2,9 @@
 
 Project-scoped instructions for Claude Code when working in
 `/Users/admin/ProjectPos/pharmacy-app/app-kmp/`. Applies to the KMP
-companion app (Compose Multiplatform — 6-module Gradle layout: `:composeApp`
-+ `:core:common` + `:core:domain` + `:core:ui` + `:core:data` + `:features`).
+companion app (Compose Multiplatform — 7-module Gradle layout: `:composeApp`
++ `:core:common` + `:core:domain` + `:core:ui` + `:core:data` + `:features`
++ `:features:shared`).
 
 ## Module structure
 
@@ -60,30 +61,81 @@ companion app (Compose Multiplatform — 6-module Gradle layout: `:composeApp`
   rule: ไม่มี androidMain / iosMain / jvmMain / wasmJsMain folder
         (PdfDownloader expect/actual ย้ายไป :core:common)
 
-:features                                ทุก feature รวมที่เดียว
-  ├─ presentation/<feature>/             (19 features)
-  │    auth, sell, customers, suppliers, stock, stockcount, imports,
-  │    bulkimport, movements, expiry, planning, reports, ky, settings,
-  │    offlinesync, help, saleshistory
-  ├─ di/<Feature>Module.kt               (10 per-feature DI modules —
+:features:shared                         navigation hub + route data objects
+  ├─ presentation/<feature>/<Feature>Routes.kt   @Serializable data objects
+  │    (one Routes.kt per feature — Sell, Stock, Help, LabelPrint, etc.)
+  ├─ presentation/navigation/ShelledScreen.kt    AppShell + MAIN_NAV table
+  deps: :core:domain + :core:ui ONLY
+  rule: NO knowledge of :features (would be a cycle); declares routes that
+        :features's NavGraphs reference + that :composeApp's AppNavHost
+        uses for startDestination + LaunchedEffect navigation. Lives below
+        :features in the graph so per-feature splits become feasible
+        without re-shuffling route definitions.
+
+:features                                ทุก feature รวมที่เดียว (ยังไม่ split per-feature)
+  ├─ presentation/<feature>/             (20 features — auth, sell, customers,
+  │                                        suppliers, stock, stockcount, imports,
+  │                                        bulkimport, movements, expiry, planning,
+  │                                        reports, ky, labels, settings, offlinesync,
+  │                                        help, saleshistory, users, profile)
+  │    each contains: Screen.kt / Content.kt / Callbacks.kt / ViewModel.kt /
+  │                   UiState.kt / NavGraph.kt + supporting section files.
+  │    Routes.kt for each feature lives in :features:shared (above).
+  ├─ di/<Feature>Module.kt               (per-feature DI modules —
   │                                        bind ONLY VM `factoryOf`;
   │                                        Use cases / Providers / Parser
   │                                        live in :core:domain's `domainModule`;
   │                                        Repository / Api live in
   │                                        :core:data's `dataModule`)
-  ├─ presentation/navigation/ShelledScreen.kt
   ├─ composeResources/files/user_guide.md
   packageOfResClass = "app.devper.pharm.features.resources"
-  deps: :core:domain + :core:ui ONLY
+  deps: :core:domain + :core:ui + :features:shared
         (`:core:common` types accessible transitively via :core:domain's
         api() re-export; :core:data NEVER accessible — features inject
         repository interfaces from :core:domain)
 ```
 
+### Per-feature split migration recipe (post `:features:shared`)
+
+When a feature genuinely needs its own module (most common reason: its
+test surface is large enough to slow `:features:jvmTest` unacceptably,
+or per-feature CI is wanted), follow this 6-step recipe:
+
+1. **Carve out the module** — `mkdir -p features/<feat>/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/`
+2. **Add `features/<feat>/build.gradle.kts`** mirroring `features/build.gradle.kts`
+   (apply `pharmacy.kmp.compose.library`, depend on `:core:domain` +
+   `:core:ui` + `:features:shared`). Set unique
+   `compose.resources { packageOfResClass = "app.devper.pharm.features.<feat>.resources" }`
+   if the feature ships its own assets; otherwise omit.
+3. **Register in `settings.gradle.kts`** — append `:features:<feat>` to
+   `include(...)`.
+4. **Move the feature's files** via `git mv` to preserve history:
+   `git mv features/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/* features/<feat>/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/`
+   The `*Routes.kt` already lives in `:features:shared` — leave it there.
+5. **Move the feature's DI module** —
+   `git mv features/src/commonMain/kotlin/app/devper/pharm/di/<Feat>Module.kt features/<feat>/src/commonMain/kotlin/app/devper/pharm/di/`
+   Wire it from `:composeApp/di/AppModule.kt` (replace the include of
+   the mega-`featureModules` aggregation with explicit per-module imports).
+6. **Move the feature's tests** —
+   `git mv features/src/commonTest/kotlin/app/devper/pharm/presentation/<feat>/* features/<feat>/src/commonTest/kotlin/app/devper/pharm/presentation/<feat>/`
+   The shared `FakeXRepository` fakes can stay in `:features/commonTest`
+   if multiple features still need them, OR move to a new
+   `:features:test-fixtures` module when 2+ split features want them.
+
+After step 6: `./gradlew :composeApp:auditArchitecture
+:composeApp:testDebugUnitTest :features:jvmTest
+:features:<feat>:jvmTest` and the cross-feature import that previously
+was a P1 convention check is now a HARD compile error (P0) — Kotlin
+won't resolve a foreign-module symbol that isn't a declared dependency.
+
 **Forbidden (P0 — audited via review skill):**
 - `:core:common` ห้ามรู้จัก project module อื่นเลย (zero project deps)
-- `:core:domain` ห้ามรู้จัก `:core:ui` / `:core:data` / `:features` / `:composeApp`
-- `:core:*` ห้ามรู้จัก `:features` หรือ `:composeApp`
+- `:core:domain` ห้ามรู้จัก `:core:ui` / `:core:data` / `:features` /
+  `:features:shared` / `:composeApp`
+- `:core:*` ห้ามรู้จัก `:features` / `:features:shared` / `:composeApp`
+- `:features:shared` ห้ามรู้จัก `:features` / `:composeApp` /
+  `:core:data` (would be a cycle — `:features` depends on
+  `:features:shared`, not the other way around)
 - `:features` ห้ามรู้จัก `:core:data` (\*RepositoryImpl, \*Api, DTO — features
   ใช้ Repository interface จาก :core:domain เท่านั้น; data bindings อยู่ใน
   :core:data/.../di/DataModule.kt ซึ่ง :composeApp include เอง)
@@ -152,8 +204,10 @@ purpose isn't clear from its name, rename the method.
   `pharmacy.architecture.audit` for the `auditArchitecture` task.
 - **Test verify**: `:composeApp:testDebugUnitTest
   :composeApp:compileTestKotlinIosSimulatorArm64
-  :composeApp:compileTestKotlinWasmJs :features:jvmTest :core:domain:jvmTest :core:common:jvmTest`
-  (test count today: 205)
+  :composeApp:compileTestKotlinWasmJs :features:jvmTest :core:domain:jvmTest
+  :core:common:jvmTest :core:ui:jvmTest :core:data:jvmTest` (also build
+  `:features:shared:compileKotlinJvm` if Routes / ShelledScreen changed).
+  Test count today: 475.
 - **Design system**: tokens in `:core:ui` →
   `ui/theme/DesignTokens.kt`; primitives in
   `ui/designsystem/Pharm*.kt`

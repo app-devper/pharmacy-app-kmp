@@ -46,7 +46,7 @@ private val MAIN_NAV_ROUTES: List<Any> = listOf(
     Help,
 )
 
-internal val MAIN_NAV: List<NavItem> = listOf(
+private val MAIN_NAV: List<NavItem> = listOf(
     NavItem(route = Sell::class.qualifiedName!!,         label = "หน้าขายยา",          icon = PharmIcons.Sell),
     NavItem(route = SalesHistory::class.qualifiedName!!, label = "ประวัติการขาย",      icon = PharmIcons.SalesHistory),
     NavItem(route = Stock::class.qualifiedName!!,        label = "สต็อกยา",            icon = PharmIcons.Stock),
@@ -66,14 +66,14 @@ internal val MAIN_NAV: List<NavItem> = listOf(
     NavItem(route = Help::class.qualifiedName!!,         label = "คู่มือการใช้งาน",    icon = PharmIcons.Help),
 )
 
-internal val LOGOUT_ITEM = NavItem(
+private val LOGOUT_ITEM = NavItem(
     route = "logout",
     label = "ออก",
     icon = PharmIcons.Logout,
 )
 
 @Composable
-internal fun ShelledScreen(
+fun ShelledScreen(
     title: String,
     currentRoute: String,
     navController: NavController,
