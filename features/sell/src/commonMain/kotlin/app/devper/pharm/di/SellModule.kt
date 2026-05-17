@@ -9,7 +9,7 @@ import app.devper.pharm.presentation.sell.sibling.VoidSaleViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val salesModule = module {
+val sellModule = module {
     factoryOf(::SellViewModel)
     factoryOf(::CheckoutViewModel)
     factoryOf(::DrugPickerViewModel)

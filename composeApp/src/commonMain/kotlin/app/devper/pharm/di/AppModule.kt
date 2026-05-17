@@ -27,7 +27,7 @@ val appModule = module {
         labelsModule,
         expiryModule,
 
-        salesModule,
+        sellModule,
         salesHistoryModule,
 
         reportsModule,
