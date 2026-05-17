@@ -75,6 +75,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
     override suspend fun addKy9(param: AddKy9Param) {
         api.addKy9(
             Ky9Request(
+                saleId = param.saleId.trim(),
                 date = param.date.trim(),
                 drugName = param.drugName.trim(),
                 regNo = param.regNo.trim(),
@@ -101,6 +102,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
 
     private fun toDomain(d: Ky9Dto) = Ky9Entry(
         id = d.id,
+        saleId = d.saleId,
         date = d.date,
         drugName = d.drugName,
         regNo = d.regNo,
@@ -115,6 +117,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
 
     private fun toDomain(d: Ky10Dto) = Ky10Entry(
         id = d.id,
+        saleId = d.saleId,
         date = d.date,
         drugName = d.drugName,
         regNo = d.regNo,
@@ -130,6 +133,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
 
     private fun toDomain(d: Ky11Dto) = Ky11Entry(
         id = d.id,
+        saleId = d.saleId,
         date = d.date,
         drugName = d.drugName,
         regNo = d.regNo,
@@ -143,6 +147,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
 
     private fun toDomain(d: Ky12Dto) = Ky12Entry(
         id = d.id,
+        saleId = d.saleId,
         date = d.date,
         rxNo = d.rxNo,
         patientName = d.patientName,

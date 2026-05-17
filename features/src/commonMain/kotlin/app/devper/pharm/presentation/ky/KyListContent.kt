@@ -87,6 +87,7 @@ private val sampleKy10Rows = listOf(
     KyRow.Ky10(
         Ky10Entry(
             id = "e1",
+            saleId = "",
             date = "02/05/26",
             drugName = "ออเมพราโซล 20mg",
             regNo = "1A 311/55",
@@ -103,6 +104,7 @@ private val sampleKy10Rows = listOf(
     KyRow.Ky10(
         Ky10Entry(
             id = "e2",
+            saleId = "",
             date = "06/05/26",
             drugName = "ยาแก้ปวด ทรามาดอล 50mg",
             regNo = "1A 200/58",
@@ -122,6 +124,7 @@ private val sampleKy11Rows = listOf(
     KyRow.Ky11(
         Ky11Entry(
             id = "e3",
+            saleId = "",
             date = "01/05/26",
             drugName = "อะม็อกซีซิลลิน 500mg",
             regNo = "1A 091/52",
@@ -136,6 +139,7 @@ private val sampleKy11Rows = listOf(
     KyRow.Ky11(
         Ky11Entry(
             id = "e4",
+            saleId = "",
             date = "04/05/26",
             drugName = "ลอราทาดีน 10mg",
             regNo = "1A 044/58",
@@ -153,6 +157,7 @@ private val sampleKy12Rows = listOf(
     KyRow.Ky12(
         Ky12Entry(
             id = "e5",
+            saleId = "",
             date = "07/05/26",
             rxNo = "240601",
             patientName = "นาย เอกชัย สุภาพ",

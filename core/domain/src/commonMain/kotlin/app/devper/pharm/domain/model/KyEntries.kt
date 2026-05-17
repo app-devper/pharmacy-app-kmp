@@ -2,6 +2,7 @@ package app.devper.pharm.domain.model
 
 data class Ky9Entry(
     val id: String,
+    val saleId: String,
     val date: String,
     val drugName: String,
     val regNo: String,
@@ -16,6 +17,7 @@ data class Ky9Entry(
 
 data class Ky10Entry(
     val id: String,
+    val saleId: String,
     val date: String,
     val drugName: String,
     val regNo: String,
@@ -31,6 +33,7 @@ data class Ky10Entry(
 
 data class Ky11Entry(
     val id: String,
+    val saleId: String,
     val date: String,
     val drugName: String,
     val regNo: String,
@@ -44,6 +47,7 @@ data class Ky11Entry(
 
 data class Ky12Entry(
     val id: String,
+    val saleId: String,
     val date: String,
     val rxNo: String,
     val patientName: String,

@@ -9,6 +9,7 @@ data class AddKy9Param(
     val pricePerUnit: Double,
     val seller: String = "",
     val invoiceNo: String = "",
+    val saleId: String = "",
 )
 
 data class KyMonthFilterParam(

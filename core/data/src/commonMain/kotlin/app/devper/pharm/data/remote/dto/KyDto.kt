@@ -48,6 +48,7 @@ data class Ky12Request(
 
 @Serializable
 data class Ky9Request(
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String,
     @SerialName("drug_name") val drugName: String,
     @SerialName("reg_no") val regNo: String = "",
@@ -61,6 +62,7 @@ data class Ky9Request(
 @Serializable
 data class Ky9Dto(
     @SerialName("id") val id: String,
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String = "",
     @SerialName("drug_name") val drugName: String = "",
     @SerialName("reg_no") val regNo: String = "",
@@ -76,6 +78,7 @@ data class Ky9Dto(
 @Serializable
 data class Ky10Dto(
     @SerialName("id") val id: String,
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String = "",
     @SerialName("drug_name") val drugName: String = "",
     @SerialName("reg_no") val regNo: String = "",
@@ -92,6 +95,7 @@ data class Ky10Dto(
 @Serializable
 data class Ky11Dto(
     @SerialName("id") val id: String,
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String = "",
     @SerialName("drug_name") val drugName: String = "",
     @SerialName("reg_no") val regNo: String = "",
@@ -106,6 +110,7 @@ data class Ky11Dto(
 @Serializable
 data class Ky12Dto(
     @SerialName("id") val id: String,
+    @SerialName("sale_id") val saleId: String = "",
     @SerialName("date") val date: String = "",
     @SerialName("rx_no") val rxNo: String = "",
     @SerialName("patient_name") val patientName: String = "",
