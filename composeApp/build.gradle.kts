@@ -56,6 +56,7 @@ kotlin {
             implementation(project(":features:help"))
             implementation(project(":features:profile"))
             implementation(project(":features:planning"))
+            implementation(project(":features:labels"))
 
             implementation(compose.runtime)
             implementation(compose.material3)

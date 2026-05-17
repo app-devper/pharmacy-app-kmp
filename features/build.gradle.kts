@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(project(":features:profile"))
+            implementation(project(":features:labels"))
         }
     }
 }
