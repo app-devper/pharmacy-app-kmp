@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.help
 
+import app.devper.pharm.features.help.resources.Res
 import app.devper.pharm.ui.common.BaseViewModel
-import app.devper.pharm.features.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 class HelpViewModel : BaseViewModel<HelpUiState>(HelpUiState()) {

@@ -29,6 +29,7 @@ val appModule = module {
         settingsModule,
 
         offlineSyncModule,
+        helpModule,
 
         profileModule,
         usersModule,

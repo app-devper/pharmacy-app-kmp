@@ -53,6 +53,7 @@ kotlin {
             implementation(project(":core:data"))
             implementation(project(":features"))
             implementation(project(":features:shared"))
+            implementation(project(":features:help"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
