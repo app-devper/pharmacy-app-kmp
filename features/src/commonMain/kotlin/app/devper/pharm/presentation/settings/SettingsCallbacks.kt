@@ -1,0 +1,30 @@
+package app.devper.pharm.presentation.settings
+
+data class SettingsEditorCallbacks(
+    val onSelectTab: (SettingsTab) -> Unit = {},
+    val onStoreName: (String) -> Unit = {},
+    val onStoreAddress: (String) -> Unit = {},
+    val onStorePhone: (String) -> Unit = {},
+    val onStoreTaxId: (String) -> Unit = {},
+    val onReceiptHeader: (String) -> Unit = {},
+    val onReceiptFooter: (String) -> Unit = {},
+    val onReceiptPaperWidth: (String) -> Unit = {},
+    val onReceiptShowPharmacist: (Boolean) -> Unit = {},
+    val onStockLowThreshold: (String) -> Unit = {},
+    val onStockReorderDays: (String) -> Unit = {},
+    val onStockReorderLookahead: (String) -> Unit = {},
+    val onStockExpiringDays: (String) -> Unit = {},
+    val onPharmacistName: (String) -> Unit = {},
+    val onPharmacistLicenseNo: (String) -> Unit = {},
+    val onKySkipAuto: (Boolean) -> Unit = {},
+    val onKyDefaultBuyerAddress: (String) -> Unit = {},
+    val onTimezone: (String) -> Unit = {},
+    val onSubmit: () -> Unit = {},
+    val onDismissMessage: () -> Unit = {},
+    val onDismissError: () -> Unit = {},
+)
+
+data class SettingsNavCallbacks(
+    val onNavigate: (SettingsMenuKey) -> Unit = {},
+    val onToggleGroup: (SettingsMenuGroup) -> Unit = {},
+)

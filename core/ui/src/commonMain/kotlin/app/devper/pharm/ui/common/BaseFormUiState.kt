@@ -1,0 +1,11 @@
+package app.devper.pharm.ui.common
+
+interface BaseFormUiState<S : BaseFormUiState<S>> : BaseUiState {
+    val saving: Boolean
+    val saved: Boolean
+    val canSubmit: Boolean
+
+    fun withSaving(saving: Boolean): S
+    fun withSaved(saved: Boolean): S
+    fun withError(error: String?): S
+}

@@ -1,0 +1,41 @@
+package app.devper.pharm
+
+import android.app.Application
+import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.platform.PdfDownloader
+import app.devper.pharm.common.print.ReceiptPrinter
+import app.devper.pharm.data.network.buildHttpClient
+import app.devper.pharm.data.storage.TokenStorage
+import app.devper.pharm.di.appModule
+import app.devper.pharm.platform.PdfDownloaderImpl
+import app.devper.pharm.platform.ReceiptPrinterImpl
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
+import io.ktor.client.engine.okhttp.OkHttp
+import kotlinx.coroutines.Dispatchers
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
+
+class PharmacyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        val androidPlatformModule = module {
+            single<Settings> {
+                val prefs = applicationContext.getSharedPreferences("pharmacy.prefs", MODE_PRIVATE)
+                SharedPreferencesSettings(prefs)
+            }
+            single { buildHttpClient(OkHttp, get<TokenStorage>()) }
+
+            single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
+            single<PdfDownloader> { PdfDownloaderImpl(applicationContext) }
+            single<ReceiptPrinter> { ReceiptPrinterImpl() }
+        }
+
+        startKoin {
+            androidContext(this@PharmacyApplication)
+            modules(androidPlatformModule, appModule)
+        }
+    }
+}

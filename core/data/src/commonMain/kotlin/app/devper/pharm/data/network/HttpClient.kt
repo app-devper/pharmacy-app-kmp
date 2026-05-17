@@ -1,0 +1,87 @@
+package app.devper.pharm.data.network
+
+import app.devper.pharm.data.storage.TokenStorage
+import app.devper.pharm.common.AuthException
+import app.devper.pharm.common.ConflictException
+import app.devper.pharm.common.ForbiddenException
+import app.devper.pharm.common.NotFoundException
+import app.devper.pharm.common.ServerException
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
+import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
+
+fun <T : HttpClientEngineConfig> buildHttpClient(
+    engine: HttpClientEngineFactory<T>,
+    tokenStorage: TokenStorage,
+    json: Json = AppJson,
+    enableLogging: Boolean = true,
+): HttpClient = HttpClient(engine) {
+    expectSuccess = false
+
+    install(ContentNegotiation) {
+        json(json)
+    }
+
+    install(DefaultRequest) {
+        contentType(ContentType.Application.Json)
+        val token = tokenStorage.token
+        if (!token.isNullOrBlank()) {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }
+    }
+
+    if (enableLogging) {
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.BODY
+        }
+    }
+
+    HttpResponseValidator {
+        validateResponse { response ->
+            val status = response.status
+            if (status.isSuccess()) return@validateResponse
+            val body = response.bodyAsText()
+            throw when (status) {
+                HttpStatusCode.Unauthorized -> {
+
+                    tokenStorage.clear()
+                    AuthException()
+                }
+                HttpStatusCode.Forbidden     -> ForbiddenException()
+                HttpStatusCode.NotFound      -> NotFoundException()
+                HttpStatusCode.Conflict      -> ConflictException(payload = body)
+                else -> ServerException(
+                    message = if (status.value in 500..599) "เซิร์ฟเวอร์ขัดข้อง (${status.value})"
+                              else "เกิดข้อผิดพลาด (${status.value})",
+                    statusCode = status.value,
+                    body = body,
+                )
+            }
+        }
+    }
+}
+
+private fun HttpStatusCode.isSuccess(): Boolean = value in 200..299
+
+val AppJson: Json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+    encodeDefaults = false
+    explicitNulls = false
+}

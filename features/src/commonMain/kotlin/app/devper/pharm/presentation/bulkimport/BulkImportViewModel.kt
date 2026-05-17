@@ -1,0 +1,60 @@
+package app.devper.pharm.presentation.bulkimport
+
+import app.devper.pharm.domain.parser.BulkImportJsonParser
+import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
+import app.devper.pharm.ui.common.BaseViewModel
+
+class BulkImportViewModel(
+    private val parser: BulkImportJsonParser,
+    private val bulkImportDrugs: BulkImportDrugsUseCase,
+) : BaseViewModel<BulkImportUiState>(BulkImportUiState()) {
+
+    fun onTextChange(value: String) = setState {
+        copy(
+            text = value,
+            parsed = emptyList(),
+            previewCount = null,
+            parseError = null,
+            result = null,
+        )
+    }
+
+    fun preview() {
+        parser.parse(current.text).fold(
+            onSuccess = { list ->
+                setState {
+                    copy(parsed = list, previewCount = list.size, parseError = null, result = null)
+                }
+            },
+            onFailure = { e ->
+                setState { copy(parsed = emptyList(), previewCount = null, parseError = e.message) }
+            },
+        )
+    }
+
+    fun submit() {
+        val parsed = parser.parse(current.text).getOrElse { e ->
+            setState { copy(parsed = emptyList(), parseError = e.message) }
+            return
+        }
+        if (parsed.isEmpty()) {
+            setState { copy(parsed = emptyList(), parseError = "ไม่มีรายการให้นำเข้า") }
+            return
+        }
+        setState {
+            copy(parsed = parsed, previewCount = parsed.size, submitting = true, error = null, result = null)
+        }
+        launchResult(
+            block = { bulkImportDrugs(parsed) },
+            onSuccess = { res ->
+                setState { copy(submitting = false, result = res) }
+            },
+            onFailure = { e ->
+                setState { copy(submitting = false, error = e.message ?: "นำเข้าไม่สำเร็จ") }
+            },
+        )
+    }
+
+    fun dismissError() = setState { copy(error = null) }
+    fun reset() = setState { BulkImportUiState() }
+}

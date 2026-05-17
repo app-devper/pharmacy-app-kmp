@@ -1,0 +1,304 @@
+package app.devper.pharm.presentation.sell.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Remove
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.ui.theme.PharmacyTheme
+import app.devper.pharm.ui.theme.tabular
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun CartLineRow(
+    line: CartLine,
+    onQtyChange: (qty: Int) -> Unit,
+    onRemove: () -> Unit,
+    onTapForDiscount: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onTapForDiscount)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = "รายละเอียด",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(18.dp),
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(
+                    text = line.drug.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+
+                line.selectedUnit?.let { alt ->
+                    Text(
+                        text = alt.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            if (line.selectedUnit == null) {
+                Text(
+                    text = line.drug.unit ?: "ชิ้น",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        QtyStepper(
+            qty = line.displayQty,
+            maxQty = (line.drug.stock / line.factor).coerceAtLeast(0),
+            onQtyChange = onQtyChange,
+            onRemove = onRemove,
+        )
+
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.width(96.dp),
+        ) {
+            Text(
+                text = "฿${bahtAmount(line.lineTotal)}",
+                style = MaterialTheme.typography.bodyLarge.tabular(),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                textAlign = TextAlign.End,
+            )
+            Text(
+                text = priceMetaLabel(line),
+                style = MaterialTheme.typography.labelSmall.tabular(),
+                color = if (line.discount > 0) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                textAlign = TextAlign.End,
+            )
+        }
+    }
+}
+
+private fun priceMetaLabel(line: CartLine): String {
+    if (line.discount > 0) {
+        val saved = line.discount * line.qty
+        return "−฿${bahtAmount(saved)}"
+    }
+    return when (line.tier) {
+        "wholesale" -> "ราคาส่ง"
+        "regular"   -> "ราคาทั่วไป"
+        "retail"    -> "ราคาหน้าร้าน"
+        else        -> "ราคาหน้าร้าน"
+    }
+}
+
+@Composable
+private fun QtyStepper(
+    qty: Int,
+    maxQty: Int,
+    onQtyChange: (Int) -> Unit,
+    onRemove: () -> Unit,
+) {
+    var draft by remember(qty) { mutableStateOf(qty.toString()) }
+    LaunchedEffect(qty) { draft = qty.toString() }
+    var editing by remember { mutableStateOf(false) }
+
+    fun commit() {
+        val parsed = draft.toIntOrNull() ?: qty
+        val clamped = parsed.coerceIn(0, maxQty.coerceAtLeast(0))
+        if (clamped != qty) onQtyChange(clamped)
+        draft = clamped.toString()
+        editing = false
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+
+        StepperCircle(
+            onClick = {
+                if (qty <= 1) onRemove() else onQtyChange(qty - 1)
+            },
+            container = MaterialTheme.colorScheme.errorContainer,
+            iconTint = MaterialTheme.colorScheme.error,
+            icon = Icons.Outlined.Remove,
+            description = "ลด",
+            enabled = true,
+        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .width(40.dp)
+                .height(28.dp),
+        ) {
+            if (editing) {
+                TextField(
+                    value = draft,
+                    onValueChange = { draft = it.filter(Char::isDigit).take(4) },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyLarge.tabular()
+                        .copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done,
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .onFocusChanged { if (!it.isFocused) commit() },
+                )
+            } else {
+                Text(
+                    text = "${qty}x",
+                    style = MaterialTheme.typography.bodyLarge.tabular(),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { editing = true },
+                )
+            }
+        }
+
+        StepperCircle(
+            onClick = { onQtyChange((qty + 1).coerceAtMost(maxQty)) },
+            container = MaterialTheme.colorScheme.primary,
+            iconTint = MaterialTheme.colorScheme.onPrimary,
+            icon = Icons.Outlined.Add,
+            description = "เพิ่ม",
+            enabled = qty < maxQty,
+        )
+    }
+}
+
+@Composable
+private fun StepperCircle(
+    onClick: () -> Unit,
+    container: Color,
+    iconTint: Color,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    description: String,
+    enabled: Boolean,
+) {
+    Surface(
+        color = if (enabled) container
+                else MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = if (enabled) iconTint
+                       else MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = CircleShape,
+        modifier = Modifier.size(28.dp),
+    ) {
+        IconButton(
+            onClick = onClick,
+            enabled = enabled,
+            modifier = Modifier.size(28.dp),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = description,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+    }
+}
+
+private fun previewDrug(): Drug = Drug(
+    id = "drug-1",
+    name = "Starmox dry 125 mg",
+    genericName = "Amoxicillin",
+    type = null,
+    strength = "125 mg",
+    barcode = null,
+    sellPrice = 25.0,
+    costPrice = 12.0,
+    stock = 240,
+    minStock = 20,
+    unit = "ชิ้น",
+    regNo = null,
+)
+
+@Preview
+@Composable
+private fun CartLineRow_Base_Preview() {
+    PharmacyTheme {
+        CartLineRow(
+            line = CartLine(drug = previewDrug(), qty = 3),
+            onQtyChange = {},
+            onRemove = {},
+            onTapForDiscount = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CartLineRow_Discounted_Preview() {
+    PharmacyTheme {
+        CartLineRow(
+            line = CartLine(drug = previewDrug(), qty = 5, discount = 3.0),
+            onQtyChange = {},
+            onRemove = {},
+            onTapForDiscount = {},
+        )
+    }
+}

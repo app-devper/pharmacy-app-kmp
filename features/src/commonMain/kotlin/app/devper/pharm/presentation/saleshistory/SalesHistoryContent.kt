@@ -1,0 +1,157 @@
+package app.devper.pharm.presentation.saleshistory
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.model.SaleSummary
+import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.theme.PharmacyTheme
+import app.devper.pharm.ui.theme.pharmTokens
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun SalesHistoryContent(
+    state: SalesHistoryUiState,
+    callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
+) {
+    val t = pharmTokens
+    val searching = state.from.isNotBlank() || state.to.isNotBlank() || state.query.isNotBlank()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(t.colors.bgPage)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(t.shapes.lg)
+                .background(t.colors.surface)
+                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
+                .padding(16.dp),
+        ) {
+            SalesHistoryFilterBar(state = state, callbacks = callbacks)
+        }
+
+        SalesHistorySummaryStats(sales = state.sales)
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(t.shapes.lg)
+                .background(t.colors.surface)
+                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+        ) {
+            when {
+                state.loading && state.sales.isEmpty() ->
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = t.colors.accent)
+                    }
+                else -> SalesHistoryTable(
+                    sales = state.sales,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
+            }
+        }
+    }
+
+    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+}
+
+private val sampleSales = listOf(
+    SaleSummary(
+        id = "1", billNo = "SC-260516-014", customerName = "คุณสมศรี ใจดี (VIP)",
+        total = 1742.0, discount = 0.0, soldAt = "2026-05-17T14:42:00", voided = false,
+    ),
+    SaleSummary(
+        id = "2", billNo = "SC-260516-013", customerName = "ลูกค้าทั่วไป",
+        total = 120.0, discount = 0.0, soldAt = "2026-05-17T14:18:00", voided = false,
+    ),
+    SaleSummary(
+        id = "3", billNo = "SC-260516-012", customerName = "นาย วรพล สุขสันต์",
+        total = 892.0, discount = 0.0, soldAt = "2026-05-17T13:55:00", voided = false,
+    ),
+    SaleSummary(
+        id = "4", billNo = "SC-260516-011", customerName = "ลูกค้าทั่วไป",
+        total = 240.0, discount = 0.0, soldAt = "2026-05-17T13:30:00", voided = false,
+    ),
+    SaleSummary(
+        id = "5", billNo = "SC-260516-010", customerName = "นาง พรรณี สวยงาม",
+        total = 520.0, discount = 0.0, soldAt = "2026-05-17T12:45:00", voided = true,
+    ),
+    SaleSummary(
+        id = "6", billNo = "SC-260516-009", customerName = "นาย เอกชัย สุภาพ",
+        total = 95.0, discount = 0.0, soldAt = "2026-05-17T12:18:00", voided = false,
+    ),
+    SaleSummary(
+        id = "7", billNo = "SC-260516-008", customerName = "ลูกค้าทั่วไป",
+        total = 1318.0, discount = 0.0, soldAt = "2026-05-17T11:50:00", voided = false,
+    ),
+    SaleSummary(
+        id = "8", billNo = "SC-260516-007", customerName = "คุณสมศรี ใจดี (VIP)",
+        total = 160.0, discount = 0.0, soldAt = "2026-05-17T11:24:00", voided = false,
+    ),
+)
+
+@Preview
+@Composable
+private fun SalesHistoryContent_Loaded_Preview() {
+    PharmacyTheme {
+        SalesHistoryContent(
+            state = SalesHistoryUiState(
+                sales = sampleSales,
+                from = "2026-05-17",
+                to = "2026-05-17",
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SalesHistoryContent_Empty_Preview() {
+    PharmacyTheme {
+        SalesHistoryContent(
+            state = SalesHistoryUiState(
+                sales = emptyList(),
+                from = "2026-05-17",
+                to = "2026-05-17",
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SalesHistoryContent_Searching_Preview() {
+    PharmacyTheme {
+        SalesHistoryContent(
+            state = SalesHistoryUiState(
+                sales = sampleSales.filter { it.customerName.contains("สมศรี") },
+                from = "2026-05-17",
+                to = "2026-05-17",
+                query = "สมศรี",
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SalesHistoryContent_Loading_Preview() {
+    PharmacyTheme {
+        SalesHistoryContent(state = SalesHistoryUiState(loading = true))
+    }
+}

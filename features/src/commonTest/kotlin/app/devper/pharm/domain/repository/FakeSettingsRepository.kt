@@ -1,0 +1,36 @@
+package app.devper.pharm.domain.repository
+
+import app.devper.pharm.domain.model.Settings
+import app.devper.pharm.domain.param.UpdateSettingsParam
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+class FakeSettingsRepository(
+    initialSettings: Settings = Settings(),
+    private val refreshThrows: Boolean = false,
+) : SettingsRepository {
+
+    private val settingsState = MutableStateFlow(initialSettings)
+    override val settings: StateFlow<Settings> = settingsState.asStateFlow()
+
+    var refreshCallCount: Int = 0
+        private set
+    var lastUpdate: UpdateSettingsParam? = null
+        private set
+
+    override suspend fun refresh(): Settings {
+        refreshCallCount++
+        if (refreshThrows) throw RuntimeException("refresh failed")
+        return settingsState.value
+    }
+
+    override suspend fun update(param: UpdateSettingsParam): Settings {
+        lastUpdate = param
+        return settingsState.value
+    }
+
+    fun pushSettings(settings: Settings) {
+        settingsState.value = settings
+    }
+}

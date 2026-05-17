@@ -1,0 +1,12 @@
+package app.devper.pharm.domain.usecase
+
+import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.model.TopDrug
+import app.devper.pharm.domain.param.TopOrSlowDrugsParam
+import app.devper.pharm.domain.repository.ReportsRepository
+
+class GetTopDrugsUseCase(private val repo: ReportsRepository, dispatchers: AppDispatchers) :
+    BaseUseCase<TopOrSlowDrugsParam, List<TopDrug>>(dispatchers) {
+    override suspend fun execute(param: TopOrSlowDrugsParam): List<TopDrug> = repo.topDrugs(param)
+    suspend operator fun invoke(days: Int = 30): Result<List<TopDrug>> = invoke(TopOrSlowDrugsParam(days))
+}

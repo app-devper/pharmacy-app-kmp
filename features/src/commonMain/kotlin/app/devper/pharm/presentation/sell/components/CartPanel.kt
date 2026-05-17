@@ -1,0 +1,221 @@
+package app.devper.pharm.presentation.sell.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.model.CartDiscount
+import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.domain.model.CartLineKey
+import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
+import app.devper.pharm.ui.theme.pharmTokens
+
+@Composable
+fun CartPanel(
+    cart: List<CartLine>,
+    customer: Customer?,
+    activeTier: String,
+    cartDiscount: CartDiscount,
+    received: String,
+    grossSubtotal: Double,
+    itemDiscountTotal: Double,
+    cartDiscountAmount: Double,
+    total: Double,
+    change: Double,
+    canCheckout: Boolean,
+    checkingOut: Boolean,
+    onSetQty: (key: CartLineKey, displayQty: Int) -> Unit,
+    onRemove: (key: CartLineKey) -> Unit,
+    onTapLineForDiscount: (CartLine) -> Unit,
+    onPickCustomer: () -> Unit,
+    onClearCustomer: () -> Unit,
+    onOpenCartDiscount: () -> Unit,
+    onReceivedChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    onClearCart: () -> Unit,
+    parkedFilledCount: Int = 0,
+    onOpenParkedSheet: () -> Unit = {},
+    compact: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    @Suppress("UNUSED_PARAMETER") val unused = parkedFilledCount
+
+    val t = pharmTokens
+    val cartCount = cart.sumOf { it.qty }
+    val hasItems = cart.isNotEmpty()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(t.colors.surface),
+    ) {
+        CartPanelHeader(cartCount = cartCount, hasItems = hasItems, onClearCart = onClearCart)
+        CartSectionDivider()
+
+        CartCustomerPill(
+            customer = customer,
+            activeTier = activeTier,
+            onPick = onPickCustomer,
+            onClear = onClearCustomer,
+        )
+
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            if (hasItems) {
+                LazyColumn(contentPadding = PaddingValues(vertical = 4.dp)) {
+                    items(
+                        cart,
+                        key = { line -> "${line.drug.id}::${line.selectedUnit?.name.orEmpty()}" },
+                    ) { line ->
+                        CartLineRow(
+                            line = line,
+                            onQtyChange = { displayQty -> onSetQty(line.key, displayQty) },
+                            onRemove = { onRemove(line.key) },
+                            onTapForDiscount = { onTapLineForDiscount(line) },
+                        )
+                    }
+                }
+            } else {
+                EmptyCart(compact = compact)
+            }
+        }
+
+        if (hasItems) {
+            CartSectionDivider()
+
+            CartTotalsBlock(
+                grossSubtotal = grossSubtotal,
+                itemDiscountTotal = itemDiscountTotal,
+                cartDiscount = cartDiscount,
+                cartDiscountAmount = cartDiscountAmount,
+                total = total,
+                onOpenCartDiscount = onOpenCartDiscount,
+            )
+
+            CartSectionDivider()
+            CartCashReceivedRow(
+                received = received,
+                total = total,
+                change = change,
+                checkingOut = checkingOut,
+                onReceivedChange = onReceivedChange,
+            )
+
+            CartCheckoutButton(
+                total = total,
+                canCheckout = canCheckout,
+                checkingOut = checkingOut,
+                onSubmit = onSubmit,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -> Unit) {
+    val t = pharmTokens
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text("ตะกร้า", style = PharmText.h3)
+            Text(
+                text = "· $cartCount รายการ",
+                style = PharmText.meta,
+            )
+        }
+        Box(
+            modifier = Modifier
+                .clip(t.shapes.sm)
+                .clickable(onClick = onClearCart, enabled = hasItems)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+        ) {
+            Text(
+                "ล้าง",
+                style = PharmText.micro.copy(
+                    color = if (hasItems) t.colors.dangerFg else t.colors.fgMuted,
+                ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CartCheckoutButton(
+    total: Double,
+    canCheckout: Boolean,
+    checkingOut: Boolean,
+    onSubmit: () -> Unit,
+) {
+    val t = pharmTokens
+    Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        PharmButton(
+            onClick = onSubmit,
+            modifier = Modifier.fillMaxWidth(),
+            size = PharmButtonSize.Lg,
+            enabled = canCheckout && !checkingOut,
+        ) {
+            if (checkingOut) {
+                Box(modifier = Modifier.size(18.dp)) {
+                    CircularProgressIndicator(
+                        color = t.colors.surface,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            } else {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        "ออกใบเสร็จ",
+                        style = PharmText.buttonMd.copy(
+                            color = t.colors.surface,
+                            fontWeight = FontWeight.SemiBold,
+                        ),
+                    )
+                    Text(
+                        fmtBaht(total),
+                        style = PharmText.total.copy(color = t.colors.surface),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CartSectionDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(pharmTokens.colors.divider),
+    )
+}
