@@ -41,6 +41,7 @@ kotlin {
             implementation(project(":features:users"))
             implementation(project(":features:stock"))
             implementation(project(":features:sell"))
+            implementation(project(":features:settings"))
         }
     }
 }

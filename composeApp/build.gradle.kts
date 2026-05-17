@@ -72,6 +72,7 @@ kotlin {
             implementation(project(":features:ky"))
             implementation(project(":features:stock"))
             implementation(project(":features:sell"))
+            implementation(project(":features:settings"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
