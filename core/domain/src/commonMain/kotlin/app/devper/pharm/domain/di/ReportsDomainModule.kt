@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.di
 
+import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
+import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
 import app.devper.pharm.domain.usecase.GetDashboardUseCase
 import app.devper.pharm.domain.usecase.GetEodReportUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
@@ -16,4 +18,6 @@ val reportsDomainModule = module {
     factoryOf(::GetProfitReportUseCase)
     factoryOf(::GetEodReportUseCase)
     factoryOf(::GetMovementsUseCase)
+    factoryOf(::ExportProfitCsvUseCase)
+    factoryOf(::ExportMovementsCsvUseCase)
 }

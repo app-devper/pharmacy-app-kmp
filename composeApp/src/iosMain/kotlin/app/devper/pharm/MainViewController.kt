@@ -2,12 +2,12 @@ package app.devper.pharm
 
 import androidx.compose.ui.window.ComposeUIViewController
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.platform.PdfDownloader
+import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
-import app.devper.pharm.platform.PdfDownloaderImpl
+import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
@@ -26,7 +26,7 @@ private fun ensureKoinStarted() {
         single { buildHttpClient(Darwin, get<TokenStorage>()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
-        single<PdfDownloader> { PdfDownloaderImpl() }
+        single<FileDownloader> { FileDownloaderImpl() }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
     }
     startKoin { modules(iosPlatformModule, appModule) }

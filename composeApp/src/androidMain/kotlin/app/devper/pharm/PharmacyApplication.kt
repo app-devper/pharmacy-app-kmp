@@ -2,12 +2,12 @@ package app.devper.pharm
 
 import android.app.Application
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.platform.PdfDownloader
+import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
-import app.devper.pharm.platform.PdfDownloaderImpl
+import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -29,7 +29,7 @@ class PharmacyApplication : Application() {
             single { buildHttpClient(OkHttp, get<TokenStorage>()) }
 
             single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
-            single<PdfDownloader> { PdfDownloaderImpl(applicationContext) }
+            single<FileDownloader> { FileDownloaderImpl(applicationContext) }
             single<ReceiptPrinter> { ReceiptPrinterImpl() }
         }
 

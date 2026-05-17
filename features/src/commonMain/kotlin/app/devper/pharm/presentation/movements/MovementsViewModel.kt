@@ -1,12 +1,14 @@
 package app.devper.pharm.presentation.movements
 
 import app.devper.pharm.domain.param.MovementsFilterParam
+import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
 import app.devper.pharm.presentation.movements.internal.millisToYmd
 import app.devper.pharm.ui.common.BaseViewModel
 
 class MovementsViewModel(
     private val getMovements: GetMovementsUseCase,
+    private val exportMovementsCsv: ExportMovementsCsvUseCase,
 ) : BaseViewModel<MovementsUiState>(MovementsUiState()) {
 
     init { reload() }
@@ -32,7 +34,21 @@ class MovementsViewModel(
         copy(page = (page + 1).coerceAtMost(max))
     }
 
-    fun onExportExcel() = Unit
+    fun onExportExcel() {
+        val rows = current.items
+        if (rows.isEmpty()) {
+            setState { copy(message = "ยังไม่มีข้อมูลให้ส่งออก") }
+            return
+        }
+        setState { copy(exporting = true) }
+        launchResult(
+            block = { exportMovementsCsv(rows) },
+            onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
+            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ส่งออกไม่สำเร็จ") } },
+        )
+    }
+
+    fun dismissMessage() = setState { copy(message = null) }
 
     fun applyFilter() = reload()
     fun dismissError() = setState { copy(error = null) }

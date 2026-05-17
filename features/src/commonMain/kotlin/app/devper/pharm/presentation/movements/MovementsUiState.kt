@@ -13,6 +13,8 @@ data class MovementsUiState(
     val activeTypeIds: Set<String> = MovementsTypeCatalog.allIds,
     val page: Int = 1,
     val pageSize: Int = 20,
+    val exporting: Boolean = false,
+    val message: String? = null,
     override val error: String? = null,
 ) : BaseUiState {
 

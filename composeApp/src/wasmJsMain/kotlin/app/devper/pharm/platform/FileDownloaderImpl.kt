@@ -2,16 +2,16 @@
 
 package app.devper.pharm.platform
 
-import app.devper.pharm.common.platform.PdfDownloader
+import app.devper.pharm.common.platform.FileDownloader
 import kotlinx.browser.document
 import kotlin.io.encoding.Base64
 import org.w3c.dom.HTMLAnchorElement
 
-class PdfDownloaderImpl : PdfDownloader {
-    override suspend fun save(filename: String, bytes: ByteArray): Result<String> = runCatching {
+class FileDownloaderImpl : FileDownloader {
+    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> = runCatching {
         val base64 = Base64.encode(bytes)
         val anchor = document.createElement("a") as HTMLAnchorElement
-        anchor.href = "data:application/pdf;base64,$base64"
+        anchor.href = "data:$mimeType;base64,$base64"
         anchor.download = filename
         anchor.style.display = "none"
         document.body?.appendChild(anchor)

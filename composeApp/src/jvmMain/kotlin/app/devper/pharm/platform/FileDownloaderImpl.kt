@@ -1,11 +1,11 @@
 package app.devper.pharm.platform
 
-import app.devper.pharm.common.platform.PdfDownloader
+import app.devper.pharm.common.platform.FileDownloader
 import java.awt.Desktop
 import java.io.File
 
-class PdfDownloaderImpl : PdfDownloader {
-    override suspend fun save(filename: String, bytes: ByteArray): Result<String> = runCatching {
+class FileDownloaderImpl : FileDownloader {
+    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> = runCatching {
         val target = resolveTarget(filename)
         target.writeBytes(bytes)
         runCatching {
@@ -23,7 +23,8 @@ class PdfDownloaderImpl : PdfDownloader {
 
         var candidate = File(baseDir, filename)
         var n = 1
-        val (stem, ext) = filename.substringBeforeLast('.', filename) to filename.substringAfterLast('.', "pdf")
+        val stem = filename.substringBeforeLast('.', filename)
+        val ext = filename.substringAfterLast('.', "bin")
         while (candidate.exists()) {
             candidate = File(baseDir, "$stem-$n.$ext")
             n++

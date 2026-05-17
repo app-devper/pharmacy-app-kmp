@@ -40,7 +40,7 @@ import app.devper.pharm.presentation.suppliers.SuppliersListViewModel
 import app.devper.pharm.presentation.users.UserFormViewModel
 import app.devper.pharm.presentation.users.UsersListViewModel
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.platform.PdfDownloader
+import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import com.russhwolf.settings.Settings
@@ -88,9 +88,9 @@ private val testPlatformModule = module {
         HttpClient(MockEngine { respond(content = "{}", status = HttpStatusCode.OK) })
     }
     single { AppDispatchers(Dispatchers.Unconfined, Dispatchers.Unconfined, Dispatchers.Unconfined) }
-    single<PdfDownloader> {
-        object : PdfDownloader {
-            override suspend fun save(filename: String, bytes: ByteArray): Result<String> =
+    single<FileDownloader> {
+        object : FileDownloader {
+            override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> =
                 Result.success("noop")
         }
     }

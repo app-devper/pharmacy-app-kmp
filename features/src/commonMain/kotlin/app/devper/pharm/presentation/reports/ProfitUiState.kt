@@ -18,6 +18,8 @@ data class ProfitUiState(
     val sort: ProfitSort = ProfitSort.Profit,
     override val loading: Boolean = false,
     val report: ProfitReport? = null,
+    val exporting: Boolean = false,
+    val message: String? = null,
     override val error: String? = null,
 ) : BaseUiState {
     val sortedRows: List<DrugProfit>
