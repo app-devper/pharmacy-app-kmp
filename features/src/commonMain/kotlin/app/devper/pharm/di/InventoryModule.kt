@@ -1,6 +1,5 @@
 package app.devper.pharm.di
 
-import app.devper.pharm.presentation.expiry.ExpiryViewModel
 import app.devper.pharm.presentation.stock.DrugFormViewModel
 import app.devper.pharm.presentation.stock.DrugLotsViewModel
 import app.devper.pharm.presentation.stock.StockAdjustmentsViewModel
@@ -17,5 +16,4 @@ val inventoryModule = module {
     factoryOf(::StockAdjustmentsViewModel)
     factoryOf(::StockCountsListViewModel)
     factoryOf(::StockCountFormViewModel)
-    factoryOf(::ExpiryViewModel)
 }

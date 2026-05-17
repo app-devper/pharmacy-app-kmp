@@ -58,6 +58,9 @@ kotlin {
             implementation(project(":features:planning"))
             implementation(project(":features:labels"))
             implementation(project(":features:offlinesync"))
+            implementation(project(":features:saleshistory"))
+            implementation(project(":features:expiry"))
+            implementation(project(":features:auth"))
 
             implementation(compose.runtime)
             implementation(compose.material3)

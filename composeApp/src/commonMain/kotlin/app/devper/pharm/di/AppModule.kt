@@ -23,8 +23,10 @@ val appModule = module {
         inventoryModule,
         planningModule,
         labelsModule,
+        expiryModule,
 
         salesModule,
+        salesHistoryModule,
 
         reportsModule,
 

@@ -1,6 +1,5 @@
 package app.devper.pharm.di
 
-import app.devper.pharm.presentation.saleshistory.SalesHistoryViewModel
 import app.devper.pharm.presentation.sell.SellViewModel
 import app.devper.pharm.presentation.sell.sibling.CheckoutViewModel
 import app.devper.pharm.presentation.sell.sibling.CustomerPickerViewModel
@@ -17,5 +16,4 @@ val salesModule = module {
     factoryOf(::CustomerPickerViewModel)
     factoryOf(::ParkedCartViewModel)
     factoryOf(::VoidSaleViewModel)
-    factoryOf(::SalesHistoryViewModel)
 }
