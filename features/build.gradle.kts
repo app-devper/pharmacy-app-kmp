@@ -38,6 +38,7 @@ kotlin {
             implementation(project(":features:customers"))
             implementation(project(":features:suppliers"))
             implementation(project(":features:imports"))
+            implementation(project(":features:users"))
         }
     }
 }

@@ -67,6 +67,9 @@ kotlin {
             implementation(project(":features:customers"))
             implementation(project(":features:suppliers"))
             implementation(project(":features:imports"))
+            implementation(project(":features:users"))
+            implementation(project(":features:reports"))
+            implementation(project(":features:ky"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
