@@ -57,6 +57,7 @@ kotlin {
             implementation(project(":features:profile"))
             implementation(project(":features:planning"))
             implementation(project(":features:labels"))
+            implementation(project(":features:offlinesync"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
