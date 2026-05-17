@@ -57,52 +57,57 @@ object PharmText {
     @androidx.compose.runtime.Composable
     private fun base(): TextStyle = androidx.compose.material3.MaterialTheme.typography.bodyMedium
 
+    @androidx.compose.runtime.Composable
+    @androidx.compose.runtime.ReadOnlyComposable
+    private fun scaledSp(value: Float): androidx.compose.ui.unit.TextUnit =
+        (value * pharmTokens.fontScale).sp
+
     val h1: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 18.sp,
+            fontSize = scaledSp(18f),
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 24.sp,
+            lineHeight = scaledSp(24f),
             color = pharmTokens.colors.fg1,
         )
 
     val h2: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 16.sp,
+            fontSize = scaledSp(16f),
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 22.sp,
+            lineHeight = scaledSp(22f),
             color = pharmTokens.colors.fg1,
         )
 
     val h3: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 14.sp,
+            fontSize = scaledSp(14f),
             fontWeight = FontWeight.SemiBold,
             color = pharmTokens.colors.fg1,
         )
 
     val body: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 14.sp, color = pharmTokens.colors.fg1)
+        get() = base().copy(fontSize = scaledSp(14f), color = pharmTokens.colors.fg1)
 
     val bodySm: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 13.sp, color = pharmTokens.colors.fg1)
+        get() = base().copy(fontSize = scaledSp(13f), color = pharmTokens.colors.fg1)
 
     val meta: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 12.sp, color = pharmTokens.colors.fg3)
+        get() = base().copy(fontSize = scaledSp(12f), color = pharmTokens.colors.fg3)
 
     val micro: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 11.sp, color = pharmTokens.colors.fg3)
+        get() = base().copy(fontSize = scaledSp(11f), color = pharmTokens.colors.fg3)
 
     val thead: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 12.sp,
+            fontSize = scaledSp(12f),
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 0.5.sp,
             color = pharmTokens.colors.fg3,
@@ -111,7 +116,7 @@ object PharmText {
     val price: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 16.sp,
+            fontSize = scaledSp(16f),
             fontWeight = FontWeight.Bold,
             color = pharmTokens.colors.price,
             fontFeatureSettings = TabularNumbers,
@@ -120,7 +125,7 @@ object PharmText {
     val total: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 18.sp,
+            fontSize = scaledSp(18f),
             fontWeight = FontWeight.Bold,
             color = pharmTokens.colors.fg1,
             fontFeatureSettings = TabularNumbers,
@@ -129,27 +134,27 @@ object PharmText {
     val metric: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(
-            fontSize = 20.sp,
+            fontSize = scaledSp(20f),
             fontWeight = FontWeight.Bold,
-            lineHeight = 24.sp,
+            lineHeight = scaledSp(24f),
             fontFeatureSettings = TabularNumbers,
         )
 
     val buttonMd: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        get() = base().copy(fontSize = scaledSp(14f), fontWeight = FontWeight.Medium)
 
     val buttonSm: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 13.sp, fontWeight = FontWeight.Medium)
+        get() = base().copy(fontSize = scaledSp(13f), fontWeight = FontWeight.Medium)
 
     val badge: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        get() = base().copy(fontSize = scaledSp(12f), fontWeight = FontWeight.Medium)
 
     val badgeSm: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+        get() = base().copy(fontSize = scaledSp(10f), fontWeight = FontWeight.SemiBold)
 }
 
 fun fmtBaht(n: Double): String {

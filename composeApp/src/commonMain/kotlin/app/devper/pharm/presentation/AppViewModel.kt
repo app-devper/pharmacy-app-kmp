@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.observer.AuthStateProvider
 import app.devper.pharm.domain.observer.OfflineQueueProvider
+import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.GetProfileUseCase
 import app.devper.pharm.domain.usecase.LogoutUseCase
 import app.devper.pharm.ui.common.BaseViewModel
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.onEach
 class AppViewModel(
     authState: AuthStateProvider,
     offlineQueue: OfflineQueueProvider,
+    uiPreferences: UiPreferencesProvider,
     private val logout: LogoutUseCase,
     private val getProfile: GetProfileUseCase,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
@@ -30,6 +32,10 @@ class AppViewModel(
 
         offlineQueue.pending
             .onEach { queue -> setState { copy(pendingSyncCount = queue.size) } }
+            .launchIn(viewModelScope)
+
+        uiPreferences.state
+            .onEach { prefs -> setState { copy(uiPreferences = prefs) } }
             .launchIn(viewModelScope)
     }
 

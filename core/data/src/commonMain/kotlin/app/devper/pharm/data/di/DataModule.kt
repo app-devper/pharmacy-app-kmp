@@ -56,6 +56,8 @@ import app.devper.pharm.domain.repository.ReportsRepository
 import app.devper.pharm.domain.repository.SaleHistoryRepository
 import app.devper.pharm.domain.repository.SaleRepository
 import app.devper.pharm.domain.repository.SettingsRepository
+import app.devper.pharm.domain.repository.UiPreferencesRepository
+import app.devper.pharm.data.repository.UiPreferencesRepositoryImpl
 import app.devper.pharm.domain.repository.StockAdjustmentsRepository
 import app.devper.pharm.domain.repository.StockCountsRepository
 import app.devper.pharm.domain.repository.OfflineSaleQueue
@@ -129,4 +131,6 @@ val dataModule = module {
 
     singleOf(::SettingsApi)
     singleOf(::SettingsRepositoryImpl) bind SettingsRepository::class
+
+    singleOf(::UiPreferencesRepositoryImpl) bind UiPreferencesRepository::class
 }

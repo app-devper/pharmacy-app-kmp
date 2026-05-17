@@ -161,6 +161,7 @@ data class PharmTokens(
     val radii: PharmRadii = PharmRadii(),
     val shapes: PharmShapes = PharmShapes(),
     val dimens: PharmDimens = PharmDimens(),
+    val fontScale: Float = 1f,
 )
 
 internal val LightPharmTokens = PharmTokens(colors = LightPharmColors)

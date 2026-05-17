@@ -1,21 +1,35 @@
 package app.devper.pharm.presentation.profile
 
+import androidx.lifecycle.viewModelScope
+import app.devper.pharm.domain.model.FontSizePreference
+import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.param.ChangePasswordParam
 import app.devper.pharm.domain.param.UpdateProfileParam
 import app.devper.pharm.domain.usecase.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.GetProfileUseCase
+import app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase
+import app.devper.pharm.domain.usecase.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.UpdateProfileUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class ProfileViewModel(
     private val getProfile: GetProfileUseCase,
     private val updateProfile: UpdateProfileUseCase,
     private val changePassword: ChangePasswordUseCase,
+    uiPreferences: UiPreferencesProvider,
+    private val setTheme: SetThemePreferenceUseCase,
+    private val setFontSize: SetFontSizePreferenceUseCase,
 ) : BaseFormViewModel<ProfileUiState>(ProfileUiState()) {
 
     init {
         load()
+        uiPreferences.state
+            .onEach { prefs -> setState { copy(theme = prefs.theme.wire, fontSize = prefs.fontSize.wire) } }
+            .launchIn(viewModelScope)
     }
 
     fun reload() = load()
@@ -37,8 +51,13 @@ class ProfileViewModel(
 
     fun dismissPasswordError() = setState { copy(passwordError = null) }
 
-    fun onThemeChange(value: String) = setState { copy(theme = value) }
-    fun onFontSizeChange(value: String) = setState { copy(fontSize = value) }
+    fun onThemeChange(value: String) {
+        setTheme(ThemePreference.parse(value))
+    }
+
+    fun onFontSizeChange(value: String) {
+        setFontSize(FontSizePreference.parse(value))
+    }
 
     fun submitPasswordChange() {
         val pwd = current.password

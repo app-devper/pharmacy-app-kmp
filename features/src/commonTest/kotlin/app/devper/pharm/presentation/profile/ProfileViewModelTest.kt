@@ -18,12 +18,17 @@ import kotlin.test.assertTrue
 
 class ProfileViewModelTest {
 
-    private fun bundle(fake: FakeProfileRepository, dispatchers: app.devper.pharm.common.AppDispatchers): ProfileViewModel =
-        ProfileViewModel(
+    private fun bundle(fake: FakeProfileRepository, dispatchers: app.devper.pharm.common.AppDispatchers): ProfileViewModel {
+        val uiPrefs = app.devper.pharm.domain.repository.FakeUiPreferencesRepository()
+        return ProfileViewModel(
             getProfile = GetProfileUseCase(fake, dispatchers),
             updateProfile = UpdateProfileUseCase(fake, dispatchers),
             changePassword = ChangePasswordUseCase(fake, dispatchers),
+            uiPreferences = app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
+            setTheme = app.devper.pharm.domain.usecase.SetThemePreferenceUseCase(uiPrefs),
+            setFontSize = app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase(uiPrefs),
         )
+    }
 
     @Test
     fun loads_profile_on_init() = runVmTest { dispatchers ->

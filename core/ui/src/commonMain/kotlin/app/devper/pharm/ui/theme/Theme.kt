@@ -111,9 +111,11 @@ private val PharmacyShapes = Shapes(
 @Composable
 fun PharmacyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    fontScale: Float = 1f,
     content: @Composable () -> Unit,
 ) {
-    val tokens = if (darkTheme) DarkPharmTokens else LightPharmTokens
+    val baseTokens = if (darkTheme) DarkPharmTokens else LightPharmTokens
+    val tokens = if (fontScale == 1f) baseTokens else baseTokens.copy(fontScale = fontScale)
     CompositionLocalProvider(LocalPharmTokens provides tokens) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColors else LightColors,
