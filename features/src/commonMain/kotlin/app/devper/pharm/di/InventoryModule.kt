@@ -1,6 +1,7 @@
 package app.devper.pharm.di
 
 import app.devper.pharm.presentation.expiry.ExpiryViewModel
+import app.devper.pharm.presentation.labels.LabelPrintViewModel
 import app.devper.pharm.presentation.planning.LowStockViewModel
 import app.devper.pharm.presentation.planning.ReorderSuggestionsViewModel
 import app.devper.pharm.presentation.stock.DrugFormViewModel
@@ -22,4 +23,5 @@ val inventoryModule = module {
     factoryOf(::ExpiryViewModel)
     factoryOf(::LowStockViewModel)
     factoryOf(::ReorderSuggestionsViewModel)
+    factoryOf(::LabelPrintViewModel)
 }

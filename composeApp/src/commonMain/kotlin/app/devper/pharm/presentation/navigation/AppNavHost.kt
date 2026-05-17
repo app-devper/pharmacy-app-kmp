@@ -15,6 +15,7 @@ import app.devper.pharm.presentation.expiry.expiryGraph
 import app.devper.pharm.presentation.help.helpGraph
 import app.devper.pharm.presentation.imports.importsGraph
 import app.devper.pharm.presentation.ky.kyGraph
+import app.devper.pharm.presentation.labels.labelPrintGraph
 import app.devper.pharm.presentation.movements.movementsGraph
 import app.devper.pharm.presentation.offlinesync.offlineSyncGraph
 import app.devper.pharm.presentation.planning.planningGraph
@@ -70,6 +71,7 @@ fun AppNavHost(viewModel: AppViewModel = koinViewModel()) {
         bulkImportGraph(navController, onLogout, pendingSyncCount, role, user)
         stockCountsGraph(navController, onLogout, pendingSyncCount, role, user)
         expiryGraph(navController, onLogout, pendingSyncCount, role, user)
+        labelPrintGraph(navController, onLogout, pendingSyncCount, role, user)
         planningGraph(navController, onLogout, pendingSyncCount, role, user)
         reportsGraph(navController, onLogout, pendingSyncCount, role, user)
         kyGraph(navController, onLogout, pendingSyncCount, role, user)

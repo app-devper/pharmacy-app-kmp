@@ -12,6 +12,7 @@ import app.devper.pharm.presentation.expiry.Expiry
 import app.devper.pharm.presentation.help.Help
 import app.devper.pharm.presentation.imports.Imports
 import app.devper.pharm.presentation.ky.Ky9
+import app.devper.pharm.presentation.labels.LabelPrint
 import app.devper.pharm.presentation.movements.Movements
 import app.devper.pharm.presentation.offlinesync.OfflineSync
 import app.devper.pharm.presentation.profile.Profile
@@ -31,6 +32,7 @@ private val MAIN_NAV_ROUTES: List<Any> = listOf(
     Stock,
     StockCounts,
     Expiry,
+    LabelPrint,
     Movements,
     OfflineSync,
     Imports,
@@ -50,6 +52,7 @@ internal val MAIN_NAV: List<NavItem> = listOf(
     NavItem(route = Stock::class.qualifiedName!!,        label = "สต็อกยา",            icon = PharmIcons.Stock),
     NavItem(route = StockCounts::class.qualifiedName!!,  label = "ตรวจนับสต็อก",       icon = PharmIcons.StockCount, admin = true),
     NavItem(route = Expiry::class.qualifiedName!!,       label = "จัดการวันหมดอายุ",   icon = PharmIcons.Expiry,     admin = true),
+    NavItem(route = LabelPrint::class.qualifiedName!!,   label = "พิมพ์ฉลาก",          icon = PharmIcons.Print,      admin = true),
     NavItem(route = Movements::class.qualifiedName!!,    label = "ความเคลื่อนไหวสต็อก", icon = PharmIcons.Movements),
     NavItem(route = OfflineSync::class.qualifiedName!!,  label = "รายการค้างซิงค์",    icon = PharmIcons.OfflineSync),
     NavItem(route = Imports::class.qualifiedName!!,      label = "นำเข้าสินค้า",       icon = PharmIcons.Imports,    admin = true),

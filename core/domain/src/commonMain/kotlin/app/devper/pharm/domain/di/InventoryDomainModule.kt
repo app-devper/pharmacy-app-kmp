@@ -12,6 +12,7 @@ import app.devper.pharm.domain.usecase.GetReorderSuggestionsUseCase
 import app.devper.pharm.domain.usecase.GetStockAdjustmentsUseCase
 import app.devper.pharm.domain.usecase.GetStockCountsUseCase
 import app.devper.pharm.domain.usecase.ListLotsUseCase
+import app.devper.pharm.domain.usecase.PrintLabelsUseCase
 import app.devper.pharm.domain.usecase.UpdateDrugUseCase
 import app.devper.pharm.domain.usecase.WriteoffLotsUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -32,4 +33,5 @@ val inventoryDomainModule = module {
     factoryOf(::WriteoffLotsUseCase)
     factoryOf(::GetLowStockDrugsUseCase)
     factoryOf(::GetReorderSuggestionsUseCase)
+    factoryOf(::PrintLabelsUseCase)
 }

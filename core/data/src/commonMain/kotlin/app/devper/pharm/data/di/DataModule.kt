@@ -8,6 +8,7 @@ import app.devper.pharm.data.remote.api.DrugApi
 import app.devper.pharm.data.remote.api.ExpiringLotsApi
 import app.devper.pharm.data.remote.api.ExportApi
 import app.devper.pharm.data.remote.api.KyApi
+import app.devper.pharm.data.remote.api.LabelApi
 import app.devper.pharm.data.remote.api.LotsApi
 import app.devper.pharm.data.remote.api.MovementsApi
 import app.devper.pharm.data.remote.api.ProfileApi
@@ -27,6 +28,7 @@ import app.devper.pharm.data.repository.DrugRepositoryImpl
 import app.devper.pharm.data.repository.ExpiringLotsRepositoryImpl
 import app.devper.pharm.data.repository.ExportRepositoryImpl
 import app.devper.pharm.data.repository.KyRepositoryImpl
+import app.devper.pharm.data.repository.LabelRepositoryImpl
 import app.devper.pharm.data.repository.LotsRepositoryImpl
 import app.devper.pharm.data.repository.MovementsRepositoryImpl
 import app.devper.pharm.data.repository.ProfileRepositoryImpl
@@ -49,6 +51,7 @@ import app.devper.pharm.domain.repository.DrugRepository
 import app.devper.pharm.domain.repository.ExpiringLotsRepository
 import app.devper.pharm.domain.repository.ExportRepository
 import app.devper.pharm.domain.repository.KyRepository
+import app.devper.pharm.domain.repository.LabelRepository
 import app.devper.pharm.domain.repository.LotsRepository
 import app.devper.pharm.domain.repository.MovementsRepository
 import app.devper.pharm.domain.repository.PurchaseOrderRepository
@@ -114,6 +117,9 @@ val dataModule = module {
 
     singleOf(::ExportApi)
     singleOf(::ExportRepositoryImpl) bind ExportRepository::class
+
+    singleOf(::LabelApi)
+    singleOf(::LabelRepositoryImpl) bind LabelRepository::class
 
     singleOf(::ReportsApi)
     singleOf(::ReportsRepositoryImpl) bind ReportsRepository::class
