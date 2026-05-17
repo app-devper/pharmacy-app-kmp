@@ -1,19 +1,27 @@
 package app.devper.pharm.platform
 
+import app.devper.pharm.common.AppException
+import app.devper.pharm.common.Logger
+import app.devper.pharm.common.StorageException
 import app.devper.pharm.common.platform.FileDownloader
 import java.awt.Desktop
 import java.io.File
 
-class FileDownloaderImpl : FileDownloader {
+class FileDownloaderImpl(private val logger: Logger) : FileDownloader {
     override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> = runCatching {
         val target = resolveTarget(filename)
         target.writeBytes(bytes)
-        runCatching {
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().open(target)
-            }
-        }
+        tryAutoOpen(target)
         "บันทึกที่ ${target.absolutePath}"
+    }.recoverCatching { e ->
+        if (e is AppException) throw e
+        throw StorageException("ไม่สามารถบันทึก $filename", cause = e)
+    }
+
+    private fun tryAutoOpen(target: File) {
+        if (!Desktop.isDesktopSupported()) return
+        runCatching { Desktop.getDesktop().open(target) }
+            .onFailure { logger.warn("FileDownloader", "auto-open failed for ${target.name}", it) }
     }
 
     private fun resolveTarget(filename: String): File {

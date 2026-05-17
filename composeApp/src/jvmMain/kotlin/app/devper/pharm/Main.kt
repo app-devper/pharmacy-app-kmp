@@ -24,7 +24,7 @@ fun main() {
         single { buildHttpClient(Java, get<TokenStorage>()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
-        single<FileDownloader> { FileDownloaderImpl() }
+        single<FileDownloader> { FileDownloaderImpl(logger = get()) }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
     }
 

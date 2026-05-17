@@ -158,7 +158,7 @@ class CheckoutViewModelTest {
         assertEquals(2, sales.lastCheckout!!.items[0].qty)
 
         assertNotNull(cart.lastCommitReceipt)
-        assertTrue(cart.active.value.items.isEmpty())
+        assertTrue(cart.state.value.active.items.isEmpty())
 
         assertFalse(vm.state.value.checkingOut)
         assertNull(vm.state.value.error)
@@ -402,11 +402,11 @@ class CheckoutViewModelTest {
         val (vm) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
 
-        assertNotNull(cart.lastReceipt.value)
+        assertNotNull(cart.state.value.lastReceipt)
         vm.dismissReceipt()
         advanceUntilIdle()
         assertTrue(cart.dismissReceiptCalled)
-        assertNull(cart.lastReceipt.value)
+        assertNull(cart.state.value.lastReceipt)
     }
 
     @Test

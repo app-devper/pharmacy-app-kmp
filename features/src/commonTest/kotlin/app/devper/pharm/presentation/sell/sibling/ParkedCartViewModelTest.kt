@@ -100,7 +100,7 @@ class ParkedCartViewModelTest {
 
         assertNotNull(cart.parkedSlots.value[1])
         assertEquals(4, cart.parkedSlots.value[1]!!.items[0].qty)
-        assertTrue(cart.active.value.items.isEmpty())
+        assertTrue(cart.state.value.active.items.isEmpty())
 
         assertFalse(vm.state.value.sheetOpen)
     }
@@ -134,8 +134,8 @@ class ParkedCartViewModelTest {
         assertEquals(3, cart.lastRestoreSlot)
 
         assertNull(cart.parkedSlots.value[3])
-        assertEquals(1, cart.active.value.items.size)
-        assertEquals(7, cart.active.value.items[0].qty)
+        assertEquals(1, cart.state.value.active.items.size)
+        assertEquals(7, cart.state.value.active.items[0].qty)
         assertFalse(vm.state.value.sheetOpen)
     }
 

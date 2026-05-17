@@ -4,6 +4,7 @@ import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
+import app.devper.pharm.domain.model.CartState
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.domain.model.Sale
@@ -26,19 +27,19 @@ class FakeCartRepository(
     initialParkedSlots: List<ParkedCart?> = List(PARK_SLOT_COUNT) { null },
 ) : CartRepository {
 
-    private val activeState = MutableStateFlow(
-        ActiveCart(
-            items = initialItems,
-            customer = initialCustomer,
-            cartDiscount = initialDiscount,
-            activeTier = initialTier,
-            cashReceived = initialReceived,
-        )
+    private val internalState = MutableStateFlow(
+        CartState(
+            active = ActiveCart(
+                items = initialItems,
+                customer = initialCustomer,
+                cartDiscount = initialDiscount,
+                activeTier = initialTier,
+                cashReceived = initialReceived,
+            ),
+            lastReceipt = initialReceipt,
+        ),
     )
-    override val active: StateFlow<ActiveCart> = activeState.asStateFlow()
-
-    private val receiptState = MutableStateFlow(initialReceipt)
-    override val lastReceipt: StateFlow<Sale?> = receiptState.asStateFlow()
+    override val state: StateFlow<CartState> = internalState.asStateFlow()
 
     private val parkedState = MutableStateFlow(initialParkedSlots)
     override val parkedSlots: StateFlow<List<ParkedCart?>> = parkedState.asStateFlow()
@@ -74,50 +75,52 @@ class FakeCartRepository(
 
     override fun remove(key: CartLineKey) {
         lastRemove = key
-        activeState.update { it.copy(items = it.items.filterNot { line -> line.key == key }) }
+        mutateActive { it.copy(items = it.items.filterNot { line -> line.key == key }) }
     }
 
     override fun selectCustomer(customer: Customer) {
         lastSelectCustomer = customer
-        activeState.update { it.copy(customer = customer) }
+        mutateActive { it.copy(customer = customer) }
     }
 
     override fun clearCustomer() {
         clearCustomerCalled = true
-        activeState.update { it.copy(customer = null) }
+        mutateActive { it.copy(customer = null) }
     }
 
     override fun setCartDiscount(discount: CartDiscount) {
         lastSetCartDiscount = discount
-        activeState.update { it.copy(cartDiscount = discount) }
+        mutateActive { it.copy(cartDiscount = discount) }
     }
 
     override fun setCashReceived(value: String) {
         lastSetCashReceived = value
-        activeState.update { it.copy(cashReceived = value) }
+        mutateActive { it.copy(cashReceived = value) }
     }
 
     override fun commitReceipt(sale: Sale) {
         lastCommitReceipt = sale
-        receiptState.value = sale
-        activeState.update { it.copy(items = emptyList(), cashReceived = "") }
+        internalState.value = CartState(
+            active = internalState.value.active.copy(items = emptyList(), cashReceived = ""),
+            lastReceipt = sale,
+        )
     }
 
     override fun dismissReceipt() {
         dismissReceiptCalled = true
-        receiptState.value = null
+        internalState.update { it.copy(lastReceipt = null) }
     }
 
     override fun clear() {
         clearCalled = true
-        activeState.update {
+        mutateActive {
             it.copy(items = emptyList(), customer = null, cartDiscount = CartDiscount.None, cashReceived = "")
         }
     }
 
     override fun parkCart(slot: Int) {
         lastParkSlot = slot
-        val snapshot = activeState.value
+        val snapshot = internalState.value.active
         if (snapshot.items.isEmpty()) return
         parkClockMs += 1000L
         val parked = ParkedCart(
@@ -131,19 +134,21 @@ class FakeCartRepository(
         parkedState.value = parkedState.value.mapIndexed { i, existing ->
             if (i == slot) parked else existing
         }
-        activeState.value = ActiveCart.Empty
+        mutateActive { ActiveCart.Empty }
     }
 
     override fun restoreCart(slot: Int) {
         lastRestoreSlot = slot
         val parked = parkedState.value.getOrNull(slot) ?: return
-        receiptState.value = null
-        activeState.value = ActiveCart(
-            items = parked.items,
-            customer = parked.customer,
-            cartDiscount = parked.cartDiscount,
-            activeTier = parked.activeTier,
-            cashReceived = parked.cashReceived,
+        internalState.value = CartState(
+            active = ActiveCart(
+                items = parked.items,
+                customer = parked.customer,
+                cartDiscount = parked.cartDiscount,
+                activeTier = parked.activeTier,
+                cashReceived = parked.cashReceived,
+            ),
+            lastReceipt = null,
         )
         parkedState.value = parkedState.value.mapIndexed { i, existing ->
             if (i == slot) null else existing
@@ -157,9 +162,13 @@ class FakeCartRepository(
         }
     }
 
-    fun pushItems(items: List<CartLine>) { activeState.update { it.copy(items = items) } }
-    fun pushCashReceived(value: String) { activeState.update { it.copy(cashReceived = value) } }
-    fun pushCustomer(customer: Customer?) { activeState.update { it.copy(customer = customer) } }
-    fun pushReceipt(sale: Sale?) { receiptState.value = sale }
-    fun pushTier(tier: String) { activeState.update { it.copy(activeTier = tier) } }
+    fun pushItems(items: List<CartLine>) { mutateActive { it.copy(items = items) } }
+    fun pushCashReceived(value: String) { mutateActive { it.copy(cashReceived = value) } }
+    fun pushCustomer(customer: Customer?) { mutateActive { it.copy(customer = customer) } }
+    fun pushReceipt(sale: Sale?) { internalState.update { it.copy(lastReceipt = sale) } }
+    fun pushTier(tier: String) { mutateActive { it.copy(activeTier = tier) } }
+
+    private inline fun mutateActive(crossinline transform: (ActiveCart) -> ActiveCart) {
+        internalState.update { it.copy(active = transform(it.active)) }
+    }
 }

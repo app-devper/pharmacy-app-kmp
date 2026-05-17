@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.movements
 
+import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.MovementsFilterParam
 import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
@@ -35,14 +36,23 @@ class MovementsViewModel(
     }
 
     fun onExportExcel() {
-        val rows = current.items
-        if (rows.isEmpty()) {
+        val s = current
+        if (s.items.isEmpty()) {
             setState { copy(message = "ยังไม่มีข้อมูลให้ส่งออก") }
             return
         }
         setState { copy(exporting = true) }
         launchResult(
-            block = { exportMovementsCsv(rows) },
+            block = {
+                exportMovementsCsv(
+                    ExportMovementsCsvParam(
+                        from = s.from,
+                        to = s.to,
+                        drugName = s.drugName,
+                        rows = s.items,
+                    ),
+                )
+            },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
             onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ส่งออกไม่สำเร็จ") } },
         )

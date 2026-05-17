@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import app.devper.pharm.common.AppException
+import app.devper.pharm.common.StorageException
 import app.devper.pharm.common.platform.FileDownloader
 import java.io.File
 import java.io.FileOutputStream
@@ -16,6 +18,9 @@ class FileDownloaderImpl(private val context: Context) : FileDownloader {
         } else {
             saveToLegacyDownloads(filename, bytes)
         }
+    }.recoverCatching { e ->
+        if (e is AppException) throw e
+        throw StorageException("ไม่สามารถบันทึก $filename", cause = e)
     }
 
     @androidx.annotation.RequiresApi(Build.VERSION_CODES.Q)
@@ -29,9 +34,9 @@ class FileDownloaderImpl(private val context: Context) : FileDownloader {
             put(MediaStore.Downloads.IS_PENDING, 1)
         }
         val uri = resolver.insert(collection, values)
-            ?: error("ไม่สามารถสร้างไฟล์ใน Downloads ได้")
+            ?: throw StorageException("ไม่สามารถสร้างไฟล์ใน Downloads")
         resolver.openOutputStream(uri)?.use { it.write(bytes) }
-            ?: error("ไม่สามารถเขียนไฟล์ได้")
+            ?: throw StorageException("ไม่สามารถเขียนไฟล์ใน Downloads")
         val finalValues = ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) }
         resolver.update(uri, finalValues, null, null)
         return "บันทึก $filename ลง Downloads แล้ว"

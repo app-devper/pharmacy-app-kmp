@@ -4,6 +4,7 @@ object CsvBuilder {
 
     private const val UTF8_BOM = "﻿"
     private const val LINE_END = "\r\n"
+    private const val FORMULA_GUARD = '\t'
 
     fun build(headers: List<String>, rows: List<List<Any?>>): String = buildString {
         append(UTF8_BOM)
@@ -19,10 +20,20 @@ object CsvBuilder {
         build(headers, rows).encodeToByteArray()
 
     internal fun escapeField(value: String): String {
-        val needsQuoting = value.contains(',') || value.contains('"') ||
-            value.contains('\n') || value.contains('\r')
-        if (!needsQuoting) return value
-        val escaped = value.replace("\"", "\"\"")
+        val guarded = if (needsFormulaGuard(value)) "$FORMULA_GUARD$value" else value
+        val needsQuoting = guarded.contains(',') || guarded.contains('"') ||
+            guarded.contains('\n') || guarded.contains('\r') || guarded.contains(FORMULA_GUARD)
+        if (!needsQuoting) return guarded
+        val escaped = guarded.replace("\"", "\"\"")
         return "\"$escaped\""
+    }
+
+    private fun needsFormulaGuard(value: String): Boolean {
+        if (value.isEmpty()) return false
+        return when (value[0]) {
+            '=', '@' -> true
+            '+', '-' -> value.length > 1 && !value[1].isDigit()
+            else     -> false
+        }
     }
 }

@@ -39,3 +39,13 @@ class ValidationException(
     message: String = "ตรวจสอบข้อมูลไม่ผ่าน",
     cause: Throwable? = null,
 ) : AppException(message, cause)
+
+class StorageException(
+    message: String = "ไม่สามารถบันทึกไฟล์ได้",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class UnsupportedPlatformException(
+    message: String = "ยังไม่รองรับฟีเจอร์นี้บนแพลตฟอร์มนี้",
+    cause: Throwable? = null,
+) : AppException(message, cause)

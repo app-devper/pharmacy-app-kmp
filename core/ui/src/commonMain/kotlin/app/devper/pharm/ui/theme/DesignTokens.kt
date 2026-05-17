@@ -2,7 +2,6 @@ package app.devper.pharm.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -167,7 +166,7 @@ data class PharmTokens(
 internal val LightPharmTokens = PharmTokens(colors = LightPharmColors)
 internal val DarkPharmTokens  = PharmTokens(colors = DarkPharmColors)
 
-val LocalPharmTokens = compositionLocalOf<PharmTokens> { LightPharmTokens }
+val LocalPharmTokens = staticCompositionLocalOf<PharmTokens> { LightPharmTokens }
 
 val pharmTokens: PharmTokens
     @androidx.compose.runtime.Composable
@@ -175,6 +174,3 @@ val pharmTokens: PharmTokens
     get() = LocalPharmTokens.current
 
 internal val DefaultPharmTokens = LightPharmTokens
-
-@Suppress("unused")
-private val _unused = staticCompositionLocalOf { Unit }

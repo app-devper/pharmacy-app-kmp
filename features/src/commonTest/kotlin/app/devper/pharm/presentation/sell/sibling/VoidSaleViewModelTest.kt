@@ -68,7 +68,7 @@ class VoidSaleViewModelTest {
         assertEquals("ลูกค้าคืน", sales.lastVoid?.reason)
 
         assertTrue(cart.dismissReceiptCalled)
-        assertNull(cart.lastReceipt.value)
+        assertNull(cart.state.value.lastReceipt)
 
         assertFalse(vm.state.value.sheetOpen)
         assertFalse(vm.state.value.submitting)
@@ -118,7 +118,7 @@ class VoidSaleViewModelTest {
         vm.confirm(saleId = "s1", reason = "ลูกค้าคืน")
         advanceUntilIdle()
 
-        assertNotNull(cart.lastReceipt.value)
+        assertNotNull(cart.state.value.lastReceipt)
         assertFalse(cart.dismissReceiptCalled)
         assertEquals("backend 500", vm.state.value.error)
         assertFalse(vm.state.value.sheetOpen)

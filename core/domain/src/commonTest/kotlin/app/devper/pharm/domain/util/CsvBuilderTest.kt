@@ -85,6 +85,35 @@ class CsvBuilderTest {
         assertTrue(csv.contains("Paracetamol,480,2.5"))
     }
 
+    @Test
+    fun formula_starting_with_equals_is_guarded_with_tab() {
+        val escaped = CsvBuilder.escapeField("=SUM(A1:A10)")
+        assertEquals("\"\t=SUM(A1:A10)\"", escaped)
+    }
+
+    @Test
+    fun formula_starting_with_at_sign_is_guarded() {
+        val escaped = CsvBuilder.escapeField("@sum")
+        assertEquals("\"\t@sum\"", escaped)
+    }
+
+    @Test
+    fun negative_number_is_not_guarded() {
+        assertEquals("-5.00", CsvBuilder.escapeField("-5.00"))
+        assertEquals("-12", CsvBuilder.escapeField("-12"))
+    }
+
+    @Test
+    fun positive_signed_number_is_not_guarded() {
+        assertEquals("+5", CsvBuilder.escapeField("+5"))
+    }
+
+    @Test
+    fun dash_prefix_text_is_guarded() {
+        val escaped = CsvBuilder.escapeField("-cmd|/c calc")
+        assertEquals("\"\t-cmd|/c calc\"", escaped)
+    }
+
     private companion object {
         const val BOM_ONLY = "﻿"
     }

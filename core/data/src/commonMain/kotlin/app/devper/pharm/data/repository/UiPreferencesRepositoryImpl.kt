@@ -1,33 +1,45 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
 import app.devper.pharm.domain.repository.UiPreferencesRepository
 import com.russhwolf.settings.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class UiPreferencesRepositoryImpl(private val settings: Settings) : UiPreferencesRepository {
+class UiPreferencesRepositoryImpl(
+    private val settings: Settings,
+    dispatchers: AppDispatchers,
+) : UiPreferencesRepository {
 
-    private val internal = MutableStateFlow(load())
+    private val scope = CoroutineScope(SupervisorJob() + dispatchers.io)
+    private val internal = MutableStateFlow(UiPreferences())
     override val state: StateFlow<UiPreferences> = internal.asStateFlow()
 
+    init {
+        scope.launch {
+            internal.value = UiPreferences(
+                theme = ThemePreference.parse(settings.getStringOrNull(KEY_THEME)),
+                fontSize = FontSizePreference.parse(settings.getStringOrNull(KEY_FONT_SIZE)),
+            )
+        }
+    }
+
     override fun setTheme(theme: ThemePreference) {
-        settings.putString(KEY_THEME, theme.wire)
         internal.value = internal.value.copy(theme = theme)
+        scope.launch { settings.putString(KEY_THEME, theme.wire) }
     }
 
     override fun setFontSize(size: FontSizePreference) {
-        settings.putString(KEY_FONT_SIZE, size.wire)
         internal.value = internal.value.copy(fontSize = size)
+        scope.launch { settings.putString(KEY_FONT_SIZE, size.wire) }
     }
-
-    private fun load(): UiPreferences = UiPreferences(
-        theme = ThemePreference.parse(settings.getStringOrNull(KEY_THEME)),
-        fontSize = FontSizePreference.parse(settings.getStringOrNull(KEY_FONT_SIZE)),
-    )
 
     private companion object {
         const val KEY_THEME = "ui.theme"

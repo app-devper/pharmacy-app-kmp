@@ -13,3 +13,12 @@ data class ActiveCart(
         val Empty: ActiveCart = ActiveCart()
     }
 }
+
+data class CartState(
+    val active: ActiveCart = ActiveCart.Empty,
+    val lastReceipt: Sale? = null,
+) {
+    companion object {
+        val Empty: CartState = CartState()
+    }
+}

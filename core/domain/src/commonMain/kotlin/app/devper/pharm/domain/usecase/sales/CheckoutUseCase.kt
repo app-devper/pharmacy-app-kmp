@@ -25,7 +25,7 @@ class CheckoutUseCase(
     ): Result<CheckoutOutcome> = invoke(RunCheckoutParam(received, allowOversell, clientRequestId))
 
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
-        val snapshot = cart.active.value
+        val snapshot = cart.state.value.active
         val lines = snapshot.items
         if (lines.isEmpty()) {
             throw CheckoutFailure(ValidationException("ตะกร้าว่างเปล่า"))

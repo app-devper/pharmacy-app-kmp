@@ -2,9 +2,11 @@
 
 package app.devper.pharm.platform
 
+import app.devper.pharm.common.AppException
+import app.devper.pharm.common.StorageException
 import app.devper.pharm.common.platform.FileDownloader
-import kotlinx.browser.document
 import kotlin.io.encoding.Base64
+import kotlinx.browser.document
 import org.w3c.dom.HTMLAnchorElement
 
 class FileDownloaderImpl : FileDownloader {
@@ -18,5 +20,8 @@ class FileDownloaderImpl : FileDownloader {
         anchor.click()
         document.body?.removeChild(anchor)
         "เริ่มดาวน์โหลดในเบราว์เซอร์"
+    }.recoverCatching { e ->
+        if (e is AppException) throw e
+        throw StorageException("ไม่สามารถดาวน์โหลด $filename", cause = e)
     }
 }

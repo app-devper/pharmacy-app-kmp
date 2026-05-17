@@ -26,7 +26,7 @@ private fun ensureKoinStarted() {
         single { buildHttpClient(Darwin, get<TokenStorage>()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
-        single<FileDownloader> { FileDownloaderImpl() }
+        single<FileDownloader> { FileDownloaderImpl(logger = get()) }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
     }
     startKoin { modules(iosPlatformModule, appModule) }
