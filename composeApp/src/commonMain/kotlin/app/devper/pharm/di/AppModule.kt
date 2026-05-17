@@ -18,9 +18,11 @@ val appModule = module {
         customersModule,
         suppliersModule,
         purchaseOrdersModule,
+        bulkImportModule,
         kyModule,
 
         inventoryModule,
+        stockCountModule,
         planningModule,
         labelsModule,
         expiryModule,
@@ -29,6 +31,7 @@ val appModule = module {
         salesHistoryModule,
 
         reportsModule,
+        movementsModule,
 
         settingsModule,
 

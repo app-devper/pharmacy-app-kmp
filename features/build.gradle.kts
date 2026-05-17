@@ -34,6 +34,7 @@ kotlin {
             implementation(project(":features:profile"))
             implementation(project(":features:labels"))
             implementation(project(":features:offlinesync"))
+            implementation(project(":features:stockcount"))
         }
     }
 }

@@ -61,6 +61,9 @@ kotlin {
             implementation(project(":features:saleshistory"))
             implementation(project(":features:expiry"))
             implementation(project(":features:auth"))
+            implementation(project(":features:movements"))
+            implementation(project(":features:bulkimport"))
+            implementation(project(":features:stockcount"))
 
             implementation(compose.runtime)
             implementation(compose.material3)

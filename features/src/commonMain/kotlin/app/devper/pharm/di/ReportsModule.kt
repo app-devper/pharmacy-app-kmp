@@ -1,6 +1,5 @@
 package app.devper.pharm.di
 
-import app.devper.pharm.presentation.movements.MovementsViewModel
 import app.devper.pharm.presentation.reports.EodViewModel
 import app.devper.pharm.presentation.reports.ProfitViewModel
 import app.devper.pharm.presentation.reports.ReportsViewModel
@@ -11,5 +10,4 @@ val reportsModule = module {
     factoryOf(::ReportsViewModel)
     factoryOf(::ProfitViewModel)
     factoryOf(::EodViewModel)
-    factoryOf(::MovementsViewModel)
 }
