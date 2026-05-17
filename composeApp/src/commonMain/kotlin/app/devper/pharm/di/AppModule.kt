@@ -21,6 +21,7 @@ val appModule = module {
         kyModule,
 
         inventoryModule,
+        planningModule,
 
         salesModule,
 

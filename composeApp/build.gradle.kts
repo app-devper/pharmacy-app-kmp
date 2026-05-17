@@ -55,6 +55,7 @@ kotlin {
             implementation(project(":features:shared"))
             implementation(project(":features:help"))
             implementation(project(":features:profile"))
+            implementation(project(":features:planning"))
 
             implementation(compose.runtime)
             implementation(compose.material3)
