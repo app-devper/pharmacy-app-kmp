@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.bulkimport
 
+import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.parser.BulkImportJsonParser
 import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
 import app.devper.pharm.ui.common.BaseViewModel
@@ -7,6 +8,7 @@ import app.devper.pharm.ui.common.BaseViewModel
 class BulkImportViewModel(
     private val parser: BulkImportJsonParser,
     private val bulkImportDrugs: BulkImportDrugsUseCase,
+    private val filePicker: FilePicker,
 ) : BaseViewModel<BulkImportUiState>(BulkImportUiState()) {
 
     fun onTextChange(value: String) = setState {
@@ -16,6 +18,21 @@ class BulkImportViewModel(
             previewCount = null,
             parseError = null,
             result = null,
+        )
+    }
+
+    fun pickFile() {
+        launchResult<String?>(
+            block = { filePicker.pickJsonFile() },
+            onSuccess = { content ->
+                if (content != null) {
+                    onTextChange(content)
+                    preview()
+                }
+            },
+            onFailure = { e ->
+                setState { copy(error = e.message ?: "เลือกไฟล์ไม่สำเร็จ") }
+            },
         )
     }
 

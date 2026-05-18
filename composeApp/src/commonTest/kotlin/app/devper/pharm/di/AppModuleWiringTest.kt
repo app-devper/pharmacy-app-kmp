@@ -41,6 +41,7 @@ import app.devper.pharm.presentation.users.UserFormViewModel
 import app.devper.pharm.presentation.users.UsersListViewModel
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FileDownloader
+import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import com.russhwolf.settings.Settings
@@ -92,6 +93,11 @@ private val testPlatformModule = module {
         object : FileDownloader {
             override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> =
                 Result.success("noop")
+        }
+    }
+    single<FilePicker> {
+        object : FilePicker {
+            override suspend fun pickJsonFile(): Result<String?> = Result.success(null)
         }
     }
     single<ReceiptPrinter> {

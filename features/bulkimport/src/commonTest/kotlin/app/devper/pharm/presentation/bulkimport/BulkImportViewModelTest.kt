@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.parser.BulkImportJsonParser
 import app.devper.pharm.domain.repository.FakeDrugRepositoryForBulk
@@ -17,13 +18,19 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class BulkImportViewModelTest {
 
+    private object NoopFilePicker : FilePicker {
+        override suspend fun pickJsonFile(): Result<String?> = Result.success(null)
+    }
+
     private fun newVm(
         dispatchers: AppDispatchers,
         repo: FakeDrugRepositoryForBulk = FakeDrugRepositoryForBulk(),
+        filePicker: FilePicker = NoopFilePicker,
     ): Pair<BulkImportViewModel, FakeDrugRepositoryForBulk> {
         val vm = BulkImportViewModel(
             parser = BulkImportJsonParser(),
             bulkImportDrugs = BulkImportDrugsUseCase(repo, dispatchers),
+            filePicker = filePicker,
         )
         return vm to repo
     }

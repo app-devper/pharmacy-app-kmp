@@ -4,11 +4,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FileDownloader
+import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
 import app.devper.pharm.platform.FileDownloaderImpl
+import app.devper.pharm.platform.FilePickerImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.StorageSettings
@@ -25,6 +27,7 @@ fun main() {
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
         single<FileDownloader> { FileDownloaderImpl() }
+        single<FilePicker> { FilePickerImpl() }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
     }
     startKoin { modules(webPlatformModule, appModule) }

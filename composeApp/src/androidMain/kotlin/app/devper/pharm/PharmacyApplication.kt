@@ -3,11 +3,13 @@ package app.devper.pharm
 import android.app.Application
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FileDownloader
+import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
 import app.devper.pharm.platform.FileDownloaderImpl
+import app.devper.pharm.platform.FilePickerImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -30,6 +32,7 @@ class PharmacyApplication : Application() {
 
             single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
             single<FileDownloader> { FileDownloaderImpl(applicationContext) }
+            single<FilePicker> { FilePickerImpl() }
             single<ReceiptPrinter> { ReceiptPrinterImpl() }
         }
 

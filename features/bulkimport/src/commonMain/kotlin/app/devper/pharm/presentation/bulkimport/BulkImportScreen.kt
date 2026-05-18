@@ -8,7 +8,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun BulkImportScreen(
     onDownloadTemplate: () -> Unit = {},
-    onPickFile: () -> Unit = {},
     viewModel: BulkImportViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -17,7 +16,7 @@ fun BulkImportScreen(
         state = state,
         callbacks = BulkImportCallbacks(
             onJsonChange = viewModel::onTextChange,
-            onPickFile = onPickFile,
+            onPickFile = viewModel::pickFile,
             onDownloadTemplate = onDownloadTemplate,
             onPreview = viewModel::preview,
             onSubmit = viewModel::submit,
