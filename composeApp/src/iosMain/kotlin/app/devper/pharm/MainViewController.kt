@@ -14,11 +14,13 @@ import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
 import io.ktor.client.engine.darwin.Darwin
+import kotlin.concurrent.Volatile
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import platform.Foundation.NSUserDefaults
 
+@Volatile
 private var koinStarted = false
 
 private fun ensureKoinStarted() {

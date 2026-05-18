@@ -94,11 +94,10 @@ class ImportFormViewModel(
     }
 
     private fun loadDrugs() {
-
         launchResult(
             block = { getDrugs() },
             onSuccess = { list -> setState { copy(drugs = list) } },
-            onFailure = {  },
+            onFailure = { e -> setState { copy(error = e.message ?: "โหลดข้อมูลยาไม่สำเร็จ") } },
         )
     }
 
@@ -106,7 +105,7 @@ class ImportFormViewModel(
         launchResult(
             block = { getSuppliers() },
             onSuccess = { list -> setState { copy(suppliers = list) } },
-            onFailure = {  },
+            onFailure = { e -> setState { copy(error = e.message ?: "โหลดข้อมูลซัพพลายเออร์ไม่สำเร็จ") } },
         )
     }
 
