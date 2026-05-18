@@ -48,7 +48,12 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
                 style = PharmText.meta.tabular(),
             )
         }
-        PharmMiniBarChart(data = data, height = 128.dp, barColor = t.colors.accent)
+        PharmMiniBarChart(
+            data = data,
+            height = 128.dp,
+            barColor = t.colors.accent,
+            valueFormatter = { "฿${formatBaht(it)}" },
+        )
         if (data.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
