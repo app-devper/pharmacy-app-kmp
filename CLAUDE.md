@@ -2,7 +2,7 @@
 
 Project-scoped instructions for Claude Code when working in
 `/Users/admin/ProjectPos/pharmacy-app/app-kmp/`. Applies to the KMP
-companion app (Compose Multiplatform — **26-module Gradle layout** after
+companion app (Compose Multiplatform — **27-module Gradle layout** after
 the per-feature split arc `5b4d0ed` → `9a76123`):
 `:composeApp` + `:core:{common,domain,ui,data}` + `:features:shared` +
 `:features:test-fixtures` + 20 `:features:<x>` modules.
@@ -141,9 +141,23 @@ instead of growing `:features:test-fixtures`.
 
 **Forbidden (P0 — Kotlin compile errors + auditArchitecture task):**
 
-The audit only needs to enforce A24-A28 explicitly now. Cross-feature
-boundaries are enforced by Kotlin's module system — any import without
-a declared `project(...)` dep is a compile error.
+The `auditArchitecture` Gradle task enforces 10 rules. Cross-feature
+boundaries are also enforced implicitly by Kotlin's module system —
+any import without a declared `project(...)` dep is a compile error.
+
+Layering (forbidden imports):
+- **A10**  `:core:*` importing from `:features:*`
+- **A17**  stale `app.devper.pharm.domain.common` imports (post-split)
+- **A19**  stale `:core:ui` package paths (pre-rename leftovers)
+- **A20**  `:features:*` importing from `:core:data` (use `:core:domain` interface)
+- **A23**  `:features:<x>/di/<X>Module.kt` importing non-VM types
+
+Wire / source-set discipline:
+- **A24**  DTO property missing explicit `@SerialName`
+- **A25**  DTO property using snake_case Kotlin name
+- **A26**  platform source folders outside `:composeApp`
+- **A27**  `expect`/`actual` declarations anywhere in the project
+- **A28**  generic `Exception` / `RuntimeException` / `IllegalStateException` in production
 
 - `:core:common` ห้ามรู้จัก project module อื่นเลย (zero project deps)
 - `:core:domain` ห้ามรู้จัก `:core:ui` / `:core:data` / `:features:*` / `:composeApp`
@@ -212,7 +226,7 @@ purpose isn't clear from its name, rename the method.
 - **Stack**: Kotlin Multiplatform 2.3.0 / Compose Multiplatform 1.9.3 / AGP
   8.13.2 / Gradle 8.14.3
 - **Targets**: `jvm`, `android`, `iosX64`, `iosArm64`, `iosSimulatorArm64`, `wasmJs`
-- **Modules (26)**: `:composeApp` (entry), `:core:{common,domain,ui,data}` (4 core),
+- **Modules (27)**: `:composeApp` (entry), `:core:{common,domain,ui,data}` (4 core),
   `:features:shared` (nav hub + routes), `:features:test-fixtures` (test doubles),
   20 `:features:<x>` (auth, bulkimport, customers, expiry, help, imports, ky,
   labels, movements, offlinesync, planning, profile, reports, saleshistory,
@@ -245,7 +259,9 @@ purpose isn't clear from its name, rename the method.
             :core:ui:jvmTest :core:data:jvmTest
   ```
   Quick smoke (runs the full dependent tree): `./gradlew :composeApp:check`.
-  Project test count today: 475 (280 across 29 feature module test suites).
+  Project test count today: ~460 `@Test` functions across 65 commonTest files
+  (most concentrated in the 20 per-feature modules). Re-measure with
+  `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`.
 - **Design system**: tokens in `:core:ui` →
   `ui/theme/DesignTokens.kt`; primitives in
   `ui/designsystem/Pharm*.kt`
