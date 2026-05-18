@@ -42,15 +42,35 @@ jobs:
       - name: Architecture audit
         run: ./gradlew :composeApp:auditArchitecture --stacktrace
 
-      - name: JVM tests (all 6 modules)
+      - name: JVM tests (4 core + 20 per-feature + shared/test-fixtures compile)
         run: |
-          ./gradlew \
+          ./gradlew --parallel \
             :core:common:jvmTest \
             :core:domain:jvmTest \
             :core:ui:jvmTest \
             :core:data:jvmTest \
-            :features:jvmTest \
-            :composeApp:jvmTest \
+            :features:shared:compileKotlinJvm \
+            :features:test-fixtures:compileKotlinJvm \
+            :features:auth:jvmTest \
+            :features:bulkimport:jvmTest \
+            :features:customers:jvmTest \
+            :features:expiry:jvmTest \
+            :features:help:jvmTest \
+            :features:imports:jvmTest \
+            :features:ky:jvmTest \
+            :features:labels:jvmTest \
+            :features:movements:jvmTest \
+            :features:offlinesync:jvmTest \
+            :features:planning:jvmTest \
+            :features:profile:jvmTest \
+            :features:reports:jvmTest \
+            :features:saleshistory:jvmTest \
+            :features:sell:jvmTest \
+            :features:settings:jvmTest \
+            :features:stock:jvmTest \
+            :features:stockcount:jvmTest \
+            :features:suppliers:jvmTest \
+            :features:users:jvmTest \
             --stacktrace
 
       - name: Android debug unit tests
