@@ -17,8 +17,11 @@ import platform.Foundation.create
 import platform.Foundation.writeToURL
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
+import platform.UIKit.UIModalPresentationFormSheet
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
+import platform.UIKit.UIUserInterfaceIdiomPad
+import platform.UIKit.UIDevice
 
 class FileDownloaderImpl(private val logger: Logger) : FileDownloader {
 
@@ -57,10 +60,16 @@ class FileDownloaderImpl(private val logger: Logger) : FileDownloader {
             activityItems = listOf(fileURL),
             applicationActivities = null,
         )
+        if (isIpad()) {
+            activityVC.modalPresentationStyle = UIModalPresentationFormSheet
+        }
         val topVC = topmostViewController()
             ?: throw StorageException("ไม่พบหน้าจอที่จะแสดง Share Sheet")
         topVC.presentViewController(activityVC, animated = true, completion = null)
     }
+
+    private fun isIpad(): Boolean =
+        UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad
 
     private fun topmostViewController(): UIViewController? {
         val rootVC = activeKeyWindow()?.rootViewController ?: return null
