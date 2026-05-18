@@ -2,7 +2,7 @@
 
 Kotlin Multiplatform / Compose Multiplatform port of the React `frontend/` web POS. **One Kotlin codebase ships to Android, iOS, Desktop (JVM), and Web (wasmJs).** Shares the same backend (`pharmacy-app/backend`) and the same `um-api` auth.
 
-Architecture is **6-module Gradle Clean Architecture** with inward-only deps; platform impls live in `:composeApp/<plat>Main/platform/` behind interfaces in `:core:common`; a convention plugin keeps every library's `build.gradle.kts` ~15–55 lines. **373 unit tests** cover business logic (241 VM tests + 71 domain + 33 ui + 20 data + 16 common + 1 wiring smoke).
+Architecture is **26-module Gradle Clean Architecture** with inward-only deps; platform impls live in `:composeApp/<plat>Main/platform/` behind interfaces in `:core:common`; a convention plugin keeps every library's `build.gradle.kts` ~15–55 lines. **475 unit tests** cover business logic — 280 across 29 per-feature test suites + ~150 across the 4 `:core:*` modules + 1 wiring smoke. Per-feature isolation: cross-feature production imports are HARD Kotlin compile errors (not just an audit warning) after the split arc `5b4d0ed` → `9a76123`.
 
 See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full module dependency matrix.
 
@@ -19,15 +19,27 @@ See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full module dependency matrix.
 | Logging | Kermit |
 | Build | Gradle 8.14 · AGP 8.13 · `pharmacy.kmp.library` convention plugin in `build-logic/` |
 
-## Module structure (6 modules)
+## Module structure (26 modules)
+
+See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full ASCII graph + dep matrix + per-module file inventory.
 
 ```
 :composeApp                          entry point only (Main*.kt + AppNavHost + AppModule composer)
    │
    ▼  depends on every layer below ──────────────┐
-:features                            ทุก 19 features รวมที่เดียว — Screens + VMs + per-feature DI
-   │                                  package: app.devper.pharm.presentation.<feature>
-   ▼  depends ONLY on :core:domain + :core:ui ───┤
+:features:<x> × 20                   per-feature modules — Screens + VMs + per-feature DI
+   │  auth, bulkimport, customers, expiry,        package: app.devper.pharm.presentation.<feature>
+   │  help, imports, ky, labels, movements,       Each:  Screen / Content / Callbacks / ViewModel /
+   │  offlinesync, planning, profile, reports,           UiState / NavGraph + section files
+   │  saleshistory, sell, settings, stock,
+   │  stockcount, suppliers, users
+   ▼  each depends on :core:domain + :core:ui + :features:shared (only)
+:features:shared                     nav hub + 20 Route data objects + ShelledScreen
+   │                                  package: app.devper.pharm.presentation.{<feature>,navigation}
+   ▼                                              │
+:features:test-fixtures              shared test doubles (14 Fake*Repository classes)
+   ─── test-only dep of 11 features that share fakes; commonMain code
+                                                  │
 :core:ui                             shared compose infra (theme + designsystem + BaseViewModel)
    │                                  package: app.devper.pharm.ui.*
    ▼                                              │
@@ -40,10 +52,11 @@ See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full module dependency matrix.
 :core:common                         interfaces + pure infra (commonMain + commonTest only)
                                       package: app.devper.pharm.common[.print|.platform]
                                       AppDispatchers + Logger + AppException + BaseUseCase
-                                      + PdfDownloader (interface) + ReceiptPrinter (interface)
+                                      + FileDownloader (interface) + ReceiptPrinter (interface)
                                       — platform impls live in :composeApp/<plat>Main
-build-logic/                         convention plugin `pharmacy.kmp.library` —
-                                      KMP setup (5 targets · JDK 17 · namespace · commonTest kotlin.test)
+build-logic/                         convention plugins — pharmacy.kmp.library (base) +
+                                      pharmacy.kmp.compose.library (compose flavor) +
+                                      pharmacy.architecture.audit (audit task)
                                       applied by every library module's build.gradle.kts
 ```
 
@@ -52,10 +65,12 @@ build-logic/                         convention plugin `pharmacy.kmp.library` �
 - `:core:domain` → `:core:common` (api-exports it so consumers reach `AppDispatchers` / `AppException` / `printReceipt` / `BaseUseCase` transitively)
 - `:core:ui` → `:core:domain` + `:core:common`
 - `:core:data` → `:core:domain` + `:core:common`
-- `:features` → `:core:domain` + `:core:ui` **only** (cannot reach `:core:data` at all; reaches `:core:common` transitively via `:core:domain`)
-- `:composeApp` depends on every layer below
+- `:features:shared` → `:core:domain` + `:core:ui` **only** (cannot depend on any `:features:<x>` — would be a cycle)
+- `:features:test-fixtures` → `:core:common` + `:core:domain` + kotlinx only
+- `:features:<x>` (20 modules) → `:core:domain` + `:core:ui` + `:features:shared` **only** (cannot reach `:core:data` at all; reaches `:core:common` transitively via `:core:domain`; cannot reach any sibling `:features:<y>` — cross-feature production imports are Kotlin compile errors)
+- `:composeApp` depends on every layer below (20 per-feature implementation deps + `:features:shared` + 4 `:core:*`)
 
-**One module owns platform code**: `:composeApp` is the **only** module with `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` source folders. `:core:common`, `:core:domain`, `:core:ui`, `:core:data`, and `:features` are `commonMain` + `commonTest` only — pure platform-agnostic code. Cross-platform seams (PDF saving, receipt printing, IO dispatcher) are expressed as **interfaces in `:core:common`** with **impls in `:composeApp/<plat>Main`**, bound via Koin in each Main*.kt's platform module. No `expect`/`actual` anywhere in the project.
+**One module owns platform code**: `:composeApp` is the **only** module with `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` source folders. `:core:{common,domain,ui,data}`, `:features:shared`, `:features:test-fixtures`, and all 20 `:features:<x>` are `commonMain` + `commonTest` only — pure platform-agnostic code. Cross-platform seams (file saving, receipt printing, IO dispatcher) are expressed as **interfaces in `:core:common`** with **impls in `:composeApp/<plat>Main`**, bound via Koin in each Main*.kt's platform module. No `expect`/`actual` anywhere in the project.
 
 ## Where everything lives
 
@@ -69,9 +84,13 @@ build-logic/                         convention plugin `pharmacy.kmp.library` �
 | Repository impl / API / DTO | `:core:data` | `app.devper.pharm.data.<sub>` | `core/data/src/commonMain/kotlin/app/devper/pharm/data/<sub>/` |
 | Design token / primitive / VM base | `:core:ui` | `app.devper.pharm.ui.<sub>` | `core/ui/src/commonMain/kotlin/app/devper/pharm/ui/<sub>/` |
 | Expect/actual (any new platform-bound code) | `:core:common` | `app.devper.pharm.common[.<sub>]` | `core/common/src/<sourceSet>/kotlin/app/devper/pharm/common/.../` |
-| Feature screen + VM + NavGraph | `:features` | `app.devper.pharm.presentation.<feature>` | `features/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/` |
-| Feature DI module (ViewModels only) | `:features` | `app.devper.pharm.di` | `features/src/commonMain/kotlin/app/devper/pharm/di/<Feature>Module.kt` |
-| Feature test | `:features` | `app.devper.pharm.presentation.<feature>` | `features/src/commonTest/kotlin/app/devper/pharm/presentation/<feature>/` |
+| New feature scaffold | `:features:<new>` (create via 6-step recipe in [`MODULE_GRAPH.md`](MODULE_GRAPH.md)) | `app.devper.pharm.presentation.<new>` | `features/<new>/src/commonMain/kotlin/app/devper/pharm/presentation/<new>/` |
+| Feature Route data object | `:features:shared` | `app.devper.pharm.presentation.<feature>` | `features/shared/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/<Feature>Routes.kt` |
+| Feature screen + VM + NavGraph | `:features:<feature>` | `app.devper.pharm.presentation.<feature>` | `features/<feature>/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/` |
+| Feature DI module (ViewModels only) | `:features:<feature>` | `app.devper.pharm.di` | `features/<feature>/src/commonMain/kotlin/app/devper/pharm/di/<Feature>Module.kt` |
+| Feature test (VM unit test) | `:features:<feature>` | `app.devper.pharm.presentation.<feature>` | `features/<feature>/src/commonTest/kotlin/app/devper/pharm/presentation/<feature>/` |
+| Test double shared by ≥2 features | `:features:test-fixtures` | `app.devper.pharm.domain.repository` | `features/test-fixtures/src/commonMain/kotlin/app/devper/pharm/domain/repository/Fake<X>Repository.kt` |
+| Test double used by only one feature | Co-locate in that feature's `commonTest` | `app.devper.pharm.domain.repository` | `features/<feature>/src/commonTest/kotlin/app/devper/pharm/domain/repository/Fake<X>Repository.kt` |
 
 ## DI composition
 
@@ -83,7 +102,7 @@ Each layer owns its own Koin module — `:composeApp/di/AppModule.kt` is the com
 | platform modules (×4) | `composeApp/<plat>Main/.../Main*.kt` | Per-platform `single<X> { … }` for `Settings` + `HttpClient(<engine>)` + `AppDispatchers(IO or Default)` + `PdfDownloaderImpl(<args>)` + `ReceiptPrinterImpl()` |
 | `domainModule` | `core/domain/.../domain/di/DomainModule.kt` (composer) + 10 sibling `<Feature>DomainModule.kt` files | 77 bindings total: `StockChangeBus` + 5 `<X>Provider` singletons + `BulkImportJsonParser` + 70 use case factories — split across 10 per-feature DI files (`authDomainModule`, `customersDomainModule`, `salesDomainModule`, …) that `domainModule = module { includes(…) }` composes |
 | `dataModule` | `core/data/.../data/di/DataModule.kt` | 40 bindings: `ApiConfig` + `AppJson` + `TokenStorage` / `ParkedCartStorage` / `OfflineSaleQueueImpl` + 15 `<X>Api` + 18 `<X>RepositoryImpl bind <X>Repository::class` |
-| `<feature>Module` × 10 | `features/.../di/*.kt` | ViewModel factories **only** — every UC / Provider / Repo / Api is bound elsewhere |
+| `<feature>Module` × 20 | `features/<feature>/.../di/<Feature>Module.kt` (one per per-feature module) | ViewModel factories **only** — every UC / Provider / Repo / Api is bound elsewhere |
 
 ```kotlin
 val appModule = module {
@@ -91,13 +110,15 @@ val appModule = module {
         commonModule,
         domainModule,
         dataModule,
-        authModule, customersModule, suppliersModule,
-        purchaseOrdersModule, kyModule,
-        inventoryModule,
-        salesModule,
-        reportsModule,
+
+        authModule,
+        customersModule, suppliersModule, importsModule, bulkImportModule, kyModule,
+        stockModule, stockCountModule, planningModule, labelsModule, expiryModule,
+        sellModule, salesHistoryModule,
+        reportsModule, movementsModule,
         settingsModule,
-        offlineSyncModule,
+        offlineSyncModule, helpModule,
+        profileModule, usersModule,
     )
     factoryOf(::AppViewModel)
 }
@@ -206,7 +227,7 @@ Cleartext (http://) is **disabled** by default on Android (no `usesCleartextTraf
 Every push to `main` and every PR runs [`.github/workflows/check.yml`](.github/workflows/check.yml) on `macos-latest` (required for the iOS targets). The workflow runs the same checks as the local verify command:
 
 1. `:composeApp:auditArchitecture` — fails on any A10/A17/A19/A20/A23/A24/A25/A26/A27/A28 violation
-2. JVM tests across all 6 modules (373 unique tests)
+2. JVM tests across all 25 library modules (475 unique tests; `:composeApp:check` transitively runs every module's `jvmTest`)
 3. `:composeApp:testDebugUnitTest` — Android debug variant
 4. `:composeApp:compileTestKotlinIosSimulatorArm64` — iOS Simulator (Arm64) compile-only check
 5. `:composeApp:compileTestKotlinWasmJs` — Web (wasmJs) compile-only check
@@ -221,12 +242,22 @@ cd /Users/admin/ProjectPos/pharmacy-app/app-kmp
 # Full check — runs all JVM tests + Android debug unit tests + lint + auditArchitecture
 ./gradlew :composeApp:check
 
-# Or pick targets explicitly (373 unique tests + compile for iOS sim + wasm)
+# Or pick targets explicitly (475 unique tests + compile for iOS sim + wasm)
 ./gradlew :composeApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs \
-          :features:jvmTest :core:domain:jvmTest \
-          :core:common:jvmTest :core:ui:jvmTest :core:data:jvmTest
+          :core:common:jvmTest :core:domain:jvmTest \
+          :core:ui:jvmTest :core:data:jvmTest \
+          :features:auth:jvmTest :features:bulkimport:jvmTest \
+          :features:customers:jvmTest :features:expiry:jvmTest \
+          :features:help:jvmTest :features:imports:jvmTest \
+          :features:ky:jvmTest :features:labels:jvmTest \
+          :features:movements:jvmTest :features:offlinesync:jvmTest \
+          :features:planning:jvmTest :features:profile:jvmTest \
+          :features:reports:jvmTest :features:saleshistory:jvmTest \
+          :features:sell:jvmTest :features:settings:jvmTest \
+          :features:stock:jvmTest :features:stockcount:jvmTest \
+          :features:suppliers:jvmTest :features:users:jvmTest
 
 # Architecture audit on its own (greps for stale inward-only violations)
 ./gradlew :composeApp:auditArchitecture
@@ -255,15 +286,30 @@ For a new feature called `<X>` (e.g. `loyalty`):
    - `data/remote/api/<X>Api.kt` — Ktor calls
    - `data/repository/<X>RepositoryImpl.kt` — implements `<X>Repository`; private `*Param.toRequest()` extension at bottom
    - **Add bindings to `data/di/DataModule.kt`**: `singleOf(::<X>Api)` + `singleOf(::<X>RepositoryImpl) bind <X>Repository::class`
-3. **Presentation** (in `:features`)
-   - `presentation/<feature>/<X>ListScreen.kt` + `<X>ListViewModel.kt` + `<X>ListUiState.kt`
-   - `presentation/<feature>/<Feature>NavGraph.kt` + `<Feature>Routes.kt` (`@Serializable` route classes)
-   - **Add bindings to `di/<Feature>Module.kt`**: `factoryOf(::<X>ListViewModel)` (VMs only!)
-4. **Wire from `:composeApp`**
+3. **Module scaffold + Route** (in `:features:<feature>` + `:features:shared`)
+   - Follow the 6-step recipe in [`MODULE_GRAPH.md`](MODULE_GRAPH.md): create
+     `features/<feature>/build.gradle.kts` mirroring an existing leaf (e.g.
+     `:features:help`), register in `settings.gradle.kts`, add the
+     `@Serializable data object <X>` route in
+     `features/shared/.../presentation/<feature>/<Feature>Routes.kt`.
+4. **Presentation** (in `:features:<feature>`)
+   - `features/<feature>/.../presentation/<feature>/<X>ListScreen.kt` + `<X>ListViewModel.kt` + `<X>ListUiState.kt`
+   - `features/<feature>/.../presentation/<feature>/<Feature>NavGraph.kt` (Route definitions live in `:features:shared`)
+   - **Add bindings to `features/<feature>/.../di/<Feature>Module.kt`**: `factoryOf(::<X>ListViewModel)` (VMs only!)
+5. **Wire from `:composeApp`**
+   - Add `implementation(project(":features:<feature>"))` to [`composeApp/build.gradle.kts`](composeApp/build.gradle.kts)
    - Add `<feature>Module` to `appModule.includes(...)` in [`AppModule.kt`](composeApp/src/commonMain/kotlin/app/devper/pharm/di/AppModule.kt)
    - Add `<feature>Graph(navController, onLogout, pendingSyncCount)` to [`AppNavHost.kt`](composeApp/src/commonMain/kotlin/app/devper/pharm/presentation/navigation/AppNavHost.kt)
-5. **Test** (in `:features/commonTest`)
-   - `presentation/<feature>/<X>ViewModelTest.kt` — uses `runVmTest { dispatchers -> }` helper from `:core:ui` + a `Fake<X>Repository` in `features/.../fakes/`
+   - Register the route in `features/shared/.../navigation/ShelledScreen.kt`'s `MAIN_NAV` table (if the feature gets a sidebar item)
+6. **Test** (in `:features:<feature>/commonTest`)
+   - `features/<feature>/src/commonTest/.../presentation/<feature>/<X>ViewModelTest.kt` — uses `runVmTest { dispatchers -> }` helper from `:core:ui` + a `Fake<X>Repository` (from `:features:test-fixtures` if shared, or co-located in `features/<feature>/src/commonTest/.../domain/repository/` if single-consumer)
+   - Add to `features/<feature>/build.gradle.kts`:
+     ```kotlin
+     commonTest.dependencies {
+         implementation(libs.kotlinx.coroutines.test)
+         implementation(project(":features:test-fixtures"))  // only if using shared fakes
+     }
+     ```
 
 The `pharmacy-kmp-feature` skill ([repo skills dir](.claude/skills/pharmacy-kmp-feature/)) automates most of this.
 
@@ -299,20 +345,22 @@ Agents (live under `.claude/agents/`):
 | `:core:domain` | 71 | model invariants, parsers (`BulkImportJsonParser`, `PurchaseOrderInputBuilder`, etc.), util (`BarcodeMatcher`, `DrugSearch`, `UmRoleValidator` — 4×4 actor×target + isSelf override, …), pricing (`resolvePrice` tier resolution) |
 | `:core:ui` | 33 | `formatBaht` / `formatBahtCurrency` / `fmtBaht` rounding + thousands separators; `BaseViewModel` setState + launchResult; `BaseFormViewModel` saving / saved / error transitions; new design-system primitive logic — `PharmAvatarCircle.initialsFrom()` (5 tests), `PharmStatusBadge` tone mapping (6 tests) |
 | `:core:data` | 20 | `AppJson` lenient/strict; `ApiConfig` URL helpers; Ktor `HttpResponseValidator` HTTP-status → typed `AppException` translation (via `MockEngine`); `OfflineSaleQueueImpl` FIFO + persistence round-trip |
-| `:features` | 241 | ViewModel unit tests across 40+ files via `runVmTest { dispatchers -> }` helper + `Fake<X>Repository` pattern (incl. `ProfileViewModelTest`, `UsersListViewModelTest`, `UserFormViewModelTest`, `SettingsEditorViewModelTest`, `SettingsMenuRegistryTest`) |
-| `:composeApp` | 1 | `AppModuleWiringTest` — boots Koin with `commonModule + domainModule + dataModule + 10 feature modules + test platform module` and resolves every `<X>ViewModel` (38 in total) to catch "forgot a `factoryOf(...)` binding" regressions before runtime |
+| 20× `:features:<x>` | 280 across 29 module test suites | ViewModel unit tests via `runVmTest { dispatchers -> }` helper + `Fake<X>Repository` pattern (from `:features:test-fixtures` when shared, co-located in the feature module when single-consumer). Five modules fully co-located test + fake: help (9 tests), saleshistory (13), auth (6), bulkimport (8), reports (15) |
+| `:composeApp` | 1 | `AppModuleWiringTest` — boots Koin with `commonModule + domainModule + dataModule + 20 feature modules + test platform module` and resolves every `<X>ViewModel` to catch "forgot a `factoryOf(...)` binding" regressions before runtime |
 
 Build-time **architecture audit** (in `build-logic/.../pharmacy.architecture.audit.gradle.kts`) runs as part of `:composeApp:check` and fails the build on any stale import that would violate the inward-only rules (A10/A17/A19/A20/A23/A24/A25/A26/A27/A28 — 10 enforced at build time of the 28 total in `pharmacy-kmp-review` skill).
 - Verify command above runs them all on JVM + compiles tests for iOS sim + wasmJs
 
 ## Out of scope
 
-- Cart / sale checkout, customers, suppliers, KY forms, reports, …  — **all implemented**. See `features/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/`.
-- Offline queue + auto-sync — implemented (`:features/presentation/offlinesync/`).
+- Cart / sale checkout, customers, suppliers, KY forms, reports, label print, …  — **all implemented**. See each `features/<feature>/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/`.
+- Offline queue + auto-sync — implemented (`:features:offlinesync`).
 - Barcode scanner — implemented as `BarcodeScannerModifier` HID listener in `:core:ui/scanner/`.
-- AGP 9 migration — deferred (currently AGP 8.13.2).
+- Per-feature module split — **done** (20 features extracted, mega-`:features` retired in `9a76123`).
+- AGP 9 migration — deferred (currently AGP 8.13.2; KMP plugin compatibility warning shown on every build is expected).
 - iOS Framework split per-feature — single `ComposeApp.framework` built by `:composeApp`.
-- Per-feature module split (`:features:<X>`) — folder structure inside `:features` is ready for it, just hasn't been done yet.
+- iPad popover anchor for `UIActivityViewController` share sheet (file export crashes on iPad; iPhone works clean).
+- Per-feature CI matrix (single check job today — could fan out by changed module path).
 
 ## More
 

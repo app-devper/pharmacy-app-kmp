@@ -1,303 +1,374 @@
 # Module graph — pharmacy-app KMP companion
 
-6-module Gradle layout. Dependency direction flows **inward only**: from
-entry point `:composeApp` down through `:features` → `:core:{ui,data}` →
-`:core:domain` → `:core:common`, with `:core:common` at the bottom depending
-on nothing else in the project.
+**26-module Gradle layout** after the per-feature split arc
+(`5b4d0ed` → `9a76123`). Dependency direction flows **inward only**:
+from entry point `:composeApp` down through 20 `:features:<x>` →
+`:features:shared` → `:core:{ui,data}` → `:core:domain` → `:core:common`,
+with `:core:common` at the bottom depending on nothing else in the
+project. A test-only side module `:features:test-fixtures` hosts shared
+`Fake*Repository` classes consumed by feature `commonTest` source sets.
 
 ## Graph
 
 ```
-                        ┌────────────────┐
-                        │  :composeApp   │   entry point
-                        │  (app shell)   │   App / AppViewModel / AppNavHost
-                        └────────┬───────┘   AppModule + CoreModule
-                                 │
-              ┌──────────────────┼──────────────────┐
-              ▼                  ▼                  ▼
-       ┌────────────┐     ┌────────────┐     ┌────────────┐
-       │ :features  │     │ :core:ui   │     │ :core:data │
-       │ 17 feats   │     │ theme +    │     │ repo impls │
-       │ + DI + VMs │     │ DS + base  │     │ + transport│
-       └─────┬──────┘     └─────┬──────┘     └─────┬──────┘
-             │                  │                  │
-             └──────────────────┼──────────────────┘
-                                ▼
-                        ┌────────────────┐
-                        │  :core:domain  │  pure kotlin
-                        │  (commonMain + │  models / usecases /
-                        │   commonTest)  │  repos (interfaces)
-                        └────────┬───────┘
-                                 ▼
-                        ┌────────────────┐
-                        │  :core:common  │  interfaces + pure infra
-                        │  (no project   │  AppDispatchers / Logger / AppException
-                        │   deps;        │  PdfDownloader interface
-                        │   commonMain   │  ReceiptPrinter interface
-                        │   only)        │  BaseUseCase / BaseSyncUseCase
-                        └────────────────┘
-   ↑ impls of PdfDownloader / ReceiptPrinter live in :composeApp/<plat>Main
+                            ┌────────────────┐
+                            │  :composeApp   │   entry point (only module
+                            │  (app shell)   │   with platform source folders)
+                            └────────┬───────┘   App / AppViewModel / AppNavHost
+                                     │
+        ┌────────────────────────────┼────────────────────────────┐
+        │              20 :features:<x> modules                   │
+        │  auth bulkimport customers expiry help imports ky       │
+        │  labels movements offlinesync planning profile reports  │
+        │  saleshistory sell settings stock stockcount suppliers  │
+        │  users                                                  │
+        └────────────────────────────┬────────────────────────────┘
+                                     ▼
+                         ┌────────────────────┐
+                         │  :features:shared  │  nav hub + 20 Route
+                         │                    │  data objects + ShelledScreen
+                         └─────────┬──────────┘
+                                   │       (:features:test-fixtures sits
+                                   │        beside :features:shared as a
+                                   │        commonTest-only dependency of
+                                   │        each :features:<x> module)
+              ┌────────────────────┼────────────────────┐
+              ▼                    ▼                    ▼
+       ┌────────────┐       ┌────────────┐       ┌────────────┐
+       │ :core:ui   │       │ :core:data │       │ :core:common│
+       │ theme +    │       │ repo impls │       │ via         │
+       │ DS + base  │       │ + transport│       │ :core:domain│
+       └─────┬──────┘       └─────┬──────┘       │  api()      │
+             │                    │              └─────────────┘
+             └──────────┬─────────┘
+                        ▼
+                ┌────────────────┐
+                │  :core:domain  │  pure kotlin
+                │  (commonMain + │  models / usecases /
+                │   commonTest)  │  repos (interfaces)
+                └────────┬───────┘
+                         ▼
+                ┌────────────────┐
+                │  :core:common  │  interfaces + pure infra
+                │  (no project   │  AppDispatchers / Logger / AppException
+                │   deps;        │  FileDownloader interface
+                │   commonMain   │  ReceiptPrinter interface
+                │   only)        │  BaseUseCase / BaseSyncUseCase
+                └────────────────┘
+   ↑ impls of FileDownloader / ReceiptPrinter live in :composeApp/<plat>Main
 ```
 
 ## Dependency matrix
 
-| Module          | depends on                                                       |
-|-----------------|------------------------------------------------------------------|
-| `:composeApp`   | `:features`, `:core:ui`, `:core:data`, `:core:domain`, `:core:common` |
-| `:features`     | `:core:ui`, `:core:domain` (only — does NOT directly depend on `:core:common` or `:core:data`) |
-| `:core:ui`      | `:core:domain`, `:core:common` (+ compose)                       |
-| `:core:data`    | `:core:domain`, `:core:common` (+ ktor + multiplatform-settings + koin-core) |
-| `:core:domain`  | `api(:core:common)` (re-exported so consumers reach `AppDispatchers`/`AppException`/`BaseUseCase` etc. transitively) (+ kotlinx) |
-| `:core:common`  | _none_ (kotlinx-only — host of every expect/actual in the project) |
+| Module                       | depends on                                                       |
+|------------------------------|------------------------------------------------------------------|
+| `:composeApp`                | `:core:{common,domain,ui,data}` + `:features:shared` + all 20 `:features:<x>` |
+| `:features:<x>` (20 modules) | `:core:domain` + `:core:ui` + `:features:shared` (+ kotlinx-datetime where needed) |
+| `:features:<x>` `commonTest` | `:features:test-fixtures` (test-only dep for the 11 features that use shared fakes; help/saleshistory/auth/bulkimport/reports/stockcount don't need it because their tests use their own co-located fakes or are pure-logic) |
+| `:features:shared`           | `:core:domain` + `:core:ui` (only) — must not depend on `:features` or `:composeApp` (would be a cycle) |
+| `:features:test-fixtures`    | `:core:common` + `:core:domain` (only) — test-only; commonMain is fakes-as-production-code |
+| `:core:ui`                   | `:core:domain`, `:core:common` (+ compose)                       |
+| `:core:data`                 | `:core:domain`, `:core:common` (+ ktor + multiplatform-settings + koin-core) |
+| `:core:domain`               | `api(:core:common)` (re-exported so consumers reach `AppDispatchers`/`AppException`/`BaseUseCase` etc. transitively) (+ kotlinx) |
+| `:core:common`               | _none_ (kotlinx-only — host of every cross-platform interface) |
 
-**Note on `:features` decoupling**: `:features` cannot reach `:core:data` symbols
-at all (no direct dep, no transitive path — `:core:domain` does not re-export
-`:core:data`). Repository bindings (`<X>RepositoryImpl bind <X>Repository::class`
-+ `<X>Api`) live in `:core:data`'s own Koin module (`dataModule` at
-`core/data/.../data/di/DataModule.kt`), which `:composeApp` includes via
-`appModule.includes(dataModule, …)`. Features inject `<X>Repository` interfaces
-from `:core:domain` — they never name a concrete `RepositoryImpl`.
+**Per-feature deps are now P0 compile errors.** Before the split,
+cross-feature imports inside `:features` (e.g.
+`presentation.sell → presentation.customers`) were only a P1 audit
+warning. After the split, the Kotlin compiler refuses any foreign-module
+symbol without an explicit `project(":features:<x>")` dep — the audit
+check became redundant for cross-feature rules (it still enforces
+A26/A27/A28 for platform folders, expect declarations, generic
+exceptions).
 
-`:features` CAN still reach `:core:common` symbols (e.g. `AppDispatchers` in VM
-tests, `printReceipt` in `CheckoutViewModel`) via `:core:domain`'s `api()`
-re-export. This is intentional — the dep direction is correct (features → domain → common),
-just declared once at the layer that needs to re-export.
+**`:features` decoupling**: no per-feature module can reach `:core:data`
+(no direct dep, no transitive path — `:core:domain` does not re-export
+`:core:data`). Repository bindings (`<X>RepositoryImpl bind
+<X>Repository::class` + `<X>Api`) live in `:core:data`'s own Koin
+module (`dataModule` at `core/data/.../data/di/DataModule.kt`), which
+`:composeApp` includes via `appModule.includes(dataModule, …)`.
+Features inject `<X>Repository` interfaces from `:core:domain` — they
+never name a concrete `RepositoryImpl`.
 
-**Note on DI module layout**: Each "owning" layer maintains its own Koin module:
-- `:core:domain` → `domainModule` (76 bindings: 5 providers + 1 parser + 68 use cases + 2 settings use cases). Mirrors the rule that all `<X>UseCase` and `<X>Provider` classes live in `:core:domain`.
-- `:core:data` → `dataModule` (33 bindings: 15 `<X>Api` + 18 `<X>RepositoryImpl bind <X>Repository::class`).
-- `:features/di/<Feature>Module.kt` → ONLY VM `factoryOf` bindings now. The 10 per-feature DI files total ~140 lines.
-- `:composeApp/di/AppModule.kt` → composition root: `includes(coreModule, domainModule, dataModule, authModule, customersModule, …)`. Order matters in principle (providers must be in scope before use cases that consume them), but Koin resolves lazily so include order doesn't bite in practice.
+`:features:<x>` CAN still reach `:core:common` symbols (e.g.
+`AppDispatchers` in VM tests, `ReceiptPrinter` in `CheckoutViewModel`)
+via `:core:domain`'s `api()` re-export. This is intentional — the dep
+direction is correct (features → domain → common), just declared once
+at the layer that needs to re-export.
+
+**Note on DI module layout**:
+- `:core:domain` → `domainModule` (76 bindings: 5 providers + 1 parser + 68 use cases + 2 settings use cases)
+- `:core:data` → `dataModule` (33 bindings: Apis + RepositoryImpls)
+- `:features:<x>/di/<Feature>Module.kt` → ONLY VM `factoryOf` bindings (one DI module per feature module)
+- `:composeApp/di/AppModule.kt` → composition root: `includes(commonModule, domainModule, dataModule, authModule, customersModule, …, sellModule, settingsModule, …)` — 20 per-feature includes.
 
 ## What lives where
 
 ### `:composeApp` — app shell only (only module with platform source folders)
 
-After the INVERT refactor, `:composeApp` is **the** only module in the project that has
-`androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` source sets. It owns:
+After the INVERT refactor, `:composeApp` is **the** only module in the
+project that has `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain`
+source sets. It owns:
 - The Compose Application entry points (Main*.kt)
-- Every platform impl of cross-cutting interfaces (PdfDownloaderImpl, ReceiptPrinterImpl)
-- Per-platform Koin module bindings (Settings, HttpClient engine, AppDispatchers,
-  PdfDownloader, ReceiptPrinter)
+- Every platform impl of cross-cutting interfaces (FileDownloaderImpl, ReceiptPrinterImpl)
+- Per-platform Koin module bindings (Settings, HttpClient engine, AppDispatchers, FileDownloader, ReceiptPrinter)
 
 | Path | Contents |
 |---|---|
 | `commonMain/.../App.kt` | Root composable |
-| `commonMain/.../presentation/AppViewModel.kt`, `AppUiState.kt` | Global VM (login state + offline queue badge) |
-| `commonMain/.../presentation/navigation/AppNavHost.kt` | Wires all 17 feature `*Graph` extensions |
-| `commonMain/.../di/AppModule.kt` | `includes(commonModule, domainModule, dataModule, …)` + binds `AppViewModel` |
-| `commonMain/.../di/CoreModule.kt` | **(removed in REC-A)** — every infra binding now lives in its layer's own Koin module + per-platform module in Main*.kt |
-| `androidMain/.../MainActivity.kt`, `PharmacyApplication.kt` | Android entry; `PharmacyApplication.androidPlatformModule` binds `Settings` + `HttpClient(OkHttp)` + `AppDispatchers(IO)` + `PdfDownloaderImpl(context)` + `ReceiptPrinterImpl()` |
-| `androidMain/.../platform/{PdfDownloaderImpl,ReceiptPrinterImpl}.kt` | Android impls of the `:core:common` interfaces (currently both no-op + Log warning — wired so a future Android print/save story doesn't require any interface change) |
-| `iosMain/.../MainViewController.kt` | iOS entry; `iosPlatformModule` mirrors Android with Darwin engine + `Dispatchers.Default` for IO slot |
-| `iosMain/.../platform/{PdfDownloaderImpl,ReceiptPrinterImpl}.kt` | iOS impls (no-op + NSLog today) |
-| `jvmMain/.../Main.kt` | Desktop entry; `jvmPlatformModule` with Java engine + real `Dispatchers.IO` + Desktop printer + ~/Downloads PDF saver |
-| `jvmMain/.../platform/{PdfDownloaderImpl,ReceiptPrinterImpl}.kt` | JVM impls — full `java.awt.print.PrinterJob` receipt + writes PDF to Downloads & opens via `Desktop` |
-| `wasmJsMain/.../Main.kt` | Web entry; `webPlatformModule` with JS engine + `Dispatchers.Default` for IO slot |
-| `wasmJsMain/.../platform/{PdfDownloaderImpl,ReceiptPrinterImpl}.kt` | wasmJs impls — base64 anchor download + iframe `window.print()` for receipts |
+| `commonMain/.../presentation/AppViewModel.kt`, `AppUiState.kt` | Global VM (login state + offline queue badge + UiPreferences) |
+| `commonMain/.../presentation/navigation/AppNavHost.kt` | Wires all 20 feature `*Graph` extensions |
+| `commonMain/.../di/AppModule.kt` | `includes(commonModule, domainModule, dataModule, + 20 feature modules)` + binds `AppViewModel` |
+| `androidMain/.../MainActivity.kt`, `PharmacyApplication.kt` | Android entry; `androidPlatformModule` binds `Settings` + `HttpClient(OkHttp)` + `AppDispatchers(IO)` + `FileDownloaderImpl(context)` + `ReceiptPrinterImpl()` |
+| `androidMain/.../platform/{FileDownloaderImpl,ReceiptPrinterImpl}.kt` | Android impls: MediaStore.Downloads for API 29+, legacy Environment for older |
+| `iosMain/.../MainViewController.kt` | iOS entry; `iosPlatformModule` mirrors Android with Darwin engine |
+| `iosMain/.../platform/{FileDownloaderImpl,ReceiptPrinterImpl}.kt` | iOS impl: `UIActivityViewController` share sheet for files; ReceiptPrinter still a logging stub |
+| `jvmMain/.../Main.kt` | Desktop entry; `jvmPlatformModule` with Java engine + real `Dispatchers.IO` + Desktop printer + ~/Downloads file saver |
+| `jvmMain/.../platform/{FileDownloaderImpl,ReceiptPrinterImpl}.kt` | JVM impls — `java.awt.print.PrinterJob` receipt + writes to `~/Downloads` + opens via `Desktop` |
+| `wasmJsMain/.../Main.kt` | Web entry; `webPlatformModule` with JS engine |
+| `wasmJsMain/.../platform/{FileDownloaderImpl,ReceiptPrinterImpl}.kt` | wasmJs impls — base64 anchor download + iframe `window.print()` for receipts |
 
-All platform impls live under one package per platform: `app.devper.pharm.platform.{PdfDownloaderImpl,ReceiptPrinterImpl}` — single per-platform "platform-impl" folder.
+All platform impls live under one package per platform:
+`app.devper.pharm.platform.{FileDownloaderImpl,ReceiptPrinterImpl}` —
+single per-platform "platform-impl" folder.
 
 ### `:core:common` — pure cross-cutting infra (commonMain + commonTest only, zero project deps)
 
-After the INVERT refactor, `:core:common` has **no platform source folders** at all. Every
-platform-bound concern is abstracted as an `interface` here; impls live in
-`:composeApp/{platform}Main/` and are bound via Koin in each Main*.kt's platform module.
-`:core:common` now joins `:core:domain`/`:core:ui`/`:core:data` as commonMain+commonTest only.
+After the INVERT refactor, `:core:common` has **no platform source
+folders** at all. Every platform-bound concern is abstracted as an
+`interface` here; impls live in `:composeApp/{platform}Main/` and are
+bound via Koin in each Main*.kt's platform module.
 
 | Path | Package | Contents |
 |---|---|---|
-| `common/AppDispatchers.kt` | `app.devper.pharm.common` | `data class AppDispatchers(main, io, default)` — no `real()` factory; constructed in per-platform module with platform-appropriate dispatchers |
-| `common/Logger.kt` | `app.devper.pharm.common` | `Logger` interface + `PrintlnLogger` impl (no platform binding) |
-| `common/AppException.kt` | `app.devper.pharm.common` | Sealed `AppException` + 7 typed subclasses (`AuthException`, `ForbiddenException`, `NotFoundException`, `ConflictException`, `NetworkException`, `ServerException`, `ValidationException`) — domain error language; enforced by A28 (no generic exceptions in production code) |
-| `domain/usecase/BaseUseCase.kt` | `app.devper.pharm.domain.usecase` | `BaseUseCase<P,R>` + `BaseSyncUseCase<P,R>` framework (split package with `:core:domain`; intentional — minimizes per-use-case imports) |
-| `common/print/ReceiptTemplate.kt` | `app.devper.pharm.common.print` | `data class ReceiptTemplate` + `ReceiptLine` only (no `expect fun`) |
-| `common/print/ReceiptPrinter.kt` | `app.devper.pharm.common.print` | **interface** `ReceiptPrinter { fun print(template): Boolean }` — impl per platform in `:composeApp` |
-| `common/platform/PdfDownloader.kt` | `app.devper.pharm.common.platform` | **interface** `PdfDownloader { suspend fun save(filename, bytes): Result<String> }` — impl per platform in `:composeApp` |
-| `common/di/CommonModule.kt` | `app.devper.pharm.common.di` | Koin module — binds `Logger` only (1 binding). `AppDispatchers` / `PdfDownloader` / `ReceiptPrinter` now bound per-platform in `:composeApp`. |
-
-The only KMP module with platform source folders for actual implementations.
-Any future expect/actual that isn't UI- or data-specific lives here.
+| `common/AppDispatchers.kt` | `app.devper.pharm.common` | `data class AppDispatchers(main, io, default)` — constructed per-platform |
+| `common/Logger.kt` | `app.devper.pharm.common` | `Logger` interface + `PrintlnLogger` impl |
+| `common/AppException.kt` | `app.devper.pharm.common` | Sealed `AppException` + 9 typed subclasses (Auth, Forbidden, NotFound, Conflict, Network, Server, Validation, Storage, UnsupportedPlatform) — domain error language; enforced by A28 |
+| `domain/usecase/BaseUseCase.kt` | `app.devper.pharm.domain.usecase` | `BaseUseCase<P,R>` + `BaseSyncUseCase<P,R>` framework |
+| `common/print/{ReceiptTemplate,ReceiptPrinter}.kt` | `app.devper.pharm.common.print` | `ReceiptTemplate` data + `ReceiptPrinter` interface |
+| `common/platform/FileDownloader.kt` | `app.devper.pharm.common.platform` | **interface** `FileDownloader { suspend fun save(filename, mimeType, bytes): Result<String> }` + `MimeType` constants |
+| `common/di/CommonModule.kt` | `app.devper.pharm.common.di` | Koin module — binds `Logger` only |
 
 ### `:core:domain` — pure domain (commonMain + commonTest only)
 
-`:core:domain` has **no** `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain`
-folders. Every actual lives in `:core:common`. Verify with:
-`find core/domain/src -name "*.kt" | grep -vE "/commonMain/|/commonTest/"`
-→ must be empty.
-
 | Path | Contents |
 |---|---|
-| `model/` | Drug, Customer, Supplier, Sale, Cart*, Lot, Adjustment, StockCount, PurchaseOrder, KyEntry*, KyForms, Settings, User, Role, … (26 files, flat — many are cross-cutting) |
-| `param/<feature>/` | All `*Param` inputs grouped per feature (21 files across 10 folders) |
-| `repository/<feature>/` | Repo interfaces grouped per feature (18 files across 10 folders; impls live in `:core:data`) |
-| `usecase/<feature>/` | 68 use cases grouped per feature: `auth/` (2), `customers/` (4), `suppliers/` (4), `inventory/` (14), `ky/` (7), `offlinesync/` (3), `purchasing/` (7), `reports/` (6), `sales/` (19), `settings/` (2). Each class extends `BaseUseCase` / `BaseSyncUseCase` from `:core:common`. Package stays `app.devper.pharm.domain.usecase` (path-to-package mismatch by convention — same as `:core:common`'s `BaseUseCase` and the MN/UI-OOS pattern). |
-| `parser/` | 4 builders |
-| `util/` | `BarcodeMatcher`, `DrugSearch`, `SaleReturnQty`, … |
-| `pricing/` | `resolvePrice` + Tier |
-| `event/` | `StockChangeBus` |
-| `observer/` | 5 `*Provider` classes (Phase BB) |
-| `di/<Feature>DomainModule.kt` × 10 | Per-feature Koin modules: `authDomainModule`, `customersDomainModule`, `suppliersDomainModule`, `inventoryDomainModule`, `kyDomainModule`, `offlineSyncDomainModule`, `purchasingDomainModule`, `reportsDomainModule`, `salesDomainModule`, `settingsDomainModule`. Each binds its providers + use cases. |
-| `di/DomainModule.kt` | Composer (18 lines): `domainModule = module { includes(authDomainModule, …) }`. `:composeApp` includes this from `appModule`. Total bindings across the 10 sub-modules: 77 (5 providers + `StockChangeBus` + `BulkImportJsonParser` + 70 use case factories). |
+| `model/` | Drug, Customer, Supplier, Sale, Cart*, Lot, Adjustment, StockCount, PurchaseOrder, KyEntry*, KyForms, Settings, User, Role, LabelPrint, UiPreferences, … |
+| `param/<feature>/` | All `*Param` inputs grouped per feature |
+| `repository/<feature>/` | Repo interfaces grouped per feature (impls live in `:core:data`) |
+| `usecase/<feature>/` | 70+ use cases grouped per feature: auth, customers, suppliers, inventory, ky, offlinesync, purchasing, reports, sales, settings, labels. Each extends `BaseUseCase` / `BaseSyncUseCase`. |
+| `parser/`, `util/`, `pricing/`, `event/`, `observer/` | Cross-cutting domain helpers + 5 Provider classes |
+| `di/<Feature>DomainModule.kt` × 10 | Per-feature Koin modules. Composer `DomainModule.kt` includes all. |
 
 ### `:core:ui` — shared compose infra (commonMain + commonTest only)
 
-`:core:ui` has **no** `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` folders —
-every platform-bound piece (the print expect/actual quad + ReceiptTemplate data)
-moved to `:core:common`. The only thing still in `:core:ui/print/` is the pure
-Compose-free `ReceiptBuilder` that turns a `Sale` into a `ReceiptTemplate`.
-
-Package root is `app.devper.pharm.ui.*` (not `presentation.*` — that namespace
-is owned by `:features` now). Resource accessor: `app.devper.pharm.ui.resources`.
-
 | Path | Contents |
 |---|---|
-| `ui/theme/` | Color, Theme, Typography, DesignTokens (PharmTokens) |
-| `ui/designsystem/` | `PharmButton`, `PharmBadge`, `PharmTextField`, `PharmModal`, `PharmTopbar`, `PharmSidebar`, `MetricCard`, `DrugCard`, `FormField`, `KyBadge` |
+| `ui/theme/` | Color, Theme, Typography, DesignTokens (PharmTokens with `fontScale`) |
+| `ui/designsystem/` | `PharmButton`, `PharmBadge`, `PharmTextField`, `PharmModal`, `PharmTopbar`, `PharmSidebar`, `MetricCard`, `DrugCard`, `FormField`, `KyBadge`, `PharmTable`, `PharmFilterChips`, `PharmActionMenu`, `PharmIcons` (32 SVG vectors) |
 | `ui/common/` | `BaseUiState`, `BaseViewModel`, `BaseFormViewModel`, `BaseFormUiState`, `RunVmTest` |
 | `ui/components/` | `AppShell`, `ErrorBottomSheet`, `WindowSize` |
 | `ui/format/` | `Money.kt` (formatBaht / formatBahtCurrency / fmtBaht) |
 | `ui/scanner/` | `BarcodeScannerModifier` (HID listener) |
 | `ui/print/` | `ReceiptBuilder` (pure — `ReceiptTemplate` lives in `:core:common`) |
-| `ui/help/MarkdownText.kt` | Markdown renderer |
-| `composeResources/font/sarabun_*.ttf` | 5 weights (Phase D) |
+| `ui/help/MarkdownText.kt` | Markdown renderer (used by `:features:help`) |
+| `composeResources/font/sarabun_*.ttf` | 5 weights |
 
 `compose.resources { packageOfResClass = "app.devper.pharm.ui.resources" }`
 
 ### `:core:data` — repository impls + transport (commonMain + commonTest only)
 
-`:core:data` has **no** `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain`
-folders — every platform-bound piece (PdfDownloader expect/actuals) moved to
-`:core:common`. Mirrors `:core:domain` and `:core:ui`. The ktor engines
-(`ktor-client-okhttp`/`darwin`/`java`/`js`) live in `:composeApp`'s per-platform
-source sets, not here.
+The ktor engines (`ktor-client-okhttp`/`darwin`/`java`/`js`) live in
+`:composeApp`'s per-platform source sets, not here.
 
 | Path | Contents |
 |---|---|
-| `data/network/` | `HttpClient` builder, `AppJson`, `ApiConfig`, `AppExceptions`, `HttpResponseValidator` |
+| `data/network/` | `HttpClient` builder, `AppJson`, `ApiConfig`, `HttpResponseValidator` |
 | `data/storage/` | `TokenStorage`, `ParkedCartStorage`, `OfflineSaleQueueImpl` (multiplatform-settings adapters) |
-| `data/repository/` | All `*RepositoryImpl` (Phase Q — no `runCatching` here) |
+| `data/repository/` | All `*RepositoryImpl` (Phase Q — no `runCatching` here) + `UiPreferencesRepositoryImpl` + `LabelRepositoryImpl` + `ExportRepositoryImpl` |
 | `data/remote/api/` | All `*Api` interfaces + endpoint paths |
-| `data/remote/dto/` | DTOs + Request / Response types. Two rules: (1) Kotlin field names are camelCase (`val sellPrice` not `val sell_price`); (2) every field carries `@SerialName("wire_name")` — even when wire matches Kotlin name. Single-line `@SerialName("sell_price") val sellPrice: …` convention. Enforced by A24 + A25 in review skill + `auditArchitecture` Gradle task. |
-| `data/di/DataModule.kt` | Koin `dataModule` with 33 bindings: every `<X>Api` (15) + every `<X>RepositoryImpl bind <X>Repository::class` (18). `:composeApp` includes this from `appModule`. |
+| `data/remote/dto/` | DTOs + Request/Response types. A24 + A25 enforced (camelCase + `@SerialName`) |
+| `data/di/DataModule.kt` | Koin `dataModule` — every `<X>Api` + every `<X>RepositoryImpl bind <X>Repository::class` |
 
-### `:features` — all 19 features (Profile + Users added post-architecture)
+### `:features:shared` — navigation hub + route data objects
 
-| Folder | Owns |
+Sits between `:core:ui` and the 20 per-feature modules. The split
+foundation extracted in `5b4d0ed` so per-feature splits became feasible
+without route-import cycles.
+
+| Path | Contents |
 |---|---|
-| `auth/` | `LoginScreen`, `LoginViewModel`, `AuthNavGraph`, `AuthRoutes` |
-| `sell/` | `SellScreen`, `CartScreen`, 5 sibling VMs, components |
-| `saleshistory/` | history list + detail |
-| `customers/` | list + form + detail + picker |
-| `suppliers/` | list + form |
-| `stock/` | stock list + `DrugForm` + `DrugLots` + `StockAdjustments` |
-| `stockcount/` | physical-count form + list |
-| `imports/` | purchase orders (PO list + form) |
-| `bulkimport/` | bulk import wizard |
-| `movements/` | stock movements log |
-| `expiry/` | expiry tracker |
-| `planning/` | `LowStock` + `ReorderSuggestions` |
-| `reports/` | Reports + Profit + Eod |
-| `ky/` | KHY9 + KyList (for 10/11/12/13) |
-| `settings/` | settings screen |
-| `offlinesync/` | offline queue monitor |
-| `help/` | user guide markdown viewer |
+| `presentation/navigation/ShelledScreen.kt` | `AppShell` wrapper + `MAIN_NAV` table (17 sidebar items + 3 unlinked routes). Public function callable from every feature's NavGraph. |
+| `presentation/<feature>/<Feature>Routes.kt` × 20 | All `@Serializable data object`/`data class` route definitions. Keeping them here means feature modules can navigate to each other's routes via the shared module without depending on each other's production code. |
 
-Co-located per feature:
-- `presentation/<feature>/*Screen.kt + *ViewModel.kt + *UiState.kt + *NavGraph.kt + *Routes.kt`
-- `di/<Feature>Module.kt` (11 files total — some features share a module)
-- `commonTest/.../<feature>/*ViewModelTest.kt` (21 test files, 205 tests today)
-- `commonTest/.../fakes/Fake*Repository.kt` (test doubles)
+`deps`: `:core:domain` + `:core:ui` only. Cannot depend on
+`:features:<x>` (would be a cycle).
 
-Common helpers in `:features`:
-- `presentation/navigation/ShelledScreen.kt` (top-level chrome — drawer + topbar)
+### `:features:test-fixtures` — shared test doubles (commonMain only)
 
-`compose.resources { packageOfResClass = "app.devper.pharm.features.resources" }`
-- `composeResources/files/user_guide.md` (loaded by `HelpViewModel` via `Res.readBytes`)
+Test-only Kotlin module exposing 14 `Fake*Repository` classes as
+`commonMain` source so any feature's `commonTest` can depend on the
+module and import the fakes.
+
+| Path | Contents |
+|---|---|
+| `domain/repository/Fake{Cart,Customer,Drug,Ky,Label,OfflineSaleQueue,Profile,PurchaseOrder,Sale,Settings,StockCounts,Supplier,UiPreferences,Users}Repository.kt` | 14 fakes shared by ≥2 feature modules' tests |
+
+`deps`: `:core:common` + `:core:domain` + kotlinx-coroutines-core only.
+
+**A28 audit exclusion**: `pharmacy.architecture.audit.gradle.kts` skips
+`/features/test-fixtures/` for the generic-exception check. The fakes
+throw `RuntimeException("...")` deliberately as a test signal; typing
+them as `AppException` subclasses would be ceremony for no value.
+
+### `:features:<x>` — 20 per-feature modules
+
+| Module | Files (prod / test) | Notable |
+|---|---|---|
+| `:features:auth` | 4 prod + 6 tests + 1 co-located fake | Login screen; navigates to Sell via shared route on success |
+| `:features:bulkimport` | 9 prod + 8 tests + 1 co-located fake | Drag-drop area + JSON import wizard |
+| `:features:customers` | 14 prod + 2 tests | List + Form + Detail + form/ subdir |
+| `:features:expiry` | 8 prod | Lot expiry tracker with bulk write-off |
+| `:features:help` | 6 prod + 9 tests + 1 markdown asset | `composeResources/files/user_guide.md`; own `packageOfResClass = "app.devper.pharm.features.help.resources"` |
+| `:features:imports` | 21 prod + 1 test | Purchase orders — biggest after sell; includes drug + supplier picker dialogs |
+| `:features:ky` | 13 prod | KHY9 + KyList for forms 10/11/12 |
+| `:features:labels` | 6 prod + 16 tests | Code128 barcode label printing (backend ships Code128 PDFs) |
+| `:features:movements` | 11 prod | Stock movements log with type-filter chips |
+| `:features:offlinesync` | 8 prod + 4 tests | Offline sale queue monitor with metrics + retry/cancel |
+| `:features:planning` | 13 prod | LowStock list + ReorderSuggestions, bundled because they share domain semantics |
+| `:features:profile` | 6 prod + 11 tests | Theme/font-scale switcher wired into running app |
+| `:features:reports` | 28 prod + 15 tests | Reports dashboard + Profit + Eod, biggest reports-cluster module |
+| `:features:saleshistory` | 11 prod + 13 tests + 1 co-located fake | List + return-sale sheet |
+| `:features:sell` | 39 prod + 6 tests | Heaviest feature — Sell + 5 sibling VMs (Checkout, DrugPicker, CustomerPicker, ParkedCart, VoidSale) + 23 component sheets |
+| `:features:settings` | 15 prod + 7 tests | 5-tab editor (Store / Receipt / Pharmacist / Stock / Ky) + admin links menu |
+| `:features:stock` | 23 prod + 30 tests + 2 co-located fakes | Stock list + DrugForm + DrugLots + StockAdjustments siblings |
+| `:features:stockcount` | 16 prod + 7 tests | Physical-count list + Form sibling |
+| `:features:suppliers` | 11 prod + 1 test | List + Form with form/ subdir |
+| `:features:users` | 12 prod + 2 tests | List + Form |
+
+Each `:features:<x>` follows the same pattern:
+- `build.gradle.kts` applies `pharmacy.kmp.compose.library`, depends on
+  `:core:domain` + `:core:ui` + `:features:shared` (+ kotlinx-datetime
+  when the feature touches dates)
+- `commonMain/kotlin/app/devper/pharm/di/<Feature>Module.kt` — ONLY VM
+  `factoryOf` bindings
+- `commonMain/kotlin/app/devper/pharm/presentation/<feature>/` — Screen,
+  Content, Callbacks, ViewModel, UiState, NavGraph + section files +
+  sometimes `components/`, `internal/`, `form/`, `sibling/` sub-folders
+- `commonTest/kotlin/app/devper/pharm/presentation/<feature>/` (when tests
+  exist) — VM tests + locally-scoped fakes
+- `composeResources/` (rare — only `:features:help` ships one today)
+- `packageOfResClass = "app.devper.pharm.features.<x>.resources"` if
+  composeResources is enabled
 
 ## Forbidden imports (P0)
 
-Audited by `pharmacy-kmp-review` skill and **enforced at build time** by the
-`auditArchitecture` Gradle task (in `build-logic/.../pharmacy.architecture.audit.gradle.kts`).
-The task runs as part of `:composeApp:check` and on every PR via
-[`.github/workflows/check.yml`](.github/workflows/check.yml) on `macos-latest`, so any stale
-import is rejected before merge:
+Audited at build time by the `auditArchitecture` Gradle task
+(in `build-logic/.../pharmacy.architecture.audit.gradle.kts`). Runs as
+part of `:composeApp:check` and on every PR. Kotlin's module system
+enforces cross-feature boundaries directly — the audit no longer needs
+to check them.
 
 | From            | To                | Status |
 |-----------------|-------------------|--------|
-| `:core:common`  | any project module| ❌ P0  |
-| `:core:domain`  | `:core:ui` / `:core:data` / `:features` / `:composeApp` | ❌ P0 |
-| `:core:ui` / `:core:data` | `:features`  | ❌ P0  |
-| `:core:*`       | `:composeApp`     | ❌ P0  |
-| `:features`     | `:core:data` (any class — even via DI)  | ❌ P0 (use `:core:domain` repo interfaces; bindings live in `:core:data/di/DataModule.kt`) |
-| `:features`     | `:composeApp`     | ❌ P0  |
-| `:features.<X>` | `:features.<Y>`   | ⚠️ P1 (same module today; would become P0 if split per-feature later) |
-| Any module other than `:composeApp` | `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` source folder | ❌ A26 (only `:composeApp` may have platform source sets; everything else is commonMain + commonTest) |
-| Anywhere in the repo | `expect class` / `expect fun` / `expect val` declarations | ❌ A27 (the project uses interface + impl pattern instead — interface in `:core:common`, impls in `:composeApp/<plat>Main` bound via Koin) |
+| `:core:common`  | any project module | ❌ P0 |
+| `:core:domain`  | `:core:ui` / `:core:data` / `:features:*` / `:composeApp` | ❌ P0 |
+| `:core:ui` / `:core:data` | `:features:*` | ❌ P0 |
+| `:core:*`       | `:composeApp`     | ❌ P0 |
+| `:features:shared` | `:features:<x>` / `:composeApp` / `:core:data` | ❌ P0 (would be a cycle — `:features:<x>` depends on `:features:shared`, not the reverse) |
+| `:features:<x>` | `:core:data` (any class — even via DI) | ❌ P0 (use `:core:domain` repo interfaces) |
+| `:features:<x>` | `:composeApp` | ❌ P0 |
+| `:features:<x>` | `:features:<y>` (different feature, production code) | ❌ P0 **Kotlin compile error** (was P1 before split arc; the audit check became redundant) |
+| Any module other than `:composeApp` | `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` source folder | ❌ A26 |
+| Anywhere in the repo | `expect class` / `expect fun` / `expect val` declarations | ❌ A27 |
+| Production code | `throw IllegalStateException` / `RuntimeException` / etc. | ❌ A28 (excludes `:features:test-fixtures/`) |
 
 ## Test layout
 
-| Module          | Test source set       | Test count today (jvmTest) |
-|-----------------|-----------------------|----------------------------|
-| `:core:common`  | `commonTest`          | 16 (`AppException` / `Logger` / `BaseUseCase` / `BaseSyncUseCase`) |
-| `:core:domain`  | `commonTest`          | 71 (model / parser / util / pricing + `UmRoleValidator` 4×4 actor×target) |
-| `:core:ui`      | `commonTest`          | 22 (`Money` / `fmtBaht` / `BaseViewModel` / `BaseFormViewModel`) |
-| `:core:data`    | `commonTest`          | 20 (`AppJson` / `ApiConfig` / `HttpResponseValidator` / `OfflineSaleQueueImpl`) |
-| `:features`     | `commonTest`          | 229 (VM unit tests across 38 files — incl. Profile + Users) |
-| `:composeApp`   | `commonTest`          | 1 (`AppModuleWiringTest` — resolves every VM via Koin) |
+| Module                       | Test source set | Tests in suite |
+|------------------------------|-----------------|----:|
+| `:core:common`               | `commonTest`    | 16 |
+| `:core:domain`               | `commonTest`    | ~80 |
+| `:core:ui`                   | `commonTest`    | ~25 (incl. MoneyFormatTest) |
+| `:core:data`                 | `commonTest`    | ~30 (incl. UiPreferencesRepositoryImpl + CartRepositoryImpl atomicity) |
+| `:features:shared`           | none yet        | 0 |
+| `:features:test-fixtures`    | none (fakes are commonMain) | 0 |
+| 20× `:features:<x>`          | `commonTest`    | 280 across 29 module test suites |
+| `:composeApp`                | `commonTest`    | 1 (`AppModuleWiringTest` — resolves every VM via Koin) |
 
-**Total**: **359** unique tests on JVM (the Android `testDebugUnitTest` target runs the same `commonTest` sources separately, so the doubled count is ~520 on a full `:composeApp:check`).
+**Project-wide**: ~475 unique tests on JVM. The Android
+`testDebugUnitTest` target runs the same `commonTest` sources separately,
+so the doubled count is higher on a full `:composeApp:check`.
 
 Run everything:
 ```bash
-./gradlew :features:jvmTest :core:domain:jvmTest :core:common:jvmTest \
+./gradlew :composeApp:auditArchitecture \
           :composeApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
-          :composeApp:compileTestKotlinWasmJs
+          :composeApp:compileTestKotlinWasmJs \
+          :features:auth:jvmTest :features:bulkimport:jvmTest \
+          :features:customers:jvmTest :features:expiry:jvmTest \
+          :features:help:jvmTest :features:imports:jvmTest \
+          :features:ky:jvmTest :features:labels:jvmTest \
+          :features:movements:jvmTest :features:offlinesync:jvmTest \
+          :features:planning:jvmTest :features:profile:jvmTest \
+          :features:reports:jvmTest :features:saleshistory:jvmTest \
+          :features:sell:jvmTest :features:settings:jvmTest \
+          :features:stock:jvmTest :features:stockcount:jvmTest \
+          :features:suppliers:jvmTest :features:users:jvmTest \
+          :core:common:jvmTest :core:domain:jvmTest \
+          :core:ui:jvmTest :core:data:jvmTest
+```
+
+Quick smoke (no per-feature breakdown — runs the dependent tree):
+```bash
+./gradlew :composeApp:check
 ```
 
 ## Adding new code — quick lookup
 
 | You want to add… | Goes in… |
 |---|---|
-| A new expect/actual (dispatcher / logger / platform plumbing) | `:core:common` |
+| A new cross-platform interface (dispatcher / logger / file IO / etc.) | `:core:common` |
+| Its per-platform impl | `:composeApp/<plat>Main/platform/` + bind in that platform's Koin module |
 | A new domain model / use case | `:core:domain` |
-| A new repository interface | `:core:domain/repository/` |
-| The impl for that interface | `:core:data/repository/` |
+| A new repository interface | `:core:domain/repository/<feature>/` |
+| The impl for that interface | `:core:data/repository/` + bind in `:core:data/di/DataModule.kt` |
 | A new DTO / API endpoint | `:core:data/remote/{dto,api}/` |
-| A new design primitive | `:core:ui/presentation/designsystem/` |
-| Anything theme / color / token | `:core:ui/presentation/theme/` |
-| A new feature screen + VM | `:features/presentation/<feature>/` |
-| Its DI bindings | `:features/di/<Feature>Module.kt` |
-| Its NavGraph + Routes | `:features/presentation/<feature>/` |
-| A new VM test | `:features/commonTest/.../<feature>/` |
-| A test double | `:features/commonTest/.../fakes/` |
-| Wiring a feature into nav | `composeApp/.../presentation/navigation/AppNavHost.kt` |
-| Wiring a feature into DI | `composeApp/.../di/AppModule.kt` (`includes(…)`) |
+| A new design primitive | `:core:ui/designsystem/` |
+| Anything theme / color / token | `:core:ui/theme/` |
+| A new feature route data object | `:features:shared/presentation/<feature>/<Feature>Routes.kt` |
+| A new feature screen + VM | `:features:<feature>/presentation/<feature>/` |
+| Its DI bindings | `:features:<feature>/di/<Feature>Module.kt` |
+| Its NavGraph | `:features:<feature>/presentation/<feature>/<Feature>NavGraph.kt` |
+| A new VM test | `:features:<feature>/commonTest/.../<feature>/` |
+| A test double used by only one feature | Co-locate in that feature's `commonTest/.../fakes/` |
+| A test double used by ≥2 features | `:features:test-fixtures/commonMain/.../repository/` |
+| Wiring a new feature into nav | `composeApp/.../presentation/navigation/AppNavHost.kt` |
+| Wiring a new feature into DI | `composeApp/.../di/AppModule.kt` (`includes(…)`) |
 
-## Why this split
+## Per-feature split migration recipe
 
-- **`:core:common` separate**: gives expect/actual a dedicated home so
-  `:core:domain` can stay 100% commonMain (no per-target folders at all).
-  Any new platform plumbing (dispatcher, logger, time, random, etc.) drops
-  here without re-introducing platform folders into the domain layer.
-- **`:core:domain` separate**: enforce the Phase S inward-only rule via the
-  build, not just code review. Kotlinx-only means it compiles in ~2 seconds.
-- **`:core:ui` separate**: theme + design system + VM base are stable and
-  shared by every feature — keeping them in their own module gives Gradle a
-  cache boundary so feature edits don't recompile the design system.
-- **`:core:data` separate**: ktor / multiplatform-settings / repository
-  impls are infrastructure — features depend on the interfaces in
-  `:core:domain`, not on the impls, so swapping transports doesn't touch
-  presentation code.
-- **`:features` as one module (not 17)**: every feature has the same
-  dependency shape (`:core:*`), so splitting per-feature would create 17
-  near-identical `build.gradle.kts` files for marginal compile-isolation
-  benefit. The folder structure (`presentation/<feature>/`) is already
-  per-feature, so future split → `:features:<X>` is mechanical.
-- **`:composeApp` slim**: only 11 source files. The entire app is composed
-  here — DI, nav, theme application — and nothing else lives here. This
-  makes the entry trivially diff-able when modules below change.
+For a brand-new feature, follow the 6-step recipe (also documented in
+CLAUDE.md):
+
+1. `mkdir -p features/<feat>/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/`
+2. Add `features/<feat>/build.gradle.kts` mirroring an existing leaf
+   feature (`:features:help` is the smallest template)
+3. Add `:features:<feat>` to `settings.gradle.kts`
+4. Add `<Feat>Routes.kt` to `:features:shared` (one-file `@Serializable
+   data object Feat`)
+5. Create `features/<feat>/.../presentation/<feat>/<Feat>{Screen,Content,
+   Callbacks,ViewModel,UiState,NavGraph}.kt` + `features/<feat>/.../di/<Feat>Module.kt`
+6. Wire from `:composeApp`: add `implementation(project(":features:<feat>"))`
+   to `composeApp/build.gradle.kts`, append `<feat>Graph(...)` to
+   `AppNavHost.kt`, append `<feat>Module` to `AppModule.kt`'s `includes(...)`,
+   register the route in `:features:shared/.../navigation/ShelledScreen.kt`'s
+   `MAIN_NAV` table if it gets a sidebar item.
+
+The recipe was pilot-tested on `:features:help` (`26d9589`) and then
+repeated 19 more times. Average time per feature: ~20-30 minutes once
+the foundation is in place.
 
 ## Convention plugin (`build-logic/`)
 
@@ -313,90 +384,50 @@ build-logic/
     └── pharmacy.architecture.audit.gradle.kts   (auditArchitecture task — A10/A17/A19/A20/A23/A24/A25/A26/A27/A28)
 ```
 
-**`pharmacy.kmp.library.gradle.kts`** (base) configures:
-- `org.jetbrains.kotlin.multiplatform` + `com.android.library` plugins
-- `jvmToolchain(17)`
-- 5 targets: `androidTarget()`, `jvm()`, `iosX64()`, `iosArm64()`, `iosSimulatorArm64()`, `wasmJs { browser() }`
-- `commonTest` gets `kotlin.test` automatically
-- `android { compileSdk; minSdk; compileOptions JDK 17 }`
-
-**`pharmacy.kmp.compose.library.gradle.kts`** (extends base) additionally adds:
-- `id("pharmacy.kmp.library")` (inherits everything above)
-- `org.jetbrains.compose` + `org.jetbrains.kotlin.plugin.compose` plugins
-- Common compose deps to `commonMain`: `runtime`, `foundation`, `material3`, `materialIconsExtended`, `ui`, `components.resources`, `components.uiToolingPreview`
-- `compose.resources { publicResClass = true; generateResClass = Always }` (each module just sets `packageOfResClass`)
-
-**`pharmacy.architecture.audit.gradle.kts`** adds the `auditArchitecture` task and wires it into `:composeApp:check`.
-
-Each library module's `build.gradle.kts` then collapses dramatically — `:core:ui` is 32 lines, `:features` is 43 lines, `:core:common` / `:core:domain` / `:core:data` are 18–31 lines. Apply via:
-
-```kotlin
-plugins {
-    id("pharmacy.kmp.library")           // for :core:common, :core:domain, :core:data
-    // or
-    id("pharmacy.kmp.compose.library")   // for :core:ui, :features
-    // + module-specific plugins (kotlin.serialization, …)
-}
-```
-
 `:composeApp` is **not** on the convention plugins — it's an Android
-Application (not Library) with its own structure (compose desktop block,
-wasmJs executable, per-platform Main*.kt + per-platform Koin module). It stays
-standalone. It does apply `pharmacy.architecture.audit` to host the audit task.
+Application with its own structure (compose desktop block, wasmJs
+executable, per-platform Main*.kt + per-platform Koin module). It does
+apply `pharmacy.architecture.audit` to host the audit task.
 
-Wiring: `settings.gradle.kts` has `pluginManagement { includeBuild("build-logic") }`.
+Each library module's `build.gradle.kts` collapses dramatically —
+the smallest feature modules (`:features:help`, `:features:profile`,
+etc.) are 18-22 lines.
 
 ## Migration history
 
-- **Phase S**: extract `:domain` module from monolithic `:composeApp`
+- **Phase S**: extract `:domain` from monolithic `:composeApp`
 - **MM-1**: rename `:domain` → `:core:domain`; create `:core:ui` + `:core:data`
-- **MM-2**: create `:features` and move all 17 feature folders + 21 test
-  files + 10 DI modules
-- **MM-3**: slim `:composeApp` to 11 files (entry only)
-- **MM-4**: docs + skills
-- **MN**: extract `:core:common` (IoDispatcher expect/actual + AppDispatchers
-  + Logger); `:core:domain` becomes commonMain + commonTest only
-- **INVERT**: replace all 3 remaining expect/actual seams (IoDispatcher, PdfDownloader,
-  printReceipt) with **interfaces in `:core:common`** + **impl classes in
-  `:composeApp/<plat>Main`**, wired through Koin in each Main*.kt's platform module.
-  Result: `:core:common` becomes commonMain + commonTest only — joining
-  `:core:domain` / `:core:ui` / `:core:data`. **`:composeApp` is now the only
-  module with platform source folders.** Audit gains A26 (platform-folder
-  ownership) + A27 (no `expect` declarations anywhere).
-- **OOS**: move `AppException` + `BaseUseCase` / `BaseSyncUseCase` to
-  `:core:common`; rename package `app.devper.pharm.domain.common` →
-  `app.devper.pharm.common` (82 sites); add `build-logic/` convention plugin
-  (each KMP library `build.gradle.kts` drops to 15–55 lines)
-- **UI-OOS**: move `:core:ui`'s platform code (`printReceipt` expect + 4
-  actuals + `ReceiptTemplate` data) to `:core:common/common/print/`;
-  rename `:core:ui`'s packages `app.devper.pharm.presentation.*` →
-  `app.devper.pharm.ui.*` for the 8 sub-packages (theme, designsystem,
-  common, components, format, scanner, help, print) — ~70 file edits in
-  `:core:ui` + ~150 importer updates across `:features` + `:composeApp`.
-  `:core:ui` now has commonMain + commonTest only (mirrors `:core:domain`).
-  Resource accessor renamed `app.devper.pharm.core.ui.resources` →
-  `app.devper.pharm.ui.resources`. Split package between `:core:ui.help`
-  (`MarkdownText`) and `:features.presentation.help` (Help feature) is
-  resolved — no more shared namespace.
-- **DATA-OOS**: move `:core:data`'s platform code (`PdfDownloader` expect +
-  4 actuals) to `:core:common/common/platform/`; `:core:data` becomes
-  commonMain + commonTest only (mirrors `:core:domain` + `:core:ui`). All
-  ktor engine deps now live in `:composeApp`'s per-platform source sets
-  only — `:core:data` only declares the generic `ktor-client-core` + bundle.
-- **FEAT-DECOUPLE**: `:features` drops direct deps on `:core:common` +
-  `:core:data`. `:core:domain` promotes `:core:common` from `implementation`
-  to `api` so features (and their VM tests) transitively reach
-  `AppDispatchers` / `AppException` / `BaseUseCase` / `printReceipt` /
-  `ReceiptTemplate`. The 33 RepositoryImpl + Api Koin bindings move from
-  the 11 per-feature DI modules into a single `dataModule` at
-  `core/data/.../data/di/DataModule.kt`; `:composeApp`'s `AppModule`
-  composes it via `includes(dataModule, …)`. Feature DI modules now bind
-  only use cases, VMs, providers, and parsers.
+- **MM-2**: create `:features` and move all feature folders + DI + tests
+- **MM-3**: slim `:composeApp` to entry-only
+- **MN**: extract `:core:common` (IoDispatcher expect/actual + AppDispatchers + Logger)
+- **INVERT**: replace all 3 remaining expect/actual seams with interfaces in `:core:common` + impl classes in `:composeApp/<plat>Main`, wired through Koin. Audit gains A26 + A27.
+- **OOS**: move `AppException` + `BaseUseCase` to `:core:common`; rename package; add `build-logic/` convention plugin.
+- **UI-OOS**: move `:core:ui`'s platform code to `:core:common/common/print/`; rename packages.
+- **DATA-OOS**: move `:core:data`'s `PdfDownloader` expect/actual to `:core:common/common/platform/`.
+- **FEAT-DECOUPLE**: `:features` drops direct deps on `:core:common` + `:core:data`. Per-feature DI modules bind only VMs.
+- **A28 + typed errors (Phase W)**: every production error uses a typed `AppException` subclass.
+- **Cart atomic refactor (`bedd1ad`, `27a4d01`)**: `CartRepository.state: StateFlow<CartState>` collapses two-flow combine into one atomic emission per operation.
+- **Per-feature split arc (`5b4d0ed` → `9a76123`)** — the big one:
+  - `5b4d0ed`: extract `:features:shared` (nav hub + 20 Route data objects). Foundation for everything that follows.
+  - `26d9589`: pilot `:features:help` — proves the 6-step recipe
+  - `5768ea8`: `:features:profile`
+  - `049c7d1`: `:features:planning` (2 screens bundled)
+  - `24e22be`: `:features:labels`
+  - `d74a5e2`: `:features:offlinesync`
+  - `65ce268`: `:features:saleshistory` + `:features:expiry` + `:features:auth` (3 in one commit; first batch with full test co-location)
+  - `57e12d2`: `:features:movements` + `:features:bulkimport` + `:features:stockcount`
+  - `f788f27`: `:features:customers` + `:features:suppliers` + `:features:imports`
+  - `30f9c4f`: `:features:users` + `:features:reports` + `:features:ky`
+  - `9c34761`: `:features:stock` (16 prod + 30 tests co-located)
+  - `b643954`: `:features:sell` (39 prod, the heaviest)
+  - `2a9f822`: `:features:settings` (the planned finale)
+  - `9a76123`: extract `:features:test-fixtures` for 14 shared fakes, co-locate 18 cross-cutting tests, **delete `:features` module entirely**. Audit rule grows the `/features/test-fixtures/` A28 exclusion.
 
 ## Out of scope (deferred)
 
-- AGP 9 migration (currently AGP 8.13)
+- AGP 9 migration (currently AGP 8.13 — KMP plugin compatibility warnings shown in `:composeApp:check` are expected)
 - iOS Framework split per-feature (single `ComposeApp.framework` at `:composeApp`)
-- Future split `:features` → `:features:<X>` (structure inside is ready)
-- Convention plugin in `build-logic/` (5 modules don't need it)
-- Per-feature `composeResources/files/` (only `user_guide.md` exists today, in `:features`)
+- Per-feature CI matrix wiring (`.github/workflows/check.yml` runs everything as a single job — could fan out by changed module path)
+- iPad popover anchor for `UIActivityViewController` share sheet (KVC fallback path documented in `iosMain/.../FileDownloaderImpl.kt` commit message `96f9407`)
+- `PharmMiniBarChart` tap-for-tooltip
+- Bulk-import drag-drop on JVM/Web platforms
