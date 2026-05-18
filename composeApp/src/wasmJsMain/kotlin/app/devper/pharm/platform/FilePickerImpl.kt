@@ -16,29 +16,33 @@ class FilePickerImpl : FilePicker {
             input.type = "file"
             input.accept = ".json,application/json"
             input.style.display = "none"
+
+            fun cleanup() {
+                if (input.parentNode != null) {
+                    document.body?.removeChild(input)
+                }
+            }
+
+            fun finish(value: String?) {
+                cleanup()
+                if (cont.isActive) cont.resume(value)
+            }
+
             input.onchange = { _ ->
                 val file = input.files?.item(0)
                 if (file == null) {
-                    cont.resume(null)
-                    document.body?.removeChild(input)
+                    finish(null)
                 } else {
                     val reader = FileReader()
-                    reader.onload = { _ ->
-                        val text = reader.result?.toString()
-                        cont.resume(text)
-                        document.body?.removeChild(input)
-                    }
-                    reader.onerror = { _ ->
-                        cont.resume(null)
-                        document.body?.removeChild(input)
-                    }
+                    reader.onload = { _ -> finish(reader.result?.toString()) }
+                    reader.onerror = { _ -> finish(null) }
                     reader.readAsText(file)
                 }
             }
-            input.oncancel = { _ ->
-                cont.resume(null)
-                document.body?.removeChild(input)
-            }
+            input.oncancel = { _ -> finish(null) }
+
+            cont.invokeOnCancellation { cleanup() }
+
             document.body?.appendChild(input)
             input.click()
         }
