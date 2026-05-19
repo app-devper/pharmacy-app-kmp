@@ -55,8 +55,12 @@ class OfflineSyncViewModel(
 
     fun discardConfirmed() {
         val id = current.confirmDiscardId ?: return
-        setState { copy(confirmDiscardId = null, message = "ลบรายการค้างซิงก์แล้ว") }
-        viewModelScope.launch(dispatchers.io) { markSynced(id) }
+        viewModelScope.launch(dispatchers.io) {
+            markSynced(id).fold(
+                onSuccess = { setState { copy(confirmDiscardId = null, message = "ลบรายการค้างซิงก์แล้ว") } },
+                onFailure = { e -> setState { copy(error = "ลบรายการไม่สำเร็จ: ${e.message ?: "ไม่ทราบสาเหตุ"}") } },
+            )
+        }
     }
 
     fun dismissMessage() = setState { copy(message = null) }

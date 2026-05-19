@@ -102,6 +102,26 @@ class OfflineSyncViewModelTest {
     }
 
     @Test
+    fun discardConfirmed_keeps_confirm_id_and_surfaces_error_on_markSynced_failure() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(
+                seed = listOf(pending("foo", enqueuedAt = 100)),
+                markSyncedThrows = RuntimeException("disk full"),
+            ),
+        )
+        advanceUntilIdle()
+        vm.askDiscard("foo")
+        vm.discardConfirmed()
+        advanceUntilIdle()
+        assertEquals("foo", vm.state.value.confirmDiscardId)
+        assertNull(vm.state.value.message)
+        assertNotNull(vm.state.value.error)
+        assertTrue(vm.state.value.error!!.contains("disk full"))
+        assertTrue(vm.state.value.pending.any { it.id == "foo" })
+    }
+
+    @Test
     fun discardConfirmed_no_op_when_no_confirm_id() = runVmTest { dispatchers ->
         val (vm, queue, _) = newVm(dispatchers)
 

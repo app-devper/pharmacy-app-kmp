@@ -144,6 +144,8 @@ private fun priceMetaLabel(line: CartLine): String {
     }
 }
 
+private const val MAX_QTY = 9999
+
 @Composable
 private fun QtyStepper(
     qty: Int,
@@ -155,7 +157,7 @@ private fun QtyStepper(
 
     fun commit() {
         val parsed = draft.toIntOrNull() ?: qty
-        val clamped = parsed.coerceAtLeast(0)
+        val clamped = parsed.coerceIn(0, MAX_QTY)
         if (clamped != qty) onQtyChange(clamped)
         draft = clamped.toString()
         editing = false
@@ -217,12 +219,12 @@ private fun QtyStepper(
         }
 
         StepperCircle(
-            onClick = { onQtyChange(qty + 1) },
+            onClick = { onQtyChange((qty + 1).coerceAtMost(MAX_QTY)) },
             container = MaterialTheme.colorScheme.primary,
             iconTint = MaterialTheme.colorScheme.onPrimary,
             icon = Icons.Outlined.Add,
             description = "เพิ่ม",
-            enabled = true,
+            enabled = qty < MAX_QTY,
         )
     }
 }
