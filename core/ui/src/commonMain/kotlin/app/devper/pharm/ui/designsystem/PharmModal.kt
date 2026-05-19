@@ -2,11 +2,13 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -15,6 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -85,8 +91,13 @@ fun PharmModal(
 
                         Box(
                             modifier = Modifier
-                                .size(28.dp)
-                                .clip(t.shapes.sm),
+                                .size(40.dp)
+                                .clip(t.shapes.sm)
+                                .clickable(onClick = onDismiss)
+                                .semantics(mergeDescendants = true) {
+                                    contentDescription = "ปิด"
+                                    role = Role.Button
+                                },
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
@@ -95,9 +106,7 @@ fun PharmModal(
                                     color = t.colors.fgMuted,
                                     textAlign = TextAlign.Center,
                                 ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 4.dp),
+                                modifier = Modifier.padding(horizontal = 4.dp),
                             )
                         }
                     }
@@ -105,9 +114,8 @@ fun PharmModal(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 0.dp)
-                        .background(t.colors.divider)
-                        .size(width = 9999.dp, height = 1.dp),
+                        .height(1.dp)
+                        .background(t.colors.divider),
                 )
             }
 
@@ -123,8 +131,8 @@ fun PharmModal(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(t.colors.divider)
-                        .size(width = 9999.dp, height = 1.dp),
+                        .height(1.dp)
+                        .background(t.colors.divider),
                 )
                 Row(
                     modifier = Modifier
