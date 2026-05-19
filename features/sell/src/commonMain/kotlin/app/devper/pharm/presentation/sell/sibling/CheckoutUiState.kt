@@ -17,5 +17,10 @@ data class CheckoutUiState(
 
     override val loading: Boolean get() = checkingOut
 
-    val canCheckout: Boolean get() = !cartIsEmpty && tenderOk && !checkingOut
+    val canCheckout: Boolean get() =
+        !cartIsEmpty &&
+            tenderOk &&
+            !checkingOut &&
+            kyCapturePending == null &&
+            oversellPending == null
 }

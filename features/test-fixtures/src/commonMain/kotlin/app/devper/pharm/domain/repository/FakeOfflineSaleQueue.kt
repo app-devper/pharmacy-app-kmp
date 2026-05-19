@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class FakeOfflineSaleQueue(
     seed: List<PendingSale> = emptyList(),
+    private val markSyncedThrows: Throwable? = null,
 ) : OfflineSaleQueue {
 
     private val pendingState = MutableStateFlow(seed)
@@ -39,6 +40,7 @@ class FakeOfflineSaleQueue(
     }
 
     override fun markSynced(id: String) {
+        markSyncedThrows?.let { throw it }
         lastMarkSynced = id
         pendingState.value = pendingState.value.filterNot { it.id == id }
     }

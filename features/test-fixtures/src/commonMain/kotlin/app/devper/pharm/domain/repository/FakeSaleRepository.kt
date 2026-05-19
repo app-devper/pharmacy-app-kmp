@@ -15,6 +15,7 @@ class FakeSaleRepository(
     ),
     private val checkoutThrows: Throwable? = null,
     private val voidThrows: Throwable? = null,
+    private val replayThrows: Throwable? = null,
 ) : SaleRepository {
 
     var lastCheckout: CheckoutParam? = null
@@ -46,6 +47,7 @@ class FakeSaleRepository(
 
     override suspend fun replayCheckout(payloadJson: String): Sale {
         lastReplay = payloadJson
+        replayThrows?.let { throw it }
         return successResult
     }
 }

@@ -4,7 +4,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
+import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -18,15 +20,17 @@ import kotlin.test.assertTrue
 class OfflineSyncViewModelTest {
 
     private fun newVm(
-        @Suppress("UNUSED_PARAMETER") dispatchers: AppDispatchers,
+        dispatchers: AppDispatchers,
         queue: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
-    ): Pair<OfflineSyncViewModel, FakeOfflineSaleQueue> {
-
+        sales: FakeSaleRepository = FakeSaleRepository(),
+    ): Triple<OfflineSyncViewModel, FakeOfflineSaleQueue, FakeSaleRepository> {
         val vm = OfflineSyncViewModel(
             offlineQueue = OfflineQueueProvider(queue),
             markSynced = MarkOfflineSaleSyncedUseCase(queue),
+            retrySale = RetryOfflineSaleUseCase(queue, sales, dispatchers),
+            dispatchers = dispatchers,
         )
-        return vm to queue
+        return Triple(vm, queue, sales)
     }
 
     private fun pending(id: String, enqueuedAt: Long, lastError: String? = null) = PendingSale(
@@ -39,7 +43,7 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun init_sorts_pending_by_enqueuedAt_ascending() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(
+        val (vm, _, _) = newVm(
             dispatchers,
             FakeOfflineSaleQueue(
                 seed = listOf(
@@ -56,7 +60,7 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun init_subscribes_to_queue_mutations() = runVmTest { dispatchers ->
-        val (vm, queue) = newVm(dispatchers)
+        val (vm, queue, _) = newVm(dispatchers)
         advanceUntilIdle()
         assertEquals(0, vm.state.value.pending.size)
         queue.push(pending("x", enqueuedAt = 100))
@@ -67,14 +71,14 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun askDiscard_sets_confirm_id() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers)
+        val (vm, _, _) = newVm(dispatchers)
         vm.askDiscard("foo")
         assertEquals("foo", vm.state.value.confirmDiscardId)
     }
 
     @Test
     fun cancelDiscard_clears_confirm_id() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers)
+        val (vm, _, _) = newVm(dispatchers)
         vm.askDiscard("foo")
         vm.cancelDiscard()
         assertNull(vm.state.value.confirmDiscardId)
@@ -82,7 +86,7 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun discardConfirmed_calls_markSynced_and_clears_id_with_message() = runVmTest { dispatchers ->
-        val (vm, queue) = newVm(
+        val (vm, queue, _) = newVm(
             dispatchers,
             FakeOfflineSaleQueue(seed = listOf(pending("foo", enqueuedAt = 100))),
         )
@@ -98,8 +102,28 @@ class OfflineSyncViewModelTest {
     }
 
     @Test
+    fun discardConfirmed_keeps_confirm_id_and_surfaces_error_on_markSynced_failure() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(
+                seed = listOf(pending("foo", enqueuedAt = 100)),
+                markSyncedThrows = RuntimeException("disk full"),
+            ),
+        )
+        advanceUntilIdle()
+        vm.askDiscard("foo")
+        vm.discardConfirmed()
+        advanceUntilIdle()
+        assertEquals("foo", vm.state.value.confirmDiscardId)
+        assertNull(vm.state.value.message)
+        assertNotNull(vm.state.value.error)
+        assertTrue(vm.state.value.error!!.contains("disk full"))
+        assertTrue(vm.state.value.pending.any { it.id == "foo" })
+    }
+
+    @Test
     fun discardConfirmed_no_op_when_no_confirm_id() = runVmTest { dispatchers ->
-        val (vm, queue) = newVm(dispatchers)
+        val (vm, queue, _) = newVm(dispatchers)
 
         vm.discardConfirmed()
         advanceUntilIdle()
@@ -109,7 +133,7 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun dismissMessage_clears_message() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(
+        val (vm, _, _) = newVm(
             dispatchers,
             FakeOfflineSaleQueue(seed = listOf(pending("x", enqueuedAt = 100))),
         )
@@ -124,7 +148,7 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun failedCount_reflects_lastError_non_null() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(
+        val (vm, _, _) = newVm(
             dispatchers,
             FakeOfflineSaleQueue(
                 seed = listOf(
@@ -137,5 +161,67 @@ class OfflineSyncViewModelTest {
         advanceUntilIdle()
         assertEquals(3, vm.state.value.totalCount)
         assertEquals(2, vm.state.value.failedCount)
+    }
+
+    @Test
+    fun retry_calls_replay_and_marks_synced_on_success() = runVmTest { dispatchers ->
+        val seed = pending("p1", enqueuedAt = 100)
+        val (vm, queue, sales) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(seed = listOf(seed)),
+        )
+        advanceUntilIdle()
+        vm.retry("p1")
+        advanceUntilIdle()
+        assertEquals(seed.payloadJson, sales.lastReplay)
+        assertEquals("p1", queue.lastMarkSynced)
+        assertTrue(vm.state.value.pending.none { it.id == "p1" })
+        assertNull(vm.state.value.error)
+    }
+
+    @Test
+    fun retry_marks_failed_and_surfaces_error_when_replay_throws() = runVmTest { dispatchers ->
+        val seed = pending("p1", enqueuedAt = 100)
+        val (vm, queue, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(seed = listOf(seed)),
+            FakeSaleRepository(replayThrows = RuntimeException("boom")),
+        )
+        advanceUntilIdle()
+        vm.retry("p1")
+        advanceUntilIdle()
+        assertNull(queue.lastMarkSynced)
+        assertNotNull(vm.state.value.error)
+        assertTrue(vm.state.value.error!!.contains("p1"))
+        assertTrue(vm.state.value.pending.any { it.id == "p1" })
+    }
+
+    @Test
+    fun syncAll_retries_every_pending_in_snapshot() = runVmTest { dispatchers ->
+        val (vm, queue, sales) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(
+                seed = listOf(
+                    pending("a", enqueuedAt = 100),
+                    pending("b", enqueuedAt = 200),
+                ),
+            ),
+        )
+        advanceUntilIdle()
+        vm.syncAll()
+        advanceUntilIdle()
+        assertEquals(0, vm.state.value.pending.size)
+        assertEquals("b", queue.lastMarkSynced)
+        assertNotNull(sales.lastReplay)
+    }
+
+    @Test
+    fun syncAll_no_op_when_pending_is_empty() = runVmTest { dispatchers ->
+        val (vm, _, sales) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.syncAll()
+        advanceUntilIdle()
+        assertNull(sales.lastReplay)
+        assertNull(vm.state.value.message)
     }
 }
