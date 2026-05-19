@@ -35,6 +35,10 @@ class ParkedCartViewModel(
         val s = current
         val slotContent = s.parkedSlots.getOrNull(slot)
         if (slotContent != null) {
+            if (!s.activeCartIsEmpty) {
+                setState { copy(swapSlot = slot) }
+                return
+            }
             restoreCart(slot)
             setState { copy(sheetOpen = false) }
             return
@@ -55,6 +59,14 @@ class ParkedCartViewModel(
         val slot = current.overwriteSlot ?: return
         parkCart(slot)
         setState { copy(overwriteSlot = null, sheetOpen = false) }
+    }
+
+    fun cancelSwap() = setState { copy(swapSlot = null) }
+
+    fun confirmSwap() {
+        val slot = current.swapSlot ?: return
+        restoreCart(slot)
+        setState { copy(swapSlot = null, sheetOpen = false) }
     }
 
     fun discard(slot: Int) = discardParked(slot)

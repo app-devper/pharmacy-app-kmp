@@ -34,6 +34,7 @@ import app.devper.pharm.presentation.sell.components.KyCaptureSheet
 import app.devper.pharm.presentation.sell.components.LineDiscountSheet
 import app.devper.pharm.presentation.sell.components.OversellConfirmSheet
 import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
+import app.devper.pharm.presentation.sell.components.SwapToParkedDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
@@ -163,6 +164,13 @@ fun CartScreen(
             slotNumber = slot + 1,
             onConfirm = parkedCartVM::confirmOverwrite,
             onCancel = parkedCartVM::cancelOverwrite,
+        )
+    }
+    parkedState.swapSlot?.let { slot ->
+        SwapToParkedDialog(
+            slotNumber = slot + 1,
+            onConfirm = parkedCartVM::confirmSwap,
+            onCancel = parkedCartVM::cancelSwap,
         )
     }
 
