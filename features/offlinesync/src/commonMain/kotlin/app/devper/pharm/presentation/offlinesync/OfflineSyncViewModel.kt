@@ -1,33 +1,53 @@
 package app.devper.pharm.presentation.offlinesync
 
 import androidx.lifecycle.viewModelScope
+import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
+import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
 import app.devper.pharm.ui.common.BaseViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class OfflineSyncViewModel(
     offlineQueue: OfflineQueueProvider,
     private val markSynced: MarkOfflineSaleSyncedUseCase,
+    private val retrySale: RetryOfflineSaleUseCase,
+    private val dispatchers: AppDispatchers,
 ) : BaseViewModel<OfflineSyncUiState>(OfflineSyncUiState()) {
 
     init {
         offlineQueue.pending
             .onEach { pending -> setState { copy(pending = pending.sortedBy { it.enqueuedAt }) } }
+            .catch { e -> setState { copy(error = e.message ?: "โหลดรายการค้างซิงก์ไม่สำเร็จ") } }
             .launchIn(viewModelScope)
     }
 
     fun refresh() = setState { copy(message = "ดึงสถานะคิวล่าสุดแล้ว") }
 
     fun syncAll() {
-        if (current.pending.isEmpty()) return
+        val snapshot = current.pending
+        if (snapshot.isEmpty()) return
         setState { copy(message = "เริ่มลองส่งบิลค้างทั้งหมดแล้ว") }
+        snapshot.forEach { item -> retryOne(item.id) }
     }
 
     fun retry(id: String) {
         if (current.pending.none { it.id == id }) return
         setState { copy(message = "เริ่มลองส่งบิล ${id.take(8)} ใหม่แล้ว") }
+        retryOne(id)
+    }
+
+    private fun retryOne(id: String) {
+        launchResult(
+            block = { retrySale(id) },
+            onSuccess = { },
+            onFailure = { e ->
+                setState { copy(error = "ส่งบิล ${id.take(8)} ไม่สำเร็จ: ${e.message ?: "ไม่ทราบสาเหตุ"}") }
+            },
+        )
     }
 
     fun askDiscard(id: String) = setState { copy(confirmDiscardId = id) }
@@ -35,8 +55,8 @@ class OfflineSyncViewModel(
 
     fun discardConfirmed() {
         val id = current.confirmDiscardId ?: return
-        markSynced(id)
         setState { copy(confirmDiscardId = null, message = "ลบรายการค้างซิงก์แล้ว") }
+        viewModelScope.launch(dispatchers.io) { markSynced(id) }
     }
 
     fun dismissMessage() = setState { copy(message = null) }
