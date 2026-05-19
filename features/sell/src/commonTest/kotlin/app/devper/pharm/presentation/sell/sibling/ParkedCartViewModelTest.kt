@@ -184,6 +184,79 @@ class ParkedCartViewModelTest {
     }
 
     @Test
+    fun tapSlot_with_filled_slot_and_non_empty_active_sets_swapSlot() = runVmTest { dispatchers ->
+        val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i ->
+            if (i == 2) parked(itemQty = 6) else null
+        }
+        val (vm, cart) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(qty = 3)), initialParkedSlots = seed),
+        )
+        advanceUntilIdle()
+        vm.openSheet()
+        vm.tapSlot(slot = 2)
+        advanceUntilIdle()
+
+        assertEquals(2, vm.state.value.swapSlot)
+        assertNull(cart.lastRestoreSlot)
+        assertNotNull(cart.parkedSlots.value[2])
+        assertEquals(3, cart.state.value.active.items[0].qty)
+        assertTrue(vm.state.value.sheetOpen)
+    }
+
+    @Test
+    fun cancelSwap_clears_swapSlot_without_restoring() = runVmTest { dispatchers ->
+        val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i ->
+            if (i == 0) parked(itemQty = 4) else null
+        }
+        val (vm, cart) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(qty = 2)), initialParkedSlots = seed),
+        )
+        advanceUntilIdle()
+        vm.tapSlot(slot = 0)
+        assertEquals(0, vm.state.value.swapSlot)
+
+        vm.cancelSwap()
+        advanceUntilIdle()
+        assertNull(vm.state.value.swapSlot)
+        assertNull(cart.lastRestoreSlot)
+        assertNotNull(cart.parkedSlots.value[0])
+    }
+
+    @Test
+    fun confirmSwap_restores_and_clears_state() = runVmTest { dispatchers ->
+        val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i ->
+            if (i == 1) parked(itemQty = 5) else null
+        }
+        val (vm, cart) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(qty = 2)), initialParkedSlots = seed),
+        )
+        advanceUntilIdle()
+        vm.openSheet()
+        vm.tapSlot(slot = 1)
+        assertEquals(1, vm.state.value.swapSlot)
+
+        vm.confirmSwap()
+        advanceUntilIdle()
+        assertEquals(1, cart.lastRestoreSlot)
+        assertEquals(5, cart.state.value.active.items[0].qty)
+        assertNull(cart.parkedSlots.value[1])
+        assertNull(vm.state.value.swapSlot)
+        assertFalse(vm.state.value.sheetOpen)
+    }
+
+    @Test
+    fun confirmSwap_no_op_when_swapSlot_null() = runVmTest { dispatchers ->
+        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        advanceUntilIdle()
+        vm.confirmSwap()
+        advanceUntilIdle()
+        assertNull(cart.lastRestoreSlot)
+    }
+
+    @Test
     fun discard_clears_the_slot() = runVmTest { dispatchers ->
         val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i ->
             if (i == 1) parked() else null

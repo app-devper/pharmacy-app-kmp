@@ -17,10 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +57,10 @@ fun CartPanel(
     onOpenCartDiscount: () -> Unit,
     onReceivedChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onClearCart: () -> Unit,
+    showClearConfirm: Boolean,
+    onRequestClearCart: () -> Unit,
+    onConfirmClearCart: () -> Unit,
+    onCancelClearCart: () -> Unit,
     @Suppress("UNUSED_PARAMETER") parkedFilledCount: Int = 0,
     @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
     compact: Boolean = false,
@@ -76,7 +75,14 @@ fun CartPanel(
             .fillMaxSize()
             .background(t.colors.surface),
     ) {
-        CartPanelHeader(cartCount = cartCount, hasItems = hasItems, onClearCart = onClearCart)
+        CartPanelHeader(
+            cartCount = cartCount,
+            hasItems = hasItems,
+            showClearConfirm = showClearConfirm,
+            onRequestClearCart = onRequestClearCart,
+            onConfirmClearCart = onConfirmClearCart,
+            onCancelClearCart = onCancelClearCart,
+        )
         CartSectionDivider()
 
         CartCustomerPill(
@@ -138,9 +144,15 @@ fun CartPanel(
 }
 
 @Composable
-private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -> Unit) {
+private fun CartPanelHeader(
+    cartCount: Int,
+    hasItems: Boolean,
+    showClearConfirm: Boolean,
+    onRequestClearCart: () -> Unit,
+    onConfirmClearCart: () -> Unit,
+    onCancelClearCart: () -> Unit,
+) {
     val t = pharmTokens
-    var showClearConfirm by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -162,7 +174,7 @@ private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -
         Box(
             modifier = Modifier
                 .clip(t.shapes.sm)
-                .clickable(onClick = { showClearConfirm = true }, enabled = hasItems)
+                .clickable(onClick = onRequestClearCart, enabled = hasItems)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Text(
@@ -176,22 +188,19 @@ private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -
 
     PharmModal(
         open = showClearConfirm,
-        onDismiss = { showClearConfirm = false },
+        onDismiss = onCancelClearCart,
         title = "ลบรายการในตะกร้า?",
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
                 label = "ยกเลิก",
-                onClick = { showClearConfirm = false },
+                onClick = onCancelClearCart,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
                 label = "ล้าง",
-                onClick = {
-                    showClearConfirm = false
-                    onClearCart()
-                },
+                onClick = onConfirmClearCart,
                 variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Sm,
             )
