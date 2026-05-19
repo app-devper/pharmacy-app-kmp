@@ -18,25 +18,26 @@ data class BulkImportUiState(
 
     val canSubmit: Boolean get() = !submitting && text.isNotBlank()
 
-    val rows: List<BulkImportRow> by lazy {
-        val errorByRow = result?.errors.orEmpty().associateBy { it.row }
-        parsed.mapIndexed { idx, p ->
-            val rowNo = idx + 1
-            val err = errorByRow[rowNo]
-            BulkImportRow(
-                row = rowNo,
-                name = p.name,
-                qty = p.stock,
-                unit = p.unit,
-                status = when {
-                    err != null              -> BulkImportRowStatus.Failed
-                    result != null           -> BulkImportRowStatus.Done
-                    else                     -> BulkImportRowStatus.Pending
-                },
-                errorMessage = err?.message,
-            )
+    val rows: List<BulkImportRow>
+        get() {
+            val errorByRow = result?.errors.orEmpty().associateBy { it.row }
+            return parsed.mapIndexed { idx, p ->
+                val rowNo = idx + 1
+                val err = errorByRow[rowNo]
+                BulkImportRow(
+                    row = rowNo,
+                    name = p.name,
+                    qty = p.stock,
+                    unit = p.unit,
+                    status = when {
+                        err != null              -> BulkImportRowStatus.Failed
+                        result != null           -> BulkImportRowStatus.Done
+                        else                     -> BulkImportRowStatus.Pending
+                    },
+                    errorMessage = err?.message,
+                )
+            }
         }
-    }
 }
 
 enum class BulkImportRowStatus { Pending, Done, Failed }

@@ -17,21 +17,29 @@ data class StockCountFormUiState(
 ) : BaseFormUiState<StockCountFormUiState> {
     val filtered: List<Drug> get() = DrugSearch.filter(drugs, query)
 
+    private val drugById: Map<String, Drug> get() = drugs.associateBy { it.id }
+
     val pendingLines: List<Pair<String, Int>>
         get() = StockCountInputBuilder.parsePending(counts)
 
     val changedLines: List<Pair<String, Int>>
-        get() = pendingLines.filter { (id, counted) ->
-            val drug = drugs.firstOrNull { it.id == id } ?: return@filter false
-            counted != drug.stock
+        get() {
+            val byId = drugById
+            return pendingLines.filter { (id, counted) ->
+                val drug = byId[id] ?: return@filter false
+                counted != drug.stock
+            }
         }
 
     val changedCount: Int get() = changedLines.size
 
     val totalAbsDelta: Int
-        get() = changedLines.sumOf { (id, counted) ->
-            val drug = drugs.firstOrNull { it.id == id } ?: return@sumOf 0
-            kotlin.math.abs(counted - drug.stock)
+        get() {
+            val byId = drugById
+            return pendingLines.sumOf { (id, counted) ->
+                val drug = byId[id] ?: return@sumOf 0
+                if (counted == drug.stock) 0 else kotlin.math.abs(counted - drug.stock)
+            }
         }
 
     override val canSubmit: Boolean
