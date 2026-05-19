@@ -4,7 +4,8 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
 import app.devper.pharm.ui.common.BaseViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class OfflineSyncViewModel(
     offlineQueue: OfflineQueueProvider,
@@ -12,11 +13,9 @@ class OfflineSyncViewModel(
 ) : BaseViewModel<OfflineSyncUiState>(OfflineSyncUiState()) {
 
     init {
-        viewModelScope.launch {
-            offlineQueue.pending.collect { pending ->
-                setState { copy(pending = pending.sortedBy { it.enqueuedAt }) }
-            }
-        }
+        offlineQueue.pending
+            .onEach { pending -> setState { copy(pending = pending.sortedBy { it.enqueuedAt }) } }
+            .launchIn(viewModelScope)
     }
 
     fun refresh() = setState { copy(message = "ดึงสถานะคิวล่าสุดแล้ว") }

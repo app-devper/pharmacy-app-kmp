@@ -35,10 +35,16 @@ class FileDownloaderImpl(private val context: Context) : FileDownloader {
         }
         val uri = resolver.insert(collection, values)
             ?: throw StorageException("ไม่สามารถสร้างไฟล์ใน Downloads")
-        resolver.openOutputStream(uri)?.use { it.write(bytes) }
-            ?: throw StorageException("ไม่สามารถเขียนไฟล์ใน Downloads")
-        val finalValues = ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) }
-        resolver.update(uri, finalValues, null, null)
+        var completed = false
+        try {
+            resolver.openOutputStream(uri)?.use { it.write(bytes) }
+                ?: throw StorageException("ไม่สามารถเขียนไฟล์ใน Downloads")
+            val finalValues = ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) }
+            resolver.update(uri, finalValues, null, null)
+            completed = true
+        } finally {
+            if (!completed) resolver.delete(uri, null, null)
+        }
         return "บันทึก $filename ลง Downloads แล้ว"
     }
 

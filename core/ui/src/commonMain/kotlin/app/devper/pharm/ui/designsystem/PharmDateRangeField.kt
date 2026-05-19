@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -155,7 +156,9 @@ private fun DatePickerSheet(
     initialMillis: Long?,
     onPick: (Long?) -> Unit,
 ) {
-    val state = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
+    val state = key(initialMillis) {
+        rememberDatePickerState(initialSelectedDateMillis = initialMillis)
+    }
     DatePickerDialog(
         onDismissRequest = { onPick(null) },
         confirmButton = {

@@ -177,7 +177,7 @@ private fun LabelToolbar(
     onPrint: () -> Unit,
 ) {
     val t = pharmTokens
-    val chips = remember {
+    val chips = remember(t) {
         LabelSize.entries.map { PharmFilterChip(id = it.wire, label = it.label) }
     }
     Row(
