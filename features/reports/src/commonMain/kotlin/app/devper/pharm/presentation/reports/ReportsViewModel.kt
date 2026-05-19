@@ -12,6 +12,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,13 +54,15 @@ class ReportsViewModel(
                 val s = async { getSlowDrugs(90) }
                 Triple(d.await(), t.await(), s.await())
             }
+            ensureActive()
+            val dashboardError = dashboard.exceptionOrNull()
             setState {
                 copy(
                     loading = false,
                     dashboard = dashboard.getOrNull() ?: this.dashboard,
                     topDrugs = top.getOrNull() ?: this.topDrugs,
                     slowDrugs = slow.getOrNull() ?: this.slowDrugs,
-                    error = dashboard.exceptionOrNull()?.message ?: this.error,
+                    error = dashboardError?.let { it.message ?: "โหลดสรุปไม่สำเร็จ" },
                 )
             }
         }
