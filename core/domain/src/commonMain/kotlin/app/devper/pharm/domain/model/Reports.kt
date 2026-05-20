@@ -53,6 +53,14 @@ data class EodReport(
     val bills: List<SaleSummary>,
 )
 
+data class EodCloseResult(
+    val closeId: String,
+    val date: String,
+    val closedAt: String,
+    val closedBy: String,
+    val report: EodReport,
+)
+
 data class ProfitReport(
     val summary: ProfitSummary,
     val byDrug: List<DrugProfit>,

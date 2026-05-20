@@ -4,6 +4,7 @@ import app.devper.pharm.data.remote.api.ReportsApi
 import app.devper.pharm.data.remote.dto.DailyDataDto
 import app.devper.pharm.data.remote.dto.DashboardDto
 import app.devper.pharm.data.remote.dto.DrugProfitDto
+import app.devper.pharm.data.remote.dto.EodCloseResultDto
 import app.devper.pharm.data.remote.dto.EodReportDto
 import app.devper.pharm.data.remote.dto.MonthlyDataDto
 import app.devper.pharm.data.remote.dto.ProfitReportDto
@@ -15,6 +16,7 @@ import app.devper.pharm.data.remote.dto.TopDrugDto
 import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.DrugProfit
+import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.domain.model.ProfitReport
@@ -23,6 +25,7 @@ import app.devper.pharm.domain.model.ReportSummary
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
+import app.devper.pharm.domain.param.CloseEodParam
 import app.devper.pharm.domain.param.DashboardRangeParam
 import app.devper.pharm.domain.param.EodReportParam
 import app.devper.pharm.domain.param.ReportRangeParam
@@ -45,6 +48,9 @@ class ReportsRepositoryImpl(private val api: ReportsApi) : ReportsRepository {
 
     override suspend fun eod(param: EodReportParam): EodReport =
         api.eod(param.date.trim()).toDomain()
+
+    override suspend fun closeEod(param: CloseEodParam): EodCloseResult =
+        api.closeEod(param.date.trim()).toDomain()
 
     private fun DashboardDto.toDomain() = Dashboard(
         summary = summary.toDomain(),
@@ -104,6 +110,14 @@ class ReportsRepositoryImpl(private val api: ReportsApi) : ReportsRepository {
         totalChange = totalChange,
         netCash = netCash,
         bills = bills.map(::toSaleSummary),
+    )
+
+    private fun EodCloseResultDto.toDomain() = EodCloseResult(
+        closeId = closeId,
+        date = date,
+        closedAt = closedAt,
+        closedBy = closedBy,
+        report = report.toDomain(),
     )
 
     private fun ProfitReportDto.toDomain() = ProfitReport(

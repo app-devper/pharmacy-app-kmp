@@ -64,6 +64,20 @@ data class EodReportDto(
 )
 
 @Serializable
+data class CloseEodRequestDto(
+    @SerialName("date") val date: String = "",
+)
+
+@Serializable
+data class EodCloseResultDto(
+    @SerialName("close_id") val closeId: String = "",
+    @SerialName("date") val date: String = "",
+    @SerialName("closed_at") val closedAt: String = "",
+    @SerialName("closed_by") val closedBy: String = "",
+    @SerialName("report") val report: EodReportDto = EodReportDto(),
+)
+
+@Serializable
 data class ProfitReportDto(
     @SerialName("summary") val summary: ProfitSummaryDto = ProfitSummaryDto(),
     @SerialName("by_drug") val byDrug: List<DrugProfitDto> = emptyList(),
