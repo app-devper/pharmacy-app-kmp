@@ -7,10 +7,8 @@ import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StoreInfo
 import app.devper.pharm.domain.param.ReceiptSettingsInput
 import app.devper.pharm.domain.param.StockSettingsInput
-import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.UpdateSettingsParam
-import app.devper.pharm.domain.usecase.GetProfileUseCase
 import app.devper.pharm.domain.usecase.RefreshSettingsUseCase
 import app.devper.pharm.domain.usecase.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.BaseViewModel
@@ -21,7 +19,6 @@ class SettingsEditorViewModel(
     settings: SettingsProvider,
     private val refreshSettings: RefreshSettingsUseCase,
     private val updateSettings: UpdateSettingsUseCase,
-    private val getProfile: GetProfileUseCase,
 ) : BaseViewModel<SettingsEditorUiState>(SettingsEditorUiState()) {
 
     private var hydrated = false
@@ -54,23 +51,9 @@ class SettingsEditorViewModel(
             },
             onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดการตั้งค่าไม่สำเร็จ") } },
         )
-
-        loadRole()
-    }
-
-    private fun loadRole() {
-        launchResult(
-            block = { getProfile(Unit) },
-            onSuccess = { user -> setState { copy(role = user.role) } },
-            onFailure = { setState { copy(role = Role.UNKNOWN) } },
-        )
     }
 
     fun selectTab(tab: SettingsTab) = setState { copy(tab = tab) }
-
-    fun toggleGroup(group: SettingsMenuGroup) = setState {
-        copy(collapsedGroups = if (group in collapsedGroups) collapsedGroups - group else collapsedGroups + group)
-    }
 
     fun onStoreName(v: String) = patch { copy(storeName = v) }
     fun onStoreAddress(v: String) = patch { copy(storeAddress = v) }

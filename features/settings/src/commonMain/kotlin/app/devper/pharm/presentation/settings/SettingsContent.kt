@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.domain.model.Role
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
@@ -26,11 +25,9 @@ private val SETTINGS_TABS: List<PharmTab> =
 fun SettingsContent(
     state: SettingsEditorUiState,
     editor: SettingsEditorCallbacks = SettingsEditorCallbacks(),
-    nav: SettingsNavCallbacks = SettingsNavCallbacks(),
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         SettingsSaveBar(state = state, onSave = editor.onSubmit, onMessageDismiss = editor.onDismissMessage)
-        SettingsMenuSection(state = state, nav = nav)
 
         PharmTabBar(
             tabs = SETTINGS_TABS,
@@ -85,7 +82,6 @@ private fun SettingsContent_Store_Preview() {
                 ),
             ),
             editor = SettingsEditorCallbacks(),
-            nav = SettingsNavCallbacks(),
         )
     }
 }
@@ -126,36 +122,6 @@ private fun SettingsContent_Dirty_Preview() {
             state = SettingsEditorUiState(
                 form = SettingsFormFields(storeName = "ร้านยา (เปลี่ยนชื่อแล้ว)"),
                 baseline = SettingsFormFields(storeName = "ร้านยา"),
-            ),
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun SettingsContent_MenuAdmin_Preview() {
-    PharmacyTheme {
-        SettingsContent(
-            state = SettingsEditorUiState(
-                form = SettingsFormFields(storeName = "ร้านยา"),
-                baseline = SettingsFormFields(storeName = "ร้านยา"),
-                role = Role.ADMIN,
-                collapsedGroups = emptySet(),
-            ),
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun SettingsContent_MenuStaff_Preview() {
-    PharmacyTheme {
-        SettingsContent(
-            state = SettingsEditorUiState(
-                form = SettingsFormFields(storeName = "ร้านยา"),
-                baseline = SettingsFormFields(storeName = "ร้านยา"),
-                role = Role.USER,
-                collapsedGroups = emptySet(),
             ),
         )
     }

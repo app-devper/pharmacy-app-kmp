@@ -23,8 +23,3 @@ data class SettingsEditorCallbacks(
     val onDismissMessage: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )
-
-data class SettingsNavCallbacks(
-    val onNavigate: (SettingsMenuKey) -> Unit = {},
-    val onToggleGroup: (SettingsMenuGroup) -> Unit = {},
-)
