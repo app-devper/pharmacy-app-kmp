@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmIcons
 
 data class TopbarUser(
     val initial: String,
@@ -160,9 +161,15 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
                 modifier = Modifier
                     .clip(t.shapes.sm)
                     .clickable(onClick = onLogout)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                Text(text = "ออก", style = PharmText.meta)
+                Icon(
+                    imageVector = PharmIcons.Logout,
+                    contentDescription = "ออก",
+                    tint = t.colors.dangerFg,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
     }

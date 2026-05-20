@@ -29,10 +29,11 @@ import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmTextField
-import app.devper.pharm.ui.theme.Blue50
+import app.devper.pharm.ui.theme.Black
 import app.devper.pharm.ui.theme.PharmText
-import app.devper.pharm.ui.theme.Slate100
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmIcons
+import androidx.compose.material3.Icon
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -48,7 +49,11 @@ fun LoginScreen(
     }
 
     val backgroundBrush = Brush.linearGradient(
-        colors = listOf(Blue50, Slate100),
+        colors = if (androidx.compose.foundation.isSystemInDarkTheme()) {
+            listOf(t.colors.bgPage, Black)
+        } else {
+            listOf(t.colors.accentBgSoft, t.colors.bgPage)
+        }
     )
 
     Box(
@@ -144,14 +149,19 @@ private fun BrandHeader() {
         Box(
             modifier = Modifier
                 .size(64.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.accent),
+                .clip(t.shapes.xl)
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(t.colors.accent, t.colors.accentHover)
+                    )
+                ),
             contentAlignment = Alignment.Center,
         ) {
-
-            Text(
-                text = "💊",
-                style = PharmText.body.copy(fontSize = 36.sp),
+            Icon(
+                imageVector = PharmIcons.Pill,
+                contentDescription = null,
+                tint = t.colors.surface,
+                modifier = Modifier.size(32.dp),
             )
         }
         Text(

@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -108,7 +109,11 @@ private fun BrandHeader() {
             modifier = Modifier
                 .size(32.dp)
                 .clip(t.shapes.md)
-                .background(t.colors.accent),
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(t.colors.accent, t.colors.accentHover)
+                    )
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -153,10 +158,12 @@ private fun SidebarRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+            .clip(t.shapes.md)
             .background(bg)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
