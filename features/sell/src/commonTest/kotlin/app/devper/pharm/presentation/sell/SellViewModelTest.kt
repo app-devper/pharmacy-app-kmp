@@ -24,6 +24,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -157,13 +158,46 @@ class SellViewModelTest {
     }
 
     @Test
-    fun onClearCart_delegates_to_clearCart_usecase() = runVmTest { dispatchers ->
+    fun requestClearCart_flips_showClearConfirm_when_cart_non_empty() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        advanceUntilIdle()
+        assertFalse(vm.state.value.showClearConfirm)
+        vm.requestClearCart()
+        assertTrue(vm.state.value.showClearConfirm)
+    }
+
+    @Test
+    fun requestClearCart_no_op_when_cart_empty() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.requestClearCart()
+        assertFalse(vm.state.value.showClearConfirm)
+    }
+
+    @Test
+    fun confirmClearCart_clears_cart_and_resets_flag() = runVmTest { dispatchers ->
         val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
         advanceUntilIdle()
-        vm.onClearCart()
+        vm.requestClearCart()
+        assertTrue(vm.state.value.showClearConfirm)
+        vm.confirmClearCart()
         advanceUntilIdle()
         assertTrue(cart.clearCalled)
         assertTrue(vm.state.value.cart.isEmpty())
+        assertFalse(vm.state.value.showClearConfirm)
+    }
+
+    @Test
+    fun cancelClearCart_resets_flag_without_clearing() = runVmTest { dispatchers ->
+        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        advanceUntilIdle()
+        vm.requestClearCart()
+        assertTrue(vm.state.value.showClearConfirm)
+        vm.cancelClearCart()
+        advanceUntilIdle()
+        assertFalse(cart.clearCalled)
+        assertFalse(vm.state.value.showClearConfirm)
+        assertTrue(vm.state.value.cart.isNotEmpty())
     }
 
     @Test

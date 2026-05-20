@@ -18,6 +18,7 @@ data class SellUiState(
     val receipt: Sale? = null,
     val cartDiscountSheetOpen: Boolean = false,
     val lineDiscountFor: CartLine? = null,
+    val showClearConfirm: Boolean = false,
 
     val settings: Settings = Settings(),
     override val loading: Boolean = false,
