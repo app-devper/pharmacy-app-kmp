@@ -40,6 +40,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.tabular
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -52,6 +58,8 @@ fun CartLineRow(
     onTapForDiscount: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showRemoveConfirm by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -130,7 +138,7 @@ fun CartLineRow(
         }
 
         IconButton(
-            onClick = onRemove,
+            onClick = { showRemoveConfirm = true },
             modifier = Modifier.size(44.dp),
         ) {
             Icon(
@@ -140,6 +148,35 @@ fun CartLineRow(
                 modifier = Modifier.size(20.dp),
             )
         }
+    }
+
+    PharmModal(
+        open = showRemoveConfirm,
+        onDismiss = { showRemoveConfirm = false },
+        title = "ลบออกจากตะกร้า?",
+        size = PharmModalSize.Sm,
+        footer = {
+            PharmButton(
+                label = "ยกเลิก",
+                onClick = { showRemoveConfirm = false },
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = "ลบ",
+                onClick = {
+                    showRemoveConfirm = false
+                    onRemove()
+                },
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Sm,
+            )
+        },
+    ) {
+        Text(
+            "ลบ ${line.drug.name} ออกจากตะกร้า?",
+            style = PharmText.body,
+        )
     }
 }
 
