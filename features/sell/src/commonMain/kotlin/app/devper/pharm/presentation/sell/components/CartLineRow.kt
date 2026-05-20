@@ -174,7 +174,7 @@ fun CartLineRow(
         },
     ) {
         Text(
-            "ลบ ${line.drug.name} ออกจากตะกร้า?",
+            line.drug.name,
             style = PharmText.body,
         )
     }
