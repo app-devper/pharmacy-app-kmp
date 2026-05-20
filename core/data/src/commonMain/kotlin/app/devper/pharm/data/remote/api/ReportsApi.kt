@@ -1,7 +1,9 @@
 package app.devper.pharm.data.remote.api
 
 import app.devper.pharm.data.network.ApiConfig
+import app.devper.pharm.data.remote.dto.CloseEodRequestDto
 import app.devper.pharm.data.remote.dto.DashboardDto
+import app.devper.pharm.data.remote.dto.EodCloseResultDto
 import app.devper.pharm.data.remote.dto.EodReportDto
 import app.devper.pharm.data.remote.dto.ProfitReportDto
 import app.devper.pharm.data.remote.dto.SlowDrugDto
@@ -10,6 +12,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 class ReportsApi(
     private val client: HttpClient,
@@ -40,5 +46,11 @@ class ReportsApi(
     suspend fun eod(date: String): EodReportDto =
         client.get(config.pharmacy("/report/eod")) {
             if (date.isNotBlank()) parameter("date", date)
+        }.body()
+
+    suspend fun closeEod(date: String): EodCloseResultDto =
+        client.post(config.pharmacy("/report/eod/close")) {
+            contentType(ContentType.Application.Json)
+            setBody(CloseEodRequestDto(date = date))
         }.body()
 }

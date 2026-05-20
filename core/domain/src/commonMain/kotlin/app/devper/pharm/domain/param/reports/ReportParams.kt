@@ -16,3 +16,7 @@ data class TopOrSlowDrugsParam(
 data class EodReportParam(
     val date: String = "",
 )
+
+data class CloseEodParam(
+    val date: String = "",
+)
