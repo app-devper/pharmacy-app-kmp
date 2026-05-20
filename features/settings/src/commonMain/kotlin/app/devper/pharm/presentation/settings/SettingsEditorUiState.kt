@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.settings
 
-import app.devper.pharm.domain.model.Role
 import app.devper.pharm.ui.common.BaseUiState
 
 data class SettingsFormFields(
@@ -33,8 +32,6 @@ data class SettingsEditorUiState(
     val baseline: SettingsFormFields = SettingsFormFields(),
     val form: SettingsFormFields = SettingsFormFields(),
     val tab: SettingsTab = SettingsTab.Store,
-    val role: Role = Role.UNKNOWN,
-    val collapsedGroups: Set<SettingsMenuGroup> = setOf(SettingsMenuGroup.Compliance),
     override val loading: Boolean = false,
     val saving: Boolean = false,
     val message: String? = null,
@@ -45,9 +42,6 @@ data class SettingsEditorUiState(
         get() = !saving && !loading && dirty &&
             form.storeName.isNotBlank() &&
             form.receiptPaperWidth in setOf("58", "80")
-
-    val menuGroups: List<Pair<SettingsMenuGroup, List<SettingsMenuItem>>>
-        get() = SettingsMenuRegistry.groupsFor(role)
 }
 
 enum class SettingsTab(val label: String) {

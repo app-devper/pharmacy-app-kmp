@@ -7,7 +7,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    onNavigate: (SettingsMenuKey) -> Unit = {},
     viewModel: SettingsEditorViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -36,10 +35,6 @@ fun SettingsScreen(
             onSubmit = viewModel::submit,
             onDismissMessage = viewModel::dismissMessage,
             onDismissError = viewModel::dismissError,
-        ),
-        nav = SettingsNavCallbacks(
-            onNavigate = onNavigate,
-            onToggleGroup = viewModel::toggleGroup,
         ),
     )
 }
