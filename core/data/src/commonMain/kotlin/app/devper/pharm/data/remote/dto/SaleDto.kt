@@ -10,6 +10,7 @@ data class SaleRequest(
     @SerialName("discount") val discount: Double = 0.0,
     @SerialName("customer_id") val customerId: String? = null,
     @SerialName("client_request_id") val clientRequestId: String? = null,
+    @SerialName("ky_skipped_by_cashier") val kySkippedByCashier: Boolean = false,
 )
 
 @Serializable
@@ -33,6 +34,7 @@ data class SaleResponse(
     @SerialName("change") val change: Double,
     @SerialName("discount") val discount: Double,
     @SerialName("stock_updates") val stockUpdates: List<StockUpdateDto> = emptyList(),
+    @SerialName("ky_skipped_by_cashier") val kySkippedByCashier: Boolean = false,
 )
 
 @Serializable

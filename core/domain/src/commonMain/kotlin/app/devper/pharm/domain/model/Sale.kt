@@ -8,6 +8,7 @@ data class Sale(
     val change: Double,
     val discount: Double,
     val stockUpdates: List<StockUpdate>,
+    val kySkippedByCashier: Boolean = false,
 )
 
 data class StockUpdate(

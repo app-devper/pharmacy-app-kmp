@@ -4,4 +4,5 @@ data class RunCheckoutParam(
     val received: Double,
     val allowOversell: Boolean = false,
     val clientRequestId: String? = null,
+    val kySkippedByCashier: Boolean = false,
 )

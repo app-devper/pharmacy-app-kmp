@@ -48,6 +48,7 @@ class CheckoutViewModel(
     private var pendingClientRequestId: String? = null
     private var pendingKyFields: KyCaptureFields? = null
     private var pendingKyRequired: KyRequired? = null
+    private var pendingKySkippedByCashier: Boolean = false
     private var receiptSnapshot: ReceiptSnapshot? = null
 
     private var lastCart: List<CartLine> = emptyList()
@@ -95,17 +96,28 @@ class CheckoutViewModel(
         startNewCheckout(allowOversell = false)
     }
 
-    fun skipKyCapture() {
+    fun requestSkipKy() {
+        if (current.kyCapturePending == null) return
+        setState { copy(showSkipKyConfirm = true) }
+    }
+
+    fun cancelSkipKy() {
+        setState { copy(showSkipKyConfirm = false) }
+    }
+
+    fun confirmSkipKy() {
         pendingKyFields = null
         pendingKyRequired = null
-        setState { copy(kyCapturePending = null) }
+        pendingKySkippedByCashier = true
+        setState { copy(kyCapturePending = null, showSkipKyConfirm = false) }
         startNewCheckout(allowOversell = false)
     }
 
     fun dismissKyCapture() {
         pendingKyFields = null
         pendingKyRequired = null
-        setState { copy(kyCapturePending = null) }
+        pendingKySkippedByCashier = false
+        setState { copy(kyCapturePending = null, showSkipKyConfirm = false) }
     }
 
     fun confirmOversell() {
@@ -151,6 +163,7 @@ class CheckoutViewModel(
 
         val kyRequiredAtSubmit = pendingKyRequired
         val kyFieldsAtSubmit = pendingKyFields
+        val kySkippedAtSubmit = pendingKySkippedByCashier
         val tzAtSubmit = lastSettings.timezone
         val cartSnapshot = lastCart
         val customerSnapshot = lastCustomer
@@ -158,7 +171,7 @@ class CheckoutViewModel(
 
         setState { copy(checkingOut = true, error = null) }
         launchResult(
-            block = { checkout(receivedSnapshot, allowOversell, requestId) },
+            block = { checkout(receivedSnapshot, allowOversell, requestId, kySkippedAtSubmit) },
             onSuccess = { outcome ->
                 when (outcome) {
                     is CheckoutOutcome.Success -> handleSuccess(
@@ -251,6 +264,7 @@ class CheckoutViewModel(
         pendingClientRequestId = null
         pendingKyRequired = null
         pendingKyFields = null
+        pendingKySkippedByCashier = false
     }
 }
 
