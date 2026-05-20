@@ -17,6 +17,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +32,9 @@ import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -133,6 +140,8 @@ fun CartPanel(
 @Composable
 private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -> Unit) {
     val t = pharmTokens
+    var showClearConfirm by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,7 +162,7 @@ private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -
         Box(
             modifier = Modifier
                 .clip(t.shapes.sm)
-                .clickable(onClick = onClearCart, enabled = hasItems)
+                .clickable(onClick = { showClearConfirm = true }, enabled = hasItems)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Text(
@@ -163,6 +172,35 @@ private fun CartPanelHeader(cartCount: Int, hasItems: Boolean, onClearCart: () -
                 ),
             )
         }
+    }
+
+    PharmModal(
+        open = showClearConfirm,
+        onDismiss = { showClearConfirm = false },
+        title = "ลบรายการในตะกร้า?",
+        size = PharmModalSize.Sm,
+        footer = {
+            PharmButton(
+                label = "ยกเลิก",
+                onClick = { showClearConfirm = false },
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = "ล้าง",
+                onClick = {
+                    showClearConfirm = false
+                    onClearCart()
+                },
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Sm,
+            )
+        },
+    ) {
+        Text(
+            "ลบรายการในตะกร้าทั้งหมด $cartCount รายการ? การกระทำนี้ย้อนกลับไม่ได้",
+            style = PharmText.body,
+        )
     }
 }
 

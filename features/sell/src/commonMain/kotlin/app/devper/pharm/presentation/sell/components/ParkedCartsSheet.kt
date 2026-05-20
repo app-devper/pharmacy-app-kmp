@@ -250,6 +250,26 @@ fun ParkOverwriteDialog(
 }
 
 @Composable
+fun SwapToParkedDialog(
+    slotNumber: Int,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text("เปลี่ยนไปใช้บิลที่พักช่อง $slotNumber?") },
+        text = { Text("ตะกร้าปัจจุบันจะถูกแทนที่ด้วยบิลที่พัก รายการในตะกร้าเดิมจะหายไป") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) { Text("เปลี่ยน") }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) { Text("ยกเลิก") }
+        },
+        shape = MaterialTheme.shapes.large,
+    )
+}
+
+@Composable
 fun ParkButton(
     filledSlots: Int,
     onClick: () -> Unit,

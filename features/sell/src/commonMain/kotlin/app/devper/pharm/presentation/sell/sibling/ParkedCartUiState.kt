@@ -8,6 +8,7 @@ data class ParkedCartUiState(
     val sheetOpen: Boolean = false,
 
     val overwriteSlot: Int? = null,
+    val swapSlot: Int? = null,
     val activeCartIsEmpty: Boolean = true,
 
     override val error: String? = null,
