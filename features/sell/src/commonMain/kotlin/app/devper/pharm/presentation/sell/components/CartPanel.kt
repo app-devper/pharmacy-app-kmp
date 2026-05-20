@@ -78,6 +78,7 @@ fun CartPanel(
         CartPanelHeader(
             cartCount = cartCount,
             hasItems = hasItems,
+            checkingOut = checkingOut,
             showClearConfirm = showClearConfirm,
             onRequestClearCart = onRequestClearCart,
             onConfirmClearCart = onConfirmClearCart,
@@ -147,6 +148,7 @@ fun CartPanel(
 private fun CartPanelHeader(
     cartCount: Int,
     hasItems: Boolean,
+    checkingOut: Boolean,
     showClearConfirm: Boolean,
     onRequestClearCart: () -> Unit,
     onConfirmClearCart: () -> Unit,
@@ -171,16 +173,17 @@ private fun CartPanelHeader(
                 style = PharmText.meta,
             )
         }
+        val canClear = hasItems && !checkingOut
         Box(
             modifier = Modifier
                 .clip(t.shapes.sm)
-                .clickable(onClick = onRequestClearCart, enabled = hasItems)
+                .clickable(onClick = onRequestClearCart, enabled = canClear)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
             Text(
                 "ล้าง",
                 style = PharmText.micro.copy(
-                    color = if (hasItems) t.colors.dangerFg else t.colors.fgMuted,
+                    color = if (canClear) t.colors.dangerFg else t.colors.fgMuted,
                 ),
             )
         }
