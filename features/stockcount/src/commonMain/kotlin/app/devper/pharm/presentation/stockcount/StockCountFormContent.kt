@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -50,6 +51,15 @@ fun StockCountFormContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+
+    SubmitConfirmModal(
+        open = state.showSubmitConfirm,
+        changedCount = state.changedCount,
+        totalAbsDelta = state.totalAbsDelta,
+        topDiscrepancies = state.topDiscrepancies,
+        onConfirm = callbacks.onConfirmSubmit,
+        onCancel = callbacks.onCancelSubmit,
+    )
 }
 
 @Composable
