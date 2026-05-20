@@ -48,6 +48,7 @@ class SaleRepositoryImpl(
         discount = discount,
         customerId = customerId,
         clientRequestId = clientRequestId,
+        kySkippedByCashier = kySkippedByCashier,
     )
 
     private fun CheckoutLineParam.toRequest() = SaleItemRequest(
@@ -69,5 +70,6 @@ class SaleRepositoryImpl(
         change = change,
         discount = discount,
         stockUpdates = stockUpdates.map { StockUpdate(it.drugId, it.newStock) },
+        kySkippedByCashier = kySkippedByCashier,
     )
 }

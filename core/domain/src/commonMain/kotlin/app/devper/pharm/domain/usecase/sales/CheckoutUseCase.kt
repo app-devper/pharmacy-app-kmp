@@ -22,7 +22,10 @@ class CheckoutUseCase(
         received: Double,
         allowOversell: Boolean = false,
         clientRequestId: String? = null,
-    ): Result<CheckoutOutcome> = invoke(RunCheckoutParam(received, allowOversell, clientRequestId))
+        kySkippedByCashier: Boolean = false,
+    ): Result<CheckoutOutcome> = invoke(
+        RunCheckoutParam(received, allowOversell, clientRequestId, kySkippedByCashier),
+    )
 
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
         val snapshot = cart.state.value.active
@@ -67,6 +70,7 @@ class CheckoutUseCase(
             discount = discountAmount,
             priceTier = tier,
             clientRequestId = param.clientRequestId,
+            kySkippedByCashier = param.kySkippedByCashier,
         )
 
         val serialized = runCatching { sales.serializeCheckout(checkoutParam) }.getOrNull()

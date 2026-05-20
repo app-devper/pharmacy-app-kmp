@@ -227,7 +227,7 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun skipKyCapture_runs_checkout_without_ky_fan_out() = runVmTest { dispatchers ->
+    fun requestSkipKy_opens_confirm_without_skipping() = runVmTest { dispatchers ->
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
@@ -236,11 +236,74 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
         vm.submit()
         advanceUntilIdle()
-        vm.skipKyCapture()
+        vm.requestSkipKy()
         advanceUntilIdle()
+
+        assertTrue(vm.state.value.showSkipKyConfirm)
+        assertNotNull(vm.state.value.kyCapturePending)
+        assertNull(sales.lastCheckout)
+        assertEquals(0, ky.ky10Submissions.size)
+    }
+
+    @Test
+    fun cancelSkipKy_clears_confirm_without_skipping() = runVmTest { dispatchers ->
+        val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
+        val (vm, _, sales) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+        )
+        advanceUntilIdle()
+        vm.submit()
+        advanceUntilIdle()
+        vm.requestSkipKy()
+        advanceUntilIdle()
+        vm.cancelSkipKy()
+        advanceUntilIdle()
+
+        assertFalse(vm.state.value.showSkipKyConfirm)
+        assertNotNull(vm.state.value.kyCapturePending)
+        assertNull(sales.lastCheckout)
+    }
+
+    @Test
+    fun confirmSkipKy_runs_checkout_with_audit_flag_and_no_ky_fan_out() = runVmTest { dispatchers ->
+        val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
+        val (vm, _, sales, ky) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+        )
+        advanceUntilIdle()
+        vm.submit()
+        advanceUntilIdle()
+        vm.requestSkipKy()
+        advanceUntilIdle()
+        vm.confirmSkipKy()
+        advanceUntilIdle()
+
         assertNotNull(sales.lastCheckout)
+        assertEquals(true, sales.lastCheckout!!.kySkippedByCashier)
         assertEquals(0, ky.ky10Submissions.size)
         assertNull(vm.state.value.kyCapturePending)
+        assertFalse(vm.state.value.showSkipKyConfirm)
+    }
+
+    @Test
+    fun confirmKyCapture_does_not_mark_audit_flag() = runVmTest { dispatchers ->
+        val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
+        val (vm, _, sales) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+        )
+        advanceUntilIdle()
+        vm.submit()
+        advanceUntilIdle()
+        vm.confirmKyCapture(
+            KyCaptureFields(ky10BuyerName = "B", ky10BuyerAddress = "A"),
+        )
+        advanceUntilIdle()
+
+        assertNotNull(sales.lastCheckout)
+        assertEquals(false, sales.lastCheckout!!.kySkippedByCashier)
     }
 
     @Test

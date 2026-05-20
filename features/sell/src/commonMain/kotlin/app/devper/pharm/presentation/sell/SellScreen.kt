@@ -29,6 +29,7 @@ import app.devper.pharm.presentation.sell.components.CartSlotRail
 import app.devper.pharm.presentation.sell.components.CustomerPickerSheet
 import app.devper.pharm.presentation.sell.components.DrugPickerColumn
 import app.devper.pharm.presentation.sell.components.KyCaptureSheet
+import app.devper.pharm.presentation.sell.components.SkipKyConfirmSheet
 import app.devper.pharm.presentation.sell.components.LineDiscountSheet
 import app.devper.pharm.presentation.sell.components.OversellConfirmSheet
 import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
@@ -156,8 +157,15 @@ fun SellScreen(
                     initial = sellState.kyInitialFields,
                     submitting = checkoutState.checkingOut,
                     onConfirm = checkoutVM::confirmKyCapture,
-                    onSkip = checkoutVM::skipKyCapture,
+                    onSkip = checkoutVM::requestSkipKy,
                     onDismiss = checkoutVM::dismissKyCapture,
+                )
+            }
+
+            if (checkoutState.showSkipKyConfirm) {
+                SkipKyConfirmSheet(
+                    onConfirm = checkoutVM::confirmSkipKy,
+                    onDismiss = checkoutVM::cancelSkipKy,
                 )
             }
 

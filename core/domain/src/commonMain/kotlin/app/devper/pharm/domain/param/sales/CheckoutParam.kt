@@ -8,6 +8,7 @@ data class CheckoutParam(
     val priceTier: String = "",
 
     val clientRequestId: String? = null,
+    val kySkippedByCashier: Boolean = false,
 )
 
 data class CheckoutLineParam(

@@ -7,6 +7,7 @@ import app.devper.pharm.ui.common.BaseUiState
 data class CheckoutUiState(
     val checkingOut: Boolean = false,
     val kyCapturePending: KyRequired? = null,
+    val showSkipKyConfirm: Boolean = false,
     val oversellPending: List<OversellShortfall>? = null,
     override val error: String? = null,
 
@@ -22,5 +23,6 @@ data class CheckoutUiState(
             tenderOk &&
             !checkingOut &&
             kyCapturePending == null &&
+            !showSkipKyConfirm &&
             oversellPending == null
 }
