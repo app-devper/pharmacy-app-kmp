@@ -43,6 +43,7 @@ import app.devper.pharm.data.repository.SupplierRepositoryImpl
 import app.devper.pharm.data.repository.UsersRepositoryImpl
 import app.devper.pharm.data.storage.OfflineSaleQueueImpl
 import app.devper.pharm.data.storage.ParkedCartStorage
+import app.devper.pharm.data.storage.StockCountDraftStorage
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.domain.repository.AuthRepository
 import app.devper.pharm.domain.repository.CartRepository
@@ -62,6 +63,7 @@ import app.devper.pharm.domain.repository.SettingsRepository
 import app.devper.pharm.domain.repository.UiPreferencesRepository
 import app.devper.pharm.data.repository.UiPreferencesRepositoryImpl
 import app.devper.pharm.domain.repository.StockAdjustmentsRepository
+import app.devper.pharm.domain.repository.StockCountDraftRepository
 import app.devper.pharm.domain.repository.StockCountsRepository
 import app.devper.pharm.domain.repository.OfflineSaleQueue
 import app.devper.pharm.domain.repository.ProfileRepository
@@ -77,6 +79,7 @@ val dataModule = module {
 
     single { TokenStorage(get()) }
     single { ParkedCartStorage(get()) }
+    singleOf(::StockCountDraftStorage) bind StockCountDraftRepository::class
     singleOf(::OfflineSaleQueueImpl) bind OfflineSaleQueue::class
 
     singleOf(::AuthApi)

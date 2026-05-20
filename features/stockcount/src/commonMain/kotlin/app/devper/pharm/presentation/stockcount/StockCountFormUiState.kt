@@ -13,6 +13,7 @@ data class StockCountFormUiState(
     val counts: Map<String, String> = emptyMap(),
     val note: String = "",
     val query: String = "",
+    val showSubmitConfirm: Boolean = false,
     override val error: String? = null,
 ) : BaseFormUiState<StockCountFormUiState> {
     val filtered: List<Drug> get() = DrugSearch.filter(drugs, query)
@@ -42,6 +43,25 @@ data class StockCountFormUiState(
             }
         }
 
+    val topDiscrepancies: List<StockCountDiscrepancy>
+        get() {
+            val byId = drugById
+            return changedLines
+                .mapNotNull { (id, counted) ->
+                    val drug = byId[id] ?: return@mapNotNull null
+                    StockCountDiscrepancy(
+                        drugId = id,
+                        drugName = drug.name,
+                        unit = drug.unit.orEmpty(),
+                        systemStock = drug.stock,
+                        counted = counted,
+                        delta = counted - drug.stock,
+                    )
+                }
+                .sortedByDescending { kotlin.math.abs(it.delta) }
+                .take(5)
+        }
+
     override val canSubmit: Boolean
         get() = !saving && !loading && pendingLines.isNotEmpty()
 
@@ -49,3 +69,12 @@ data class StockCountFormUiState(
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override fun withError(error: String?) = copy(error = error)
 }
+
+data class StockCountDiscrepancy(
+    val drugId: String,
+    val drugName: String,
+    val unit: String,
+    val systemStock: Int,
+    val counted: Int,
+    val delta: Int,
+)

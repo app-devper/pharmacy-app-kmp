@@ -92,6 +92,13 @@ internal fun StockCountFormToolbar(
                 enabled = state.counts.isNotEmpty(),
             )
             PharmButton(
+                label = "ล้าง draft",
+                onClick = callbacks.onClearDraft,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+                enabled = state.counts.isNotEmpty() || state.note.isNotBlank(),
+            )
+            PharmButton(
                 label = "บันทึก ${state.changedCount} รายการ",
                 onClick = callbacks.onSave,
                 size = PharmButtonSize.Sm,
