@@ -58,6 +58,7 @@ fun EodContent(
         EodHeader(
             date = state.date,
             loading = state.loading,
+            closing = state.closing,
             closed = state.closed,
             hasReport = report != null,
             callbacks = callbacks,
@@ -99,6 +100,7 @@ fun EodContent(
 private fun EodHeader(
     date: String,
     loading: Boolean,
+    closing: Boolean,
     closed: Boolean,
     hasReport: Boolean,
     callbacks: EodCallbacks,
@@ -155,7 +157,7 @@ private fun EodHeader(
             )
             EodCloseButton(
                 closed = closed,
-                enabled = !loading && hasReport,
+                enabled = !loading && !closing && hasReport,
                 onClick = callbacks.onRequestClose,
             )
         }

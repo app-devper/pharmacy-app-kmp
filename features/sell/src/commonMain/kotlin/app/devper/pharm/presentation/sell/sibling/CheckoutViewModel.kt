@@ -26,7 +26,6 @@ import app.devper.pharm.ui.print.buildReceiptTemplate
 import app.devper.pharm.presentation.sell.internal.todayYmd
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class CheckoutViewModel(
     cartState: CartStateProvider,
