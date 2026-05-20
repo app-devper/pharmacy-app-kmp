@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Remove
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -111,7 +112,6 @@ fun CartLineRow(
         QtyStepper(
             qty = line.displayQty,
             onQtyChange = onQtyChange,
-            onRemove = { showRemoveConfirm = true },
         )
 
         Column(
@@ -134,6 +134,18 @@ fun CartLineRow(
                         else MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 textAlign = TextAlign.End,
+            )
+        }
+
+        IconButton(
+            onClick = { showRemoveConfirm = true },
+            modifier = Modifier.size(44.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = "ลบรายการ",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
@@ -162,7 +174,7 @@ fun CartLineRow(
         },
     ) {
         Text(
-            "ลบ ${line.drug.name} ออกจากตะกร้า?",
+            line.drug.name,
             style = PharmText.body,
         )
     }
@@ -187,7 +199,6 @@ private const val MAX_QTY = 9999
 private fun QtyStepper(
     qty: Int,
     onQtyChange: (Int) -> Unit,
-    onRemove: () -> Unit,
 ) {
     var editing by remember { mutableStateOf(false) }
     var draft by remember(qty) { mutableStateOf(qty.toString()) }
@@ -206,14 +217,12 @@ private fun QtyStepper(
     ) {
 
         StepperCircle(
-            onClick = {
-                if (qty <= 1) onRemove() else onQtyChange(qty - 1)
-            },
+            onClick = { onQtyChange(qty - 1) },
             container = MaterialTheme.colorScheme.errorContainer,
             iconTint = MaterialTheme.colorScheme.error,
             icon = Icons.Outlined.Remove,
             description = "ลด",
-            enabled = true,
+            enabled = qty > 1,
         )
         Box(
             contentAlignment = Alignment.Center,

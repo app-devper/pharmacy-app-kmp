@@ -68,7 +68,18 @@ class SellViewModel(
 
     fun onSetQty(key: CartLineKey, displayQty: Int) = setCartQty(key, displayQty)
     fun onRemove(key: CartLineKey) = removeItem(key)
-    fun onClearCart() = clearCart()
+
+    fun requestClearCart() {
+        if (current.cart.isEmpty()) return
+        setState { copy(showClearConfirm = true) }
+    }
+
+    fun cancelClearCart() = setState { copy(showClearConfirm = false) }
+
+    fun confirmClearCart() {
+        clearCart()
+        setState { copy(showClearConfirm = false) }
+    }
 
     fun onOpenLineDiscount(line: CartLine) = setState { copy(lineDiscountFor = line) }
     fun onCloseLineDiscount() = setState { copy(lineDiscountFor = null) }
