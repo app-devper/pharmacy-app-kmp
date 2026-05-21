@@ -32,13 +32,25 @@ fun MetricCard(
         MetricTint.Green  -> t.colors.successFg
         MetricTint.Purple -> t.colors.typePurpleFg
     }
+    val bg = when (tint) {
+        MetricTint.Blue   -> t.colors.infoBg.copy(alpha = 0.25f)
+        MetricTint.Indigo -> t.colors.indigoBg.copy(alpha = 0.25f)
+        MetricTint.Green  -> t.colors.successBg.copy(alpha = 0.25f)
+        MetricTint.Purple -> t.colors.typePurpleBg.copy(alpha = 0.25f)
+    }
+    val borderColor = when (tint) {
+        MetricTint.Blue   -> t.colors.infoFg.copy(alpha = 0.15f)
+        MetricTint.Indigo -> t.colors.indigoFg.copy(alpha = 0.15f)
+        MetricTint.Green  -> t.colors.successFg.copy(alpha = 0.15f)
+        MetricTint.Purple -> t.colors.typePurpleFg.copy(alpha = 0.15f)
+    }
     val shape = t.shapes.lg
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(t.colors.surface, shape)
-            .border(1.dp, t.colors.borderSubtle, shape)
+            .background(bg, shape)
+            .border(1.dp, borderColor, shape)
             .padding(t.spacing.s4),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
