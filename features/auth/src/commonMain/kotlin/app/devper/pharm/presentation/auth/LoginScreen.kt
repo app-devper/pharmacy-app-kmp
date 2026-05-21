@@ -31,6 +31,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.Black
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.White
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmIcons
 import androidx.compose.material3.Icon
@@ -160,7 +161,7 @@ private fun BrandHeader() {
             Icon(
                 imageVector = PharmIcons.Pill,
                 contentDescription = null,
-                tint = t.colors.surface,
+                tint = White,
                 modifier = Modifier.size(32.dp),
             )
         }
