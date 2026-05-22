@@ -54,7 +54,6 @@ class StockCountFormViewModelTest {
             getDrugs = GetDrugsUseCase(drugs, dispatchers),
             createStockCount = CreateStockCountUseCase(counts, dispatchers),
             draftRepo = drafts,
-            dispatchers = dispatchers,
         )
         return Bundle(vm, drugs, counts, drafts)
     }

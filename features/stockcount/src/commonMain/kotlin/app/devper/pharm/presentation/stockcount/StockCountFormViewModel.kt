@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.param.CreateStockCountParam
 import app.devper.pharm.domain.parser.StockCountInputBuilder
@@ -19,14 +18,12 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.withContext
 
 @OptIn(FlowPreview::class, ExperimentalTime::class)
 class StockCountFormViewModel(
     private val getDrugs: GetDrugsUseCase,
     private val createStockCount: CreateStockCountUseCase,
     private val draftRepo: StockCountDraftRepository,
-    private val dispatchers: AppDispatchers,
 ) : BaseFormViewModel<StockCountFormUiState>(StockCountFormUiState()) {
 
     init {
@@ -37,18 +34,16 @@ class StockCountFormViewModel(
             .distinctUntilChanged()
             .debounce(DRAFT_DEBOUNCE_MS.milliseconds)
             .onEach { snapshot ->
-                withContext(dispatchers.io) {
-                    if (snapshot.counts.isEmpty() && snapshot.note.isBlank()) {
-                        draftRepo.clear()
-                    } else {
-                        draftRepo.save(
-                            StockCountDraft(
-                                counts = snapshot.counts,
-                                note = snapshot.note,
-                                updatedAt = Clock.System.now().toEpochMilliseconds(),
-                            )
+                if (snapshot.counts.isEmpty() && snapshot.note.isBlank()) {
+                    draftRepo.clear()
+                } else {
+                    draftRepo.save(
+                        StockCountDraft(
+                            counts = snapshot.counts,
+                            note = snapshot.note,
+                            updatedAt = Clock.System.now().toEpochMilliseconds(),
                         )
-                    }
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -107,7 +102,7 @@ class StockCountFormViewModel(
         val lines = StockCountInputBuilder.build(s.counts)
         val result = createStockCount(CreateStockCountParam(note = s.note.trim(), items = lines)).map { Unit }
         if (result.isSuccess) {
-            withContext(dispatchers.io) { draftRepo.clear() }
+            draftRepo.clear()
             setState { copy(counts = emptyMap(), note = "") }
         }
         return result

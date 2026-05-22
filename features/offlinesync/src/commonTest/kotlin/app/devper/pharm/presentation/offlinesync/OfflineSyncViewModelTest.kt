@@ -26,9 +26,8 @@ class OfflineSyncViewModelTest {
     ): Triple<OfflineSyncViewModel, FakeOfflineSaleQueue, FakeSaleRepository> {
         val vm = OfflineSyncViewModel(
             offlineQueue = OfflineQueueProvider(queue),
-            markSynced = MarkOfflineSaleSyncedUseCase(queue),
+            markSynced = MarkOfflineSaleSyncedUseCase(queue, dispatchers),
             retrySale = RetryOfflineSaleUseCase(queue, sales, dispatchers),
-            dispatchers = dispatchers,
         )
         return Triple(vm, queue, sales)
     }

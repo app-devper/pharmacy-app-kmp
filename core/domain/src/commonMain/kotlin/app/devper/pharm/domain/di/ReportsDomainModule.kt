@@ -9,6 +9,7 @@ import app.devper.pharm.domain.usecase.GetMovementsUseCase
 import app.devper.pharm.domain.usecase.GetProfitReportUseCase
 import app.devper.pharm.domain.usecase.GetSlowDrugsUseCase
 import app.devper.pharm.domain.usecase.GetTopDrugsUseCase
+import app.devper.pharm.domain.usecase.PrintReceiptUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -19,6 +20,7 @@ val reportsDomainModule = module {
     factoryOf(::GetProfitReportUseCase)
     factoryOf(::GetEodReportUseCase)
     factoryOf(::CloseEodUseCase)
+    factoryOf(::PrintReceiptUseCase)
     factoryOf(::GetMovementsUseCase)
     factoryOf(::ExportProfitCsvUseCase)
     factoryOf(::ExportMovementsCsvUseCase)
