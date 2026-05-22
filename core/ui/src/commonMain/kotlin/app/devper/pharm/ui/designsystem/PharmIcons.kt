@@ -219,6 +219,18 @@ object PharmIcons {
         "M3 6 h18 M3 12 h18 M3 18 h18",
     )
 
+    val Sun: ImageVector = strokeIcon(
+        name = "Sun",
+        circle(12f, 12f, 4f),
+        "M12 2 v2 M12 20 v2 M2 12 h2 M20 12 h2",
+        "M4.93 4.93 l1.41 1.41 M17.66 17.66 l1.41 1.41 M4.93 19.07 l1.41 -1.41 M17.66 6.34 l1.41 -1.41",
+    )
+
+    val Moon: ImageVector = strokeIcon(
+        name = "Moon",
+        "M21 12.79 A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79 Z",
+    )
+
     val Search: ImageVector = strokeIcon(
         name = "Search",
         circle(11f, 11f, 7f),
