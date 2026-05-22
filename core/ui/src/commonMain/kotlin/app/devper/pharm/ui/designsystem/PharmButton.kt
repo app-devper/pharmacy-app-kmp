@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,14 +33,15 @@ fun PharmButton(
     variant: PharmButtonVariant = PharmButtonVariant.Primary,
     size: PharmButtonSize = PharmButtonSize.Md,
     enabled: Boolean = true,
+    loading: Boolean = false,
     leadingIcon: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
     val (bg, fg, border) = colorsFor(variant)
     val padding = paddingFor(size)
-    val textStyle = if (size == PharmButtonSize.Sm) PharmText.buttonSm else PharmText.buttonMd
     val shape = t.shapes.md
+    val interactive = enabled && !loading
 
     Row(
         modifier = modifier
@@ -46,14 +49,21 @@ fun PharmButton(
             .alpha(if (enabled) 1f else 0.5f)
             .then(if (border != null) Modifier.border(1.dp, border, shape) else Modifier)
             .background(bg, shape)
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(enabled = interactive, onClick = onClick)
             .padding(padding),
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (leadingIcon != null) leadingIcon()
         CompositionLocalProvider(LocalContentColor provides fg) {
-
+            if (loading) {
+                CircularProgressIndicator(
+                    color = fg,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(14.dp),
+                )
+            } else if (leadingIcon != null) {
+                leadingIcon()
+            }
             content()
         }
     }
@@ -67,6 +77,7 @@ fun PharmButton(
     variant: PharmButtonVariant = PharmButtonVariant.Primary,
     size: PharmButtonSize = PharmButtonSize.Md,
     enabled: Boolean = true,
+    loading: Boolean = false,
     leadingIcon: (@Composable () -> Unit)? = null,
 ) = PharmButton(
     onClick = onClick,
@@ -74,6 +85,7 @@ fun PharmButton(
     variant = variant,
     size = size,
     enabled = enabled,
+    loading = loading,
     leadingIcon = leadingIcon,
 ) {
     val style = if (size == PharmButtonSize.Sm) PharmText.buttonSm else PharmText.buttonMd
