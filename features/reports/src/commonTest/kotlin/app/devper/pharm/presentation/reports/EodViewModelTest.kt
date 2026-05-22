@@ -10,6 +10,7 @@ import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.CloseEodUseCase
 import app.devper.pharm.domain.usecase.GetEodReportUseCase
+import app.devper.pharm.domain.usecase.PrintReceiptUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -67,8 +68,7 @@ class EodViewModelTest {
         settings = SettingsProvider(settings),
         getEodReport = GetEodReportUseCase(reports, dispatchers),
         closeEod = CloseEodUseCase(reports, dispatchers),
-        receiptPrinter = printer,
-        dispatchers = dispatchers,
+        printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
     )
 
     @Test

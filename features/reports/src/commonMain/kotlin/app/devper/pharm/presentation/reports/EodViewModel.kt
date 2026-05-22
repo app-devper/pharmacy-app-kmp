@@ -1,26 +1,23 @@
 package app.devper.pharm.presentation.reports
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.CloseEodParam
 import app.devper.pharm.domain.param.EodReportParam
 import app.devper.pharm.domain.usecase.CloseEodUseCase
 import app.devper.pharm.domain.usecase.GetEodReportUseCase
+import app.devper.pharm.domain.usecase.PrintReceiptUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import app.devper.pharm.ui.print.buildEodReceiptTemplate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class EodViewModel(
     settings: SettingsProvider,
     private val getEodReport: GetEodReportUseCase,
     private val closeEod: CloseEodUseCase,
-    private val receiptPrinter: ReceiptPrinter,
-    private val dispatchers: AppDispatchers,
+    private val printReceiptUseCase: PrintReceiptUseCase,
 ) : BaseViewModel<EodUiState>(EodUiState()) {
 
     private var lastSettings: Settings = Settings()
@@ -72,12 +69,13 @@ class EodViewModel(
     fun printReceipt() {
         val result = current.closeResult ?: return
         val template = buildEodReceiptTemplate(closed = result, settings = lastSettings)
-        viewModelScope.launch(dispatchers.io) {
-            val ok = receiptPrinter.print(template)
-            if (!ok) {
-                setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") }
-            }
-        }
+        launchResult(
+            block = { printReceiptUseCase(template) },
+            onSuccess = { ok ->
+                if (!ok) setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") }
+            },
+            onFailure = { setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") } },
+        )
     }
 
     fun reload() {
