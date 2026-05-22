@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmIcons
@@ -57,6 +61,7 @@ fun PharmTopbar(
         }
         Text(text = title, style = PharmText.h1)
         Box(modifier = Modifier.weight(1f))
+        ThemeToggleButton()
         if (online) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -92,6 +97,27 @@ fun PharmTopbar(
             .height(1.dp)
             .background(t.colors.border),
     )
+}
+
+@Composable
+private fun ThemeToggleButton() {
+    val t = pharmTokens
+    val controller = LocalThemeController.current
+    if (!controller.canToggle) return
+    Box(
+        modifier = Modifier
+            .size(32.dp)
+            .clip(t.shapes.sm)
+            .clickable(onClick = controller.toggle),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = if (controller.isDark) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
+            contentDescription = if (controller.isDark) "สลับเป็นธีมสว่าง" else "สลับเป็นธีมมืด",
+            tint = t.colors.fg2,
+            modifier = Modifier.size(18.dp),
+        )
+    }
 }
 
 @Composable

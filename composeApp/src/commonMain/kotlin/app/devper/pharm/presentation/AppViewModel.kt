@@ -2,11 +2,13 @@ package app.devper.pharm.presentation
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.observer.AuthStateProvider
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.GetProfileUseCase
 import app.devper.pharm.domain.usecase.LogoutUseCase
+import app.devper.pharm.domain.usecase.SetThemePreferenceUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -17,6 +19,7 @@ class AppViewModel(
     uiPreferences: UiPreferencesProvider,
     private val logout: LogoutUseCase,
     private val getProfile: GetProfileUseCase,
+    private val setTheme: SetThemePreferenceUseCase,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
 
     init {
@@ -62,6 +65,10 @@ class AppViewModel(
             block = { logout() },
             onSuccess = {  },
         )
+    }
+
+    fun toggleTheme(currentlyDark: Boolean) {
+        setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark)
     }
 
     fun dismissError() = setState { copy(error = null) }
