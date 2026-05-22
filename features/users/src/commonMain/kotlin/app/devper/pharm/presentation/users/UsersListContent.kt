@@ -7,15 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +32,8 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmLoadingState
 import app.devper.pharm.ui.designsystem.PharmTableSurface
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
@@ -52,8 +51,17 @@ fun UsersListContent(
         Column(modifier = Modifier.fillMaxSize()) {
             UsersHeader(state = state, callbacks = callbacks)
             when {
-                state.loading && state.users.isEmpty() -> LoadingState()
-                state.users.isEmpty() && state.searchQuery.isBlank() -> EmptyState(onAdd = callbacks.onAddUser)
+                state.loading && state.users.isEmpty() -> PharmLoadingState()
+                state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
+                    title = "ยังไม่มีผู้ใช้งาน",
+                    action = {
+                        PharmButton(
+                            label = "+ เพิ่มผู้ใช้งานคนแรก",
+                            onClick = callbacks.onAddUser,
+                            variant = PharmButtonVariant.Primary,
+                        )
+                    },
+                )
                 else -> UsersTableSection(state = state, callbacks = callbacks)
             }
         }
@@ -96,34 +104,6 @@ private fun UsersHeader(
                 placeholder = "ค้นหาชื่อ / username / อีเมล…",
             )
         }
-    }
-}
-
-@Composable
-private fun LoadingState() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(color = pharmTokens.colors.accent)
-    }
-}
-
-@Composable
-private fun EmptyState(onAdd: () -> Unit) {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = "ยังไม่มีผู้ใช้งาน",
-            style = PharmText.h2.copy(color = t.colors.fg2),
-        )
-        Spacer(Modifier.height(12.dp))
-        PharmButton(
-            label = "+ เพิ่มผู้ใช้งานคนแรก",
-            onClick = onAdd,
-            variant = PharmButtonVariant.Primary,
-        )
     }
 }
 
@@ -200,10 +180,11 @@ private fun DeleteDialogBody(
             enabled = !state.actionBusy,
         )
         PharmButton(
-            label = if (state.actionBusy) "กำลังลบ…" else "ลบ",
+            label = "ลบ",
             onClick = callbacks.onConfirmDelete,
             variant = PharmButtonVariant.Danger,
             enabled = !state.actionBusy,
+            loading = state.actionBusy,
         )
     }
 }
@@ -260,10 +241,11 @@ private fun StatusDialogBody(
             enabled = !state.actionBusy,
         )
         PharmButton(
-            label = if (state.actionBusy) "กำลังบันทึก…" else if (nextActive) "เปิดใช้" else "ระงับ",
+            label = if (nextActive) "เปิดใช้" else "ระงับ",
             onClick = callbacks.onConfirmStatusToggle,
             variant = PharmButtonVariant.Primary,
             enabled = !state.actionBusy,
+            loading = state.actionBusy,
         )
     }
 }
@@ -308,10 +290,11 @@ private fun PasswordDialogBody(
             enabled = !state.actionBusy,
         )
         PharmButton(
-            label = if (state.actionBusy) "กำลังบันทึก…" else "ตั้งรหัสผ่าน",
+            label = "ตั้งรหัสผ่าน",
             onClick = { callbacks.onSubmitPasswordSet(pwd) },
             variant = PharmButtonVariant.Primary,
             enabled = matches && !state.actionBusy,
+            loading = state.actionBusy,
         )
     }
 }
