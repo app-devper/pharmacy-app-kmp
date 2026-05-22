@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.presentation.AppViewModel
 import app.devper.pharm.presentation.navigation.AppNavHost
@@ -25,11 +26,13 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
         ThemePreference.Dark  -> true
         ThemePreference.Auto  -> systemDark
     }
-    val themeController = ThemeController(
-        isDark = darkTheme,
-        canToggle = true,
-        toggle = { viewModel.toggleTheme(darkTheme) },
-    )
+    val themeController = remember(darkTheme) {
+        ThemeController(
+            isDark = darkTheme,
+            canToggle = true,
+            toggle = { viewModel.toggleTheme(darkTheme) },
+        )
+    }
     PharmacyTheme(
         darkTheme = darkTheme,
         fontScale = state.uiPreferences.fontSize.scale,

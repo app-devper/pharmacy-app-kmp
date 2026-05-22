@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmText
@@ -106,9 +107,9 @@ private fun ThemeToggleButton() {
     if (!controller.canToggle) return
     Box(
         modifier = Modifier
-            .size(32.dp)
+            .size(44.dp)
             .clip(t.shapes.sm)
-            .clickable(onClick = controller.toggle),
+            .clickable(role = Role.Button, onClick = controller.toggle),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
