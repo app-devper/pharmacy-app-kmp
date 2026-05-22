@@ -6,8 +6,11 @@ import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeStockCountDraftRepository
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
+import app.devper.pharm.domain.usecase.ClearStockCountDraftUseCase
 import app.devper.pharm.domain.usecase.CreateStockCountUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.LoadStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.SaveStockCountDraftUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
@@ -53,7 +56,9 @@ class StockCountFormViewModelTest {
         val vm = StockCountFormViewModel(
             getDrugs = GetDrugsUseCase(drugs, dispatchers),
             createStockCount = CreateStockCountUseCase(counts, dispatchers),
-            draftRepo = drafts,
+            loadDraft = LoadStockCountDraftUseCase(drafts),
+            saveDraft = SaveStockCountDraftUseCase(drafts, dispatchers),
+            clearDraft = ClearStockCountDraftUseCase(drafts, dispatchers),
         )
         return Bundle(vm, drugs, counts, drafts)
     }

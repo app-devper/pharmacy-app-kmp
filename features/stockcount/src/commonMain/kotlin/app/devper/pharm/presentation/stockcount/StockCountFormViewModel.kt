@@ -4,9 +4,11 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.param.CreateStockCountParam
 import app.devper.pharm.domain.parser.StockCountInputBuilder
-import app.devper.pharm.domain.repository.StockCountDraftRepository
+import app.devper.pharm.domain.usecase.ClearStockCountDraftUseCase
 import app.devper.pharm.domain.usecase.CreateStockCountUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.LoadStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.SaveStockCountDraftUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
@@ -23,7 +25,9 @@ import kotlinx.coroutines.flow.onEach
 class StockCountFormViewModel(
     private val getDrugs: GetDrugsUseCase,
     private val createStockCount: CreateStockCountUseCase,
-    private val draftRepo: StockCountDraftRepository,
+    private val loadDraft: LoadStockCountDraftUseCase,
+    private val saveDraft: SaveStockCountDraftUseCase,
+    private val clearDraft: ClearStockCountDraftUseCase,
 ) : BaseFormViewModel<StockCountFormUiState>(StockCountFormUiState()) {
 
     init {
@@ -35,9 +39,9 @@ class StockCountFormViewModel(
             .debounce(DRAFT_DEBOUNCE_MS.milliseconds)
             .onEach { snapshot ->
                 if (snapshot.counts.isEmpty() && snapshot.note.isBlank()) {
-                    draftRepo.clear()
+                    clearDraft(Unit)
                 } else {
-                    draftRepo.save(
+                    saveDraft(
                         StockCountDraft(
                             counts = snapshot.counts,
                             note = snapshot.note,
@@ -102,14 +106,14 @@ class StockCountFormViewModel(
         val lines = StockCountInputBuilder.build(s.counts)
         val result = createStockCount(CreateStockCountParam(note = s.note.trim(), items = lines)).map { Unit }
         if (result.isSuccess) {
-            draftRepo.clear()
+            clearDraft(Unit)
             setState { copy(counts = emptyMap(), note = "") }
         }
         return result
     }
 
     private fun hydrate() {
-        val draft = draftRepo.load()
+        val draft = loadDraft(Unit).getOrNull() ?: return
         if (draft.isEmpty) return
         setState { copy(counts = draft.counts, note = draft.note) }
     }

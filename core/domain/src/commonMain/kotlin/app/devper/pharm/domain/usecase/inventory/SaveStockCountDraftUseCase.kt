@@ -1,0 +1,12 @@
+package app.devper.pharm.domain.usecase
+
+import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.model.StockCountDraft
+import app.devper.pharm.domain.repository.StockCountDraftRepository
+
+class SaveStockCountDraftUseCase(
+    private val draftRepo: StockCountDraftRepository,
+    dispatchers: AppDispatchers,
+) : BaseUseCase<StockCountDraft, Unit>(dispatchers) {
+    override suspend fun execute(param: StockCountDraft) = draftRepo.save(param)
+}
