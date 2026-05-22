@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -63,6 +66,43 @@ fun CartCashReceivedRow(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            PharmButton(
+                label = "พอดี",
+                onClick = { onReceivedChange(plainAmount(total)) },
+                variant = PharmButtonVariant.Outline,
+                size = PharmButtonSize.Sm,
+                enabled = !checkingOut && total > 0.0,
+                modifier = Modifier.weight(1f),
+            )
+            PharmButton(
+                label = "฿100",
+                onClick = { onReceivedChange("100") },
+                variant = PharmButtonVariant.Outline,
+                size = PharmButtonSize.Sm,
+                enabled = !checkingOut,
+                modifier = Modifier.weight(1f),
+            )
+            PharmButton(
+                label = "฿500",
+                onClick = { onReceivedChange("500") },
+                variant = PharmButtonVariant.Outline,
+                size = PharmButtonSize.Sm,
+                enabled = !checkingOut,
+                modifier = Modifier.weight(1f),
+            )
+            PharmButton(
+                label = "฿1000",
+                onClick = { onReceivedChange("1000") },
+                variant = PharmButtonVariant.Outline,
+                size = PharmButtonSize.Sm,
+                enabled = !checkingOut,
+                modifier = Modifier.weight(1f),
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -82,6 +122,9 @@ fun CartCashReceivedRow(
         }
     }
 }
+
+private fun plainAmount(value: Double): String =
+    if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
 
 @Preview
 @Composable

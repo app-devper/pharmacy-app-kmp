@@ -18,10 +18,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.devper.pharm.domain.model.Drug
@@ -44,6 +48,16 @@ fun DrugPickerColumn(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
+    val searchFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { searchFocus.requestFocus() } }
+    val onSubmitSearch = {
+        if (query.isNotBlank()) {
+            visible.firstOrNull()?.let { drug ->
+                onAdd(drug)
+                onQueryChange("")
+            }
+        }
+    }
     Column(modifier = modifier.fillMaxSize().background(t.colors.bgPage)) {
 
         Row(
@@ -57,6 +71,8 @@ fun DrugPickerColumn(
             SearchBar(
                 query = query,
                 onChange = onQueryChange,
+                onSubmit = onSubmitSearch,
+                focusRequester = searchFocus,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -114,6 +130,8 @@ fun DrugPickerColumn(
 private fun SearchBar(
     query: String,
     onChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -126,6 +144,9 @@ private fun SearchBar(
             onValueChange = onChange,
             placeholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)",
             modifier = Modifier.weight(1f),
+            imeAction = ImeAction.Search,
+            onImeAction = onSubmit,
+            focusRequester = focusRequester,
             leadingSlot = null,
             trailingSlot = null,
         )

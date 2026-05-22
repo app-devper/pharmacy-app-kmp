@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -22,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
@@ -75,6 +79,9 @@ fun PharmTextField(
     isWarning: Boolean = false,
     singleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Default,
+    onImeAction: (() -> Unit)? = null,
+    focusRequester: FocusRequester? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     leadingSlot: (@Composable () -> Unit)? = null,
     trailingSlot: (@Composable () -> Unit)? = null,
@@ -116,12 +123,20 @@ fun PharmTextField(
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier),
                     enabled = enabled,
                     readOnly = readOnly,
                     singleLine = singleLine,
                     textStyle = style,
-                    keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                    keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+                    keyboardActions = if (onImeAction != null) KeyboardActions(
+                        onDone = { onImeAction() },
+                        onSearch = { onImeAction() },
+                        onGo = { onImeAction() },
+                        onSend = { onImeAction() },
+                    ) else KeyboardActions.Default,
                     visualTransformation = visualTransformation,
                     interactionSource = interaction,
                     cursorBrush = androidx.compose.ui.graphics.SolidColor(t.colors.accent),
