@@ -46,7 +46,7 @@ fun PharmButton(
     Row(
         modifier = modifier
             .clip(shape)
-            .alpha(if (enabled) 1f else 0.5f)
+            .alpha(if (enabled || loading) 1f else 0.5f)
             .then(if (border != null) Modifier.border(1.dp, border, shape) else Modifier)
             .background(bg, shape)
             .clickable(enabled = interactive, onClick = onClick)

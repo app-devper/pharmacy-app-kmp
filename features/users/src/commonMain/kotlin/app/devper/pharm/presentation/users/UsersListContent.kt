@@ -183,7 +183,6 @@ private fun DeleteDialogBody(
             label = "ลบ",
             onClick = callbacks.onConfirmDelete,
             variant = PharmButtonVariant.Danger,
-            enabled = !state.actionBusy,
             loading = state.actionBusy,
         )
     }
@@ -244,7 +243,6 @@ private fun StatusDialogBody(
             label = if (nextActive) "เปิดใช้" else "ระงับ",
             onClick = callbacks.onConfirmStatusToggle,
             variant = PharmButtonVariant.Primary,
-            enabled = !state.actionBusy,
             loading = state.actionBusy,
         )
     }
@@ -293,7 +291,7 @@ private fun PasswordDialogBody(
             label = "ตั้งรหัสผ่าน",
             onClick = { callbacks.onSubmitPasswordSet(pwd) },
             variant = PharmButtonVariant.Primary,
-            enabled = matches && !state.actionBusy,
+            enabled = matches,
             loading = state.actionBusy,
         )
     }
