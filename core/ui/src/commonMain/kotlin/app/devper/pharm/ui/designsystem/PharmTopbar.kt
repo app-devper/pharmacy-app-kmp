@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -113,7 +110,7 @@ private fun ThemeToggleButton() {
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = if (controller.isDark) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
+            imageVector = if (controller.isDark) PharmIcons.Sun else PharmIcons.Moon,
             contentDescription = if (controller.isDark) "สลับเป็นธีมสว่าง" else "สลับเป็นธีมมืด",
             tint = t.colors.fg2,
             modifier = Modifier.size(18.dp),
