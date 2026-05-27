@@ -26,6 +26,7 @@ import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -241,13 +242,19 @@ private fun CartCheckoutButton(
                 }
             } else {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "ออกใบเสร็จ",
-                        style = PharmText.buttonMd.copy(
-                            color = t.colors.surface,
-                            fontWeight = FontWeight.SemiBold,
-                        ),
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        ShortcutHint(label = "F9")
+                        Text(
+                            "ออกใบเสร็จ",
+                            style = PharmText.buttonMd.copy(
+                                color = t.colors.surface,
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                        )
+                    }
                     Text(
                         fmtBaht(total),
                         style = PharmText.total.copy(color = t.colors.surface),

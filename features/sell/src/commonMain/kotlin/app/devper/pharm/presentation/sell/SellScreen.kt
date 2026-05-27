@@ -18,7 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.common.PharmShortcut
+import app.devper.pharm.ui.common.pharmShortcuts
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.scanner.scanBarcodes
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
@@ -56,12 +59,73 @@ fun SellScreen(
     val parkedState by parkedCartVM.state.collectAsState()
     val voidState by voidSaleVM.state.collectAsState()
 
+    val onShortcutParkCart: () -> Unit = {
+        if (!parkedState.activeCartIsEmpty) {
+            val firstEmpty = parkedState.parkedSlots.indexOfFirst { it == null }
+            if (firstEmpty >= 0) parkedCartVM.tapSlot(firstEmpty) else parkedCartVM.openSheet()
+        }
+    }
+
+    val onShortcutEscape: () -> Unit = {
+        when {
+            parkedState.overwriteSlot != null      -> parkedCartVM.cancelOverwrite()
+            parkedState.swapSlot != null           -> parkedCartVM.cancelSwap()
+            sellState.showClearConfirm             -> sellVM.cancelClearCart()
+            checkoutState.showSkipKyConfirm        -> checkoutVM.cancelSkipKy()
+            checkoutState.oversellPending != null  -> checkoutVM.dismissOversell()
+            checkoutState.kyCapturePending != null -> checkoutVM.dismissKyCapture()
+            sellState.lineDiscountFor != null      -> sellVM.onCloseLineDiscount()
+            sellState.cartDiscountSheetOpen        -> sellVM.onCloseCartDiscount()
+            drugState.altUnitPickerFor != null     -> drugPickerVM.onCloseAltUnitPicker()
+            voidState.sheetOpen                    -> voidSaleVM.closeSheet()
+            customerState.open                     -> customerPickerVM.close()
+            parkedState.sheetOpen                  -> parkedCartVM.closeSheet()
+            sellState.receipt != null              -> checkoutVM.dismissReceipt()
+        }
+    }
+
+    val sellShortcuts = arrayOf(
+        PharmShortcut(
+            key = Key.F2,
+            label = "F2",
+            action = customerPickerVM::open,
+        ),
+        PharmShortcut(
+            key = Key.F4,
+            label = "F4",
+            action = sellVM::onOpenCartDiscount,
+        ),
+        PharmShortcut(
+            key = Key.F9,
+            label = "F9",
+            action = { if (checkoutState.canCheckout) checkoutVM.submit() },
+        ),
+        PharmShortcut(
+            key = Key.Escape,
+            label = "Esc",
+            action = onShortcutEscape,
+        ),
+        PharmShortcut(
+            key = Key.N,
+            ctrl = true,
+            label = "Ctrl+N",
+            action = onShortcutParkCart,
+        ),
+        PharmShortcut(
+            key = Key.P,
+            ctrl = true,
+            shift = true,
+            label = "Ctrl+Shift+P",
+            action = parkedCartVM::openSheet,
+        ),
+    )
+
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier
             .fillMaxSize()
-
-            .scanBarcodes(onScan = drugPickerVM::onScanBarcode),
+            .scanBarcodes(onScan = drugPickerVM::onScanBarcode)
+            .pharmShortcuts(*sellShortcuts),
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val isWide = maxWidth >= 720.dp
