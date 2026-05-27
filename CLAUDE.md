@@ -223,9 +223,9 @@ purpose isn't clear from its name, rename the method.
 
 ## Project reminders (KMP-specific)
 
-- **Stack**: Kotlin Multiplatform 2.3.0 / Compose Multiplatform 1.9.3 / AGP
+- **Stack**: Kotlin Multiplatform 2.3.21 / Compose Multiplatform 1.11.0 / AGP
   8.13.2 / Gradle 8.14.3
-- **Targets**: `jvm`, `android`, `iosX64`, `iosArm64`, `iosSimulatorArm64`, `wasmJs`
+- **Targets**: `jvm`, `android`, `iosArm64`, `iosSimulatorArm64`, `wasmJs`
 - **Modules (27)**: `:composeApp` (entry), `:core:{common,domain,ui,data}` (4 core),
   `:features:shared` (nav hub + routes), `:features:test-fixtures` (test doubles),
   20 `:features:<x>` (auth, bulkimport, customers, expiry, help, imports, ky,

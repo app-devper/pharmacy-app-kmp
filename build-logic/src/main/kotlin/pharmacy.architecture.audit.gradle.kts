@@ -121,7 +121,7 @@ tasks.register("auditArchitecture") {
         }
 
         val platformOnlyForComposeApp = listOf("core/common", "core/domain", "core/ui", "core/data", "features")
-        val platformDirRe = Regex("""/src/(androidMain|iosMain|iosX64Main|iosArm64Main|iosSimulatorArm64Main|jvmMain|wasmJsMain|androidUnitTest|androidInstrumentedTest|iosTest|jvmTest|wasmJsTest)/""")
+        val platformDirRe = Regex("""/src/(androidMain|iosMain|iosArm64Main|iosSimulatorArm64Main|jvmMain|wasmJsMain|androidUnitTest|androidInstrumentedTest|iosTest|jvmTest|wasmJsTest)/""")
         platformOnlyForComposeApp.forEach { moduleDir ->
             val root = projectRoot.resolve(moduleDir)
             if (!root.exists()) return@forEach
