@@ -5,24 +5,24 @@ android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 
-androidx-lifecycle = "2.9.6"
+androidx-lifecycle = "2.10.0"
 androidx-savedstate = "1.4.0"
-androidx-navigationCompose = "2.9.1"
-androidx-core-ktx = "1.17.0"
-androidx-activityCompose = "1.12.2"
+androidx-navigationCompose = "2.9.2"
+androidx-core-ktx = "1.18.0"
+androidx-activityCompose = "1.13.0"
 
-compose-multiplatform = "1.9.3"
+compose-multiplatform = "1.11.0"
 
-koin = "4.1.1"
-ktor = "3.3.3"
+koin = "4.2.1"
+ktor = "3.5.0"
 
-kotlin = "2.3.0"
-kotlinx-serialization-json = "1.9.0"
+kotlin = "2.3.21"
+kotlinx-serialization-json = "1.11.0"
 kotlinx-datetime = "0.7.1"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 
 multiplatform-settings = "1.3.0"
-kermit = "2.0.8"
+kermit = "2.1.0"
 kotlinx-browser = "0.4"
 
 [libraries]
