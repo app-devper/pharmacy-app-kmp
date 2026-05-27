@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicTextField
@@ -15,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -25,6 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,7 +67,14 @@ fun FormField(
         content()
 
         when {
-            error != null -> Text(text = error, style = PharmText.micro.copy(color = t.colors.dangerFg))
+            error != null -> Text(
+                text = error,
+                style = PharmText.micro.copy(color = t.colors.dangerFg),
+                modifier = Modifier.semantics {
+                    liveRegion = LiveRegionMode.Polite
+                    contentDescription = error
+                },
+            )
             hint != null  -> Text(text = hint,  style = PharmText.micro)
         }
     }
@@ -153,6 +166,14 @@ fun PharmTextField(
                     },
                 )
             }
+        }
+        if (isError) {
+            Icon(
+                imageVector = PharmIcons.AlertCircle,
+                contentDescription = "ข้อผิดพลาด",
+                tint = t.colors.dangerFg,
+                modifier = Modifier.size(18.dp),
+            )
         }
         if (trailingSlot != null) {
             trailingSlot()

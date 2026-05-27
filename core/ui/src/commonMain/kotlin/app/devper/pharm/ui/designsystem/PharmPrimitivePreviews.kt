@@ -248,3 +248,41 @@ private fun PharmGroupedBarChart_Preview() {
     }
 }
 
+@Composable
+private fun PharmTextField_States_Body() {
+    var normal by remember { mutableStateOf("Paracetamol 500mg") }
+    var error by remember { mutableStateOf("") }
+    var warn by remember { mutableStateOf("ใกล้หมดอายุ") }
+    Column(
+        modifier = Modifier.padding(16.dp).background(pharmTokens.colors.bgPage),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        FormField(label = "ชื่อยา", required = true) {
+            PharmTextField(value = normal, onValueChange = { normal = it }, placeholder = "ค้นหายา")
+        }
+        FormField(label = "รหัส", required = true, error = "กรุณากรอกรหัสยา") {
+            PharmTextField(
+                value = error,
+                onValueChange = { error = it },
+                isError = true,
+                placeholder = "เช่น A001",
+            )
+        }
+        FormField(label = "หมายเหตุ", hint = "ระบุล็อตที่ใกล้หมดอายุ") {
+            PharmTextField(value = warn, onValueChange = { warn = it }, isWarning = true)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PharmTextField_States_Preview() {
+    PharmacyTheme { PharmTextField_States_Body() }
+}
+
+@Preview
+@Composable
+private fun PharmTextField_States_Dark_Preview() {
+    PharmacyTheme(darkTheme = true) { PharmTextField_States_Body() }
+}
+
