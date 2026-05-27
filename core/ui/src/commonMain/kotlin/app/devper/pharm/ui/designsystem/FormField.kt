@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -72,7 +71,6 @@ fun FormField(
                 style = PharmText.micro.copy(color = t.colors.dangerFg),
                 modifier = Modifier.semantics {
                     liveRegion = LiveRegionMode.Polite
-                    contentDescription = error
                 },
             )
             hint != null  -> Text(text = hint,  style = PharmText.micro)
@@ -167,13 +165,15 @@ fun PharmTextField(
                 )
             }
         }
-        if (isError) {
-            Icon(
-                imageVector = PharmIcons.AlertCircle,
-                contentDescription = "ข้อผิดพลาด",
-                tint = t.colors.dangerFg,
-                modifier = Modifier.size(18.dp),
-            )
+        Box(modifier = Modifier.size(18.dp), contentAlignment = Alignment.Center) {
+            if (isError) {
+                Icon(
+                    imageVector = PharmIcons.AlertCircle,
+                    contentDescription = "ข้อผิดพลาด",
+                    tint = t.colors.dangerFg,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
         }
         if (trailingSlot != null) {
             trailingSlot()
