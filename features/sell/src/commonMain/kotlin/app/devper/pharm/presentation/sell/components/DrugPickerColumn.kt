@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +34,7 @@ import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun DrugPickerColumn(
@@ -89,7 +89,7 @@ fun DrugPickerColumn(
             loading && drugs.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator(color = t.colors.accent) }
+            ) { PharmCircularProgress(color = t.colors.accent) }
 
             visible.isEmpty() && !loading -> EmptyState(searching = query.isNotBlank())
 

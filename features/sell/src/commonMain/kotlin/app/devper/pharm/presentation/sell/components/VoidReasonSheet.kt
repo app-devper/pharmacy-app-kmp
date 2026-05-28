@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -27,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +86,7 @@ fun VoidReasonSheet(
                     enabled = reason.isNotBlank() && !submitting,
                 ) {
                     if (submitting) {
-                        CircularProgressIndicator(
+                        PharmCircularProgress(
                             color = t.colors.surface,
                             strokeWidth = 2.dp,
                             modifier = Modifier.height(18.dp),

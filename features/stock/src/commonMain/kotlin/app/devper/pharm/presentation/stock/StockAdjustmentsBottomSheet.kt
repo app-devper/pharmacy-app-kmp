@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -46,6 +45,7 @@ import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,7 +119,7 @@ private fun HistoryBody(state: StockAdjustmentsUiState) {
             state.loading && state.history.isEmpty() -> Box(
                 modifier = Modifier.fillMaxWidth().padding(24.dp),
                 contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator() }
+            ) { PharmCircularProgress() }
 
             state.history.isEmpty() -> Box(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
@@ -275,7 +275,7 @@ private fun AddAdjustmentForm(state: StockAdjustmentsUiState, vm: StockAdjustmen
             modifier = Modifier.fillMaxWidth().height(48.dp),
         ) {
             if (state.saving) {
-                CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.height(18.dp))
+                PharmCircularProgress(strokeWidth = 2.dp, modifier = Modifier.height(18.dp))
             } else {
                 Text("บันทึก")
             }

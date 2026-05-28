@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +33,7 @@ import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun CartPanel(
@@ -233,7 +233,7 @@ private fun CartCheckoutButton(
         ) {
             if (checkingOut) {
                 Box(modifier = Modifier.size(18.dp)) {
-                    CircularProgressIndicator(
+                    PharmCircularProgress(
                         color = t.colors.surface,
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(16.dp),

@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +34,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,7 +118,7 @@ fun KyCaptureSheet(
                     enabled = canSubmit,
                 ) {
                     if (submitting) {
-                        CircularProgressIndicator(
+                        PharmCircularProgress(
                             color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.dp,
                             modifier = Modifier.height(18.dp),
