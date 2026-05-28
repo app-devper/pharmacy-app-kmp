@@ -24,6 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -52,12 +56,16 @@ fun PharmActionMenu(
                 .size(32.dp)
                 .clip(t.shapes.pill)
                 .background(if (expanded) t.colors.borderSubtle else Color.Transparent)
+                .semantics(mergeDescendants = true) {
+                    contentDescription = "เปิดเมนู"
+                    role = Role.Button
+                }
                 .clickable { expanded = true },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = PharmIcons.More,
-                contentDescription = "เปิดเมนู",
+                contentDescription = null,
                 tint = if (expanded) t.colors.fg1 else t.colors.fg3,
                 modifier = Modifier.size(18.dp),
             )

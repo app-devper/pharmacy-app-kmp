@@ -17,7 +17,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material.icons.outlined.WarningAmber
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,6 +43,7 @@ import app.devper.pharm.domain.pricing.tierLabel
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.tabular
 import org.koin.compose.viewmodel.koinViewModel
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +107,7 @@ fun CustomerDetailScreen(
 private fun CustomerHeader(customer: Customer?, loading: Boolean) {
     if (loading && customer == null) {
         Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            PharmCircularProgress()
         }
         return
     }
@@ -206,7 +206,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
         when {
             state.salesLoading && state.sales.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    PharmCircularProgress()
                 }
             }
             state.sales.isEmpty() -> {
