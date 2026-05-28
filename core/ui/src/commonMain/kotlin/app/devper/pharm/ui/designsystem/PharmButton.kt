@@ -1,14 +1,17 @@
 package app.devper.pharm.ui.designsystem
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -19,6 +22,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.common.pharmFocusRing
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,15 +49,23 @@ fun PharmButton(
     val padding = paddingFor(size)
     val shape = t.shapes.md
     val interactive = enabled && !loading
+    val interaction = remember { MutableInteractionSource() }
+    val indication = LocalIndication.current
 
     Row(
         modifier = modifier
+            .pharmFocusRing(interactionSource = interaction, shape = shape)
             .clip(shape)
             .alpha(if (enabled || loading) 1f else 0.5f)
             .then(if (border != null) Modifier.border(1.dp, border, shape) else Modifier)
             .background(bg, shape)
             .semantics { role = Role.Button }
-            .clickable(enabled = interactive, onClick = onClick)
+            .clickable(
+                enabled = interactive,
+                onClick = onClick,
+                interactionSource = interaction,
+                indication = indication,
+            )
             .padding(padding),
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
