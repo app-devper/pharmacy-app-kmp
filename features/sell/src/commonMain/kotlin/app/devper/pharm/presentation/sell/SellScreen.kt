@@ -19,6 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.scanner.scanBarcodes
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
@@ -55,6 +58,20 @@ fun SellScreen(
     val customerState by customerPickerVM.state.collectAsState()
     val parkedState by parkedCartVM.state.collectAsState()
     val voidState by voidSaleVM.state.collectAsState()
+
+    val snackbar = LocalPharmSnackbar.current
+    val onTapParkSlot: (Int) -> Unit = { slot ->
+        val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
+        parkedCartVM.tapSlot(slot)
+        if (willPark) {
+            snackbar.showToast(
+                PharmToast.Info(
+                    message = "พักตะกร้าไว้ช่อง ${slot + 1} แล้ว",
+                    action = ToastAction("เปิดดู") { parkedCartVM.openSheet() },
+                ),
+            )
+        }
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -93,7 +110,7 @@ fun SellScreen(
 
                     CartSlotRail(
                         slots = parkedState.parkedSlots,
-                        onTapSlot = parkedCartVM::tapSlot,
+                        onTapSlot = onTapParkSlot,
                     )
                 }
             } else {
@@ -130,7 +147,7 @@ fun SellScreen(
                 ParkedCartsSheet(
                     slots = parkedState.parkedSlots,
                     canParkActiveCart = !parkedState.activeCartIsEmpty,
-                    onTapSlot = parkedCartVM::tapSlot,
+                    onTapSlot = onTapParkSlot,
                     onDiscardSlot = parkedCartVM::discard,
                     onRequestOverwrite = parkedCartVM::requestOverwrite,
                     onDismiss = parkedCartVM::closeSheet,
