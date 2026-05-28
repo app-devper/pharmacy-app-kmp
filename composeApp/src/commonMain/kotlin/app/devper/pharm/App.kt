@@ -1,15 +1,21 @@
 package app.devper.pharm
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.presentation.AppViewModel
 import app.devper.pharm.presentation.navigation.AppNavHost
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmSnackbarHost
+import app.devper.pharm.ui.common.PharmSnackbarHostUi
 import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.ThemeController
@@ -33,13 +39,23 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
             toggle = { viewModel.toggleTheme(darkTheme) },
         )
     }
+    val snackbarHost = remember { PharmSnackbarHost() }
     PharmacyTheme(
         darkTheme = darkTheme,
         fontScale = state.uiPreferences.fontSize.scale,
     ) {
-        CompositionLocalProvider(LocalThemeController provides themeController) {
+        CompositionLocalProvider(
+            LocalThemeController provides themeController,
+            LocalPharmSnackbar provides snackbarHost,
+        ) {
             Surface {
-                AppNavHost(viewModel = viewModel)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AppNavHost(viewModel = viewModel)
+                    PharmSnackbarHostUi(
+                        host = snackbarHost,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
         }
     }

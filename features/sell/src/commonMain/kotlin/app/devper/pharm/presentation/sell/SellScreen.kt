@@ -20,7 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmShortcut
+import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.common.pharmShortcuts
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.scanner.scanBarcodes
@@ -59,6 +62,20 @@ fun SellScreen(
     val parkedState by parkedCartVM.state.collectAsState()
     val voidState by voidSaleVM.state.collectAsState()
 
+    val snackbar = LocalPharmSnackbar.current
+    val onTapParkSlot: (Int) -> Unit = { slot ->
+        val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
+        parkedCartVM.tapSlot(slot)
+        if (willPark) {
+            snackbar.showToast(
+                PharmToast.Info(
+                    message = "พักตะกร้าไว้ช่อง ${slot + 1} แล้ว",
+                    action = ToastAction("เปิดดู") { parkedCartVM.openSheet() },
+                ),
+            )
+        }
+    }
+
     val combinedError = sellState.error
         ?: checkoutState.error
         ?: drugState.error
@@ -76,7 +93,7 @@ fun SellScreen(
     val onShortcutParkCart: () -> Unit = {
         if (!parkedState.activeCartIsEmpty) {
             val firstEmpty = parkedState.parkedSlots.indexOfFirst { it == null }
-            if (firstEmpty >= 0) parkedCartVM.tapSlot(firstEmpty) else parkedCartVM.openSheet()
+            if (firstEmpty >= 0) onTapParkSlot(firstEmpty) else parkedCartVM.openSheet()
         }
     }
 
@@ -172,7 +189,7 @@ fun SellScreen(
 
                     CartSlotRail(
                         slots = parkedState.parkedSlots,
-                        onTapSlot = parkedCartVM::tapSlot,
+                        onTapSlot = onTapParkSlot,
                     )
                 }
             } else {
@@ -209,7 +226,7 @@ fun SellScreen(
                 ParkedCartsSheet(
                     slots = parkedState.parkedSlots,
                     canParkActiveCart = !parkedState.activeCartIsEmpty,
-                    onTapSlot = parkedCartVM::tapSlot,
+                    onTapSlot = onTapParkSlot,
                     onDiscardSlot = parkedCartVM::discard,
                     onRequestOverwrite = parkedCartVM::requestOverwrite,
                     onDismiss = parkedCartVM::closeSheet,

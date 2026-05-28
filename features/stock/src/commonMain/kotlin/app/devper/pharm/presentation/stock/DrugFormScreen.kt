@@ -6,6 +6,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.stock.form.DrugFormCallbacks
 import app.devper.pharm.presentation.stock.form.DrugFormContent
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmToast
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -17,6 +19,7 @@ fun DrugFormScreen(
     adjustmentsViewModel: StockAdjustmentsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbar = LocalPharmSnackbar.current
 
     LaunchedEffect(drugId) {
         viewModel.init(if (drugId.isNullOrBlank()) DrugFormMode.Add else DrugFormMode.Edit(drugId))
@@ -24,6 +27,7 @@ fun DrugFormScreen(
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
+            snackbar.showToast(PharmToast.Success("บันทึกข้อมูลยาเรียบร้อย"))
             onBack()
         }
     }
