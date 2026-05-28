@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +38,7 @@ import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import kotlin.math.abs
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun EodContent(
@@ -67,7 +67,7 @@ fun EodContent(
         when {
             state.loading && report == null ->
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = t.colors.accent)
+                    PharmCircularProgress(color = t.colors.accent)
                 }
 
             report == null -> EmptyEod()

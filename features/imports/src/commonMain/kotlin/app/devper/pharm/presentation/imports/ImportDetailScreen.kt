@@ -20,7 +20,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -49,6 +48,7 @@ import app.devper.pharm.ui.format.formatBaht
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.tabular
 import org.koin.compose.viewmodel.koinViewModel
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +106,7 @@ fun ImportDetailScreen(
         Box(modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             when {
                 state.loading && state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    PharmCircularProgress()
                 }
                 state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("ไม่พบใบรับสินค้า", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -330,7 +330,7 @@ private fun ActionBar(
                     modifier = Modifier.weight(1f),
                 ) {
                     if (state.confirming) {
-                        CircularProgressIndicator(
+                        PharmCircularProgress(
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(18.dp),
                         )

@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -41,6 +40,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 data class HelpSection(
     val id: String,
@@ -62,7 +62,7 @@ fun HelpContent(
             state.loading -> Box(
                 Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator(color = t.colors.accent) }
+            ) { PharmCircularProgress(color = t.colors.accent) }
 
             state.markdown.isBlank() -> Box(
                 Modifier.fillMaxSize(),

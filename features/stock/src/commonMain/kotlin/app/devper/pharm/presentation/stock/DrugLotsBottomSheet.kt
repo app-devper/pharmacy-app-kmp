@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,7 +134,7 @@ private fun LotsBody(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center,
-                ) { CircularProgressIndicator() }
+                ) { PharmCircularProgress() }
             }
             state.lots.isEmpty() -> {
                 Text(
@@ -258,7 +258,7 @@ private fun AddLotForm(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
             modifier = Modifier.fillMaxWidth().height(48.dp),
         ) {
             if (state.saving) {
-                CircularProgressIndicator(
+                PharmCircularProgress(
                     color = MaterialTheme.colorScheme.onPrimary,
                     strokeWidth = 2.dp,
                     modifier = Modifier.size(18.dp),

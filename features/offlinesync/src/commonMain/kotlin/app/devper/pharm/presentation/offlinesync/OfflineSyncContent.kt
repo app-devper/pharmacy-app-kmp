@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun OfflineSyncContent(
@@ -53,8 +53,6 @@ fun OfflineSyncContent(
 
         OfflineSyncMetricsRow(pending = state.pending)
 
-        state.message?.let { MessageBanner(message = it, onDismiss = callbacks.onDismissMessage) }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -65,7 +63,7 @@ fun OfflineSyncContent(
             when {
                 state.loading && state.pending.isEmpty() ->
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = t.colors.accent)
+                        PharmCircularProgress(color = t.colors.accent)
                     }
                 state.pending.isEmpty() -> EmptyOfflineSync()
                 else -> OfflineSyncTable(pending = state.pending, callbacks = callbacks)
@@ -143,32 +141,6 @@ private fun OfflineSyncHeader(
                     modifier = Modifier.size(16.dp),
                 )
             },
-        )
-    }
-}
-
-@Composable
-private fun MessageBanner(message: String, onDismiss: () -> Unit) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(t.shapes.md)
-            .background(t.colors.successBg)
-            .border(1.dp, t.colors.successFg, t.shapes.md)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = message,
-            style = PharmText.bodySm.copy(color = t.colors.successFg),
-            modifier = Modifier.weight(1f),
-        )
-        PharmButton(
-            label = "ปิด",
-            onClick = onDismiss,
-            variant = PharmButtonVariant.Ghost,
-            size = PharmButtonSize.Sm,
         )
     }
 }
