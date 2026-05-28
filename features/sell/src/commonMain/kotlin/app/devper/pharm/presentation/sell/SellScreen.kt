@@ -201,14 +201,16 @@ fun SellScreen(
                     )
                 }
                 sellState.receipt?.let { sale ->
-                    ReceiptDialog(
-                        sale = sale,
-                        received = sellState.receivedNum,
-                        onDismiss = checkoutVM::dismissReceipt,
-                        onVoid = sale.id.takeIf { it.isNotBlank() }
-                            ?.let { { voidSaleVM.openSheet() } },
-                        onPrint = { checkoutVM.printLastReceipt(sale) },
-                    )
+                    val template = checkoutState.lastReceiptTemplate
+                    if (template != null) {
+                        ReceiptDialog(
+                            template = template,
+                            onDismiss = checkoutVM::dismissReceipt,
+                            onVoid = sale.id.takeIf { it.isNotBlank() }
+                                ?.let { { voidSaleVM.openSheet() } },
+                            onPrint = { checkoutVM.printLastReceipt(sale) },
+                        )
+                    }
                     if (voidState.sheetOpen) {
                         VoidReasonSheet(
                             billNo = sale.billNo,

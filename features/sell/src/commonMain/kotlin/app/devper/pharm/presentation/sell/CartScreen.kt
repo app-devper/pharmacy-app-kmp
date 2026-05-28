@@ -204,18 +204,20 @@ fun CartScreen(
         )
     }
     sellState.receipt?.let { sale ->
-        ReceiptDialog(
-            sale = sale,
-            received = sellState.receivedNum,
-            onDismiss = {
-                checkoutVM.dismissReceipt()
+        val template = checkoutState.lastReceiptTemplate
+        if (template != null) {
+            ReceiptDialog(
+                template = template,
+                onDismiss = {
+                    checkoutVM.dismissReceipt()
 
-                onBack()
-            },
-            onVoid = sale.id.takeIf { it.isNotBlank() }
-                ?.let { { voidSaleVM.openSheet() } },
-            onPrint = { checkoutVM.printLastReceipt(sale) },
-        )
+                    onBack()
+                },
+                onVoid = sale.id.takeIf { it.isNotBlank() }
+                    ?.let { { voidSaleVM.openSheet() } },
+                onPrint = { checkoutVM.printLastReceipt(sale) },
+            )
+        }
         if (voidState.sheetOpen) {
             VoidReasonSheet(
                 billNo = sale.billNo,
