@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -73,16 +74,18 @@ sealed class PharmToast {
     ) : PharmToast()
 }
 
-class PharmSnackbarHost {
+open class PharmSnackbarHost {
     private val _events = MutableSharedFlow<PharmToast>(replay = 0, extraBufferCapacity = 4)
     val events: SharedFlow<PharmToast> = _events.asSharedFlow()
 
-    fun showToast(toast: PharmToast) {
+    open fun showToast(toast: PharmToast) {
         _events.tryEmit(toast)
     }
 
     companion object {
-        val Noop: PharmSnackbarHost = PharmSnackbarHost()
+        val Noop: PharmSnackbarHost = object : PharmSnackbarHost() {
+            override fun showToast(toast: PharmToast) = Unit
+        }
     }
 }
 
@@ -173,22 +176,33 @@ private fun ToastCard(
             modifier = Modifier.weight(1f),
         )
         toast.action?.let { action ->
-            Text(
-                text = action.label,
-                style = PharmText.buttonSm.copy(color = colors.fg),
+            Box(
                 modifier = Modifier
+                    .heightIn(min = 40.dp)
                     .clip(t.shapes.sm)
                     .clickable(onClick = onAction)
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = action.label,
+                    style = PharmText.buttonSm.copy(color = colors.fg),
+                )
+            }
+        }
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(t.shapes.pill)
+                .clickable(onClick = onClose),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = PharmIcons.Close,
+                contentDescription = "ปิด",
+                tint = colors.fg.copy(alpha = 0.7f),
+                modifier = Modifier.size(18.dp),
             )
         }
-        Icon(
-            imageVector = PharmIcons.Close,
-            contentDescription = "ปิด",
-            tint = colors.fg.copy(alpha = 0.7f),
-            modifier = Modifier
-                .size(16.dp)
-                .clickable(onClick = onClose),
-        )
     }
 }

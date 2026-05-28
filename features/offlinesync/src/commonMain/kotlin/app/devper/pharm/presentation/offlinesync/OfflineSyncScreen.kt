@@ -29,7 +29,6 @@ fun OfflineSyncScreen(viewModel: OfflineSyncViewModel = koinViewModel()) {
             onCancel = { viewModel.askDiscard(it.id) },
             onConfirmCancel = viewModel::discardConfirmed,
             onDismissCancel = viewModel::cancelDiscard,
-            onDismissMessage = viewModel::dismissMessage,
             onDismissError = viewModel::dismissError,
         ),
     )
