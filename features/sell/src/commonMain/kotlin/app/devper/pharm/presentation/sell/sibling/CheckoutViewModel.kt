@@ -21,6 +21,7 @@ import app.devper.pharm.domain.util.KyRequiredCalculator
 import app.devper.pharm.domain.util.looksLikeNetworkError
 import app.devper.pharm.domain.util.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
+import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.common.BaseViewModel
 import app.devper.pharm.ui.print.buildReceiptTemplate
 import app.devper.pharm.presentation.sell.internal.todayYmd
@@ -134,18 +135,11 @@ class CheckoutViewModel(
     fun dismissReceipt() {
         dismissReceiptUseCase()
         receiptSnapshot = null
+        setState { copy(lastReceiptTemplate = null) }
     }
 
     fun printLastReceipt(sale: Sale) {
-        val snap = receiptSnapshot ?: return
-        val template = buildReceiptTemplate(
-            sale = sale,
-            cartSnapshot = snap.cart,
-            customer = snap.customer,
-            settings = lastSettings,
-            received = snap.received,
-            soldAtFormatted = todayYmd(lastSettings.timezone),
-        )
+        val template = current.lastReceiptTemplate ?: return
         if (!receiptPrinter.print(template)) {
             setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") }
         }
@@ -201,7 +195,15 @@ class CheckoutViewModel(
     ) {
         clearPendingTokens()
         receiptSnapshot = ReceiptSnapshot(cart = cart, customer = customer, received = received)
-        setState { copy(checkingOut = false) }
+        val template = buildReceiptTemplate(
+            sale = sale,
+            cartSnapshot = cart,
+            customer = customer,
+            settings = lastSettings,
+            received = received,
+            soldAtFormatted = todayYmd(tz),
+        )
+        setState { copy(checkingOut = false, lastReceiptTemplate = template) }
 
         if (kyRequired != null && kyFields != null) {
             submitKyForms(
