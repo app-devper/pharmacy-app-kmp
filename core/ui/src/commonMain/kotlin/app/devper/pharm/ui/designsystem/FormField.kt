@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.common.pharmFocusRing
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -119,6 +120,8 @@ fun PharmTextField(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .pharmFocusRing(interactionSource = interaction, shape = shape)
+            .padding(2.dp)
             .clip(shape)
             .background(bg, shape)
             .border(borderThickness, borderColor, shape)
