@@ -53,6 +53,8 @@ fun OfflineSyncContent(
 
         OfflineSyncMetricsRow(pending = state.pending)
 
+        state.message?.let { MessageBanner(message = it, onDismiss = callbacks.onDismissMessage) }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -141,6 +143,32 @@ private fun OfflineSyncHeader(
                     modifier = Modifier.size(16.dp),
                 )
             },
+        )
+    }
+}
+
+@Composable
+private fun MessageBanner(message: String, onDismiss: () -> Unit) {
+    val t = pharmTokens
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(t.shapes.md)
+            .background(t.colors.successBg)
+            .border(1.dp, t.colors.successFg, t.shapes.md)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = message,
+            style = PharmText.bodySm.copy(color = t.colors.successFg),
+            modifier = Modifier.weight(1f),
+        )
+        PharmButton(
+            label = "ปิด",
+            onClick = onDismiss,
+            variant = PharmButtonVariant.Ghost,
+            size = PharmButtonSize.Sm,
         )
     }
 }

@@ -20,7 +20,7 @@ fun PharmCircularProgress(
     color: Color = pharmTokens.colors.accent,
 ) {
     CircularProgressIndicator(
-        modifier = Modifier.size(size).then(modifier),
+        modifier = modifier.then(Modifier.size(size)),
         color = color,
         strokeWidth = strokeWidth,
     )
