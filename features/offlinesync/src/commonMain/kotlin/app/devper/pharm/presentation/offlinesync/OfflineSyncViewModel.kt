@@ -27,7 +27,7 @@ class OfflineSyncViewModel(
     fun syncAll() {
         val snapshot = current.pending
         if (snapshot.isEmpty()) return
-        setState { copy(message = "เริ่มลองส่งบิลค้างทั้งหมดแล้ว") }
+        setState { copy(message = "เริ่มซิงก์ ${snapshot.size} รายการ") }
         snapshot.forEach { item -> retryOne(item.id) }
     }
 

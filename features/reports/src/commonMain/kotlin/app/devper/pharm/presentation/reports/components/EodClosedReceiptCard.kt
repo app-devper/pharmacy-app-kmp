@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.reports.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +15,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.print.PharmReceiptPreview
+import app.devper.pharm.ui.print.PharmReceiptStyle
 import app.devper.pharm.ui.theme.PharmText
-import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
-internal fun EodClosedReceiptCard(report: EodReport, onPrint: () -> Unit) {
+internal fun EodClosedReceiptCard(
+    report: EodReport,
+    template: ReceiptTemplate?,
+    onPrint: () -> Unit,
+) {
     val t = pharmTokens
     Column(
         modifier = Modifier
@@ -35,7 +40,7 @@ internal fun EodClosedReceiptCard(report: EodReport, onPrint: () -> Unit) {
             .background(t.colors.surface, t.shapes.lg)
             .border(1.dp, t.colors.accent, t.shapes.lg)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -67,28 +72,16 @@ internal fun EodClosedReceiptCard(report: EodReport, onPrint: () -> Unit) {
                 },
             )
         }
-        EodReceiptLine(label = "ยอดขายสุทธิ", value = fmtBaht(report.totalSales))
-        EodReceiptLine(label = "จำนวนบิล", value = "${report.billCount} บิล")
-        EodReceiptLine(label = "ส่วนลดรวม", value = fmtBaht(report.totalDiscount))
-        EodReceiptLine(label = "รับเงิน", value = fmtBaht(report.totalReceived))
-        EodReceiptLine(label = "ทอนเงิน", value = fmtBaht(report.totalChange))
-        Box(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
-            EodReceiptLine(label = "เงินเข้าลิ้นชัก", value = fmtBaht(report.netCash), bold = true)
+        if (template != null) {
+            PharmReceiptPreview(
+                template = template,
+                style = PharmReceiptStyle(
+                    width = null,
+                    padding = 12.dp,
+                    showStoreHeader = false,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
-    }
-}
-
-@Composable
-private fun EodReceiptLine(label: String, value: String, bold: Boolean = false) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(text = label, style = PharmText.meta.copy(color = t.colors.fg2))
-        Text(
-            text = value,
-            style = if (bold) PharmText.total else PharmText.bodySm.copy(color = t.colors.fg1),
-        )
     }
 }

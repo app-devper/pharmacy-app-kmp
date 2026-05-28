@@ -66,7 +66,13 @@ fun EodContent(
             ) {
                 item("summary") { EodSummaryCards(report) }
                 item("balance") { EodBalanceCard(report) }
-                if (state.closed) item("closed") { EodClosedReceiptCard(report = report, onPrint = callbacks.onPrint) }
+                if (state.closed) item("closed") {
+                    EodClosedReceiptCard(
+                        report = report,
+                        template = state.closedTemplate,
+                        onPrint = callbacks.onPrint,
+                    )
+                }
                 item("bills-header") { EodBillsHeader(count = report.billCount) }
                 items(report.bills, key = { it.id }) { bill -> EodBillRow(bill = bill) }
             }
