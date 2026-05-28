@@ -59,6 +59,20 @@ fun SellScreen(
     val parkedState by parkedCartVM.state.collectAsState()
     val voidState by voidSaleVM.state.collectAsState()
 
+    val combinedError = sellState.error
+        ?: checkoutState.error
+        ?: drugState.error
+        ?: customerState.error
+        ?: voidState.error
+
+    val dismissAllErrors: () -> Unit = {
+        sellVM.dismissError()
+        checkoutVM.dismissError()
+        drugPickerVM.dismissError()
+        customerPickerVM.dismissError()
+        voidSaleVM.dismissError()
+    }
+
     val onShortcutParkCart: () -> Unit = {
         if (!parkedState.activeCartIsEmpty) {
             val firstEmpty = parkedState.parkedSlots.indexOfFirst { it == null }
@@ -68,6 +82,7 @@ fun SellScreen(
 
     val onShortcutEscape: () -> Unit = {
         when {
+            combinedError != null                  -> dismissAllErrors()
             parkedState.overwriteSlot != null      -> parkedCartVM.cancelOverwrite()
             parkedState.swapSlot != null           -> parkedCartVM.cancelSwap()
             sellState.showClearConfirm             -> sellVM.cancelClearCart()
@@ -286,20 +301,9 @@ fun SellScreen(
         }
     }
 
-    val combinedError = sellState.error
-        ?: checkoutState.error
-        ?: drugState.error
-        ?: customerState.error
-        ?: voidState.error
     ErrorBottomSheet(
         message = combinedError,
-        onDismiss = {
-            sellVM.dismissError()
-            checkoutVM.dismissError()
-            drugPickerVM.dismissError()
-            customerPickerVM.dismissError()
-            voidSaleVM.dismissError()
-        },
+        onDismiss = dismissAllErrors,
     )
 }
 
@@ -343,6 +347,7 @@ private fun SellCartPanel(
         onCancelClearCart = sellVM::cancelClearCart,
         parkedFilledCount = parkedFilledCount,
         onOpenParkedSheet = onOpenParkedSheet,
+        showShortcutHints = true,
         modifier = modifier,
     )
 }

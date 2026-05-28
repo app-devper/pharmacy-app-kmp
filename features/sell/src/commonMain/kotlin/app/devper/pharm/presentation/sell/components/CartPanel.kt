@@ -65,6 +65,7 @@ fun CartPanel(
     @Suppress("UNUSED_PARAMETER") parkedFilledCount: Int = 0,
     @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
     compact: Boolean = false,
+    showShortcutHints: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
@@ -92,6 +93,7 @@ fun CartPanel(
             activeTier = activeTier,
             onPick = onPickCustomer,
             onClear = onClearCustomer,
+            showShortcutHint = showShortcutHints,
         )
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -124,6 +126,7 @@ fun CartPanel(
                 cartDiscountAmount = cartDiscountAmount,
                 total = total,
                 onOpenCartDiscount = onOpenCartDiscount,
+                showShortcutHint = showShortcutHints,
             )
 
             CartSectionDivider()
@@ -140,6 +143,7 @@ fun CartPanel(
                 canCheckout = canCheckout,
                 checkingOut = checkingOut,
                 onSubmit = onSubmit,
+                showShortcutHint = showShortcutHints,
             )
         }
     }
@@ -223,6 +227,7 @@ private fun CartCheckoutButton(
     canCheckout: Boolean,
     checkingOut: Boolean,
     onSubmit: () -> Unit,
+    showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -246,7 +251,9 @@ private fun CartCheckoutButton(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        ShortcutHint(label = "F9")
+                        if (showShortcutHint) {
+                            ShortcutHint(label = "F9")
+                        }
                         Text(
                             "ออกใบเสร็จ",
                             style = PharmText.buttonMd.copy(

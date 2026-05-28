@@ -28,6 +28,7 @@ fun CartTotalsBlock(
     cartDiscountAmount: Double,
     total: Double,
     onOpenCartDiscount: () -> Unit,
+    showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     Column(
@@ -63,7 +64,9 @@ fun CartTotalsBlock(
                     style = PharmText.bodySm.copy(color = t.colors.discount),
                 )
             } else {
-                ShortcutHint(label = "F4", modifier = Modifier.padding(end = 6.dp))
+                if (showShortcutHint) {
+                    ShortcutHint(label = "F4", modifier = Modifier.padding(end = 6.dp))
+                }
                 Text("เพิ่ม ›", style = PharmText.micro.copy(color = t.colors.accent))
             }
         }

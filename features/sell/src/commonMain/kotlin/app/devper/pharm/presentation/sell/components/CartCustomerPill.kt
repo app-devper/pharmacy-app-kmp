@@ -27,6 +27,7 @@ fun CartCustomerPill(
     activeTier: String,
     onPick: () -> Unit,
     onClear: () -> Unit,
+    showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     val name = customer?.name ?: "ลูกค้าทั่วไป"
@@ -63,7 +64,9 @@ fun CartCustomerPill(
                 Text("×", style = PharmText.h2.copy(color = t.colors.accent))
             }
         } else {
-            ShortcutHint(label = "F2", modifier = Modifier.padding(end = 6.dp))
+            if (showShortcutHint) {
+                ShortcutHint(label = "F2", modifier = Modifier.padding(end = 6.dp))
+            }
             Text(
                 "›",
                 style = PharmText.body.copy(color = t.colors.accent),
