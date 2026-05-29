@@ -137,7 +137,7 @@ private fun KyFormTabs(
     currentForm: KyFormType,
     onSwitchForm: (KyFormType) -> Unit,
 ) {
-    val tabs = KyFormType.values().map { form ->
+    val tabs = KyFormType.entries.map { form ->
         PharmTab(id = "$KY_TAB_PREFIX${form.number}", label = "ขย.${form.number}")
     }
     PharmTabBar(

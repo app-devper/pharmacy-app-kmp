@@ -43,7 +43,7 @@ internal fun ExpiryToolbar(
     ) {
         Box(modifier = Modifier.weight(1f)) {
             PharmSingleSelectChips(
-                chips = ExpiryWindow.values().map { PharmFilterChip(id = it.name, label = it.label) },
+                chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label) },
                 activeId = window.name,
                 onSelect = { id -> callbacks.onWindowChange(ExpiryWindow.valueOf(id)) },
                 scrollable = false,

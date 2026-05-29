@@ -19,7 +19,7 @@ internal fun ReportsWindowChips(
         horizontalArrangement = Arrangement.End,
     ) {
         PharmSingleSelectChips(
-            chips = DashboardWindow.values().map { PharmFilterChip(id = it.name, label = it.label) },
+            chips = DashboardWindow.entries.map { PharmFilterChip(id = it.name, label = it.label) },
             activeId = state.window.name,
             onSelect = { id -> onSelectWindow(DashboardWindow.valueOf(id)) },
             scrollable = false,
