@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +25,7 @@ import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -34,6 +34,7 @@ import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun CartPanel(
@@ -64,6 +65,7 @@ fun CartPanel(
     @Suppress("UNUSED_PARAMETER") parkedFilledCount: Int = 0,
     @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
     compact: Boolean = false,
+    showShortcutHints: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
@@ -91,6 +93,7 @@ fun CartPanel(
             activeTier = activeTier,
             onPick = onPickCustomer,
             onClear = onClearCustomer,
+            showShortcutHint = showShortcutHints,
         )
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -123,6 +126,7 @@ fun CartPanel(
                 cartDiscountAmount = cartDiscountAmount,
                 total = total,
                 onOpenCartDiscount = onOpenCartDiscount,
+                showShortcutHint = showShortcutHints,
             )
 
             CartSectionDivider()
@@ -139,6 +143,7 @@ fun CartPanel(
                 canCheckout = canCheckout,
                 checkingOut = checkingOut,
                 onSubmit = onSubmit,
+                showShortcutHint = showShortcutHints,
             )
         }
     }
@@ -222,6 +227,7 @@ private fun CartCheckoutButton(
     canCheckout: Boolean,
     checkingOut: Boolean,
     onSubmit: () -> Unit,
+    showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
@@ -233,7 +239,7 @@ private fun CartCheckoutButton(
         ) {
             if (checkingOut) {
                 Box(modifier = Modifier.size(18.dp)) {
-                    CircularProgressIndicator(
+                    PharmCircularProgress(
                         color = t.colors.surface,
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(16.dp),
@@ -241,13 +247,21 @@ private fun CartCheckoutButton(
                 }
             } else {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "ออกใบเสร็จ",
-                        style = PharmText.buttonMd.copy(
-                            color = t.colors.surface,
-                            fontWeight = FontWeight.SemiBold,
-                        ),
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        if (showShortcutHint) {
+                            ShortcutHint(label = "F9")
+                        }
+                        Text(
+                            "ออกใบเสร็จ",
+                            style = PharmText.buttonMd.copy(
+                                color = t.colors.surface,
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                        )
+                    }
                     Text(
                         fmtBaht(total),
                         style = PharmText.total.copy(color = t.colors.surface),

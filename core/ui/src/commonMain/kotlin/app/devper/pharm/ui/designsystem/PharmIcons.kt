@@ -283,6 +283,12 @@ object PharmIcons {
         "M12 9 v4 M12 17 h0.01",
     )
 
+    val Info: ImageVector = strokeIcon(
+        name = "Info",
+        circle(12f, 12f, 9f),
+        "M12 11 v5 M12 8 h0.01",
+    )
+
     val Print: ImageVector = strokeIcon(
         name = "Print",
         "M7 9 V3 h10 v6",
@@ -331,5 +337,11 @@ object PharmIcons {
         name = "Ban",
         circle(12f, 12f, 9f),
         "M5.5 5.5 l13 13",
+    )
+
+    val AlertCircle: ImageVector = strokeIcon(
+        name = "AlertCircle",
+        circle(12f, 12f, 9f),
+        "M12 8 v5 M12 16 h0.01",
     )
 }

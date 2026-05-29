@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun Ky9Screen(
@@ -77,7 +77,7 @@ fun Ky9Screen(
             when {
                 state.loading && state.entries.isEmpty() ->
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = t.colors.accent)
+                        PharmCircularProgress(color = t.colors.accent)
                     }
 
                 else -> KyTable(rows = rows, formType = KyFormType.Ky9)
@@ -195,7 +195,7 @@ private fun Ky9AddFormSection(state: Ky9UiState, viewModel: Ky9ViewModel) {
                 size = PharmButtonSize.Md,
             ) {
                 if (state.saving) {
-                    CircularProgressIndicator(
+                    PharmCircularProgress(
                         strokeWidth = 2.dp,
                         color = t.colors.surface,
                         modifier = Modifier.size(16.dp),

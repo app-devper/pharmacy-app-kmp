@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -33,6 +32,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 data class DrugLotsCallbacks(
     val onClose: () -> Unit = {},
@@ -159,7 +159,7 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center,
-                ) { CircularProgressIndicator() }
+                ) { PharmCircularProgress() }
             }
             state.lots.isEmpty() -> {
                 Text(

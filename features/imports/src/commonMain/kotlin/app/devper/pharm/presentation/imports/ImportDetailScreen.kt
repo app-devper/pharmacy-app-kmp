@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +30,7 @@ import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmStatus
@@ -84,7 +84,7 @@ fun ImportDetailScreen(
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when {
                 state.loading && state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    PharmCircularProgress()
                 }
                 state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("ไม่พบใบรับสินค้า", style = PharmText.body.copy(color = t.colors.fg2))

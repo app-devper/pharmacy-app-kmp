@@ -30,7 +30,7 @@ class EodViewModel(
     }
 
     fun onDateChange(v: String) = setState {
-        copy(date = v, closed = false, closeResult = null)
+        copy(date = v, closed = false, closeResult = null, closedTemplate = null)
     }
 
     fun applyDate() = reload()
@@ -45,11 +45,13 @@ class EodViewModel(
         launchResult(
             block = { closeEod(CloseEodParam(date = s.date)) },
             onSuccess = { result ->
+                val template = buildEodReceiptTemplate(closed = result, settings = lastSettings)
                 setState {
                     copy(
                         closing = false,
                         closed = true,
                         closeResult = result,
+                        closedTemplate = template,
                         report = result.report,
                     )
                 }
@@ -67,8 +69,9 @@ class EodViewModel(
     }
 
     fun printReceipt() {
-        val result = current.closeResult ?: return
-        val template = buildEodReceiptTemplate(closed = result, settings = lastSettings)
+        val template = current.closedTemplate
+            ?: current.closeResult?.let { buildEodReceiptTemplate(closed = it, settings = lastSettings) }
+            ?: return
         launchResult(
             block = { printReceiptUseCase(template) },
             onSuccess = { ok ->

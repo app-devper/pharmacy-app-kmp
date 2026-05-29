@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -31,6 +30,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
@@ -135,7 +135,7 @@ private fun HistoryBody(state: StockAdjustmentsUiState) {
             state.loading && state.history.isEmpty() -> Box(
                 modifier = Modifier.fillMaxWidth().padding(24.dp),
                 contentAlignment = Alignment.Center,
-            ) { CircularProgressIndicator() }
+            ) { PharmCircularProgress() }
 
             state.history.isEmpty() -> Box(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),

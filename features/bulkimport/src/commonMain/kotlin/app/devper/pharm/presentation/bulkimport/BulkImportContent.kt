@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun BulkImportContent(
@@ -157,7 +157,7 @@ private fun BulkImportActionRow(
             modifier = Modifier.weight(1f),
         ) {
             if (state.submitting) {
-                CircularProgressIndicator(
+                PharmCircularProgress(
                     strokeWidth = 2.dp,
                     modifier = Modifier.size(18.dp),
                 )

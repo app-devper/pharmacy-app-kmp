@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
+import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
@@ -27,6 +28,7 @@ fun CartTotalsBlock(
     cartDiscountAmount: Double,
     total: Double,
     onOpenCartDiscount: () -> Unit,
+    showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     Column(
@@ -62,6 +64,9 @@ fun CartTotalsBlock(
                     style = PharmText.bodySm.copy(color = t.colors.discount),
                 )
             } else {
+                if (showShortcutHint) {
+                    ShortcutHint(label = "F4", modifier = Modifier.padding(end = 6.dp))
+                }
                 Text("เพิ่ม ›", style = PharmText.micro.copy(color = t.colors.accent))
             }
         }

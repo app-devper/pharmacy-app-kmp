@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
@@ -81,12 +82,20 @@ fun ImportSupplierPickerDialog(
                 },
                 trailingSlot = if (query.isNotEmpty()) {
                     {
-                        Icon(
-                            PharmIcons.Close,
-                            contentDescription = "ล้าง",
-                            tint = t.colors.fgMuted,
-                            modifier = Modifier.size(18.dp).clickable { query = "" },
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(t.shapes.sm)
+                                .clickable { query = "" },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                PharmIcons.Close,
+                                contentDescription = "ล้าง",
+                                tint = t.colors.fgMuted,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
                     }
                 } else null,
                 modifier = Modifier.fillMaxWidth(),

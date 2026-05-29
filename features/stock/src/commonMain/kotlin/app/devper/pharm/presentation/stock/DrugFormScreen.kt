@@ -6,6 +6,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.stock.form.DrugFormCallbacks
 import app.devper.pharm.presentation.stock.form.DrugFormContent
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmToast
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -19,6 +21,7 @@ fun DrugFormScreen(
     val state by viewModel.state.collectAsState()
     val lotsState by lotsViewModel.state.collectAsState()
     val adjustmentsState by adjustmentsViewModel.state.collectAsState()
+    val snackbar = LocalPharmSnackbar.current
 
     LaunchedEffect(drugId) {
         viewModel.init(if (drugId.isNullOrBlank()) DrugFormMode.Add else DrugFormMode.Edit(drugId))
@@ -26,6 +29,7 @@ fun DrugFormScreen(
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
+            snackbar.showToast(PharmToast.Success("บันทึกข้อมูลยาเรียบร้อย"))
             onBack()
         }
     }
@@ -84,7 +88,7 @@ fun DrugFormScreen(
             onSubmitAdd = lotsViewModel::submitAdd,
             onDismissError = lotsViewModel::dismissError,
         ),
-        onDismiss = {  },
+        onDismiss = adjustmentsViewModel::reload,
     )
     StockAdjustmentsBottomSheet(
         state = adjustmentsState,
@@ -98,6 +102,6 @@ fun DrugFormScreen(
             onSubmitAdd = adjustmentsViewModel::submitAdd,
             onDismissError = adjustmentsViewModel::dismissError,
         ),
-        onDismiss = {  },
+        onDismiss = lotsViewModel::reload,
     )
 }

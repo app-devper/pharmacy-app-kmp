@@ -64,13 +64,13 @@ class AppViewModel(
         launchResult(
             block = { logout() },
             onSuccess = {  },
-            onFailure = { setState { copy(error = it.message) } },
+            onFailure = { setState { copy(error = it.message ?: "ออกจากระบบไม่สำเร็จ") } },
         )
     }
 
     fun toggleTheme(currentlyDark: Boolean) {
         setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark)
-            .onFailure { setState { copy(error = it.message) } }
+            .onFailure { setState { copy(error = it.message ?: "เปลี่ยนธีมไม่สำเร็จ") } }
     }
 
     fun dismissError() = setState { copy(error = null) }
