@@ -29,6 +29,15 @@ private class CounterViewModel : BaseViewModel<CounterState>(CounterState()) {
             withLoading = { l -> setState { copy(loading = l) } },
         )
     }
+
+    fun loadThrowingBlock() {
+        launchResult<Int>(
+            block = { throw IllegalStateException("kaboom") },
+            onSuccess = { setState { copy(count = it) } },
+            onFailure = { e -> setState { copy(error = e.message) } },
+            withLoading = { l -> setState { copy(loading = l) } },
+        )
+    }
 }
 
 class BaseViewModelTest {
@@ -67,6 +76,15 @@ class BaseViewModelTest {
         vm.load(value = 7)
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun launchResult_clears_loading_and_routes_failure_when_block_throws() = runVmTest { _ ->
+        val vm = CounterViewModel()
+        vm.loadThrowingBlock()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.loading)
+        assertEquals("kaboom", vm.state.value.error)
     }
 
     @Test

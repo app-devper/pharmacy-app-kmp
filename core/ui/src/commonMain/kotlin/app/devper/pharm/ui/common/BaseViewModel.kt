@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,7 +31,14 @@ abstract class BaseViewModel<S : BaseUiState>(
         withLoading?.invoke(true)
         viewModelScope.launch {
             try {
-                block().fold(
+                val result = try {
+                    block()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Throwable) {
+                    Result.failure(e)
+                }
+                result.fold(
                     onSuccess = { value -> onSuccess(value) },
                     onFailure = { e -> onFailure(e) },
                 )
