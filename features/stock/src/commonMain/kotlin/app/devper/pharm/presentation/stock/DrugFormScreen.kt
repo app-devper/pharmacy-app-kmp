@@ -19,6 +19,8 @@ fun DrugFormScreen(
     adjustmentsViewModel: StockAdjustmentsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val lotsState by lotsViewModel.state.collectAsState()
+    val adjustmentsState by adjustmentsViewModel.state.collectAsState()
     val snackbar = LocalPharmSnackbar.current
 
     LaunchedEffect(drugId) {
@@ -70,6 +72,36 @@ fun DrugFormScreen(
         ),
     )
 
-    DrugLotsBottomSheet(viewModel = lotsViewModel, onDismiss = {  })
-    StockAdjustmentsBottomSheet(viewModel = adjustmentsViewModel, onDismiss = {  })
+    DrugLotsBottomSheet(
+        state = lotsState,
+        callbacks = DrugLotsCallbacks(
+            onClose = lotsViewModel::close,
+            onRequestDelete = lotsViewModel::requestDelete,
+            onCancelDelete = lotsViewModel::cancelDelete,
+            onConfirmDelete = lotsViewModel::confirmDelete,
+            onToggleAddForm = lotsViewModel::toggleAddForm,
+            onLotNumber = lotsViewModel::onLotNumber,
+            onExpiryDate = lotsViewModel::onExpiryDate,
+            onQuantity = lotsViewModel::onQuantity,
+            onCostPrice = lotsViewModel::onCostPrice,
+            onSellPrice = lotsViewModel::onSellPrice,
+            onSubmitAdd = lotsViewModel::submitAdd,
+            onDismissError = lotsViewModel::dismissError,
+        ),
+        onDismiss = adjustmentsViewModel::reload,
+    )
+    StockAdjustmentsBottomSheet(
+        state = adjustmentsState,
+        callbacks = StockAdjustmentsCallbacks(
+            onClose = adjustmentsViewModel::close,
+            onToggleAddForm = adjustmentsViewModel::toggleAddForm,
+            onSign = adjustmentsViewModel::onSign,
+            onAbsDelta = adjustmentsViewModel::onAbsDelta,
+            onReason = adjustmentsViewModel::onReason,
+            onNote = adjustmentsViewModel::onNote,
+            onSubmitAdd = adjustmentsViewModel::submitAdd,
+            onDismissError = adjustmentsViewModel::dismissError,
+        ),
+        onDismiss = lotsViewModel::reload,
+    )
 }

@@ -14,12 +14,15 @@ fun NavGraphBuilder.kyGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<Ky9> {
         ShelledScreen(
             title = KyFormType.Ky9.label,
             currentRoute = Ky9::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
@@ -32,7 +35,8 @@ fun NavGraphBuilder.kyGraph(
         ShelledScreen(
             title = KyFormType.Ky10.label,
             currentRoute = Ky10::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
@@ -45,7 +49,8 @@ fun NavGraphBuilder.kyGraph(
         ShelledScreen(
             title = KyFormType.Ky11.label,
             currentRoute = Ky11::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
@@ -58,7 +63,8 @@ fun NavGraphBuilder.kyGraph(
         ShelledScreen(
             title = KyFormType.Ky12.label,
             currentRoute = Ky12::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,

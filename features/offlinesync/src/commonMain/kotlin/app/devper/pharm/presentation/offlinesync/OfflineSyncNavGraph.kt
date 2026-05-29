@@ -13,12 +13,15 @@ fun NavGraphBuilder.offlineSyncGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<OfflineSync> {
         ShelledScreen(
             title = "บิลค้างซิงก์",
             currentRoute = OfflineSync::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
