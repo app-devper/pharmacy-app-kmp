@@ -38,6 +38,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -403,7 +404,7 @@ private fun LabelPreviewCard(size: LabelSize, line: LabelLine) {
         Column {
             if (line.includePrice) {
                 Text(
-                    text = "฿${formatMoney(line.price)}",
+                    text = formatBahtCurrency(line.price),
                     style = PharmText.body.copy(color = t.colors.accent, fontWeight = FontWeight.Bold),
                 )
             }
@@ -420,11 +421,4 @@ private fun LabelPreviewCard(size: LabelSize, line: LabelLine) {
             )
         }
     }
-}
-
-private fun formatMoney(v: Double): String {
-    val cents = (v * 100.0 + if (v >= 0) 0.5 else -0.5).toLong()
-    val whole = cents / 100
-    val frac = (cents % 100).let { if (it < 0) -it else it }.toString().padStart(2, '0')
-    return "$whole.$frac"
 }

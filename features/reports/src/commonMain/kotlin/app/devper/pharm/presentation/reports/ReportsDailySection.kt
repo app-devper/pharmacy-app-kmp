@@ -18,7 +18,7 @@ import androidx.compose.material3.Text
 import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
 import app.devper.pharm.ui.designsystem.PharmMiniBarChart
-import app.devper.pharm.ui.format.formatBaht
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -44,7 +44,7 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
         ) {
             Text(text = "ยอดขายรายวัน", style = PharmText.h3, modifier = Modifier.weight(1f))
             Text(
-                text = "เฉลี่ย ฿${formatBaht(avg)}/วัน",
+                text = "เฉลี่ย ${formatBahtCurrency(avg)}/วัน",
                 style = PharmText.meta.tabular(),
             )
         }
@@ -52,7 +52,7 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
             data = data,
             height = 128.dp,
             barColor = t.colors.accent,
-            valueFormatter = { "฿${formatBaht(it)}" },
+            valueFormatter = { formatBahtCurrency(it) },
         )
         if (data.isNotEmpty()) {
             Row(

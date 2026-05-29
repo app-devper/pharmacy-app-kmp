@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
 import app.devper.pharm.ui.designsystem.PharmGroupedBarChart
-import app.devper.pharm.ui.format.formatBaht
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -55,7 +55,7 @@ internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Mo
             revenue = revenueData,
             cost = costData,
             height = 144.dp,
-            valueFormatter = { "฿${formatBaht(it)}" },
+            valueFormatter = { formatBahtCurrency(it) },
         )
         Row(
             modifier = Modifier.fillMaxWidth(),

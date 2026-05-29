@@ -46,6 +46,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.tabular
@@ -121,7 +122,7 @@ fun CartLineRow(
             modifier = Modifier.width(96.dp),
         ) {
             Text(
-                text = "฿${bahtAmount(line.lineTotal)}",
+                text = formatBahtCurrency(line.lineTotal),
                 style = MaterialTheme.typography.bodyLarge.tabular(),
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -184,7 +185,7 @@ fun CartLineRow(
 private fun priceMetaLabel(line: CartLine): String {
     if (line.discount > 0) {
         val saved = line.discount * line.qty
-        return "−฿${bahtAmount(saved)}"
+        return "−${formatBahtCurrency(saved)}"
     }
     return when (line.tier) {
         "wholesale" -> "ราคาส่ง"

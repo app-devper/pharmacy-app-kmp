@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
-import app.devper.pharm.ui.format.formatBaht
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -84,7 +84,7 @@ private fun RecentSaleRow(sale: SaleSummary) {
                 PharmStatusBadge(status = PharmStatus.Voided)
             }
             Text(
-                text = "฿${formatBaht(sale.total)}",
+                text = formatBahtCurrency(sale.total),
                 style = PharmText.bodySm.tabular().copy(
                     color = if (sale.voided) t.colors.fgMuted else t.colors.accent,
                     fontWeight = FontWeight.SemiBold,
