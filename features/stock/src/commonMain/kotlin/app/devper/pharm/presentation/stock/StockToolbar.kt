@@ -44,7 +44,7 @@ internal fun StockToolbar(
             )
         }
         PharmSingleSelectChips(
-            chips = StockTypeFilter.values().map { PharmFilterChip(id = it.name, label = it.label) },
+            chips = StockTypeFilter.entries.map { PharmFilterChip(id = it.name, label = it.label) },
             activeId = typeFilter.name,
             onSelect = { id -> callbacks.onTypeFilterChange(StockTypeFilter.valueOf(id)) },
             scrollable = false,
