@@ -13,12 +13,15 @@ fun NavGraphBuilder.bulkImportGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<BulkImport> {
         ShelledScreen(
             title = "นำเข้ายาด้วย JSON",
             currentRoute = BulkImport::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,

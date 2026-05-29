@@ -1,20 +1,25 @@
 package app.devper.pharm.ui.designsystem
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.common.pharmFocusRing
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -74,12 +79,21 @@ private fun PharmTabItem(
     val t = pharmTokens
     val bg = if (active) t.colors.accentBgSoft else androidx.compose.ui.graphics.Color.Transparent
     val fg = if (active) t.colors.accent else t.colors.fg2
+    val interaction = remember { MutableInteractionSource() }
+    val indication = LocalIndication.current
 
     Row(
         modifier = modifier
+            .pharmFocusRing(interactionSource = interaction, shape = t.shapes.md)
             .clip(t.shapes.md)
             .background(bg)
-            .clickable(onClick = onClick)
+            .selectable(
+                selected = active,
+                role = Role.Tab,
+                onClick = onClick,
+                interactionSource = interaction,
+                indication = indication,
+            )
             .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.tabular
 
 @Composable
@@ -46,7 +47,7 @@ internal fun CartReceiptSummary(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = "฿${bahtAmount(grossSubtotal)}",
+                text = formatBahtCurrency(grossSubtotal),
                 style = MaterialTheme.typography.bodyLarge.tabular(),
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -94,7 +95,7 @@ internal fun CartReceiptSummary(
             Text(
                 text = when {
                     cartDiscount is CartDiscount.None -> "-"
-                    cartDiscountAmount > 0            -> "−฿${bahtAmount(cartDiscountAmount)}"
+                    cartDiscountAmount > 0            -> "−${formatBahtCurrency(cartDiscountAmount)}"
                     else                              -> "-"
                 },
                 style = MaterialTheme.typography.bodyLarge.tabular(),
@@ -116,7 +117,7 @@ internal fun CartReceiptSummary(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = "฿${bahtAmount(total)}",
+                text = formatBahtCurrency(total),
                 style = MaterialTheme.typography.titleLarge.tabular(),
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,

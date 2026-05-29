@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 internal fun SettingsSaveBar(
@@ -46,7 +46,7 @@ internal fun SettingsSaveBar(
                     modifier = Modifier.padding(horizontal = 12.dp).size(20.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    CircularProgressIndicator(
+                    PharmCircularProgress(
                         strokeWidth = 2.dp,
                         modifier = Modifier.size(16.dp),
                         color = t.colors.accent,

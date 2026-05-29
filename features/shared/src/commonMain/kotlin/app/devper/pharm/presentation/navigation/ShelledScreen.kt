@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.ui.components.AppShell
 import app.devper.pharm.ui.components.NavItem
@@ -15,7 +14,6 @@ import app.devper.pharm.presentation.ky.Ky9
 import app.devper.pharm.presentation.labels.LabelPrint
 import app.devper.pharm.presentation.movements.Movements
 import app.devper.pharm.presentation.offlinesync.OfflineSync
-import app.devper.pharm.presentation.profile.Profile
 import app.devper.pharm.presentation.reports.Profit
 import app.devper.pharm.presentation.reports.Reports
 import app.devper.pharm.presentation.saleshistory.SalesHistory
@@ -76,7 +74,8 @@ private val LOGOUT_ITEM = NavItem(
 fun ShelledScreen(
     title: String,
     currentRoute: String,
-    navController: NavController,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
     onLogout: () -> Unit,
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
@@ -92,19 +91,14 @@ fun ShelledScreen(
 
             val typedRoute = MAIN_NAV_ROUTES.firstOrNull { it::class.qualifiedName == destKey }
                 ?: return@AppShell
-            navController.navigate(typedRoute) {
-
-                launchSingleTop = true
-                restoreState = true
-                popUpTo(Sell) { saveState = true }
-            }
+            onNavigateMain(typedRoute)
         },
         onLogout = onLogout,
         logoutItem = LOGOUT_ITEM,
         pendingSyncCount = pendingSyncCount,
         role = role,
         user = user,
-        onProfileClick = { navController.navigate(Profile) { launchSingleTop = true } },
+        onProfileClick = onProfileClick,
         content = content,
     )
 }

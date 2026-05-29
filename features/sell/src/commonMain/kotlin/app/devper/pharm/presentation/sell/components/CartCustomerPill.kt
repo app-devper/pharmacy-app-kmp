@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -26,6 +27,7 @@ fun CartCustomerPill(
     activeTier: String,
     onPick: () -> Unit,
     onClear: () -> Unit,
+    showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     val name = customer?.name ?: "ลูกค้าทั่วไป"
@@ -62,6 +64,9 @@ fun CartCustomerPill(
                 Text("×", style = PharmText.h2.copy(color = t.colors.accent))
             }
         } else {
+            if (showShortcutHint) {
+                ShortcutHint(label = "F2", modifier = Modifier.padding(end = 6.dp))
+            }
             Text(
                 "›",
                 style = PharmText.body.copy(color = t.colors.accent),

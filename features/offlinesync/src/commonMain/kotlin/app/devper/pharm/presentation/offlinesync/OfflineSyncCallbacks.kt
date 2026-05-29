@@ -9,6 +9,5 @@ data class OfflineSyncCallbacks(
     val onCancel: (PendingSale) -> Unit = {},
     val onConfirmCancel: () -> Unit = {},
     val onDismissCancel: () -> Unit = {},
-    val onDismissMessage: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

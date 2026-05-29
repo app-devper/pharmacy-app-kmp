@@ -14,12 +14,15 @@ fun NavGraphBuilder.suppliersGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<Suppliers> {
         ShelledScreen(
             title = "ผู้จัดจำหน่าย",
             currentRoute = Suppliers::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,

@@ -14,12 +14,15 @@ fun NavGraphBuilder.usersGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<Users> {
         ShelledScreen(
             title = "จัดการผู้ใช้งาน",
             currentRoute = Users::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,

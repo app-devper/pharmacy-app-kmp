@@ -13,12 +13,15 @@ fun NavGraphBuilder.salesHistoryGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<SalesHistory> {
         ShelledScreen(
             title = "ประวัติการขาย",
             currentRoute = SalesHistory::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
