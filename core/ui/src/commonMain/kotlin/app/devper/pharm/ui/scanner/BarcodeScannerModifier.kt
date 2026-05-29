@@ -37,8 +37,8 @@ fun Modifier.scanBarcodes(
     val buffer = remember { StringBuilder() }
     val scope = rememberCoroutineScope()
     val flushJob = remember { Box<Job?>(null) }
-    val flush = remember<(String) -> Unit>(scope) {
-        { reason ->
+    val flush = remember<() -> Unit>(scope) {
+        {
             val payload = buffer.toString()
             buffer.clear()
             flushJob.value?.cancel()
@@ -46,8 +46,6 @@ fun Modifier.scanBarcodes(
             if (payload.length >= minLength) {
                 onScanState.value(payload)
             }
-
-            @Suppress("UNUSED_EXPRESSION") reason
         }
     }
 
@@ -69,7 +67,7 @@ private fun handleKeyEvent(
     buffer: StringBuilder,
     scope: CoroutineScope,
     flushJob: Box<Job?>,
-    flush: (String) -> Unit,
+    flush: () -> Unit,
     idleTimeoutMillis: Long,
 ): Boolean {
     if (event.type != KeyEventType.KeyDown) return false
@@ -78,7 +76,7 @@ private fun handleKeyEvent(
         event.key == androidx.compose.ui.input.key.Key.NumPadEnter
     ) {
         if (buffer.isNotEmpty()) {
-            flush("enter")
+            flush()
             return true
         }
         return false
@@ -92,7 +90,7 @@ private fun handleKeyEvent(
         flushJob.value?.cancel()
         flushJob.value = scope.launch {
             delay(idleTimeoutMillis)
-            if (buffer.isNotEmpty()) flush("timeout")
+            if (buffer.isNotEmpty()) flush()
         }
 
         return false

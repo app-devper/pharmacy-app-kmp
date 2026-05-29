@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
@@ -50,6 +53,7 @@ fun PharmButton(
             .then(if (border != null) Modifier.border(1.dp, border, shape) else Modifier)
             .background(bg, shape)
             .clickable(enabled = interactive, onClick = onClick)
+            .semantics { role = Role.Button }
             .padding(padding),
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,

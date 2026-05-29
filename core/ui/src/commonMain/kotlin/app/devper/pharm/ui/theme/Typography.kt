@@ -158,11 +158,12 @@ object PharmText {
 }
 
 fun fmtBaht(n: Double): String {
-    val isInt = n % 1.0 == 0.0
-    val sign = if (n < 0) "-" else ""
-    val abs = if (n < 0) -n else n
-    val whole = abs.toLong()
-    val frac = ((abs - whole) * 100.0 + 0.5).toLong().coerceAtLeast(0)
+    val cents = (n * 100.0 + if (n >= 0) 0.5 else -0.5).toLong()
+    val negative = cents < 0
+    val absCents = if (negative) -cents else cents
+    val whole = absCents / 100
+    val fracCents = absCents % 100
+    val sign = if (negative) "-" else ""
     val wholeStr = buildString {
         val s = whole.toString()
         for (i in s.indices) {
@@ -170,8 +171,8 @@ fun fmtBaht(n: Double): String {
             append(s[i])
         }
     }
-    return if (isInt) "฿$sign$wholeStr"
-    else "฿$sign$wholeStr." + frac.toString().padStart(2, '0')
+    return if (fracCents == 0L) "฿$sign$wholeStr"
+    else "฿$sign$wholeStr." + fracCents.toString().padStart(2, '0')
 }
 
 fun fmtBaht(n: Int): String = fmtBaht(n.toDouble())

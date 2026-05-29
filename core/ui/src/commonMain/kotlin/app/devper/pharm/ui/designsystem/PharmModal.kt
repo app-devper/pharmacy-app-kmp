@@ -79,7 +79,7 @@ fun PharmModal(
                     verticalAlignment = Alignment.Top,
                 ) {
                     Column(
-                        modifier = Modifier.widthIn(max = 9999.dp),
+                        modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(2.dp),
                     ) {
                         Text(title, style = PharmText.h2)
@@ -87,7 +87,7 @@ fun PharmModal(
                             Text(subtitle, style = PharmText.meta)
                         }
                     }
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
+                    Box(contentAlignment = Alignment.TopEnd) {
 
                         Box(
                             modifier = Modifier

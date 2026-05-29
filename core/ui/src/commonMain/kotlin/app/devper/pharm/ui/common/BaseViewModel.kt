@@ -29,16 +29,14 @@ abstract class BaseViewModel<S : BaseUiState>(
     ) {
         withLoading?.invoke(true)
         viewModelScope.launch {
-            block().fold(
-                onSuccess = { value ->
-                    withLoading?.invoke(false)
-                    onSuccess(value)
-                },
-                onFailure = { e ->
-                    withLoading?.invoke(false)
-                    onFailure(e)
-                },
-            )
+            try {
+                block().fold(
+                    onSuccess = { value -> onSuccess(value) },
+                    onFailure = { e -> onFailure(e) },
+                )
+            } finally {
+                withLoading?.invoke(false)
+            }
         }
     }
 }

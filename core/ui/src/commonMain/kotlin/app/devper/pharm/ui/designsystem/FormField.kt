@@ -90,15 +90,20 @@ fun PharmTextField(
     val interaction = remember { MutableInteractionSource() }
     val isFocused by interaction.collectIsFocusedAsState()
     val borderColor = when {
+        !enabled   -> t.colors.borderSubtle
         isError    -> t.colors.dangerFg
         isWarning  -> t.colors.warningFg
         isFocused  -> t.colors.accent
         else       -> t.colors.border
     }
-    val borderThickness = if (isFocused) 1.5.dp else 1.dp
-    val bg = if (isWarning) t.colors.warningBg.copy(alpha = 0.6f) else t.colors.surface
+    val borderThickness = if (isFocused && enabled) 1.5.dp else 1.dp
+    val bg = when {
+        !enabled  -> t.colors.bgPage
+        isWarning -> t.colors.warningBg.copy(alpha = 0.6f)
+        else      -> t.colors.surface
+    }
     val shape = t.shapes.md
-    val style = PharmText.body.copy(color = t.colors.fg1)
+    val style = PharmText.body.copy(color = if (enabled) t.colors.fg1 else t.colors.fgMuted)
 
     val selectionColors = TextSelectionColors(
         handleColor = t.colors.accent,
