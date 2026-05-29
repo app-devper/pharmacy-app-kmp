@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -26,9 +27,9 @@ internal fun KyTable(
     formType: KyFormType,
     modifier: Modifier = Modifier,
 ) {
-    val display = rows.mapIndexed { index, row -> kyRowDisplay(row, index + 1) }
-    val totalQty = display.sumOf { it.qty }
-    val totalValue = display.sumOf { it.totalValue ?: 0.0 }
+    val display = remember(rows) { rows.mapIndexed { index, row -> kyRowDisplay(row, index + 1) } }
+    val totalQty = remember(display) { display.sumOf { it.qty } }
+    val totalValue = remember(display) { display.sumOf { it.totalValue ?: 0.0 } }
     val partyHeader = if (formType == KyFormType.Ky9) "ผู้ขาย/บริษัท" else "ผู้ซื้อ/ผู้ป่วย"
     val refHeader = if (formType == KyFormType.Ky9) "เลขใบส่งของ" else "อ้างอิง"
     val columns = kyColumns(partyHeader = partyHeader, refHeader = refHeader)

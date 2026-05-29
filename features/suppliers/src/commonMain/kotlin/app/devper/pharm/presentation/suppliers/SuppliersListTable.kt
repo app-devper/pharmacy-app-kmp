@@ -123,8 +123,8 @@ internal fun SuppliersListTable(
 
 @Composable
 private fun SupplierRowActions(supplier: Supplier, callbacks: SuppliersListCallbacks) {
-    PharmActionMenu(
-        actions = listOf(
+    val actions = remember(supplier.id, callbacks) {
+        listOf(
             PharmAction(
                 label = "รายละเอียด",
                 icon = PharmIcons.Suppliers,
@@ -142,6 +142,7 @@ private fun SupplierRowActions(supplier: Supplier, callbacks: SuppliersListCallb
                 tone = PharmActionTone.Danger,
                 onClick = { callbacks.onRequestDelete(supplier) },
             ),
-        ),
-    )
+        )
+    }
+    PharmActionMenu(actions = actions)
 }
