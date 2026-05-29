@@ -145,7 +145,7 @@ private fun KyFormTabs(
         activeId = "$KY_TAB_PREFIX${currentForm.number}",
         onSelect = { id ->
             val n = id.removePrefix(KY_TAB_PREFIX).toIntOrNull() ?: return@PharmTabBar
-            val target = KyFormType.values().firstOrNull { it.number == n } ?: return@PharmTabBar
+            val target = KyFormType.entries.firstOrNull { it.number == n } ?: return@PharmTabBar
             if (target != currentForm) onSwitchForm(target)
         },
         fillMaxWidth = false,
