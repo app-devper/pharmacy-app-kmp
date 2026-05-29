@@ -1,6 +1,8 @@
 package app.devper.pharm.presentation.sell.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,18 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,12 +22,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyRequired
+import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,12 +48,17 @@ fun KyCaptureSheet(
     onSkip: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val t = pharmTokens
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var fields by remember(initial) { mutableStateOf(initial) }
 
     val canSubmit = !submitting && validate(required, fields)
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = t.colors.surface,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,17 +69,15 @@ fun KyCaptureSheet(
         ) {
             Text(
                 text = "บันทึก ขย. ก่อนออกบิล",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                style = PharmText.h1.copy(color = t.colors.fg1),
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
                 text = "ระบบจะออกบิลแล้วบันทึก ขย. ตามรายการต่อไปนี้",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.body.copy(color = t.colors.fg2),
             )
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             if (required.needsKy11) {
                 Ky11Section(
@@ -107,26 +111,25 @@ fun KyCaptureSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
-                TextButton(onClick = onSkip, enabled = !submitting) {
-                    Text("ข้ามบันทึก ขย.", style = MaterialTheme.typography.titleMedium)
-                }
-                TextButton(onClick = onDismiss, enabled = !submitting) {
-                    Text("ยกเลิก", style = MaterialTheme.typography.titleMedium)
-                }
-                Button(
+                PharmButton(
+                    label = "ข้ามบันทึก ขย.",
+                    onClick = onSkip,
+                    enabled = !submitting,
+                    variant = PharmButtonVariant.Ghost,
+                )
+                PharmButton(
+                    label = "ยกเลิก",
+                    onClick = onDismiss,
+                    enabled = !submitting,
+                    variant = PharmButtonVariant.Ghost,
+                )
+                PharmButton(
+                    label = "บันทึกและออกบิล",
                     onClick = { onConfirm(fields) },
                     enabled = canSubmit,
-                ) {
-                    if (submitting) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.height(18.dp),
-                        )
-                    } else {
-                        Text("บันทึกและออกบิล", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
+                    loading = submitting,
+                    variant = PharmButtonVariant.Primary,
+                )
             }
         }
     }
@@ -136,27 +139,26 @@ fun KyCaptureSheet(
 private fun SectionHeader(
     label: String,
     sublabel: String,
-    badgeColor: androidx.compose.ui.graphics.Color,
+    bgColor: Color,
+    fgColor: Color,
 ) {
-    Surface(
-        color = badgeColor.copy(alpha = 0.18f),
-        shape = MaterialTheme.shapes.small,
+    val t = pharmTokens
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(t.shapes.sm)
+            .background(bgColor, t.shapes.sm)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                text = sublabel,
-                style = MaterialTheme.typography.bodySmall.tabular(),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            text = label,
+            style = PharmText.h2.copy(color = fgColor),
+        )
+        Text(
+            text = sublabel,
+            style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
+        )
     }
 }
 
@@ -167,26 +169,31 @@ private fun Ky11Section(
     onChange: (KyCaptureFields) -> Unit,
     enabled: Boolean,
 ) {
+    val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
             label = "ขย.11 — ยาอันตราย",
             sublabel = lines.joinToString(", ") { it.drug.name },
-            badgeColor = MaterialTheme.colorScheme.error,
+            bgColor = t.colors.ky11Bg,
+            fgColor = t.colors.ky11Fg,
         )
         KyField(
-            label = "ชื่อผู้ซื้อ *",
+            label = "ชื่อผู้ซื้อ",
+            required = true,
             value = fields.ky11BuyerName,
             onValueChange = { onChange(fields.copy(ky11BuyerName = it)) },
             enabled = enabled,
         )
         KyField(
-            label = "วัตถุประสงค์ *",
+            label = "วัตถุประสงค์",
+            required = true,
             value = fields.ky11Purpose,
             onValueChange = { onChange(fields.copy(ky11Purpose = it)) },
             enabled = enabled,
         )
         KyField(
-            label = "เภสัชกรผู้จ่าย *",
+            label = "เภสัชกรผู้จ่าย",
+            required = true,
             value = fields.ky11Pharmacist,
             onValueChange = { onChange(fields.copy(ky11Pharmacist = it)) },
             enabled = enabled,
@@ -201,20 +208,24 @@ private fun Ky10Section(
     onChange: (KyCaptureFields) -> Unit,
     enabled: Boolean,
 ) {
+    val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
             label = "ขย.10 — ยาควบคุมพิเศษ",
             sublabel = lines.joinToString(", ") { it.drug.name },
-            badgeColor = MaterialTheme.colorScheme.tertiary,
+            bgColor = t.colors.ky10Bg,
+            fgColor = t.colors.ky10Fg,
         )
         KyField(
-            label = "ชื่อผู้ซื้อ *",
+            label = "ชื่อผู้ซื้อ",
+            required = true,
             value = fields.ky10BuyerName,
             onValueChange = { onChange(fields.copy(ky10BuyerName = it)) },
             enabled = enabled,
         )
         KyField(
-            label = "ที่อยู่ผู้ซื้อ *",
+            label = "ที่อยู่ผู้ซื้อ",
+            required = true,
             value = fields.ky10BuyerAddress,
             onValueChange = { onChange(fields.copy(ky10BuyerAddress = it)) },
             enabled = enabled,
@@ -254,22 +265,26 @@ private fun Ky12Section(
     onChange: (KyCaptureFields) -> Unit,
     enabled: Boolean,
 ) {
+    val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
             label = "ขย.12 — ใบสั่งแพทย์",
             sublabel = lines.joinToString(", ") { it.drug.name },
-            badgeColor = MaterialTheme.colorScheme.primary,
+            bgColor = t.colors.ky12Bg,
+            fgColor = t.colors.ky12Fg,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             KyField(
-                label = "เลขใบสั่ง *",
+                label = "เลขใบสั่ง",
+                required = true,
                 value = fields.ky12RxNo,
                 onValueChange = { onChange(fields.copy(ky12RxNo = it)) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
             )
             KyField(
-                label = "ผู้ป่วย *",
+                label = "ผู้ป่วย",
+                required = true,
                 value = fields.ky12PatientName,
                 onValueChange = { onChange(fields.copy(ky12PatientName = it)) },
                 enabled = enabled,
@@ -308,22 +323,16 @@ private fun KyField(
     onValueChange: (String) -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier,
+    required: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        OutlinedTextField(
+    FormField(label = label, required = required, modifier = modifier) {
+        PharmTextField(
             value = value,
             onValueChange = onValueChange,
-            singleLine = true,
             enabled = enabled,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = MaterialTheme.shapes.medium,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            singleLine = true,
+            keyboardType = keyboardType,
         )
     }
 }

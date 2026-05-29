@@ -207,6 +207,7 @@ fun CartScreen(
         ReceiptDialog(
             sale = sale,
             received = sellState.receivedNum,
+            shopName = sellState.settings.store.name,
             onDismiss = {
                 checkoutVM.dismissReceipt()
 

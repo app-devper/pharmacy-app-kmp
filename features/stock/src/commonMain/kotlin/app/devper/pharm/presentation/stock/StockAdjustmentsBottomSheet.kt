@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.stock
 
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,60 +10,64 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmFilterChip
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+
+data class StockAdjustmentsCallbacks(
+    val onClose: () -> Unit = {},
+    val onToggleAddForm: () -> Unit = {},
+    val onSign: (AdjustmentSign) -> Unit = {},
+    val onAbsDelta: (String) -> Unit = {},
+    val onReason: (AdjustmentReason) -> Unit = {},
+    val onNote: (String) -> Unit = {},
+    val onSubmitAdd: () -> Unit = {},
+    val onDismissError: () -> Unit = {},
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StockAdjustmentsBottomSheet(
-    viewModel: StockAdjustmentsViewModel,
+    state: StockAdjustmentsUiState,
+    callbacks: StockAdjustmentsCallbacks,
     onDismiss: () -> Unit,
 ) {
-    val state by viewModel.state.collectAsState()
     if (state.drugId.isBlank()) return
 
+    val t = pharmTokens
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = {
-            viewModel.close()
+            callbacks.onClose()
             onDismiss()
         },
         sheetState = sheetState,
+        containerColor = t.colors.surface,
     ) {
         Column(
             modifier = Modifier
@@ -71,21 +76,32 @@ fun StockAdjustmentsBottomSheet(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            HeaderRow(state, viewModel)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
+            HeaderRow(state, callbacks)
+            Divider()
             HistoryBody(state)
             if (state.addFormOpen) {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
-                AddAdjustmentForm(state, viewModel)
+                Divider()
+                AddAdjustmentForm(state, callbacks)
             }
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = viewModel::dismissError)
+    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
 }
 
 @Composable
-private fun HeaderRow(state: StockAdjustmentsUiState, vm: StockAdjustmentsViewModel) {
+private fun Divider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(pharmTokens.colors.divider),
+    )
+}
+
+@Composable
+private fun HeaderRow(state: StockAdjustmentsUiState, callbacks: StockAdjustmentsCallbacks) {
+    val t = pharmTokens
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
@@ -93,27 +109,27 @@ private fun HeaderRow(state: StockAdjustmentsUiState, vm: StockAdjustmentsViewMo
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "ปรับปรุงสต็อก",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                style = PharmText.h2,
             )
             Text(
                 text = state.drugName,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.body.copy(color = t.colors.fg2),
             )
         }
-        TextButton(onClick = vm::toggleAddForm) {
-            Icon(Icons.Outlined.Add, contentDescription = null)
-            Text(
-                if (state.addFormOpen) "ปิด" else "ปรับปรุงใหม่",
-                modifier = Modifier.padding(start = 6.dp),
-            )
-        }
+        PharmButton(
+            label = if (state.addFormOpen) "ปิด" else "ปรับปรุงใหม่",
+            onClick = callbacks.onToggleAddForm,
+            variant = PharmButtonVariant.Ghost,
+            leadingIcon = {
+                Icon(PharmIcons.Plus, contentDescription = null, modifier = Modifier.size(18.dp))
+            },
+        )
     }
 }
 
 @Composable
 private fun HistoryBody(state: StockAdjustmentsUiState) {
+    val t = pharmTokens
     Box(modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp, max = 320.dp)) {
         when {
             state.loading && state.history.isEmpty() -> Box(
@@ -127,15 +143,14 @@ private fun HistoryBody(state: StockAdjustmentsUiState) {
             ) {
                 Text(
                     "ยังไม่มีประวัติการปรับปรุง",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
 
             else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 items(state.history, key = { it.id }) { row ->
                     AdjustmentRow(row)
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.08f))
+                    Divider()
                 }
             }
         }
@@ -144,6 +159,7 @@ private fun HistoryBody(state: StockAdjustmentsUiState) {
 
 @Composable
 private fun AdjustmentRow(adj: StockAdjustment) {
+    val t = pharmTokens
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,130 +171,102 @@ private fun AdjustmentRow(adj: StockAdjustment) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "${adj.before} → ${adj.after}",
-                style = MaterialTheme.typography.bodyMedium.tabular(),
+                style = PharmText.body.tabular().copy(color = t.colors.fg1),
             )
             Text(
                 text = buildString {
                     append(adj.at.take(19).replace('T', ' '))
                     if (adj.note.isNotBlank()) append("  ·  ${adj.note}")
                 },
-                style = MaterialTheme.typography.labelSmall.tabular(),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.micro.tabular().copy(color = t.colors.fg2),
                 maxLines = 2,
             )
         }
         Text(
             text = if (adj.delta > 0) "+${adj.delta}" else adj.delta.toString(),
-            style = MaterialTheme.typography.titleMedium.tabular(),
-            fontWeight = FontWeight.Bold,
-            color = if (adj.delta >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+            style = PharmText.h2.tabular().copy(
+                color = if (adj.delta >= 0) t.colors.accent else t.colors.dangerFg,
+            ),
         )
     }
 }
 
 @Composable
 private fun ReasonBadge(reason: AdjustmentReason) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        shape = MaterialTheme.shapes.small,
+    val t = pharmTokens
+    Box(
+        modifier = Modifier
+            .clip(t.shapes.sm)
+            .background(t.colors.borderSubtle, t.shapes.sm)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.sm)
+            .padding(horizontal = 8.dp, vertical = 2.dp),
     ) {
         Text(
             text = reason.wire,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+            style = PharmText.micro.copy(color = t.colors.fg1),
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddAdjustmentForm(state: StockAdjustmentsUiState, vm: StockAdjustmentsViewModel) {
+private fun AddAdjustmentForm(state: StockAdjustmentsUiState, callbacks: StockAdjustmentsCallbacks) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             text = "ปรับปรุงใหม่",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
+            style = PharmText.h3,
         )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SingleChoiceSegmentedButtonRow {
-                SegmentedButton(
-                    selected = state.draft.sign == AdjustmentSign.Decrease,
-                    onClick = { vm.onSign(AdjustmentSign.Decrease) },
-                    shape = SegmentedButtonDefaults.itemShape(0, 2),
-                ) { Text("ลด") }
-                SegmentedButton(
-                    selected = state.draft.sign == AdjustmentSign.Increase,
-                    onClick = { vm.onSign(AdjustmentSign.Increase) },
-                    shape = SegmentedButtonDefaults.itemShape(1, 2),
-                ) { Text("เพิ่ม") }
-            }
-            OutlinedTextField(
-                value = state.draft.absDelta,
-                onValueChange = vm::onAbsDelta,
-                singleLine = true,
-                placeholder = { Text("จำนวน") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            PharmSingleSelectChips(
+                chips = listOf(
+                    PharmFilterChip(id = AdjustmentSign.Decrease.name, label = "ลด"),
+                    PharmFilterChip(id = AdjustmentSign.Increase.name, label = "เพิ่ม"),
                 ),
-                modifier = Modifier.weight(1f).height(56.dp),
+                activeId = state.draft.sign.name,
+                onSelect = { callbacks.onSign(AdjustmentSign.valueOf(it)) },
+                scrollable = false,
             )
-        }
-
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                text = "เหตุผล",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                AdjustmentReason.pickerOrder.forEach { reason ->
-                    FilterChip(
-                        selected = state.draft.reason == reason,
-                        onClick = { vm.onReason(reason) },
-                        label = { Text(reason.wire) },
-                        colors = FilterChipDefaults.filterChipColors(),
-                    )
-                }
+            FormField(label = "จำนวน", modifier = Modifier.weight(1f)) {
+                PharmTextField(
+                    value = state.draft.absDelta,
+                    onValueChange = callbacks.onAbsDelta,
+                    placeholder = "จำนวน",
+                    keyboardType = KeyboardType.Number,
+                )
             }
         }
 
-        OutlinedTextField(
-            value = state.draft.note,
-            onValueChange = vm::onNote,
-            placeholder = { Text("หมายเหตุ (ออปชัน)") },
-            singleLine = false,
-            maxLines = 3,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-            ),
-            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp, max = 96.dp),
-        )
+        FormField(label = "เหตุผล") {
+            PharmSingleSelectChips(
+                chips = AdjustmentReason.pickerOrder.map {
+                    PharmFilterChip(id = it.name, label = it.wire)
+                },
+                activeId = state.draft.reason.name,
+                onSelect = { callbacks.onReason(AdjustmentReason.valueOf(it)) },
+            )
+        }
 
-        Button(
-            onClick = vm::submitAdd,
+        FormField(label = "หมายเหตุ") {
+            PharmTextField(
+                value = state.draft.note,
+                onValueChange = callbacks.onNote,
+                placeholder = "หมายเหตุ (ออปชัน)",
+                singleLine = false,
+            )
+        }
+
+        PharmButton(
+            label = "บันทึก",
+            onClick = callbacks.onSubmitAdd,
             enabled = state.canSubmitDraft,
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-        ) {
-            if (state.saving) {
-                CircularProgressIndicator(strokeWidth = 2.dp, modifier = Modifier.height(18.dp))
-            } else {
-                Text("บันทึก")
-            }
-        }
+            loading = state.saving,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

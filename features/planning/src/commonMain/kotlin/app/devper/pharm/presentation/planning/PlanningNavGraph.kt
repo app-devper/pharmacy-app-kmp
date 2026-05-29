@@ -13,12 +13,15 @@ fun NavGraphBuilder.planningGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<LowStock> {
         ShelledScreen(
             title = "ยาใกล้หมด",
             currentRoute = LowStock::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
@@ -31,7 +34,8 @@ fun NavGraphBuilder.planningGraph(
         ShelledScreen(
             title = "คำแนะนำสั่งซื้อ",
             currentRoute = ReorderSuggestions::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,

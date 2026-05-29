@@ -8,12 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -22,6 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,11 +32,13 @@ fun ErrorBottomSheet(
     confirmLabel: String = "ปิด",
 ) {
     if (message.isNullOrBlank()) return
+    val t = pharmTokens
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        containerColor = t.colors.surface,
     ) {
         Column(
             modifier = Modifier
@@ -49,36 +51,27 @@ fun ErrorBottomSheet(
             Box(
                 modifier = Modifier
                     .size(56.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        shape = CircleShape,
-                    ),
+                    .background(color = t.colors.dangerBg, shape = CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.ErrorOutline,
+                    imageVector = PharmIcons.Warning,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onErrorContainer,
+                    tint = t.colors.dangerFg,
                     modifier = Modifier.size(32.dp),
                 )
             }
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            Text(text = title, style = PharmText.h2)
             Text(
                 text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.bodySm.copy(color = t.colors.fg2),
                 textAlign = TextAlign.Center,
             )
-            Button(
+            PharmButton(
+                label = confirmLabel,
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(confirmLabel)
-            }
+            )
         }
     }
 }

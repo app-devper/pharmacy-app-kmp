@@ -29,6 +29,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 fun ReceiptDialog(
     sale: Sale,
     received: Double,
+    shopName: String,
     onDismiss: () -> Unit,
     onVoid: (() -> Unit)? = null,
     onPrint: (() -> Unit)? = null,
@@ -76,7 +77,7 @@ fun ReceiptDialog(
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(
-                text = "ร้านยา เฮลท์ตี้ฟาร์ม",
+                text = shopName.ifBlank { "ร้านขายยา" },
                 style = PharmText.h3,
                 modifier = Modifier.fillMaxWidth(),
             )

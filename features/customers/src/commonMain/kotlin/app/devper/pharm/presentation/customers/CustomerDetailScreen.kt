@@ -1,33 +1,23 @@
 package app.devper.pharm.presentation.customers
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.PersonOutline
-import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import app.devper.pharm.ui.format.formatBahtCurrency
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,17 +25,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.pricing.Tier
 import app.devper.pharm.domain.pricing.tierLabel
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PharmBadgeTone
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerDetailScreen(
     customerId: String,
@@ -54,50 +48,52 @@ fun CustomerDetailScreen(
     viewModel: CustomerDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val t = pharmTokens
 
     LaunchedEffect(customerId) { viewModel.load(customerId) }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = state.customer?.name ?: "ลูกค้า",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "ย้อนกลับ",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { onEdit(customerId) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = "แก้ไข",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                ),
-            )
-        },
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            CustomerHeader(customer = state.customer, loading = state.customerLoading)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
-            SalesSection(state = state)
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .clip(t.shapes.sm)
+                    .clickable(onClick = onBack)
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Icon(
+                    PharmIcons.ReturnArrow,
+                    contentDescription = "ย้อนกลับ",
+                    tint = t.colors.fg3,
+                    modifier = Modifier.size(16.dp),
+                )
+                Text("กลับ", style = PharmText.body.copy(color = t.colors.fg3))
+            }
+            Text("/", style = PharmText.body.copy(color = t.colors.fgMuted))
+            Text(state.customer?.name ?: "ลูกค้า", style = PharmText.h1, modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .clip(t.shapes.sm)
+                    .clickable { onEdit(customerId) }
+                    .padding(4.dp),
+            ) {
+                Icon(
+                    PharmIcons.Pencil,
+                    contentDescription = "แก้ไข",
+                    tint = t.colors.fg3,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
+
+        CustomerHeader(customer = state.customer, loading = state.customerLoading)
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        SalesSection(state = state)
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = viewModel::dismissError)
@@ -105,6 +101,7 @@ fun CustomerDetailScreen(
 
 @Composable
 private fun CustomerHeader(customer: Customer?, loading: Boolean) {
+    val t = pharmTokens
     if (loading && customer == null) {
         Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -121,54 +118,39 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Surface(
-                color = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = CircleShape,
-                modifier = Modifier.size(48.dp),
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(t.colors.accent, CircleShape),
+                contentAlignment = Alignment.Center,
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Outlined.PersonOutline,
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp),
-                    )
-                }
+                Icon(
+                    PharmIcons.Person,
+                    contentDescription = null,
+                    tint = t.colors.surface,
+                    modifier = Modifier.size(28.dp),
+                )
             }
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = customer.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                )
+                Text(text = customer.name, style = PharmText.h1)
                 Text(
                     text = customer.phone?.takeIf { it.isNotBlank() } ?: "ไม่ระบุเบอร์โทร",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
             if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
-                Surface(
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    shape = MaterialTheme.shapes.small,
-                ) {
-                    Text(
-                        text = tierLabel(customer.priceTier),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                    )
-                }
+                PharmBadge(text = tierLabel(customer.priceTier), tone = PharmBadgeTone.Purple)
             }
         }
 
         customer.allergyNote?.takeIf { it.isNotBlank() }?.let { note ->
-            Surface(
-                color = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(t.shapes.md)
+                    .background(t.colors.warningBg, t.shapes.md)
+                    .border(1.dp, t.colors.borderSubtle, t.shapes.md),
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -176,17 +158,17 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
                     verticalAlignment = Alignment.Top,
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.WarningAmber,
+                        PharmIcons.Warning,
                         contentDescription = null,
+                        tint = t.colors.warningFg,
                         modifier = Modifier.size(18.dp),
                     )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "แพ้ยา / โรคประจำตัว",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold,
+                            style = PharmText.h3.copy(color = t.colors.warningFg),
                         )
-                        Text(text = note, style = MaterialTheme.typography.bodySmall)
+                        Text(text = note, style = PharmText.bodySm.copy(color = t.colors.warningFg))
                     }
                 }
             }
@@ -196,11 +178,11 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
 
 @Composable
 private fun SalesSection(state: CustomerDetailUiState) {
+    val t = pharmTokens
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "ประวัติการขาย",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
+            style = PharmText.h2,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         )
         when {
@@ -212,8 +194,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
             state.sales.isEmpty() -> {
                 Text(
                     text = "ลูกค้ารายนี้ยังไม่มีบิล",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PharmText.body.copy(color = t.colors.fg2),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
@@ -221,7 +202,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(state.sales, key = { it.id }) { sale ->
                         SaleRow(sale)
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
+                        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
                     }
                 }
             }
@@ -231,10 +212,11 @@ private fun SalesSection(state: CustomerDetailUiState) {
 
 @Composable
 private fun SaleRow(sale: SaleSummary) {
+    val t = pharmTokens
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(t.colors.surface)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -246,35 +228,20 @@ private fun SaleRow(sale: SaleSummary) {
             ) {
                 Text(
                     text = sale.billNo.ifBlank { "(ไม่มีเลขบิล)" },
-                    style = MaterialTheme.typography.titleSmall.tabular(),
-                    fontWeight = FontWeight.SemiBold,
+                    style = PharmText.h3.tabular(),
                 )
                 if (sale.voided) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                        shape = MaterialTheme.shapes.small,
-                    ) {
-                        Text(
-                            text = "ยกเลิกแล้ว",
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        )
-                    }
+                    PharmBadge(text = "ยกเลิกแล้ว", tone = PharmBadgeTone.Red)
                 }
             }
             Text(
                 text = sale.soldAt.take(19).replace('T', ' '),
-                style = MaterialTheme.typography.labelSmall.tabular(),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.micro.tabular().copy(color = t.colors.fg2),
             )
         }
         Text(
             text = formatBahtCurrency(sale.total),
-            style = MaterialTheme.typography.titleMedium.tabular(),
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
+            style = PharmText.h2.tabular().copy(color = t.colors.accent),
         )
     }
 }
-

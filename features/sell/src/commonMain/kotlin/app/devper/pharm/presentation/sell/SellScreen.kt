@@ -19,6 +19,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.scanner.scanBarcodes
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
@@ -82,7 +84,14 @@ fun SellScreen(
                         sellState = sellState,
                         canCheckout = checkoutState.canCheckout,
                         checkingOut = checkoutState.checkingOut,
-                        sellVM = sellVM,
+                        onSetQty = sellVM::onSetQty,
+                        onRemove = sellVM::onRemove,
+                        onTapLineForDiscount = sellVM::onOpenLineDiscount,
+                        onOpenCartDiscount = sellVM::onOpenCartDiscount,
+                        onReceivedChange = sellVM::onReceivedChange,
+                        onRequestClearCart = sellVM::requestClearCart,
+                        onConfirmClearCart = sellVM::confirmClearCart,
+                        onCancelClearCart = sellVM::cancelClearCart,
                         onSubmit = checkoutVM::submit,
                         parkedFilledCount = parkedState.filledCount,
                         onPickCustomer = customerPickerVM::open,
@@ -204,6 +213,7 @@ fun SellScreen(
                     ReceiptDialog(
                         sale = sale,
                         received = sellState.receivedNum,
+                        shopName = sellState.settings.store.name,
                         onDismiss = checkoutVM::dismissReceipt,
                         onVoid = sale.id.takeIf { it.isNotBlank() }
                             ?.let { { voidSaleVM.openSheet() } },
@@ -244,7 +254,14 @@ private fun SellCartPanel(
     sellState: SellUiState,
     canCheckout: Boolean,
     checkingOut: Boolean,
-    sellVM: SellViewModel,
+    onSetQty: (CartLineKey, Int) -> Unit,
+    onRemove: (CartLineKey) -> Unit,
+    onTapLineForDiscount: (CartLine) -> Unit,
+    onOpenCartDiscount: () -> Unit,
+    onReceivedChange: (String) -> Unit,
+    onRequestClearCart: () -> Unit,
+    onConfirmClearCart: () -> Unit,
+    onCancelClearCart: () -> Unit,
     onSubmit: () -> Unit,
     parkedFilledCount: Int,
     onPickCustomer: () -> Unit,
@@ -265,18 +282,18 @@ private fun SellCartPanel(
         change = sellState.change,
         canCheckout = canCheckout,
         checkingOut = checkingOut,
-        onSetQty = sellVM::onSetQty,
-        onRemove = sellVM::onRemove,
-        onTapLineForDiscount = sellVM::onOpenLineDiscount,
+        onSetQty = onSetQty,
+        onRemove = onRemove,
+        onTapLineForDiscount = onTapLineForDiscount,
         onPickCustomer = onPickCustomer,
         onClearCustomer = onClearCustomer,
-        onOpenCartDiscount = sellVM::onOpenCartDiscount,
-        onReceivedChange = sellVM::onReceivedChange,
+        onOpenCartDiscount = onOpenCartDiscount,
+        onReceivedChange = onReceivedChange,
         onSubmit = onSubmit,
         showClearConfirm = sellState.showClearConfirm,
-        onRequestClearCart = sellVM::requestClearCart,
-        onConfirmClearCart = sellVM::confirmClearCart,
-        onCancelClearCart = sellVM::cancelClearCart,
+        onRequestClearCart = onRequestClearCart,
+        onConfirmClearCart = onConfirmClearCart,
+        onCancelClearCart = onCancelClearCart,
         parkedFilledCount = parkedFilledCount,
         onOpenParkedSheet = onOpenParkedSheet,
         modifier = modifier,

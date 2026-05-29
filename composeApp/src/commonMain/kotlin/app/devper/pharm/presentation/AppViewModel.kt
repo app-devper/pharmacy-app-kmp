@@ -64,11 +64,13 @@ class AppViewModel(
         launchResult(
             block = { logout() },
             onSuccess = {  },
+            onFailure = { setState { copy(error = it.message) } },
         )
     }
 
     fun toggleTheme(currentlyDark: Boolean) {
         setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark)
+            .onFailure { setState { copy(error = it.message) } }
     }
 
     fun dismissError() = setState { copy(error = null) }
