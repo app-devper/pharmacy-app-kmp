@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.reports.internal.ProfitQuickPeriod
 import app.devper.pharm.presentation.reports.internal.formatYmdDisplay
 import app.devper.pharm.presentation.reports.internal.resolve
+import app.devper.pharm.presentation.reports.internal.todayDate
 import app.devper.pharm.presentation.reports.internal.ymdToMillis
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -37,7 +38,7 @@ internal fun ProfitFilterBar(
         fromMillis = ymdToMillis(state.from),
         toMillis = ymdToMillis(state.to),
     )
-    val quickPeriods = remember {
+    val quickPeriods = remember(todayDate()) {
         ProfitQuickPeriod.entries.map { period ->
             val resolved = period.resolve()
             PharmDateQuickPeriod(

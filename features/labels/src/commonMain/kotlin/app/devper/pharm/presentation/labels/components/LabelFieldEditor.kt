@@ -64,7 +64,7 @@ internal fun LabelFieldEditor(
             return@Column
         }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            itemsIndexed(lines, key = { _, line -> line.drugId + line.hashCode() }) { index, line ->
+            itemsIndexed(lines, key = { _, line -> line.drugId }) { index, line ->
                 LabelLineRow(
                     line = line,
                     onRemove = { onRemoveLine(index) },

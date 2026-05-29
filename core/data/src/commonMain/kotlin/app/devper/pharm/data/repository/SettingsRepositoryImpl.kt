@@ -10,7 +10,9 @@ import app.devper.pharm.data.remote.dto.StockSettingsDto
 import app.devper.pharm.data.remote.dto.StoreInfoDto
 import app.devper.pharm.domain.model.KySettings
 import app.devper.pharm.domain.model.PharmacistInfo
+import app.devper.pharm.domain.model.ReceiptSettings
 import app.devper.pharm.domain.model.Settings
+import app.devper.pharm.domain.model.StockSettings
 import app.devper.pharm.domain.model.StoreInfo
 import app.devper.pharm.domain.param.UpdateSettingsParam
 import app.devper.pharm.domain.repository.SettingsRepository
@@ -41,6 +43,8 @@ class SettingsRepositoryImpl(
 
     private fun SettingsDto.toDomain() = Settings(
         store = store.toDomain(),
+        receipt = receipt.toDomain(),
+        stock = stock.toDomain(),
         pharmacist = pharmacist.toDomain(),
         ky = ky.toDomain(),
         timezone = timezone.takeIf { it.isNotBlank() } ?: "Asia/Bangkok",
@@ -48,6 +52,17 @@ class SettingsRepositoryImpl(
 
     private fun StoreInfoDto.toDomain() = StoreInfo(
         name = name, address = address, phone = phone, taxId = taxId,
+    )
+
+    private fun ReceiptSettingsDto.toDomain() = ReceiptSettings(
+        header = header, footer = footer, paperWidth = paperWidth, showPharmacist = showPharmacist,
+    )
+
+    private fun StockSettingsDto.toDomain() = StockSettings(
+        lowStockThreshold = lowStockThreshold,
+        reorderDays = reorderDays,
+        reorderLookahead = reorderLookahead,
+        expiringDays = expiringDays,
     )
 
     private fun PharmacistInfoDto.toDomain() = PharmacistInfo(

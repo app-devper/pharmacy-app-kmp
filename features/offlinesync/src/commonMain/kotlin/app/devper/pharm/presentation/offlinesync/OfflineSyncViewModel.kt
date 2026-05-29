@@ -8,6 +8,7 @@ import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class OfflineSyncViewModel(
     offlineQueue: OfflineQueueProvider,
@@ -28,7 +29,13 @@ class OfflineSyncViewModel(
         val snapshot = current.pending
         if (snapshot.isEmpty()) return
         setState { copy(message = "เริ่มซิงก์ ${snapshot.size} รายการ") }
-        snapshot.forEach { item -> retryOne(item.id) }
+        viewModelScope.launch {
+            var failed = 0
+            snapshot.forEach { item ->
+                retrySale(item.id).onFailure { failed++ }
+            }
+            if (failed > 0) setState { copy(error = "ส่งบิลไม่สำเร็จ $failed จาก ${snapshot.size} รายการ") }
+        }
     }
 
     fun retry(id: String) {
