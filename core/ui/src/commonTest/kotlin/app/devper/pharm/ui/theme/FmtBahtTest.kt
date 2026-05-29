@@ -27,4 +27,12 @@ class FmtBahtTest {
         assertEquals("฿-99.50", fmtBaht(-99.50))
         assertEquals("฿-1,000", fmtBaht(-1000))
     }
+
+    @Test
+    fun fractional_rounding_carries_into_whole() {
+        assertEquals("฿6", fmtBaht(5.996))
+        assertEquals("฿2", fmtBaht(1.999))
+        assertEquals("฿1,000", fmtBaht(999.999))
+        assertEquals("฿-6", fmtBaht(-5.996))
+    }
 }
