@@ -1,0 +1,66 @@
+package app.devper.pharm.presentation.profile.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PharmBadgeTone
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
+
+@Composable
+internal fun ProfileHeaderCard(user: UmUser) {
+    val t = pharmTokens
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Box(
+            modifier = Modifier.size(64.dp).clip(CircleShape).background(t.colors.accent),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(text = user.initials, style = PharmText.h1.copy(color = t.colors.surface))
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(text = user.displayName, style = PharmText.h1)
+            Text(text = "@${user.username}", style = PharmText.body.copy(color = t.colors.fgMuted))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PharmBadge(text = user.role.label(), tone = user.role.tone())
+                PharmBadge(
+                    text = if (user.status.isActive) "ใช้งาน" else "ปิดใช้งาน",
+                    tone = if (user.status.isActive) PharmBadgeTone.Green else PharmBadgeTone.Gray,
+                )
+            }
+        }
+    }
+}
+
+private fun Role.label(): String = when (this) {
+    Role.SUPER   -> "Super Admin"
+    Role.ADMIN   -> "Admin"
+    Role.MANAGER -> "Manager"
+    Role.USER    -> "User"
+    Role.UNKNOWN -> "-"
+}
+
+private fun Role.tone(): PharmBadgeTone = when (this) {
+    Role.SUPER   -> PharmBadgeTone.Purple
+    Role.ADMIN   -> PharmBadgeTone.Blue
+    Role.MANAGER -> PharmBadgeTone.Amber
+    Role.USER    -> PharmBadgeTone.Gray
+    Role.UNKNOWN -> PharmBadgeTone.Gray
+}

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,53 +11,62 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
+
+data class DrugLotsCallbacks(
+    val onClose: () -> Unit = {},
+    val onRequestDelete: (DrugLot) -> Unit = {},
+    val onCancelDelete: () -> Unit = {},
+    val onConfirmDelete: () -> Unit = {},
+    val onToggleAddForm: () -> Unit = {},
+    val onLotNumber: (String) -> Unit = {},
+    val onExpiryDate: (String) -> Unit = {},
+    val onQuantity: (String) -> Unit = {},
+    val onCostPrice: (String) -> Unit = {},
+    val onSellPrice: (String) -> Unit = {},
+    val onSubmitAdd: () -> Unit = {},
+    val onDismissError: () -> Unit = {},
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrugLotsBottomSheet(
-    viewModel: DrugLotsViewModel,
+    state: DrugLotsUiState,
+    callbacks: DrugLotsCallbacks,
     onDismiss: () -> Unit,
 ) {
-    val state by viewModel.state.collectAsState()
     if (state.drugId.isBlank()) return
 
+    val t = pharmTokens
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = {
-            viewModel.close()
+            callbacks.onClose()
             onDismiss()
         },
         sheetState = sheetState,
+        containerColor = t.colors.surface,
     ) {
         Column(
             modifier = Modifier
@@ -66,42 +76,58 @@ fun DrugLotsBottomSheet(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             HeaderRow(state)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
-            LotsBody(state, viewModel)
+            Divider()
+            LotsBody(state, callbacks)
             if (state.addFormOpen) {
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
-                AddLotForm(state, viewModel)
+                Divider()
+                AddLotForm(state, callbacks)
             }
         }
     }
 
     state.pendingDelete?.let { lot ->
-        AlertDialog(
-            onDismissRequest = viewModel::cancelDelete,
-            title = { Text("ลบล็อตนี้?") },
-            text = {
-                Text(
-                    "ล็อต ${lot.lotNumber} จะถูกลบออก " +
-                        "stock ของยาจะลดลง ${lot.remaining} หน่วย " +
-                        "(การเคลื่อนไหวจะถูกบันทึกไว้)",
+        PharmModal(
+            open = true,
+            onDismiss = callbacks.onCancelDelete,
+            title = "ลบล็อตนี้?",
+            footer = {
+                PharmButton(
+                    label = "ยกเลิก",
+                    onClick = callbacks.onCancelDelete,
+                    variant = PharmButtonVariant.Ghost,
+                )
+                PharmButton(
+                    label = "ลบ",
+                    onClick = callbacks.onConfirmDelete,
+                    variant = PharmButtonVariant.Danger,
                 )
             },
-            confirmButton = {
-                TextButton(onClick = viewModel::confirmDelete) {
-                    Text("ลบ", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = viewModel::cancelDelete) { Text("ยกเลิก") }
-            },
-        )
+        ) {
+            Text(
+                text = "ล็อต ${lot.lotNumber} จะถูกลบออก " +
+                    "stock ของยาจะลดลง ${lot.remaining} หน่วย " +
+                    "(การเคลื่อนไหวจะถูกบันทึกไว้)",
+                style = PharmText.body,
+            )
+        }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = viewModel::dismissError)
+    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+}
+
+@Composable
+private fun Divider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(pharmTokens.colors.divider),
+    )
 }
 
 @Composable
 private fun HeaderRow(state: DrugLotsUiState) {
+    val t = pharmTokens
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
@@ -109,14 +135,12 @@ private fun HeaderRow(state: DrugLotsUiState) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = "ล็อตทั้งหมด",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                style = PharmText.h2,
             )
             if (state.drugName.isNotBlank()) {
                 Text(
                     text = state.drugName,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
         }
@@ -124,7 +148,8 @@ private fun HeaderRow(state: DrugLotsUiState) {
 }
 
 @Composable
-private fun LotsBody(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
+private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
+    val t = pharmTokens
     Column(
         modifier = Modifier.heightIn(max = 320.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -134,13 +159,12 @@ private fun LotsBody(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center,
-                ) { CircularProgressIndicator() }
+                ) { PharmCircularProgress() }
             }
             state.lots.isEmpty() -> {
                 Text(
                     text = "ยังไม่มีล็อต",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PharmText.body.copy(color = t.colors.fg2),
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
             }
@@ -148,29 +172,31 @@ private fun LotsBody(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
                 state.lots.forEach { lot ->
                     LotRow(
                         lot = lot,
-                        onDelete = { viewModel.requestDelete(lot) },
+                        onDelete = { callbacks.onRequestDelete(lot) },
                     )
                 }
             }
         }
 
         Spacer(Modifier.height(8.dp))
-        TextButton(onClick = viewModel::toggleAddForm) {
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-            Text(
-                text = if (state.addFormOpen) "  ปิดฟอร์มเพิ่มล็อต" else "  เพิ่มล็อต",
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
+        PharmButton(
+            label = if (state.addFormOpen) "ปิดฟอร์มเพิ่มล็อต" else "เพิ่มล็อต",
+            onClick = callbacks.onToggleAddForm,
+            variant = PharmButtonVariant.Ghost,
+            leadingIcon = {
+                Icon(
+                    imageVector = PharmIcons.Plus,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+            },
+        )
     }
 }
 
 @Composable
 private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
+    val t = pharmTokens
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -179,20 +205,21 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = lot.lotNumber,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
+                style = PharmText.body.copy(color = t.colors.fg1),
             )
             Text(
                 text = "หมดอายุ ${lot.expiryDate.take(10)} · เหลือ ${lot.remaining}/${lot.quantity}",
-                style = MaterialTheme.typography.labelSmall.tabular(),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.micro.tabular().copy(color = t.colors.fg2),
             )
         }
-        IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+        PharmButton(
+            onClick = onDelete,
+            variant = PharmButtonVariant.Ghost,
+        ) {
             Icon(
-                imageVector = Icons.Outlined.DeleteOutline,
+                imageVector = PharmIcons.Trash,
                 contentDescription = "ลบล็อต",
-                tint = MaterialTheme.colorScheme.error,
+                tint = t.colors.dangerFg,
                 modifier = Modifier.size(20.dp),
             )
         }
@@ -200,28 +227,27 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
 }
 
 @Composable
-private fun AddLotForm(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
+private fun AddLotForm(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
             text = "เพิ่มล็อตใหม่",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
+            style = PharmText.h2,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             LotField(
                 label = "เลขล็อต *",
                 value = state.draft.lotNumber,
-                onValueChange = viewModel::onLotNumber,
+                onValueChange = callbacks.onLotNumber,
                 placeholder = "เช่น L240501",
                 modifier = Modifier.weight(1f),
             )
             LotField(
                 label = "วันหมดอายุ * (YYYY-MM-DD)",
                 value = state.draft.expiryDate,
-                onValueChange = viewModel::onExpiryDate,
+                onValueChange = callbacks.onExpiryDate,
                 placeholder = "2026-12-31",
                 modifier = Modifier.weight(1f),
             )
@@ -230,7 +256,7 @@ private fun AddLotForm(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
             LotField(
                 label = "จำนวน *",
                 value = state.draft.quantity,
-                onValueChange = viewModel::onQuantity,
+                onValueChange = callbacks.onQuantity,
                 placeholder = "0",
                 keyboardType = KeyboardType.Number,
                 modifier = Modifier.weight(1f),
@@ -238,7 +264,7 @@ private fun AddLotForm(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
             LotField(
                 label = "ราคาทุน/หน่วย",
                 value = state.draft.costPrice,
-                onValueChange = viewModel::onCostPrice,
+                onValueChange = callbacks.onCostPrice,
                 placeholder = "ใช้ราคาทุนของยา",
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f),
@@ -246,31 +272,22 @@ private fun AddLotForm(state: DrugLotsUiState, viewModel: DrugLotsViewModel) {
             LotField(
                 label = "ราคาขาย/หน่วย",
                 value = state.draft.sellPrice,
-                onValueChange = viewModel::onSellPrice,
+                onValueChange = callbacks.onSellPrice,
                 placeholder = "ใช้ราคาขายของยา",
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f),
             )
         }
-        Button(
-            onClick = viewModel::submitAdd,
+        PharmButton(
+            label = "บันทึกล็อต",
+            onClick = callbacks.onSubmitAdd,
             enabled = state.canSubmitDraft,
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-        ) {
-            if (state.saving) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier.size(18.dp),
-                )
-            } else {
-                Text("บันทึกล็อต", style = MaterialTheme.typography.titleMedium)
-            }
-        }
+            loading = state.saving,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LotField(
     label: String,
@@ -280,26 +297,12 @@ private fun LotField(
     keyboardType: KeyboardType = KeyboardType.Text,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        OutlinedTextField(
+    FormField(label = label, modifier = modifier) {
+        PharmTextField(
             value = value,
             onValueChange = onValueChange,
-            singleLine = true,
-            placeholder = { Text(placeholder) },
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Next),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-            ),
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            placeholder = placeholder,
+            keyboardType = keyboardType,
         )
     }
 }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +35,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmIcons
 import androidx.compose.material3.Icon
 import org.koin.compose.viewmodel.koinViewModel
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun LoginScreen(
@@ -106,7 +106,7 @@ fun LoginScreen(
                         modifier = Modifier.size(16.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        CircularProgressIndicator(
+                        PharmCircularProgress(
                             color = t.colors.surface,
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(14.dp),

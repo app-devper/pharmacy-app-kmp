@@ -13,12 +13,15 @@ fun NavGraphBuilder.reportsGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<Reports> {
         ShelledScreen(
             title = "รายงานสรุป",
             currentRoute = Reports::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
@@ -31,7 +34,8 @@ fun NavGraphBuilder.reportsGraph(
         ShelledScreen(
             title = "กำไรต่อยา",
             currentRoute = Profit::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
@@ -44,7 +48,8 @@ fun NavGraphBuilder.reportsGraph(
         ShelledScreen(
             title = "ปิดยอดสิ้นวัน",
             currentRoute = Eod::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,

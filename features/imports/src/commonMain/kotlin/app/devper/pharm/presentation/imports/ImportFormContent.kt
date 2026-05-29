@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +37,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +65,7 @@ fun ImportFormContent(
                 },
                 actions = {
                     if (state.saving) {
-                        CircularProgressIndicator(
+                        PharmCircularProgress(
                             color = t.colors.accent,
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(20.dp).padding(end = 12.dp),
@@ -90,7 +90,7 @@ fun ImportFormContent(
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             if (state.loading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = t.colors.accent)
+                    PharmCircularProgress(color = t.colors.accent)
                 }
             } else {
                 ImportFormBody(

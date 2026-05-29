@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +16,7 @@ import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.theme.PharmacyTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 private val SETTINGS_TABS: List<PharmTab> =
     SettingsTab.entries.map { PharmTab(id = it.name, label = it.label) }
@@ -38,7 +38,7 @@ fun SettingsContent(
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.loading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    PharmCircularProgress()
                 }
             } else {
                 SettingsTabBody(state = state, editor = editor)

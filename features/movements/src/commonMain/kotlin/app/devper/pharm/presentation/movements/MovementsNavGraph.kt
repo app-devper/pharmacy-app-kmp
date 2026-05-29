@@ -13,12 +13,15 @@ fun NavGraphBuilder.movementsGraph(
     pendingSyncCount: Int,
     role: Role = Role.UNKNOWN,
     user: TopbarUser? = null,
+    onNavigateMain: (Any) -> Unit,
+    onProfileClick: () -> Unit,
 ) {
     composable<Movements> {
         ShelledScreen(
             title = "ประวัติเคลื่อนไหวสต็อก",
             currentRoute = Movements::class.qualifiedName!!,
-            navController = navController,
+            onNavigateMain = onNavigateMain,
+            onProfileClick = onProfileClick,
             onLogout = onLogout,
             pendingSyncCount = pendingSyncCount,
             role = role,
