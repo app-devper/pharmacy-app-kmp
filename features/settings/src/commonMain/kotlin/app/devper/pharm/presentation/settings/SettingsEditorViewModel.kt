@@ -100,6 +100,16 @@ class SettingsEditorViewModel(
         storePhone = store.phone,
         storeTaxId = store.taxId,
 
+        receiptHeader = receipt.header,
+        receiptFooter = receipt.footer,
+        receiptPaperWidth = receipt.paperWidth,
+        receiptShowPharmacist = receipt.showPharmacist,
+
+        stockLowThreshold = stock.lowStockThreshold.toString(),
+        stockReorderDays = stock.reorderDays.toString(),
+        stockReorderLookahead = stock.reorderLookahead.toString(),
+        stockExpiringDays = stock.expiringDays.toString(),
+
         pharmacistName = pharmacist.name,
         pharmacistLicenseNo = pharmacist.licenseNo,
         kySkipAuto = ky.skipAuto,

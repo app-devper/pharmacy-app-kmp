@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.domain.util.UmRoleValidator
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -55,11 +56,13 @@ fun UsersListContent(
                 state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
                     title = "ยังไม่มีผู้ใช้งาน",
                     action = {
-                        PharmButton(
-                            label = "+ เพิ่มผู้ใช้งานคนแรก",
-                            onClick = callbacks.onAddUser,
-                            variant = PharmButtonVariant.Primary,
-                        )
+                        if (UmRoleValidator.canManageUsers(state.currentUserRole)) {
+                            PharmButton(
+                                label = "+ เพิ่มผู้ใช้งานคนแรก",
+                                onClick = callbacks.onAddUser,
+                                variant = PharmButtonVariant.Primary,
+                            )
+                        }
                     },
                 )
                 else -> UsersTableSection(state = state, callbacks = callbacks)
@@ -91,11 +94,13 @@ private fun UsersHeader(
                     style = PharmText.micro.copy(color = t.colors.fgMuted),
                 )
             }
-            PharmButton(
-                label = "+ เพิ่มผู้ใช้งาน",
-                onClick = callbacks.onAddUser,
-                variant = PharmButtonVariant.Primary,
-            )
+            if (UmRoleValidator.canManageUsers(state.currentUserRole)) {
+                PharmButton(
+                    label = "+ เพิ่มผู้ใช้งาน",
+                    onClick = callbacks.onAddUser,
+                    variant = PharmButtonVariant.Primary,
+                )
+            }
         }
         Box(modifier = Modifier.widthIn(max = 360.dp)) {
             PharmTextField(

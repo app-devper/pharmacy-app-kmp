@@ -43,7 +43,7 @@ fun OversellConfirmSheet(
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var ack by remember { mutableStateOf(false) }
+    var ack by remember(shortfalls) { mutableStateOf(false) }
     val t = pharmTokens
 
     ModalBottomSheet(
