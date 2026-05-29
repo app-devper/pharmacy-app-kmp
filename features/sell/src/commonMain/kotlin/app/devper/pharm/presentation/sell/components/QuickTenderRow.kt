@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.format.formatBaht
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmacyTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -33,8 +35,8 @@ internal fun QuickTenderRow(
         TenderChip(label = "฿1,000", value = "1000", enabled = enabled, onPick = onPick)
 
         TenderChip(
-            label = "ตามยอด · ฿${bahtAmount(total)}",
-            value = bahtAmount(total),
+            label = "ตามยอด · ${formatBahtCurrency(total)}",
+            value = formatBaht(total).replace(",", "").removeSuffix(".00"),
             enabled = enabled && total > 0,
             onPick = onPick,
             primary = true,
