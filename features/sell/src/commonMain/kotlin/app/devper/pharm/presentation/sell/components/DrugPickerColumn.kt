@@ -169,7 +169,7 @@ private fun ScannerActivePill() {
             modifier = Modifier
                 .size(6.dp)
                 .clip(t.shapes.pill)
-                .background(androidx.compose.ui.graphics.Color(0xFF22C55E)),
+                .background(t.colors.successFg),
         )
         Text(
             text = "สแกนเนอร์เปิดอยู่",
