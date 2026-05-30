@@ -16,54 +16,40 @@ data class StockCountFormUiState(
     val showSubmitConfirm: Boolean = false,
     override val error: String? = null,
 ) : BaseFormUiState<StockCountFormUiState> {
-    val filtered: List<Drug> get() = DrugSearch.filter(drugs, query)
+    private val drugById: Map<String, Drug> = drugs.associateBy { it.id }
 
-    private val drugById: Map<String, Drug> get() = drugs.associateBy { it.id }
+    val filtered: List<Drug> = DrugSearch.filter(drugs, query)
 
-    val pendingLines: List<Pair<String, Int>>
-        get() = StockCountInputBuilder.parsePending(counts)
+    val pendingLines: List<Pair<String, Int>> = StockCountInputBuilder.parsePending(counts)
 
-    val changedLines: List<Pair<String, Int>>
-        get() {
-            val byId = drugById
-            return pendingLines.filter { (id, counted) ->
-                val drug = byId[id] ?: return@filter false
-                counted != drug.stock
-            }
+    val changedLines: List<Pair<String, Int>> = pendingLines.filter { (id, counted) ->
+        val drug = drugById[id] ?: return@filter false
+        counted != drug.stock
+    }
+
+    val changedCount: Int = changedLines.size
+
+    val totalAbsDelta: Int = pendingLines.sumOf { (id, counted) ->
+        val drug = drugById[id] ?: return@sumOf 0
+        if (counted == drug.stock) 0 else kotlin.math.abs(counted - drug.stock)
+    }
+
+    val topDiscrepancies: List<StockCountDiscrepancy> = changedLines
+        .mapNotNull { (id, counted) ->
+            val drug = drugById[id] ?: return@mapNotNull null
+            StockCountDiscrepancy(
+                drugId = id,
+                drugName = drug.name,
+                unit = drug.unit.orEmpty(),
+                systemStock = drug.stock,
+                counted = counted,
+                delta = counted - drug.stock,
+            )
         }
+        .sortedByDescending { kotlin.math.abs(it.delta) }
+        .take(5)
 
-    val changedCount: Int get() = changedLines.size
-
-    val totalAbsDelta: Int
-        get() {
-            val byId = drugById
-            return pendingLines.sumOf { (id, counted) ->
-                val drug = byId[id] ?: return@sumOf 0
-                if (counted == drug.stock) 0 else kotlin.math.abs(counted - drug.stock)
-            }
-        }
-
-    val topDiscrepancies: List<StockCountDiscrepancy>
-        get() {
-            val byId = drugById
-            return changedLines
-                .mapNotNull { (id, counted) ->
-                    val drug = byId[id] ?: return@mapNotNull null
-                    StockCountDiscrepancy(
-                        drugId = id,
-                        drugName = drug.name,
-                        unit = drug.unit.orEmpty(),
-                        systemStock = drug.stock,
-                        counted = counted,
-                        delta = counted - drug.stock,
-                    )
-                }
-                .sortedByDescending { kotlin.math.abs(it.delta) }
-                .take(5)
-        }
-
-    override val canSubmit: Boolean
-        get() = !saving && !loading && pendingLines.isNotEmpty()
+    override val canSubmit: Boolean = !saving && !loading && pendingLines.isNotEmpty()
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
