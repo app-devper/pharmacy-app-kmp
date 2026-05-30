@@ -5,7 +5,6 @@ package app.devper.pharm.ui.designsystem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -70,7 +69,7 @@ fun <T> PharmTable(
             .background(t.colors.surface),
     ) {
         val totalWeight = remember(columns) { columns.fold(0f) { acc, c -> acc + c.weight } }
-        val minTableWidth = (totalWeight * MIN_WIDTH_PER_WEIGHT_PX).dp
+        val minTableWidth = MIN_WIDTH_PER_WEIGHT * totalWeight
         val needsScroll = minTableWidth > maxWidth
         val hScroll = rememberScrollState()
 
@@ -109,7 +108,7 @@ fun <T> PharmTable(
     }
 }
 
-private const val MIN_WIDTH_PER_WEIGHT_PX = 88f
+private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
 
 @Composable
 private fun <T> PharmTableHeader(columns: List<PharmTableColumn<T>>, height: Dp) {
