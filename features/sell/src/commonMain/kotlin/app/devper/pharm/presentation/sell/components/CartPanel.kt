@@ -350,7 +350,8 @@ private fun CartComplianceBanner(required: KyRequired) {
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clip(t.shapes.md)
             .background(t.colors.warningBg)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
