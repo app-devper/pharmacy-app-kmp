@@ -50,16 +50,13 @@ internal fun ProfitQuickPeriod.resolve(): ProfitDateRange {
             ProfitDateRange(start.toStartOfDayMillis(), today.toStartOfDayMillis())
         }
         ProfitQuickPeriod.ThisMonth -> {
-            @Suppress("DEPRECATION")
-            val start = LocalDate(today.year, today.monthNumber, 1)
+            val start = LocalDate(today.year, today.month, 1)
             ProfitDateRange(start.toStartOfDayMillis(), today.toStartOfDayMillis())
         }
         ProfitQuickPeriod.LastMonth -> {
-            @Suppress("DEPRECATION")
-            val firstOfThisMonth = LocalDate(today.year, today.monthNumber, 1)
+            val firstOfThisMonth = LocalDate(today.year, today.month, 1)
             val lastOfPrev = firstOfThisMonth.minus(1, DateTimeUnit.DAY)
-            @Suppress("DEPRECATION")
-            val firstOfPrev = LocalDate(lastOfPrev.year, lastOfPrev.monthNumber, 1)
+            val firstOfPrev = LocalDate(lastOfPrev.year, lastOfPrev.month, 1)
             ProfitDateRange(firstOfPrev.toStartOfDayMillis(), lastOfPrev.toStartOfDayMillis())
         }
     }

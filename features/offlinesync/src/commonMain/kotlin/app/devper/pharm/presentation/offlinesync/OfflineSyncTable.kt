@@ -26,6 +26,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
@@ -165,10 +166,8 @@ private fun OfflineSyncRowActions(row: PendingSale, callbacks: OfflineSyncCallba
 @OptIn(ExperimentalTime::class)
 private fun formatEnqueuedAt(millis: Long): String {
     val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
-    @Suppress("DEPRECATION")
-    val mm = dt.monthNumber.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val dd = dt.dayOfMonth.toString().padStart(2, '0')
+    val mm = dt.month.number.toString().padStart(2, '0')
+    val dd = dt.day.toString().padStart(2, '0')
     val yy = (dt.year % 100).toString().padStart(2, '0')
     val hh = dt.hour.toString().padStart(2, '0')
     val mi = dt.minute.toString().padStart(2, '0')

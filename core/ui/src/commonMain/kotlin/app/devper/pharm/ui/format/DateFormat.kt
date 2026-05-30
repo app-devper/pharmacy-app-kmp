@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
@@ -12,10 +13,8 @@ import kotlinx.datetime.toLocalDateTime
 fun millisToYmd(millis: Long?): String {
     if (millis == null) return ""
     val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault()).date
-    @Suppress("DEPRECATION")
-    val mm = date.monthNumber.toString().padStart(2, '0')
-    @Suppress("DEPRECATION")
-    val dd = date.dayOfMonth.toString().padStart(2, '0')
+    val mm = date.month.number.toString().padStart(2, '0')
+    val dd = date.day.toString().padStart(2, '0')
     return "${date.year}-$mm-$dd"
 }
 
