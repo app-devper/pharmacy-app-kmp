@@ -32,9 +32,9 @@ internal fun ReportsMetricsRow(summary: ReportSummary, modifier: Modifier = Modi
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "กำไรเดือนนี้",
+            label = "กำไรเดือนนี้ (ประมาณ)",
             value = formatBahtCurrency(estimatedMonthProfit(summary)),
-            sub = "รายได้ - ต้นทุน",
+            sub = "ประเมิน ~30% ของยอดขาย",
             tint = MetricTint.Green,
             modifier = Modifier.weight(1f),
         )
