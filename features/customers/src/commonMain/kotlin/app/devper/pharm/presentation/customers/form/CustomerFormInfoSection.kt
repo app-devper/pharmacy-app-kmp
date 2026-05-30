@@ -3,6 +3,8 @@ package app.devper.pharm.presentation.customers.form
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -131,7 +133,7 @@ private fun TierChip(
             .clip(t.shapes.pill)
             .background(bg, t.shapes.pill)
             .border(1.dp, borderColor, t.shapes.pill)
-            .clickable { onPick(value) }
+            .selectable(selected = selected, role = Role.RadioButton, onClick = { onPick(value) })
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         Text(text = label, style = PharmText.body.copy(color = fg))

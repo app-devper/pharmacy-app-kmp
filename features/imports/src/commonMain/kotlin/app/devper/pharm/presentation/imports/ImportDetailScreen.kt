@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -62,7 +64,7 @@ fun ImportDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
-                modifier = Modifier.clip(t.shapes.sm).clickable(onClick = onBack).padding(horizontal = 4.dp, vertical = 4.dp),
+                modifier = Modifier.clip(t.shapes.sm).clickable(role = Role.Button, onClick = onBack).defaultMinSize(minHeight = 44.dp).padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
@@ -73,8 +75,9 @@ fun ImportDetailScreen(
             Text(state.po?.docNo ?: "ใบรับสินค้า", style = PharmText.h1, modifier = Modifier.weight(1f))
             state.po?.let { po ->
                 Row(
-                    modifier = Modifier.clip(t.shapes.sm).clickable(onClick = { onEdit(po.id) }).padding(4.dp),
+                    modifier = Modifier.clip(t.shapes.sm).clickable(role = Role.Button, onClick = { onEdit(po.id) }).defaultMinSize(minWidth = 44.dp, minHeight = 44.dp).padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     Icon(PharmIcons.Pencil, contentDescription = "แก้ไข", tint = t.colors.fg2, modifier = Modifier.size(20.dp))
                 }

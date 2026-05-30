@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,8 +64,11 @@ fun CartCustomerPill(
             Box(
                 modifier = Modifier
                     .clip(t.shapes.sm)
-                    .clickable(onClick = onClear)
+                    .clickable(role = Role.Button, onClick = onClear)
+                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                    .semantics { contentDescription = "ล้างลูกค้า" }
                     .padding(horizontal = 8.dp, vertical = 2.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text("×", style = PharmText.h2.copy(color = t.colors.accent))
             }
