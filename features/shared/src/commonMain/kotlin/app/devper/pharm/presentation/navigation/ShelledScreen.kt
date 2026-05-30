@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.ui.components.AppShell
 import app.devper.pharm.ui.components.NavItem
@@ -24,45 +25,39 @@ import app.devper.pharm.presentation.stockcount.StockCounts
 import app.devper.pharm.presentation.suppliers.Suppliers
 import app.devper.pharm.presentation.users.Users
 
-private val MAIN_NAV_ROUTES: List<Any> = listOf(
-    Sell,
-    SalesHistory,
-    Stock,
-    StockCounts,
-    Expiry,
-    LabelPrint,
-    Movements,
-    OfflineSync,
-    Imports,
-    Suppliers,
-    Customers,
-    Reports,
-    Profit,
-    Ky9,
-    Users,
-    SettingsRoute,
-    Help,
+private fun routeKey(route: Any): String =
+    requireNotNull(route::class.qualifiedName) { "main nav route ${route::class.simpleName} must have a qualified name" }
+
+private data class MainNavEntry(
+    val route: Any,
+    val label: String,
+    val icon: ImageVector,
+    val admin: Boolean = false,
 )
 
-private val MAIN_NAV: List<NavItem> = listOf(
-    NavItem(route = Sell::class.qualifiedName!!,         label = "หน้าขายยา",          icon = PharmIcons.Sell),
-    NavItem(route = SalesHistory::class.qualifiedName!!, label = "ประวัติการขาย",      icon = PharmIcons.SalesHistory),
-    NavItem(route = Stock::class.qualifiedName!!,        label = "สต็อกยา",            icon = PharmIcons.Stock),
-    NavItem(route = StockCounts::class.qualifiedName!!,  label = "ตรวจนับสต็อก",       icon = PharmIcons.StockCount, admin = true),
-    NavItem(route = Expiry::class.qualifiedName!!,       label = "จัดการวันหมดอายุ",   icon = PharmIcons.Expiry,     admin = true),
-    NavItem(route = LabelPrint::class.qualifiedName!!,   label = "พิมพ์ฉลาก",          icon = PharmIcons.Print,      admin = true),
-    NavItem(route = Movements::class.qualifiedName!!,    label = "ความเคลื่อนไหวสต็อก", icon = PharmIcons.Movements),
-    NavItem(route = OfflineSync::class.qualifiedName!!,  label = "รายการค้างซิงค์",    icon = PharmIcons.OfflineSync),
-    NavItem(route = Imports::class.qualifiedName!!,      label = "นำเข้าสินค้า",       icon = PharmIcons.Imports,    admin = true),
-    NavItem(route = Suppliers::class.qualifiedName!!,    label = "ซัพพลายเออร์",       icon = PharmIcons.Suppliers,  admin = true),
-    NavItem(route = Customers::class.qualifiedName!!,    label = "ลูกค้า",             icon = PharmIcons.Customers),
-    NavItem(route = Reports::class.qualifiedName!!,      label = "รายงาน",             icon = PharmIcons.Reports),
-    NavItem(route = Profit::class.qualifiedName!!,       label = "กำไร",               icon = PharmIcons.Profit,     admin = true),
-    NavItem(route = Ky9::class.qualifiedName!!,          label = "แบบฟอร์ม ขย. 9–12",  icon = PharmIcons.KyForms,    admin = true),
-    NavItem(route = Users::class.qualifiedName!!,        label = "จัดการผู้ใช้งาน",    icon = PharmIcons.Users,      admin = true),
-    NavItem(route = SettingsRoute::class.qualifiedName!!, label = "ตั้งค่าระบบ",        icon = PharmIcons.Settings,   admin = true),
-    NavItem(route = Help::class.qualifiedName!!,         label = "คู่มือการใช้งาน",    icon = PharmIcons.Help),
+private val MAIN_NAV_TABLE: List<MainNavEntry> = listOf(
+    MainNavEntry(Sell,         "หน้าขายยา",          PharmIcons.Sell),
+    MainNavEntry(SalesHistory, "ประวัติการขาย",      PharmIcons.SalesHistory),
+    MainNavEntry(Stock,        "สต็อกยา",            PharmIcons.Stock),
+    MainNavEntry(StockCounts,  "ตรวจนับสต็อก",       PharmIcons.StockCount, admin = true),
+    MainNavEntry(Expiry,       "จัดการวันหมดอายุ",   PharmIcons.Expiry,     admin = true),
+    MainNavEntry(LabelPrint,   "พิมพ์ฉลาก",          PharmIcons.Print,      admin = true),
+    MainNavEntry(Movements,    "ความเคลื่อนไหวสต็อก", PharmIcons.Movements),
+    MainNavEntry(OfflineSync,  "รายการค้างซิงค์",    PharmIcons.OfflineSync),
+    MainNavEntry(Imports,      "นำเข้าสินค้า",       PharmIcons.Imports,    admin = true),
+    MainNavEntry(Suppliers,    "ซัพพลายเออร์",       PharmIcons.Suppliers,  admin = true),
+    MainNavEntry(Customers,    "ลูกค้า",             PharmIcons.Customers),
+    MainNavEntry(Reports,      "รายงาน",             PharmIcons.Reports),
+    MainNavEntry(Profit,       "กำไร",               PharmIcons.Profit,     admin = true),
+    MainNavEntry(Ky9,          "แบบฟอร์ม ขย. 9–12",  PharmIcons.KyForms,    admin = true),
+    MainNavEntry(Users,        "จัดการผู้ใช้งาน",    PharmIcons.Users,      admin = true),
+    MainNavEntry(SettingsRoute, "ตั้งค่าระบบ",        PharmIcons.Settings,   admin = true),
+    MainNavEntry(Help,         "คู่มือการใช้งาน",    PharmIcons.Help),
 )
+
+private val MAIN_NAV: List<NavItem> = MAIN_NAV_TABLE.map { entry ->
+    NavItem(route = routeKey(entry.route), label = entry.label, icon = entry.icon, admin = entry.admin)
+}
 
 private val LOGOUT_ITEM = NavItem(
     route = "logout",
@@ -89,7 +84,7 @@ fun ShelledScreen(
         onNavigate = { destKey ->
             if (destKey == currentRoute) return@AppShell
 
-            val typedRoute = MAIN_NAV_ROUTES.firstOrNull { it::class.qualifiedName == destKey }
+            val typedRoute = MAIN_NAV_TABLE.firstOrNull { routeKey(it.route) == destKey }?.route
                 ?: return@AppShell
             onNavigateMain(typedRoute)
         },
