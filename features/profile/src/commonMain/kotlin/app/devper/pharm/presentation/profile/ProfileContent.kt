@@ -2,23 +2,30 @@ package app.devper.pharm.presentation.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.presentation.profile.components.ProfileDisplayPreferences
 import app.devper.pharm.presentation.profile.components.ProfileFormSection
 import app.devper.pharm.presentation.profile.components.ProfileHeaderCard
@@ -47,6 +54,7 @@ fun ProfileContent(
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                ProfileBackRow(onBack = callbacks.onBack)
                 state.user?.let { user -> ProfileHeaderCard(user) }
                 ProfileCard(
                     title = "ข้อมูลส่วนตัว",
@@ -72,6 +80,28 @@ fun ProfileContent(
     }
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
     ErrorBottomSheet(message = state.passwordError, onDismiss = callbacks.onDismissPasswordError)
+}
+
+@Composable
+private fun ProfileBackRow(onBack: () -> Unit) {
+    val t = pharmTokens
+    Row(
+        modifier = Modifier
+            .clip(t.shapes.sm)
+            .clickable(role = Role.Button, onClick = onBack)
+            .defaultMinSize(minHeight = 44.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Icon(
+            imageVector = PharmIcons.ReturnArrow,
+            contentDescription = null,
+            tint = t.colors.fg3,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(text = "กลับ", style = PharmText.body.copy(color = t.colors.fg3))
+    }
 }
 
 @Composable
