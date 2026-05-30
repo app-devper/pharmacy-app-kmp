@@ -1,13 +1,10 @@
 package app.devper.pharm.presentation.offlinesync
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.ui.designsystem.MetricCard
+import app.devper.pharm.ui.designsystem.MetricCardRow
 import app.devper.pharm.ui.designsystem.MetricTint
 
 @Composable
@@ -16,10 +13,7 @@ internal fun OfflineSyncMetricsRow(pending: List<PendingSale>, modifier: Modifie
     val failed = pending.count { it.lastError != null }
     val attempts = pending.sumOf { it.attempts }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    MetricCardRow(modifier = modifier) {
         MetricCard(
             label = "รายการค้างทั้งหมด",
             value = total.toString(),

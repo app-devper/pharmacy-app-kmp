@@ -1,22 +1,16 @@
 package app.devper.pharm.presentation.reports
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.ui.designsystem.MetricCard
+import app.devper.pharm.ui.designsystem.MetricCardRow
 import app.devper.pharm.ui.designsystem.MetricTint
 import app.devper.pharm.ui.theme.fmtBaht
 
 @Composable
 internal fun EodSummaryCards(report: EodReport, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    MetricCardRow(modifier = modifier) {
         MetricCard(
             label = "ยอดขายสุทธิ",
             value = fmtBaht(report.totalSales),
