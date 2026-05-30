@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +32,8 @@ import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.domain.model.KyRequired
+import app.devper.pharm.domain.util.KyRequiredCalculator
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -105,6 +108,11 @@ fun CartPanel(
 
         customer?.allergyNote?.takeIf { it.isNotBlank() }?.let { note ->
             CartAllergyBanner(note = note)
+        }
+
+        val kyRequired = remember(cart) { KyRequiredCalculator.calculate(cart) }
+        if (!kyRequired.isEmpty) {
+            CartComplianceBanner(required = kyRequired)
         }
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -323,6 +331,43 @@ private fun CartAllergyBanner(note: String) {
             Text(
                 text = note,
                 style = PharmText.bodySm.copy(color = t.colors.dangerFg),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CartComplianceBanner(required: KyRequired) {
+    val t = pharmTokens
+    val forms = buildList {
+        if (required.needsKy10) add("10")
+        if (required.needsKy11) add("11")
+        if (required.needsKy12) add("12")
+    }.joinToString(", ")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .clip(t.shapes.md)
+            .background(t.colors.warningBg)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(
+            imageVector = PharmIcons.KyForms,
+            contentDescription = null,
+            tint = t.colors.warningFg,
+            modifier = Modifier.size(16.dp),
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+            Text(
+                text = "ยาควบคุม — ต้องบันทึก ขย.$forms",
+                style = PharmText.micro.copy(color = t.colors.warningFg, fontWeight = FontWeight.SemiBold),
+            )
+            Text(
+                text = "ระบบจะให้กรอกข้อมูลผู้ซื้อตอนชำระเงิน",
+                style = PharmText.bodySm.copy(color = t.colors.warningFg),
             )
         }
     }
