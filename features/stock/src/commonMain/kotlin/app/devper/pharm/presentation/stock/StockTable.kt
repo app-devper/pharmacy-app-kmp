@@ -207,8 +207,8 @@ private fun StockQtyCell(drug: Drug) {
     val t = pharmTokens
     val stockColor = when {
         drug.stock < 0 -> t.colors.dangerFg
-        drug.stock == 0 -> t.colors.warningFg
-        drug.stock < 20 -> t.colors.warningFg
+        drug.stockStatus == StockStatus.OutOrOversold -> t.colors.warningFg
+        drug.stockStatus == StockStatus.Low -> t.colors.warningFg
         else -> t.colors.fg1
     }
     Row(
