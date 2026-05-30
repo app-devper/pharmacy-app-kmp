@@ -16,11 +16,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
@@ -30,6 +34,7 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
@@ -97,6 +102,10 @@ fun CartPanel(
             onClear = onClearCustomer,
             showShortcutHint = showShortcutHints,
         )
+
+        customer?.allergyNote?.takeIf { it.isNotBlank() }?.let { note ->
+            CartAllergyBanner(note = note)
+        }
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (hasItems) {
@@ -284,4 +293,37 @@ private fun CartSectionDivider() {
             .height(1.dp)
             .background(pharmTokens.colors.divider),
     )
+}
+
+@Composable
+private fun CartAllergyBanner(note: String) {
+    val t = pharmTokens
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .clip(t.shapes.md)
+            .background(t.colors.dangerBg)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(
+            imageVector = PharmIcons.Warning,
+            contentDescription = null,
+            tint = t.colors.dangerFg,
+            modifier = Modifier.size(16.dp),
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+            Text(
+                text = "แพ้ยา / โรคประจำตัว",
+                style = PharmText.micro.copy(color = t.colors.dangerFg, fontWeight = FontWeight.SemiBold),
+            )
+            Text(
+                text = note,
+                style = PharmText.bodySm.copy(color = t.colors.dangerFg),
+            )
+        }
+    }
 }
