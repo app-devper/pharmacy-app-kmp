@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.suppliers
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import app.devper.pharm.domain.model.Supplier
+import androidx.compose.runtime.remember
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -14,19 +14,18 @@ fun SuppliersScreen(
     viewModel: SuppliersListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
-    val byId: (Supplier) -> String = { it.id }
-
-    SuppliersListContent(
-        state = state,
-        callbacks = SuppliersListCallbacks(
+    val callbacks = remember(viewModel, onAddSupplier, onEditSupplier, onOpenSupplierDetail) {
+        SuppliersListCallbacks(
             onSearchChange = viewModel::onQueryChange,
             onOpenAdd = onAddSupplier,
-            onOpenDetail = { onOpenSupplierDetail(byId(it)) },
-            onOpenEdit = { onEditSupplier(byId(it)) },
+            onOpenDetail = { onOpenSupplierDetail(it.id) },
+            onOpenEdit = { onEditSupplier(it.id) },
             onRequestDelete = viewModel::confirmDelete,
             onCancelDelete = viewModel::cancelDelete,
             onConfirmDelete = viewModel::deleteConfirmed,
             onDismissError = viewModel::dismissError,
-        ),
-    )
+        )
+    }
+
+    SuppliersListContent(state = state, callbacks = callbacks)
 }

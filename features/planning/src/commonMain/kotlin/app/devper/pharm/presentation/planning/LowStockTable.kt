@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.planning
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,36 +24,38 @@ internal fun LowStockTable(
     callbacks: LowStockCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    val columns = listOf(
-        PharmTableColumn<Drug>(
-            header = "ชื่อยา",
-            weight = 2.4f,
-            cell = { drug -> LowStockNameCell(drug) },
-        ),
-        PharmTableColumn(
-            header = "คงเหลือ",
-            weight = 1.0f,
-            align = PharmColumnAlign.End,
-            cell = { drug -> LowStockCurrentCell(drug) },
-        ),
-        PharmTableColumn(
-            header = "ขั้นต่ำ",
-            weight = 0.9f,
-            align = PharmColumnAlign.End,
-            cell = { drug -> LowStockMinCell(drug) },
-        ),
-        PharmTableColumn(
-            header = "หน่วย",
-            weight = 0.8f,
-            cell = { drug -> LowStockUnitCell(drug) },
-        ),
-        PharmTableColumn(
-            header = "สถานะ",
-            weight = 1.0f,
-            align = PharmColumnAlign.End,
-            cell = { drug -> LowStockStatusCell(drug) },
-        ),
-    )
+    val columns = remember {
+        listOf(
+            PharmTableColumn<Drug>(
+                header = "ชื่อยา",
+                weight = 2.4f,
+                cell = { drug -> LowStockNameCell(drug) },
+            ),
+            PharmTableColumn(
+                header = "คงเหลือ",
+                weight = 1.0f,
+                align = PharmColumnAlign.End,
+                cell = { drug -> LowStockCurrentCell(drug) },
+            ),
+            PharmTableColumn(
+                header = "ขั้นต่ำ",
+                weight = 0.9f,
+                align = PharmColumnAlign.End,
+                cell = { drug -> LowStockMinCell(drug) },
+            ),
+            PharmTableColumn(
+                header = "หน่วย",
+                weight = 0.8f,
+                cell = { drug -> LowStockUnitCell(drug) },
+            ),
+            PharmTableColumn(
+                header = "สถานะ",
+                weight = 1.0f,
+                align = PharmColumnAlign.End,
+                cell = { drug -> LowStockStatusCell(drug) },
+            ),
+        )
+    }
 
     PharmTable(
         rows = drugs,

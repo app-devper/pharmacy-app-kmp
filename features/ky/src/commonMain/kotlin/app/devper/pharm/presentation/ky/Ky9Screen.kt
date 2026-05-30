@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +41,8 @@ fun Ky9Screen(
 ) {
     val state by viewModel.state.collectAsState()
     val t = pharmTokens
-    val rows = state.entries.map { KyRow.Ky9(it) }
-    val totalValue = state.entries.sumOf { it.totalValue }
+    val rows = remember(state.entries) { state.entries.map { KyRow.Ky9(it) } }
+    val totalValue = remember(state.entries) { state.entries.sumOf { it.totalValue } }
 
     Column(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage).padding(16.dp),
