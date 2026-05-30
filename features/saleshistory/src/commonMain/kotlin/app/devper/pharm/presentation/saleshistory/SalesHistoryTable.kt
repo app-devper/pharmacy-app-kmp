@@ -58,26 +58,10 @@ internal fun SalesHistoryTable(
             },
         ),
         PharmTableColumn(
-            header = "แคชเชียร์",
-            weight = 1.0f,
-            cell = { _ -> DashCell() },
-        ),
-        PharmTableColumn(
-            header = "รายการ",
-            weight = 0.7f,
-            align = PharmColumnAlign.End,
-            cell = { _ -> DashCell() },
-        ),
-        PharmTableColumn(
             header = "ยอดสุทธิ",
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { sale -> TotalCell(sale) },
-        ),
-        PharmTableColumn(
-            header = "ชำระ",
-            weight = 0.9f,
-            cell = { _ -> DashCell() },
         ),
         PharmTableColumn(
             header = "สถานะ",
@@ -147,12 +131,6 @@ private fun TotalCell(sale: SaleSummary) {
         textDecoration = if (sale.voided) TextDecoration.LineThrough else null,
     )
     Text(text = fmtBaht(sale.total), style = style)
-}
-
-@Composable
-private fun DashCell() {
-    val t = pharmTokens
-    Text(text = "—", style = PharmText.micro.copy(color = t.colors.fgMuted))
 }
 
 @Composable
