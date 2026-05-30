@@ -23,6 +23,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -57,6 +58,13 @@ fun ReorderSuggestionsContent(
                 state.loading && state.suggestions.isEmpty() ->
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         PharmCircularProgress(color = t.colors.accent)
+                    }
+                state.suggestions.isEmpty() ->
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        PharmEmptyState(
+                            title = "ไม่มีรายการที่ต้องสั่งซื้อ",
+                            subtitle = "ยังไม่มียาที่ถึงเกณฑ์แนะนำให้สั่งซื้อเพิ่ม",
+                        )
                     }
                 else -> ReorderSuggestionsTable(suggestions = state.suggestions, callbacks = callbacks)
             }

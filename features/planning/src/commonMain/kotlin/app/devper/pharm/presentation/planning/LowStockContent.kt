@@ -23,6 +23,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -57,6 +58,13 @@ fun LowStockContent(
                 state.loading && state.drugs.isEmpty() ->
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         PharmCircularProgress(color = t.colors.accent)
+                    }
+                state.drugs.isEmpty() ->
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        PharmEmptyState(
+                            title = "ไม่มียาใกล้หมด",
+                            subtitle = "สต็อกยาทุกรายการสูงกว่าระดับขั้นต่ำ",
+                        )
                     }
                 else -> LowStockTable(drugs = state.drugs, callbacks = callbacks)
             }

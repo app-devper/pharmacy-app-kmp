@@ -17,7 +17,6 @@ class KyListViewModel(
 ) : BaseViewModel<KyListUiState>(KyListUiState()) {
 
     fun init(formType: KyFormType) {
-        if (current.formType == formType && current.rows.isNotEmpty()) return
         setState { copy(formType = formType, rows = emptyList()) }
         reload()
     }
