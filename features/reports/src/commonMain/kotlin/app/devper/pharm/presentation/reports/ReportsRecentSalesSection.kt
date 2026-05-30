@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmStatus
@@ -67,18 +68,21 @@ private fun RecentSaleRow(sale: SaleSummary) {
                 ),
                 modifier = Modifier.weight(1.2f),
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = sale.customerName.ifBlank { "ลูกค้าทั่วไป" },
                 style = PharmText.bodySm.copy(color = t.colors.fg2),
                 modifier = Modifier.weight(1.4f),
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = sale.soldAt.take(19).replace('T', ' '),
                 style = PharmText.micro.tabular().copy(color = t.colors.fg3),
                 modifier = Modifier.weight(1.2f),
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             if (sale.voided) {
                 PharmStatusBadge(status = PharmStatus.Voided)
