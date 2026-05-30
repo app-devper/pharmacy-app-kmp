@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.sell.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -89,6 +90,7 @@ fun CartDiscountSheet(
                 modifier = Modifier
                     .clip(t.shapes.md)
                     .background(t.colors.borderSubtle)
+                    .selectableGroup()
                     .padding(2.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
