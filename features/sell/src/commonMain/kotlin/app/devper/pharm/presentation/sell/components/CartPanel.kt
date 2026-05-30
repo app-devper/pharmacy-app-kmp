@@ -305,13 +305,13 @@ private fun CartAllergyBanner(note: String) {
             .clip(t.shapes.md)
             .background(t.colors.dangerBg)
             .padding(horizontal = 12.dp, vertical = 8.dp)
-            .semantics { liveRegion = LiveRegionMode.Assertive },
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Icon(
             imageVector = PharmIcons.Warning,
-            contentDescription = "คำเตือนแพ้ยา",
+            contentDescription = null,
             tint = t.colors.dangerFg,
             modifier = Modifier.size(16.dp),
         )
