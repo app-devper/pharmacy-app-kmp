@@ -4,14 +4,18 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -59,31 +63,52 @@ fun <T> PharmTable(
         return
     }
 
-    LazyColumn(
-        state = listState,
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(t.colors.surface),
     ) {
-        stickyHeader {
-            PharmTableHeader(columns = columns, height = headerHeight)
+        val totalWeight = remember(columns) { columns.fold(0f) { acc, c -> acc + c.weight } }
+        val minTableWidth = MIN_WIDTH_PER_WEIGHT * totalWeight
+        val needsScroll = minTableWidth > maxWidth
+        val hScroll = rememberScrollState()
+
+        val listModifier = if (needsScroll) {
+            Modifier.width(minTableWidth).fillMaxHeight()
+        } else {
+            Modifier.fillMaxWidth().fillMaxHeight()
         }
-        items(items = rows, key = key) { row ->
-            val onClickRow = remember(row, onRowClick) {
-                onRowClick?.let { cb -> { cb(row) } }
+        val outerModifier = if (needsScroll) {
+            Modifier.fillMaxSize().horizontalScroll(hScroll)
+        } else {
+            Modifier.fillMaxSize()
+        }
+
+        Box(modifier = outerModifier) {
+            LazyColumn(state = listState, modifier = listModifier) {
+                stickyHeader {
+                    PharmTableHeader(columns = columns, height = headerHeight)
+                }
+                items(items = rows, key = key) { row ->
+                    val onClickRow = remember(row, onRowClick) {
+                        onRowClick?.let { cb -> { cb(row) } }
+                    }
+                    PharmTableRow(
+                        columns = columns,
+                        row = row,
+                        height = rowHeight,
+                        onClick = onClickRow,
+                    )
+                }
+                if (bottomRow != null) {
+                    item { bottomRow() }
+                }
             }
-            PharmTableRow(
-                columns = columns,
-                row = row,
-                height = rowHeight,
-                onClick = onClickRow,
-            )
-        }
-        if (bottomRow != null) {
-            item { bottomRow() }
         }
     }
 }
+
+private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
 
 @Composable
 private fun <T> PharmTableHeader(columns: List<PharmTableColumn<T>>, height: Dp) {
