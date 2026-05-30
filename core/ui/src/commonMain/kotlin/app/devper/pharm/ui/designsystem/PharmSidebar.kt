@@ -221,7 +221,7 @@ private fun SidebarFooter(online: Boolean, versionLabel: String) {
             modifier = Modifier
                 .size(6.dp)
                 .clip(t.shapes.pill)
-                .background(if (online) Color(0xFF4ADE80) else t.colors.fgMuted),
+                .background(if (online) t.colors.successFg else t.colors.fgMuted),
         )
         Text(
             text = if (online) "ออนไลน์ · $versionLabel" else "ออฟไลน์ · $versionLabel",

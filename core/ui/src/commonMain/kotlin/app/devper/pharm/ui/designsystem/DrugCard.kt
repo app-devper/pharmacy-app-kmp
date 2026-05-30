@@ -43,11 +43,11 @@ fun DrugCard(
     val low = !oos && stock <= lowStockThreshold
 
     val borderColor: Color = when {
-        highlighted -> Color(0xFF4ADE80)
+        highlighted -> t.colors.successFg
         oos         -> t.colors.warningBg
         else        -> t.colors.border
     }
-    val ringColor: Color? = if (highlighted) Color(0xFF6EE7B7) else null
+    val ringColor: Color? = if (highlighted) t.colors.successFg.copy(alpha = 0.4f) else null
 
     val (typeTone, typeLabel) = when (type) {
         DrugCardType.Herb       -> PharmBadgeTone.Emerald to "ยาสมุนไพร"

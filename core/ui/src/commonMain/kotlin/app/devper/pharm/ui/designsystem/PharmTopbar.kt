@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.LocalThemeController
@@ -70,7 +69,7 @@ fun PharmTopbar(
                     modifier = Modifier
                         .size(6.dp)
                         .clip(t.shapes.pill)
-                        .background(Color(0xFF22C55E)),
+                        .background(t.colors.successFg),
                 )
                 Text("ออนไลน์", style = PharmText.meta)
             }
