@@ -39,12 +39,14 @@ fun DrugCard(
     lowStockThreshold: Int = 20,
 ) {
     val t = pharmTokens
-    val oos = stock <= 0
-    val low = !oos && stock <= lowStockThreshold
+    val oversold = stock < 0
+    val empty = stock == 0
+    val low = stock > 0 && stock <= lowStockThreshold
 
     val borderColor: Color = when {
         highlighted -> t.colors.successFg
-        oos         -> t.colors.warningBg
+        oversold    -> t.colors.dangerFg
+        empty       -> t.colors.warningBg
         else        -> t.colors.border
     }
     val ringColor: Color? = if (highlighted) t.colors.successFg.copy(alpha = 0.4f) else null
@@ -112,7 +114,10 @@ fun DrugCard(
         ) {
             PharmBadge(text = typeLabel, tone = typeTone, size = PharmBadgeSize.Sm)
             if (kyForm != null) KyBadge(form = kyForm)
-            if (oos) PharmBadge(text = "ขายล่วงหน้า", tone = PharmBadgeTone.Amber, size = PharmBadgeSize.Sm)
+            when {
+                oversold -> PharmBadge(text = "ขายเกิน ${-stock}", tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
+                empty    -> PharmBadge(text = "ขายล่วงหน้า", tone = PharmBadgeTone.Amber, size = PharmBadgeSize.Sm)
+            }
         }
 
         Row(
@@ -122,7 +127,8 @@ fun DrugCard(
         ) {
             Text(text = fmtBaht(price), style = PharmText.price)
             val stockColor = when {
-                oos -> t.colors.warningFg
+                oversold -> t.colors.dangerFg
+                empty -> t.colors.warningFg
                 low -> t.colors.warningFg
                 else -> t.colors.fgMuted
             }
