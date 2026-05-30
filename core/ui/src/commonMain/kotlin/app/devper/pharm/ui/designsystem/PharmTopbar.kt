@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -123,9 +124,9 @@ private fun HamburgerButton(onClick: () -> Unit) {
     val t = pharmTokens
     Box(
         modifier = Modifier
-            .size(32.dp)
+            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
             .clip(t.shapes.sm)
-            .clickable(onClick = onClick),
+            .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -163,7 +164,7 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
         val nameModifier = if (onProfileClick != null) {
             Modifier
                 .clip(t.shapes.sm)
-                .clickable(onClick = onProfileClick)
+                .clickable(role = Role.Button, onClick = onProfileClick)
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         } else {
             Modifier
@@ -184,13 +185,14 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
             Box(
                 modifier = Modifier
                     .clip(t.shapes.sm)
-                    .clickable(onClick = onLogout)
+                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                    .clickable(role = Role.Button, onClick = onLogout)
                     .padding(8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = PharmIcons.Logout,
-                    contentDescription = "ออก",
+                    contentDescription = "ออกจากระบบ",
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(16.dp),
                 )

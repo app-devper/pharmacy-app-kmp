@@ -3,6 +3,8 @@ package app.devper.pharm.presentation.stock.form
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -256,7 +258,7 @@ private fun KyChip(
             .clip(t.shapes.pill)
             .background(bg, t.shapes.pill)
             .border(1.dp, borderColor, t.shapes.pill)
-            .clickable(onClick = onToggle)
+            .toggleable(value = checked, role = Role.Checkbox, onValueChange = { onToggle() })
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),

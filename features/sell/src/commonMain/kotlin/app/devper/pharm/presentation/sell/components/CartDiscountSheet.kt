@@ -2,6 +2,9 @@ package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,6 +90,7 @@ fun CartDiscountSheet(
                 modifier = Modifier
                     .clip(t.shapes.md)
                     .background(t.colors.borderSubtle)
+                    .selectableGroup()
                     .padding(2.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
@@ -147,7 +151,7 @@ private fun SegItem(text: String, active: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .clip(t.shapes.sm)
             .background(bg, t.shapes.sm)
-            .clickable(onClick = { if (!active) onClick() })
+            .selectable(selected = active, role = Role.RadioButton, onClick = { if (!active) onClick() })
             .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         Text(

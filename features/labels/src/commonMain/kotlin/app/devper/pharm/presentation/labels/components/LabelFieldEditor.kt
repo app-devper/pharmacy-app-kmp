@@ -11,14 +11,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -131,7 +137,11 @@ private fun LabelLineRow(
         Row(
             modifier = Modifier
                 .weight(2f)
-                .clickable { onIncludePriceChange(!line.includePrice) },
+                .toggleable(
+                    value = line.includePrice,
+                    role = Role.Checkbox,
+                    onValueChange = { onIncludePriceChange(it) },
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
@@ -157,9 +167,13 @@ private fun LabelLineRow(
         }
         Box(
             modifier = Modifier
-                .size(28.dp)
+                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                 .clip(t.shapes.sm)
-                .clickable(onClick = onRemove),
+                .clickable(onClick = onRemove)
+                .semantics {
+                    contentDescription = "ลบบรรทัด"
+                    role = Role.Button
+                },
             contentAlignment = Alignment.Center,
         ) {
             Text(

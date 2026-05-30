@@ -3,6 +3,9 @@ package app.devper.pharm.presentation.customers.form
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -104,7 +107,10 @@ private fun PriceTierPicker(
     val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(text = "กลุ่มราคา", style = PharmText.h3.copy(color = t.colors.fg2))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.selectableGroup(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             TierChip(label = "หน้าร้าน", value = "", current = current, onPick = onPick)
             TierChip(label = "ทั่วไป", value = Tier.Regular, current = current, onPick = onPick)
             TierChip(label = "ส่ง", value = Tier.Wholesale, current = current, onPick = onPick)
@@ -131,7 +137,7 @@ private fun TierChip(
             .clip(t.shapes.pill)
             .background(bg, t.shapes.pill)
             .border(1.dp, borderColor, t.shapes.pill)
-            .clickable { onPick(value) }
+            .selectable(selected = selected, role = Role.RadioButton, onClick = { onPick(value) })
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         Text(text = label, style = PharmText.body.copy(color = fg))

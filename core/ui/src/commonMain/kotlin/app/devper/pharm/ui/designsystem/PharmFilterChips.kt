@@ -84,7 +84,7 @@ private fun PharmFilterChipItem(
 
     Row(
         modifier = Modifier
-            .heightIn(min = 36.dp)
+            .heightIn(min = 44.dp)
             .clip(t.shapes.pill)
             .background(bg)
             .border(1.dp, border, t.shapes.pill)

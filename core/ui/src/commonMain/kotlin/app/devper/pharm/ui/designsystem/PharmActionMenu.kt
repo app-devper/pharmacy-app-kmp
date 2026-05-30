@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -53,9 +54,8 @@ fun PharmActionMenu(
     Box(modifier = modifier) {
         Box(
             modifier = Modifier
-                .size(32.dp)
+                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                 .clip(t.shapes.pill)
-                .background(if (expanded) t.colors.borderSubtle else Color.Transparent)
                 .semantics(mergeDescendants = true) {
                     contentDescription = "เปิดเมนู"
                     role = Role.Button
@@ -63,12 +63,20 @@ fun PharmActionMenu(
                 .clickable { expanded = true },
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = PharmIcons.More,
-                contentDescription = null,
-                tint = if (expanded) t.colors.fg1 else t.colors.fg3,
-                modifier = Modifier.size(18.dp),
-            )
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(t.shapes.pill)
+                    .background(if (expanded) t.colors.borderSubtle else Color.Transparent),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = PharmIcons.More,
+                    contentDescription = null,
+                    tint = if (expanded) t.colors.fg1 else t.colors.fg3,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
         }
         DropdownMenu(
             expanded = expanded,

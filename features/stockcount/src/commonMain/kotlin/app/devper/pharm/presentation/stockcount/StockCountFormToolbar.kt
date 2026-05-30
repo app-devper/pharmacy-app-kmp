@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -54,18 +56,24 @@ internal fun StockCountFormToolbar(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(28.dp)
-                        .clip(t.shapes.pill)
-                        .background(t.colors.borderSubtle)
-                        .clickable(onClick = callbacks.onBack),
+                        .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                        .clickable(role = Role.Button, onClick = callbacks.onBack),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        imageVector = PharmIcons.ReturnArrow,
-                        contentDescription = "ย้อนกลับ",
-                        tint = t.colors.fg2,
-                        modifier = Modifier.size(14.dp),
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(t.shapes.pill)
+                            .background(t.colors.borderSubtle),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = PharmIcons.ReturnArrow,
+                            contentDescription = "ย้อนกลับ",
+                            tint = t.colors.fg2,
+                            modifier = Modifier.size(14.dp),
+                        )
+                    }
                 }
                 Text(text = "นับสต็อกใหม่", style = PharmText.h2)
             }
