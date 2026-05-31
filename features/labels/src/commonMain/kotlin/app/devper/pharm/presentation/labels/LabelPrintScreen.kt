@@ -1,13 +1,13 @@
 package app.devper.pharm.presentation.labels
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LabelPrintScreen(viewModel: LabelPrintViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LabelPrintContent(
         state = state,
         callbacks = LabelPrintCallbacks(

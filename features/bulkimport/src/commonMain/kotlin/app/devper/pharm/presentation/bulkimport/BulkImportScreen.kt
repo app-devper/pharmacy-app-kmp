@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.bulkimport
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -10,7 +10,7 @@ fun BulkImportScreen(
     onDownloadTemplate: () -> Unit = {},
     viewModel: BulkImportViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     BulkImportContent(
         state = state,

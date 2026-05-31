@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.stock
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.stock.form.DrugFormCallbacks
 import app.devper.pharm.presentation.stock.form.DrugFormContent
@@ -18,9 +18,9 @@ fun DrugFormScreen(
     lotsViewModel: DrugLotsViewModel = koinViewModel(),
     adjustmentsViewModel: StockAdjustmentsViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
-    val lotsState by lotsViewModel.state.collectAsState()
-    val adjustmentsState by adjustmentsViewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val lotsState by lotsViewModel.state.collectAsStateWithLifecycle()
+    val adjustmentsState by adjustmentsViewModel.state.collectAsStateWithLifecycle()
     val snackbar = LocalPharmSnackbar.current
 
     LaunchedEffect(drugId) {

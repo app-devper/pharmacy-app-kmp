@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.ky
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.KyFormType
 import org.koin.compose.viewmodel.koinViewModel
@@ -13,7 +13,7 @@ fun KyListScreen(
     onSwitchForm: (KyFormType) -> Unit = {},
     viewModel: KyListViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(formType) { viewModel.init(formType) }
 

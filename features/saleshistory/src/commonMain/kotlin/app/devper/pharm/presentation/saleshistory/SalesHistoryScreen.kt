@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.saleshistory
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.SaleSummary
 import org.koin.compose.viewmodel.koinViewModel
@@ -11,7 +11,7 @@ fun SalesHistoryScreen(
     onOpenReceipt: (saleId: String) -> Unit = {},
     viewModel: SalesHistoryViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val byId: (SaleSummary) -> String = { it.id }
 
     SalesHistoryContent(

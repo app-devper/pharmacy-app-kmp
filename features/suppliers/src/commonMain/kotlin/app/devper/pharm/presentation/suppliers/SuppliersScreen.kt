@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.suppliers
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import org.koin.compose.viewmodel.koinViewModel
@@ -13,7 +13,7 @@ fun SuppliersScreen(
     onOpenSupplierDetail: (id: String) -> Unit = onEditSupplier,
     viewModel: SuppliersListViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val callbacks = remember(viewModel, onAddSupplier, onEditSupplier, onOpenSupplierDetail) {
         SuppliersListCallbacks(
             onSearchChange = viewModel::onQueryChange,

@@ -1,3 +1,4 @@
+import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension
@@ -8,6 +9,8 @@ plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
+
+val libs = the<LibrariesForLibs>()
 
 extensions.configure<KotlinMultiplatformExtension>("kotlin") {
     sourceSets.named("commonMain") {
@@ -20,6 +23,7 @@ extensions.configure<KotlinMultiplatformExtension>("kotlin") {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.runtime.compose)
         }
     }
 }

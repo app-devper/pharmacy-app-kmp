@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.customers
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.customers.form.CustomerFormCallbacks
 import app.devper.pharm.presentation.customers.form.CustomerFormContent
@@ -14,7 +14,7 @@ fun CustomerFormScreen(
     onBack: () -> Unit,
     viewModel: CustomerFormViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(customerId) {
         viewModel.init(

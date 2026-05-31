@@ -1,13 +1,13 @@
 package app.devper.pharm.presentation.reports
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EodScreen(viewModel: EodViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     EodContent(
         state = state,
         callbacks = EodCallbacks(

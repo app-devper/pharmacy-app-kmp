@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.users
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -12,7 +12,7 @@ fun UserFormScreen(
     onBack: () -> Unit,
     viewModel: UserFormViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(userId) {
         viewModel.init(

@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -35,7 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost(viewModel: AppViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val isLoggedIn = state.isLoggedIn
     val pendingSyncCount = state.pendingSyncCount
     val role = state.role

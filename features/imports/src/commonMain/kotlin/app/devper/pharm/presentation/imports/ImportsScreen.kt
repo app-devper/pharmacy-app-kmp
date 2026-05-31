@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.imports
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.PurchaseOrderSummary
 import org.koin.compose.viewmodel.koinViewModel
@@ -13,7 +13,7 @@ fun ImportsScreen(
     onEditImport: (id: String) -> Unit = onOpenImport,
     viewModel: ImportsListViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val byId: (PurchaseOrderSummary) -> String = { it.id }
 
     ImportsListContent(

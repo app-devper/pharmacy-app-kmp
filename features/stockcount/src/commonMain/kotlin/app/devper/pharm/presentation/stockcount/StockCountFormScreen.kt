@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.stockcount
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -11,7 +11,7 @@ fun StockCountFormScreen(
     onBack: () -> Unit,
     viewModel: StockCountFormViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.saved) {
         if (state.saved) {
