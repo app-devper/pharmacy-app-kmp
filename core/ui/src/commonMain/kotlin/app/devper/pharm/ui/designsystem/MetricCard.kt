@@ -30,7 +30,7 @@ fun MetricCardRow(
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val columns = when {
             maxWidth < 360.dp -> 1
-            maxWidth < 600.dp -> 2
+            maxWidth < 720.dp -> 2
             else -> 4
         }
         FlowRow(
