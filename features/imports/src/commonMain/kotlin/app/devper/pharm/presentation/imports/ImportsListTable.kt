@@ -40,6 +40,7 @@ internal fun ImportsListTable(
         PharmTableColumn(
             header = "เลขที่เอกสาร",
             weight = 1.6f,
+            compactTitle = true,
             cell = { row -> DocNoCell(row) },
         ),
         PharmTableColumn(
