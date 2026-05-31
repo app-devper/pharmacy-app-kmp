@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.stockcount
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -13,7 +13,7 @@ fun StockCountsScreen(
     onDeleteCount: (id: String) -> Unit = {},
     viewModel: StockCountsListViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     StockCountsListContent(
         state = state,

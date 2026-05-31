@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.stock
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.Drug
 import org.koin.compose.viewmodel.koinViewModel
@@ -16,7 +16,7 @@ fun StockScreen(
     onOpenReorderSuggestions: () -> Unit = {},
     viewModel: StockViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val byId: (Drug) -> String = { it.id }
 
     StockContent(

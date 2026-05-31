@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.suppliers
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.suppliers.form.SupplierFormCallbacks
 import app.devper.pharm.presentation.suppliers.form.SupplierFormContent
@@ -14,7 +14,7 @@ fun SupplierFormScreen(
     onBack: () -> Unit,
     viewModel: SupplierFormViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(supplierId) {
         viewModel.init(

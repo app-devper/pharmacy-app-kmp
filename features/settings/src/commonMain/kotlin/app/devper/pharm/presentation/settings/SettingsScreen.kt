@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.settings
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -9,7 +9,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SettingsScreen(
     viewModel: SettingsEditorViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     SettingsContent(
         state = state,

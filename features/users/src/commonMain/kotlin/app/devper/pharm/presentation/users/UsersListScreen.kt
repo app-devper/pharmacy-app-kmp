@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.users
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.UmUser
 import org.koin.compose.viewmodel.koinViewModel
@@ -12,7 +12,7 @@ fun UsersListScreen(
     onEditUser: (UmUser) -> Unit = {},
     viewModel: UsersListViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     UsersListContent(
         state = state,
         callbacks = UsersListCallbacks(

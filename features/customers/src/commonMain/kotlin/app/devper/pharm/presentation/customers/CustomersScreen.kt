@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.customers
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -12,7 +12,7 @@ fun CustomersScreen(
     onEditCustomer: (id: String) -> Unit = {},
     viewModel: CustomersListViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     CustomersListContent(
         state = state,

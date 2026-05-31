@@ -20,7 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -55,12 +55,12 @@ fun CartScreen(
     parkedCartVM: ParkedCartViewModel = koinViewModel(),
     voidSaleVM: VoidSaleViewModel = koinViewModel(),
 ) {
-    val sellState by sellVM.state.collectAsState()
-    val checkoutState by checkoutVM.state.collectAsState()
-    val drugState by drugPickerVM.state.collectAsState()
-    val customerState by customerPickerVM.state.collectAsState()
-    val parkedState by parkedCartVM.state.collectAsState()
-    val voidState by voidSaleVM.state.collectAsState()
+    val sellState by sellVM.state.collectAsStateWithLifecycle()
+    val checkoutState by checkoutVM.state.collectAsStateWithLifecycle()
+    val drugState by drugPickerVM.state.collectAsStateWithLifecycle()
+    val customerState by customerPickerVM.state.collectAsStateWithLifecycle()
+    val parkedState by parkedCartVM.state.collectAsStateWithLifecycle()
+    val voidState by voidSaleVM.state.collectAsStateWithLifecycle()
 
     val snackbar = LocalPharmSnackbar.current
     val onTapParkSlot: (Int) -> Unit = { slot ->

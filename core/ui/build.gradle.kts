@@ -9,7 +9,6 @@ kotlin {
             implementation(project(":core:domain"))
 
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.savedstate)
             implementation(libs.androidx.navigation.compose)
 
