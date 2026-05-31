@@ -54,7 +54,7 @@ internal fun ProfitFilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(modifier = Modifier.weight(1f).widthIn(min = 360.dp)) {
+        Box(modifier = Modifier.weight(1f).widthIn(min = 200.dp)) {
             PharmDateRangeField(
                 range = range,
                 onRangeChange = { next ->
