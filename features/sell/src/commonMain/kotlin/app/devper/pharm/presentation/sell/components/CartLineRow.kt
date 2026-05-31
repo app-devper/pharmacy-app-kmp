@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,93 +63,42 @@ fun CartLineRow(
 ) {
     var showRemoveConfirm by remember { mutableStateOf(false) }
 
-    Row(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onTapForDiscount)
             .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-
-        Icon(
-            imageVector = Icons.Outlined.Info,
-            contentDescription = "รายละเอียด",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(18.dp),
-        )
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Text(
-                    text = line.drug.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
-
-                line.selectedUnit?.let { alt ->
-                    Text(
-                        text = alt.name,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+        if (maxWidth < 360.dp) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    CartLineInfoIcon()
+                    CartLineName(line = line, modifier = Modifier.weight(1f))
+                    CartLineRemoveButton(onClick = { showRemoveConfirm = true })
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    QtyStepper(qty = line.displayQty, onQtyChange = onQtyChange)
+                    Box(modifier = Modifier.weight(1f))
+                    CartLinePrice(line = line)
                 }
             }
-
-            if (line.selectedUnit == null) {
-                Text(
-                    text = line.drug.unit ?: "ชิ้น",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                CartLineInfoIcon()
+                CartLineName(line = line, modifier = Modifier.weight(1f))
+                QtyStepper(qty = line.displayQty, onQtyChange = onQtyChange)
+                CartLinePrice(line = line)
+                CartLineRemoveButton(onClick = { showRemoveConfirm = true })
             }
-        }
-
-        QtyStepper(
-            qty = line.displayQty,
-            onQtyChange = onQtyChange,
-        )
-
-        Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.width(96.dp),
-        ) {
-            Text(
-                text = formatBahtCurrency(line.lineTotal),
-                style = MaterialTheme.typography.bodyLarge.tabular(),
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                textAlign = TextAlign.End,
-            )
-            Text(
-                text = priceMetaLabel(line),
-                style = MaterialTheme.typography.labelSmall.tabular(),
-                color = if (line.discount > 0) MaterialTheme.colorScheme.error
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                textAlign = TextAlign.End,
-            )
-        }
-
-        IconButton(
-            onClick = { showRemoveConfirm = true },
-            modifier = Modifier.size(44.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Close,
-                contentDescription = "ลบรายการ",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp),
-            )
         }
     }
 
@@ -178,6 +128,86 @@ fun CartLineRow(
         Text(
             line.drug.name,
             style = PharmText.body,
+        )
+    }
+}
+
+@Composable
+private fun CartLineInfoIcon() {
+    Icon(
+        imageVector = Icons.Outlined.Info,
+        contentDescription = "รายละเอียด",
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(18.dp),
+    )
+}
+
+@Composable
+private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(
+                text = line.drug.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            line.selectedUnit?.let { alt ->
+                Text(
+                    text = alt.name,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        if (line.selectedUnit == null) {
+            Text(
+                text = line.drug.unit ?: "ชิ้น",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CartLinePrice(line: CartLine) {
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.width(96.dp),
+    ) {
+        Text(
+            text = formatBahtCurrency(line.lineTotal),
+            style = MaterialTheme.typography.bodyLarge.tabular(),
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            textAlign = TextAlign.End,
+        )
+        Text(
+            text = priceMetaLabel(line),
+            style = MaterialTheme.typography.labelSmall.tabular(),
+            color = if (line.discount > 0) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            textAlign = TextAlign.End,
+        )
+    }
+}
+
+@Composable
+private fun CartLineRemoveButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.size(44.dp)) {
+        Icon(
+            imageVector = Icons.Rounded.Close,
+            contentDescription = "ลบรายการ",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp),
         )
     }
 }

@@ -28,7 +28,11 @@ fun MetricCardRow(
     content: @Composable FlowRowScope.() -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val columns = if (maxWidth < 600.dp) 2 else 4
+        val columns = when {
+            maxWidth < 360.dp -> 1
+            maxWidth < 600.dp -> 2
+            else -> 4
+        }
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
