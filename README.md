@@ -83,7 +83,7 @@ build-logic/                         convention plugins — pharmacy.kmp.library
 | Provider (state observer) | `:core:domain` | `app.devper.pharm.domain.observer` | `core/domain/.../domain/observer/` + register in `di/<Feature>DomainModule.kt` |
 | Repository impl / API / DTO | `:core:data` | `app.devper.pharm.data.<sub>` | `core/data/src/commonMain/kotlin/app/devper/pharm/data/<sub>/` |
 | Design token / primitive / VM base | `:core:ui` | `app.devper.pharm.ui.<sub>` | `core/ui/src/commonMain/kotlin/app/devper/pharm/ui/<sub>/` |
-| Expect/actual (any new platform-bound code) | `:core:common` | `app.devper.pharm.common[.<sub>]` | `core/common/src/<sourceSet>/kotlin/app/devper/pharm/common/.../` |
+| Platform-bound seam (file save / print / IO) | interface in `:core:common`, impl in `:composeApp/<plat>Main` | `app.devper.pharm.common[.<sub>]` (interface) | `core/common/src/commonMain/.../common/.../<X>.kt` + `composeApp/src/<plat>Main/.../platform/<X>Impl.kt`, bound via Koin in each `Main*.kt` |
 | New feature scaffold | `:features:<new>` (create via 6-step recipe in [`MODULE_GRAPH.md`](MODULE_GRAPH.md)) | `app.devper.pharm.presentation.<new>` | `features/<new>/src/commonMain/kotlin/app/devper/pharm/presentation/<new>/` |
 | Feature Route data object | `:features:shared` | `app.devper.pharm.presentation.<feature>` | `features/shared/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/<Feature>Routes.kt` |
 | Feature screen + VM + NavGraph | `:features:<feature>` | `app.devper.pharm.presentation.<feature>` | `features/<feature>/src/commonMain/kotlin/app/devper/pharm/presentation/<feature>/` |
@@ -249,7 +249,7 @@ Cleartext (http://) is **disabled** by default on Android (no `usesCleartextTraf
 Every push to `main` and every PR runs [`.github/workflows/check.yml`](.github/workflows/check.yml) on `macos-latest` (required for the iOS targets). The workflow runs the same checks as the local verify command:
 
 1. `:composeApp:auditArchitecture` — fails on any A10/A17/A19/A20/A23/A24/A25/A26/A27/A28 violation
-2. JVM tests across all 26 library modules (513 `@Test` functions; `:composeApp:check` transitively runs every module's `jvmTest`)
+2. JVM tests across the 26 library modules + the `:composeApp` wiring test (513 `@Test` functions total; `:composeApp:check` transitively runs every module's `jvmTest`)
 3. `:composeApp:testDebugUnitTest` — Android debug variant
 4. `:composeApp:compileTestKotlinIosSimulatorArm64` — iOS Simulator (Arm64) compile-only check
 5. `:composeApp:compileTestKotlinWasmJs` — Web (wasmJs) compile-only check
@@ -351,7 +351,7 @@ For a deeper Kotlin/Android/KMP review pass, the workspace also provides a `kotl
 
 ## Tests
 
-**513 `@Test` functions across the 26 library modules** (more on a full `./gradlew :composeApp:check` once you double-count Android variant runs):
+**513 `@Test` functions across the 26 library modules + the `:composeApp` wiring test** (more on a full `./gradlew :composeApp:check` once you double-count Android variant runs):
 
 | Module | jvmTest count | What's covered |
 |---|---|---|
