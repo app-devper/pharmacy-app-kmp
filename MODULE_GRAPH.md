@@ -1,6 +1,6 @@
 # Module graph — pharmacy-app KMP companion
 
-**26-module Gradle layout** after the per-feature split arc
+**27-module Gradle layout** after the per-feature split arc
 (`5b4d0ed` → `9a76123`). Dependency direction flows **inward only**:
 from entry point `:composeApp` down through 20 `:features:<x>` →
 `:features:shared` → `:core:{ui,data}` → `:core:domain` → `:core:common`,
@@ -212,7 +212,7 @@ module and import the fakes.
 
 | Path | Contents |
 |---|---|
-| `domain/repository/Fake{Cart,Customer,Drug,Ky,Label,OfflineSaleQueue,Profile,PurchaseOrder,Sale,Settings,StockCounts,Supplier,UiPreferences,Users}Repository.kt` | 14 fakes shared by ≥2 feature modules' tests |
+| `domain/repository/Fake{Cart,Customer,Drug,Ky,Label,OfflineSaleQueue,Profile,PurchaseOrder,Reports,Sale,Settings,StockCounts,Supplier,UiPreferences,Users}Repository.kt` | 15 fakes shared by ≥2 feature modules' tests |
 
 `deps`: `:core:common` + `:core:domain` + kotlinx-coroutines-core only.
 
@@ -288,15 +288,15 @@ to check them.
 | Module                       | Test source set | Tests in suite |
 |------------------------------|-----------------|----:|
 | `:core:common`               | `commonTest`    | 16 |
-| `:core:domain`               | `commonTest`    | ~80 |
-| `:core:ui`                   | `commonTest`    | ~25 (incl. MoneyFormatTest) |
-| `:core:data`                 | `commonTest`    | ~30 (incl. UiPreferencesRepositoryImpl + CartRepositoryImpl atomicity) |
+| `:core:domain`               | `commonTest`    | 88 |
+| `:core:ui`                   | `commonTest`    | 62 (incl. MoneyFormatTest) |
+| `:core:data`                 | `commonTest`    | 41 (incl. UiPreferencesRepositoryImpl + CartRepositoryImpl atomicity) |
 | `:features:shared`           | none yet        | 0 |
 | `:features:test-fixtures`    | none (fakes are commonMain) | 0 |
-| 20× `:features:<x>`          | `commonTest`    | 280 across 29 module test suites |
+| 20× `:features:<x>`          | `commonTest`    | 305 across 29 module test suites |
 | `:composeApp`                | `commonTest`    | 1 (`AppModuleWiringTest` — resolves every VM via Koin) |
 
-**Project-wide**: ~475 unique tests on JVM. The Android
+**Project-wide**: 513 `@Test` functions on JVM. The Android
 `testDebugUnitTest` target runs the same `commonTest` sources separately,
 so the doubled count is higher on a full `:composeApp:check`.
 

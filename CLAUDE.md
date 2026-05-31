@@ -71,8 +71,8 @@ the per-feature split arc `5b4d0ed` → `9a76123`):
 
 :features:test-fixtures                  shared test doubles (commonMain only, test-only module)
   ├─ domain/repository/Fake{Cart,Customer,Drug,Ky,Label,OfflineSaleQueue,
-  │                          Profile,PurchaseOrder,Sale,Settings,StockCounts,
-  │                          Supplier,UiPreferences,Users}Repository.kt   (14 fakes)
+  │                          Profile,PurchaseOrder,Reports,Sale,Settings,StockCounts,
+  │                          Supplier,UiPreferences,Users}Repository.kt   (15 fakes)
   deps: :core:common + :core:domain + kotlinx-coroutines-core only
   rule: Fakes live in commonMain (not commonTest) so any feature's commonTest
         can `implementation(project(":features:test-fixtures"))` and import.
@@ -259,7 +259,7 @@ purpose isn't clear from its name, rename the method.
             :core:ui:jvmTest :core:data:jvmTest
   ```
   Quick smoke (runs the full dependent tree): `./gradlew :composeApp:check`.
-  Project test count today: ~460 `@Test` functions across 65 commonTest files
+  Project test count today: 513 `@Test` functions across ~70 commonTest files
   (most concentrated in the 20 per-feature modules). Re-measure with
   `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`.
 - **Design system**: tokens in `:core:ui` →
@@ -284,8 +284,23 @@ purpose isn't clear from its name, rename the method.
   signal). Use Storage / UnsupportedPlatform subclasses for IO/platform
   failures in `:composeApp/<plat>Main/platform/`.
 
+- **Responsive layout**: one codebase spans 320px phone → desktop. Breakpoints:
+  320 (floor, nothing below) / 360 (stack `Row→Column`) / 600 (`WindowSize.Compact`
+  ↔ `Medium`; `PharmTable` switches to card mode) / 720 (`MetricCardRow` 4-up) /
+  840 (`Medium` ↔ `Expanded`). `WindowSize.fromWidth(maxWidth)` lives in
+  `:core:ui/ui/components/WindowSize.kt`. Use `BoxWithConstraints` + `FlowRow`
+  for content reflow; `PharmTable` columns take `hideInCompact` / `compactTitle`.
+  Desktop/web floor at 600px (`Main.kt` `window.minimumSize`, `index.html`
+  `min-width`). Collect state with `collectAsStateWithLifecycle()` (not
+  `collectAsState`) everywhere — battery.
 - **Adding a new feature** → follow the 6-step recipe above (see
   `MODULE_GRAPH.md` for full graph + adding-new-code quick-lookup table).
+- **Skills**: project-specific skills live in `.claude/skills/` —
+  `pharmacy-kmp-feature` (scaffold), `pharmacy-kmp-add-form` (`BaseFormViewModel`),
+  `pharmacy-kmp-test` (`runVmTest` + fakes), `pharmacy-kmp-screen-split`
+  (Screen↔Content + responsive), `pharmacy-kmp-review` (audit a diff against the
+  10 build-enforced rules + conventions). Reach for them before hand-rolling
+  these flows.
 
 ## Cross-cutting reminders
 
