@@ -38,7 +38,7 @@ internal fun MovementsFilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(modifier = Modifier.weight(1f).widthIn(min = 320.dp)) {
+        Box(modifier = Modifier.weight(1f).widthIn(min = 200.dp)) {
             PharmDateRangeField(
                 range = range,
                 onRangeChange = { next ->
@@ -48,7 +48,7 @@ internal fun MovementsFilterBar(
                 formatDate = { millis -> formatYmdDisplay(millis) },
             )
         }
-        Box(modifier = Modifier.weight(1f).widthIn(min = 220.dp)) {
+        Box(modifier = Modifier.weight(1f).widthIn(min = 160.dp)) {
             PharmTextField(
                 value = state.drugName,
                 onValueChange = callbacks.onSearchChange,
