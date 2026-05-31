@@ -1,7 +1,11 @@
 package app.devper.pharm
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
+import java.awt.Dimension
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
@@ -34,7 +38,15 @@ fun main() {
     startKoin { modules(jvmPlatformModule, appModule) }
 
     application {
-        Window(onCloseRequest = ::exitApplication, title = "PharmacyApp") {
+        val windowState = rememberWindowState(width = 1100.dp, height = 760.dp)
+        Window(
+            onCloseRequest = ::exitApplication,
+            state = windowState,
+            title = "PharmacyApp",
+        ) {
+            LaunchedEffect(Unit) {
+                window.minimumSize = Dimension(600, 600)
+            }
             App()
         }
     }
