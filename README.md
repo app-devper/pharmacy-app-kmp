@@ -2,7 +2,7 @@
 
 Kotlin Multiplatform / Compose Multiplatform port of the React `frontend/` web POS. **One Kotlin codebase ships to Android, iOS, Desktop (JVM), and Web (wasmJs).** Shares the same backend (`pharmacy-app/backend`) and the same `um-api` auth.
 
-Architecture is **26-module Gradle Clean Architecture** with inward-only deps; platform impls live in `:composeApp/<plat>Main/platform/` behind interfaces in `:core:common`; a convention plugin keeps every library's `build.gradle.kts` ~15–55 lines. **475 unit tests** cover business logic — 280 across 29 per-feature test suites + ~150 across the 4 `:core:*` modules + 1 wiring smoke. Per-feature isolation: cross-feature production imports are HARD Kotlin compile errors (not just an audit warning) after the split arc `5b4d0ed` → `9a76123`.
+Architecture is **27-module Gradle Clean Architecture** with inward-only deps; platform impls live in `:composeApp/<plat>Main/platform/` behind interfaces in `:core:common`; a convention plugin keeps every library's `build.gradle.kts` ~15–55 lines. **513 unit tests** (~70 `commonTest` files) cover business logic across the 20 per-feature modules + the 4 `:core:*` modules + 1 wiring smoke. Per-feature isolation: cross-feature production imports are HARD Kotlin compile errors (not just an audit warning) after the split arc `5b4d0ed` → `9a76123`.
 
 See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full module dependency matrix.
 
@@ -10,16 +10,16 @@ See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full module dependency matrix.
 
 | Concern | Choice |
 |---------|--------|
-| Language | Kotlin 2.3.0 |
-| UI | Compose Multiplatform 1.9.3 (Material 3 + custom design system) |
-| Networking | Ktor 3.3 (engines per platform: OkHttp / Darwin / Java / Js) |
-| DI | Koin 4.1 — each layer owns its own Koin module |
-| Navigation | androidx.navigation-compose (multiplatform — type-safe `@Serializable` routes) |
-| Storage | multiplatform-settings (UserDefaults / SharedPreferences / Preferences / localStorage) |
-| Logging | Kermit |
-| Build | Gradle 8.14 · AGP 8.13 · `pharmacy.kmp.library` convention plugin in `build-logic/` |
+| Language | Kotlin 2.3.21 |
+| UI | Compose Multiplatform 1.11.0 (Material 3 + custom design system) |
+| Networking | Ktor 3.5.0 (engines per platform: OkHttp / Darwin / Java / Js) |
+| DI | Koin 4.2.1 — each layer owns its own Koin module |
+| Navigation | androidx.navigation-compose 2.9.2 (multiplatform — type-safe `@Serializable` routes) |
+| Storage | multiplatform-settings 1.3.0 (UserDefaults / SharedPreferences / Preferences / localStorage) |
+| Logging | Kermit 2.1.0 |
+| Build | Gradle 8.14.3 · AGP 8.13.2 · `pharmacy.kmp.library` convention plugin in `build-logic/` |
 
-## Module structure (26 modules)
+## Module structure (27 modules)
 
 See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full ASCII graph + dep matrix + per-module file inventory.
 
@@ -37,7 +37,7 @@ See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full ASCII graph + dep matrix +
 :features:shared                     nav hub + 20 Route data objects + ShelledScreen
    │                                  package: app.devper.pharm.presentation.{<feature>,navigation}
    ▼                                              │
-:features:test-fixtures              shared test doubles (14 Fake*Repository classes)
+:features:test-fixtures              shared test doubles (15 Fake*Repository classes)
    ─── test-only dep of 11 features that share fakes; commonMain code
                                                   │
 :core:ui                             shared compose infra (theme + designsystem + BaseViewModel)
@@ -100,7 +100,7 @@ Each layer owns its own Koin module — `:composeApp/di/AppModule.kt` is the com
 |---|---|---|
 | `commonModule` | `core/common/.../common/di/CommonModule.kt` | 1 binding only — `Logger` / `PrintlnLogger`. (`AppDispatchers` / `PdfDownloader` / `ReceiptPrinter` are now bound per-platform in `:composeApp`'s Main*.kt platform modules since the INVERT refactor.) |
 | platform modules (×4) | `composeApp/<plat>Main/.../Main*.kt` | Per-platform `single<X> { … }` for `Settings` + `HttpClient(<engine>)` + `AppDispatchers(IO or Default)` + `PdfDownloaderImpl(<args>)` + `ReceiptPrinterImpl()` |
-| `domainModule` | `core/domain/.../domain/di/DomainModule.kt` (composer) + 10 sibling `<Feature>DomainModule.kt` files | 77 bindings total: `StockChangeBus` + 5 `<X>Provider` singletons + `BulkImportJsonParser` + 70 use case factories — split across 10 per-feature DI files (`authDomainModule`, `customersDomainModule`, `salesDomainModule`, …) that `domainModule = module { includes(…) }` composes |
+| `domainModule` | `core/domain/.../domain/di/DomainModule.kt` (composer) + 12 sibling `<Feature>DomainModule.kt` files | `StockChangeBus` + `<X>Provider` singletons + `BulkImportJsonParser` + the use-case factories — split across 12 per-feature DI files (`authDomainModule`, `customersDomainModule`, `salesDomainModule`, …) that `domainModule = module { includes(…) }` composes |
 | `dataModule` | `core/data/.../data/di/DataModule.kt` | 40 bindings: `ApiConfig` + `AppJson` + `TokenStorage` / `ParkedCartStorage` / `OfflineSaleQueueImpl` + 15 `<X>Api` + 18 `<X>RepositoryImpl bind <X>Repository::class` |
 | `<feature>Module` × 20 | `features/<feature>/.../di/<Feature>Module.kt` (one per per-feature module) | ViewModel factories **only** — every UC / Provider / Repo / Api is bound elsewhere |
 
@@ -167,6 +167,28 @@ Strict rule: **no comments anywhere in production or test Kotlin code**. No `//`
 - **Avoid the `label = { … }` slot** when layout stability matters. Use the `FormField` pattern from `:core:ui.designsystem`: static `Text` label above the field plus a `placeholder` for hint copy.
 - **Conditional `trailingIcon` must keep the slot reserved.** Always render the `IconButton`, gate visibility *inside* it (`if (cond) Icon(...)`) and use `enabled = cond`.
 
+## Responsive & layout
+
+One codebase renders from a 320px phone to a desktop window, so layout is breakpoint-driven, not fixed:
+
+| Width | Band | Behavior |
+|---|---|---|
+| `< 320dp` | unsupported | nothing is designed below this floor |
+| `< 360dp` | tightest phone | content rows stack `Row → Column` (e.g. cart line, drug-card badge row via `FlowRow`) |
+| `< 600dp` | **Compact** | `AppShell` uses the mobile drawer; `PharmTable` auto-renders **card mode** |
+| `600–840dp` | **Medium** | sidebar shell; tables in row mode |
+| `≥ 720dp` | — | `MetricCardRow` goes 4-up (2-up below) |
+| `≥ 840dp` | **Expanded** | full desktop layout |
+
+- **`WindowSize`** (`core/ui/.../ui/components/WindowSize.kt`) classifies width into `Compact / Medium / Expanded` (600 / 840 thresholds) for shell-level decisions.
+- **`PharmTable`** is responsive by itself: card mode `< 600dp`, horizontal scroll when columns don't fit (`MIN_WIDTH_PER_WEIGHT = 88.dp` × total weight). Columns take `hideInCompact` (drop in card mode) and `compactTitle` (promote as the card's headline).
+- **`MetricCardRow`** picks 1 / 2 / 4 columns at 360 / 720 via `BoxWithConstraints` + `FlowRow`.
+- Content-level reflow uses `BoxWithConstraints { maxWidth … }` + `FlowRow` (wraps) rather than fixed weighted `Row`s that crush on narrow screens.
+- **Desktop/web floor at 600px**: `Main.kt` sets `window.minimumSize = Dimension(600, 600)`; `index.html` sets `body { min-width: 600px; overflow-x: auto }`. Inner screens must not assume `< 600dp` on desktop/web.
+- **State collection uses `collectAsStateWithLifecycle()`** everywhere (not `collectAsState`) to pause recomposition off-screen — a battery measure.
+
+The `pharmacy-kmp-screen-split` skill captures these breakpoints for new/refactored screens.
+
 ## Repository conventions
 
 - **Methods with 2+ parameters group them into a `*Param` data class** in `core/domain/.../domain/param/<feature>/`. Example: `AuthRepository.login(param: LoginParam)`. Single-arg methods stay plain.
@@ -202,7 +224,7 @@ data class DrugDto(
 - The wire shape (snake_case in the pharmacy backend's case) stays pinned via `@SerialName` — no implicit-default-matching surprises
 - Renaming a Kotlin field can't silently change the over-the-wire contract; you have to also update `@SerialName`, and the breakage shows up at code-review time as obvious diff noise
 
-**286 fields** across **17 DTO files** follow this convention today. New DTO fields breaking either rule are a P0 violation (A24 + A25 in `pharmacy-kmp-review` skill; both enforced at build time by `auditArchitecture` Gradle task — wire `@SerialName("snake_case")` strings are intentional and exempt).
+Over **500 `@SerialName` fields** across the DTO + `*Request` files in `:core:data` follow this convention today. New DTO fields breaking either rule are a P0 violation (A24 + A25 in `pharmacy-kmp-review` skill; both enforced at build time by `auditArchitecture` Gradle task — wire `@SerialName("snake_case")` strings are intentional and exempt).
 
 ## Backends used
 
@@ -227,7 +249,7 @@ Cleartext (http://) is **disabled** by default on Android (no `usesCleartextTraf
 Every push to `main` and every PR runs [`.github/workflows/check.yml`](.github/workflows/check.yml) on `macos-latest` (required for the iOS targets). The workflow runs the same checks as the local verify command:
 
 1. `:composeApp:auditArchitecture` — fails on any A10/A17/A19/A20/A23/A24/A25/A26/A27/A28 violation
-2. JVM tests across all 25 library modules (475 unique tests; `:composeApp:check` transitively runs every module's `jvmTest`)
+2. JVM tests across all 26 library modules (513 `@Test` functions; `:composeApp:check` transitively runs every module's `jvmTest`)
 3. `:composeApp:testDebugUnitTest` — Android debug variant
 4. `:composeApp:compileTestKotlinIosSimulatorArm64` — iOS Simulator (Arm64) compile-only check
 5. `:composeApp:compileTestKotlinWasmJs` — Web (wasmJs) compile-only check
@@ -242,7 +264,7 @@ cd /Users/admin/ProjectPos/pharmacy-app/app-kmp
 # Full check — runs all JVM tests + Android debug unit tests + lint + auditArchitecture
 ./gradlew :composeApp:check
 
-# Or pick targets explicitly (475 unique tests + compile for iOS sim + wasm)
+# Or pick targets explicitly (513 @Test functions + compile for iOS sim + wasm)
 ./gradlew :composeApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs \
@@ -315,40 +337,32 @@ The `pharmacy-kmp-feature` skill ([repo skills dir](.claude/skills/pharmacy-kmp-
 
 ## Skills + Agents
 
-In-repo skills live under `.claude/skills/` (mirrored to `~/.agents/skills/`):
+Project-specific skills live under [`.claude/skills/`](.claude/skills/):
 
 | Skill | What it does |
 |---|---|
-| `pharmacy-kmp-feature` | Scaffold a new end-to-end feature (domain → data → presentation → DI → nav → test) |
-| `pharmacy-kmp-add-form` | Add a new `BaseFormViewModel`-style form with validation |
-| `pharmacy-kmp-test` | Write a VM test using `runVmTest` + `Fake<X>Repository` pattern. Enforces **minimum coverage rule**: every feature ships with `<X>ViewModelTest.kt` per VM + unit tests for non-trivial use cases |
-| `pharmacy-kmp-screen-split` | Refactor a fat Screen into `Screen` ↔ `Content` + `@Preview` variants |
-| `pharmacy-kmp-review` | Audit a change against M → CC architectural rules + 28 numbered P0 checks (A1–A28) + 32 P1 convention checks (C1–C32) + 8 P2 polish (Q1–Q8) |
-| `compose-multiplatform-patterns` | General Compose Multiplatform patterns (state, navigation, slot APIs, performance, theming) + project-specific deviations table |
-| `kotlin-coding-style` | Idiomatic Kotlin (val/var, sealed types, null safety, scope functions, error handling) + pharmacy deviations (no comments, no `Result<T>` in repos, typed `AppException`) |
-| `git-workflow` | Branching, conventional commits, merge vs rebase, PRs + Claude Code safety rails (no amend, no force-push, no `--no-verify`, `Co-Authored-By` trailer) |
-| `update-docs` | Keep `README.md` in sync after feature / API / model / dep changes |
+| `pharmacy-kmp-feature` | Scaffold a new end-to-end feature (domain → data → new `:features:<x>` module → DI → nav → test) |
+| `pharmacy-kmp-add-form` | Add a create/edit form using the `BaseFormViewModel` pattern (`canSubmit` gating, saving/saved/error, `FormField` layout) |
+| `pharmacy-kmp-test` | Write a VM test using `runVmTest` + `Fake<X>Repository`. Enforces the coverage rule: every VM ships a `<X>ViewModelTest.kt`; non-trivial use cases get a unit test |
+| `pharmacy-kmp-screen-split` | Refactor a fat Screen into `Screen` ↔ `Content` + `Callbacks` + `@Preview`, including responsive layout (breakpoints 320/360/600/720/840) |
+| `pharmacy-kmp-review` | Audit a diff against the dependency boundaries + the 10 build-enforced audit rules + project conventions (no-comments, typed errors, DTO `@SerialName`, MVVM, design system, responsive), graded `[CRITICAL]/[HIGH]/[MEDIUM]/[LOW]` |
 
-Agents (live under `.claude/agents/`):
-
-| Agent | What it does |
-|---|---|
-| `kotlin-reviewer` | Senior Kotlin/Android/KMP code reviewer — reads `git diff`, applies the 28 architecture checks + Compose / coroutine / lifecycle traps, outputs `[CRITICAL]/[HIGH]/[MEDIUM]/[LOW]` report. Recognises project-specific "looks-wrong-but-is-right" patterns (split-package `BaseUseCase`, bare `T` repo returns, no VM dispatchers, etc.) |
+For a deeper Kotlin/Android/KMP review pass, the workspace also provides a `kotlin-reviewer` subagent (idiomatic patterns, coroutine safety, Compose pitfalls) — pair it with the `pharmacy-kmp-review` skill for the project-specific boundaries.
 
 ## Tests
 
-**373 unique tests across 6 modules** (~540 on a full `./gradlew :composeApp:check` once you double-count Android variant runs):
+**513 `@Test` functions across the 26 library modules** (more on a full `./gradlew :composeApp:check` once you double-count Android variant runs):
 
 | Module | jvmTest count | What's covered |
 |---|---|---|
 | `:core:common` | 16 | `AppException` typed errors, `Logger`/`PrintlnLogger`, `BaseUseCase`/`BaseSyncUseCase` success+failure paths |
-| `:core:domain` | 71 | model invariants, parsers (`BulkImportJsonParser`, `PurchaseOrderInputBuilder`, etc.), util (`BarcodeMatcher`, `DrugSearch`, `UmRoleValidator` — 4×4 actor×target + isSelf override, …), pricing (`resolvePrice` tier resolution) |
-| `:core:ui` | 33 | `formatBaht` / `formatBahtCurrency` / `fmtBaht` rounding + thousands separators; `BaseViewModel` setState + launchResult; `BaseFormViewModel` saving / saved / error transitions; new design-system primitive logic — `PharmAvatarCircle.initialsFrom()` (5 tests), `PharmStatusBadge` tone mapping (6 tests) |
-| `:core:data` | 20 | `AppJson` lenient/strict; `ApiConfig` URL helpers; Ktor `HttpResponseValidator` HTTP-status → typed `AppException` translation (via `MockEngine`); `OfflineSaleQueueImpl` FIFO + persistence round-trip |
-| 20× `:features:<x>` | 280 across 29 module test suites | ViewModel unit tests via `runVmTest { dispatchers -> }` helper + `Fake<X>Repository` pattern (from `:features:test-fixtures` when shared, co-located in the feature module when single-consumer). Five modules fully co-located test + fake: help (9 tests), saleshistory (13), auth (6), bulkimport (8), reports (15) |
+| `:core:domain` | 88 | model invariants, parsers (`BulkImportJsonParser`, `PurchaseOrderInputBuilder`, etc.), util (`BarcodeMatcher`, `DrugSearch`, `UmRoleValidator` — 4×4 actor×target + isSelf override, …), pricing (`resolvePrice` tier resolution) |
+| `:core:ui` | 62 | `formatBaht` / `formatBahtCurrency` / `fmtBaht` rounding + thousands separators; `BaseViewModel` setState + launchResult; `BaseFormViewModel` saving / saved / error transitions; new design-system primitive logic — `PharmAvatarCircle.initialsFrom()` (5 tests), `PharmStatusBadge` tone mapping (6 tests) |
+| `:core:data` | 41 | `AppJson` lenient/strict; `ApiConfig` URL helpers; Ktor `HttpResponseValidator` HTTP-status → typed `AppException` translation (via `MockEngine`); `OfflineSaleQueueImpl` FIFO + persistence round-trip |
+| 20× `:features:<x>` | 305 across 29 module test suites | ViewModel unit tests via `runVmTest { dispatchers -> }` helper + `Fake<X>Repository` pattern (from `:features:test-fixtures` when shared, co-located in the feature module when single-consumer). Five modules fully co-located test + fake: help (9 tests), saleshistory (13), auth (6), bulkimport (8), reports (15) |
 | `:composeApp` | 1 | `AppModuleWiringTest` — boots Koin with `commonModule + domainModule + dataModule + 20 feature modules + test platform module` and resolves every `<X>ViewModel` to catch "forgot a `factoryOf(...)` binding" regressions before runtime |
 
-Build-time **architecture audit** (in `build-logic/.../pharmacy.architecture.audit.gradle.kts`) runs as part of `:composeApp:check` and fails the build on any stale import that would violate the inward-only rules (A10/A17/A19/A20/A23/A24/A25/A26/A27/A28 — 10 enforced at build time of the 28 total in `pharmacy-kmp-review` skill).
+Build-time **architecture audit** (in `build-logic/.../pharmacy.architecture.audit.gradle.kts`) runs as part of `:composeApp:check` and fails the build on any stale import that would violate the inward-only rules. There are **10 build-enforced rules** — A10/A17/A19/A20/A23/A24/A25/A26/A27/A28 — each documented in the `pharmacy-kmp-review` skill (the older "A1–A28" numbering was aspirational; only these ten are implemented).
 - Verify command above runs them all on JVM + compiles tests for iOS sim + wasmJs
 
 ## Out of scope
