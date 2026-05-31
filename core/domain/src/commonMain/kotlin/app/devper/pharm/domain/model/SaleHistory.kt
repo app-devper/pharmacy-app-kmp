@@ -31,8 +31,3 @@ data class SaleItemSnapshot(
     val remainingDisplayQty: Int
         get() = if (unitFactor > 1) remainingQty / unitFactor else remainingQty
 }
-
-data class SaleReturnLine(
-    val saleItemId: String,
-    val qty: Int,
-)
