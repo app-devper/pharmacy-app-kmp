@@ -66,6 +66,7 @@ internal fun StockTable(
         PharmTableColumn(
             header = "ชื่อสามัญ",
             weight = 1.6f,
+            hideInCompact = true,
             cell = { drug ->
                 Text(
                     text = drug.genericName.orEmpty(),
@@ -78,6 +79,7 @@ internal fun StockTable(
         PharmTableColumn(
             header = "ขนาด",
             weight = 0.8f,
+            hideInCompact = true,
             cell = { drug ->
                 Text(
                     text = drug.strength.orEmpty(),
@@ -101,6 +103,7 @@ internal fun StockTable(
             header = "ราคาทุน",
             weight = 0.8f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { drug ->
                 Text(
                     text = fmtBaht(drug.costPrice),
@@ -133,6 +136,7 @@ internal fun StockTable(
         PharmTableColumn(
             header = "บาร์โค้ด",
             weight = 1.2f,
+            hideInCompact = true,
             cell = { drug ->
                 Text(
                     text = drug.barcode.orEmpty(),

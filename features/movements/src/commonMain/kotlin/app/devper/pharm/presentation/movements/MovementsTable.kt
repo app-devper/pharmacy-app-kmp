@@ -51,6 +51,7 @@ internal fun MovementsTable(
             PharmTableColumn(
                 header = "ชื่อยา",
                 weight = 2.0f,
+                compactTitle = true,
                 cell = { m -> DrugCell(m) },
             ),
             PharmTableColumn(

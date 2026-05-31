@@ -71,6 +71,7 @@ internal fun SuppliersListTable(
         PharmTableColumn(
             header = "เลขผู้เสียภาษี",
             weight = 1.3f,
+            hideInCompact = true,
             cell = { supplier ->
                 Text(
                     text = supplier.taxId.ifBlank { "—" },
@@ -86,6 +87,7 @@ internal fun SuppliersListTable(
         PharmTableColumn(
             header = "หมายเหตุ",
             weight = 1.6f,
+            hideInCompact = true,
             cell = { supplier ->
                 Text(
                     text = supplier.notes.ifBlank { "—" },
