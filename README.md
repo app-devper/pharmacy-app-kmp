@@ -16,7 +16,7 @@ See [`MODULE_GRAPH.md`](MODULE_GRAPH.md) for the full module dependency matrix.
 | DI | Koin 4.2.1 — each layer owns its own Koin module |
 | Navigation | androidx.navigation-compose 2.9.2 (multiplatform — type-safe `@Serializable` routes) |
 | Storage | multiplatform-settings 1.3.0 (UserDefaults / SharedPreferences / Preferences / localStorage) |
-| Logging | Kermit 2.1.0 |
+| Logging | Custom `Logger` interface + `PrintlnLogger` in `:core:common`, Koin-bound (Kermit 2.1.0 is in the catalog but currently unused) |
 | Build | Gradle 8.14.3 · AGP 8.13.2 · `pharmacy.kmp.library` convention plugin in `build-logic/` |
 
 ## Module structure (27 modules)
