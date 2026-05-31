@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,12 +63,19 @@ fun ReportsContent(
                     item("monthly") { ReportsMonthlyGroupedBars(monthly = monthly) }
                 }
                 item("top-and-slow") {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
-                        ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+                    if (maxWidth < 700.dp) {
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
+                            ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
+                            ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+                        }
                     }
                 }
                 state.dashboard?.recentSales?.let { recent ->
