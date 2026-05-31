@@ -43,6 +43,7 @@ internal fun SalesHistoryTable(
         PharmTableColumn(
             header = "เลขที่บิล",
             weight = 1.4f,
+            compactTitle = true,
             cell = { sale -> BillNoCell(sale) },
         ),
         PharmTableColumn(

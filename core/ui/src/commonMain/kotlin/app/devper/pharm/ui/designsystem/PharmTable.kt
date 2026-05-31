@@ -3,11 +3,14 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +41,8 @@ data class PharmTableColumn<T>(
     val header: String,
     val weight: Float = 1f,
     val align: PharmColumnAlign = PharmColumnAlign.Start,
+    val hideInCompact: Boolean = false,
+    val compactTitle: Boolean = false,
     val cell: @Composable (row: T) -> Unit,
 )
 
@@ -68,6 +73,17 @@ fun <T> PharmTable(
             .fillMaxSize()
             .background(t.colors.surface),
     ) {
+        if (maxWidth < CARD_MODE_MAX_WIDTH) {
+            PharmTableCardList(
+                rows = rows,
+                columns = columns,
+                key = key,
+                onRowClick = onRowClick,
+                bottomRow = bottomRow,
+            )
+            return@BoxWithConstraints
+        }
+
         val totalWeight = remember(columns) { columns.fold(0f) { acc, c -> acc + c.weight } }
         val minTableWidth = MIN_WIDTH_PER_WEIGHT * totalWeight
         val needsScroll = minTableWidth > maxWidth
@@ -109,6 +125,73 @@ fun <T> PharmTable(
 }
 
 private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
+private val CARD_MODE_MAX_WIDTH: Dp = 600.dp
+
+@Composable
+private fun <T> PharmTableCardList(
+    rows: List<T>,
+    columns: List<PharmTableColumn<T>>,
+    key: ((T) -> Any)?,
+    onRowClick: ((T) -> Unit)?,
+    bottomRow: @Composable (() -> Unit)?,
+) {
+    val visible = remember(columns) { columns.filterNot { it.hideInCompact } }
+    val title = remember(visible) { visible.firstOrNull { it.compactTitle } ?: visible.firstOrNull() }
+    val details = remember(visible, title) { visible.filter { it !== title } }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(items = rows, key = key) { row ->
+            val onClickRow = remember(row, onRowClick) {
+                onRowClick?.let { cb -> { cb(row) } }
+            }
+            PharmTableCard(title = title, details = details, row = row, onClick = onClickRow)
+        }
+        if (bottomRow != null) {
+            item { bottomRow() }
+        }
+    }
+}
+
+@Composable
+private fun <T> PharmTableCard(
+    title: PharmTableColumn<T>?,
+    details: List<PharmTableColumn<T>>,
+    row: T,
+    onClick: (() -> Unit)?,
+) {
+    val t = pharmTokens
+    val clickable = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(t.shapes.lg)
+            .background(t.colors.surface)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
+            .then(clickable)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
+        details.forEach { col ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = col.header,
+                    style = PharmText.micro.copy(color = t.colors.fgMuted),
+                    modifier = Modifier.weight(1f),
+                )
+                Box(contentAlignment = Alignment.CenterEnd) { col.cell(row) }
+            }
+        }
+    }
+}
 
 @Composable
 private fun <T> PharmTableHeader(columns: List<PharmTableColumn<T>>, height: Dp) {
