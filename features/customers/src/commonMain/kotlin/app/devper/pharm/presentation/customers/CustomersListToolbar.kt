@@ -42,7 +42,7 @@ internal fun CustomersListToolbar(
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
         }
-        Box(modifier = Modifier.widthIn(min = 200.dp, max = 280.dp)) {
+        Box(modifier = Modifier.weight(1f).widthIn(max = 280.dp)) {
             PharmTextField(
                 value = query,
                 onValueChange = callbacks.onSearchChange,
