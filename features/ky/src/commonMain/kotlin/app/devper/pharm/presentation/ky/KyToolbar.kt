@@ -58,9 +58,7 @@ internal fun KyToolbar(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(modifier = Modifier.widthIn(min = 240.dp)) {
-            KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
-        }
+        KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -83,7 +81,6 @@ internal fun KyToolbar(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.widthIn(min = 220.dp),
         ) {
             Text(
                 text = "$rowCount รายการ",
