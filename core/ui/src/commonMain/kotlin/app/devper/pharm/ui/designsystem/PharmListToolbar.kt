@@ -37,10 +37,7 @@ fun PharmListToolbar(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(text = title, style = titleStyle)
             Text(
                 text = subtitle,
