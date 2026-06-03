@@ -77,7 +77,7 @@ internal fun StockCountFormToolbar(
                 }
                 Text(text = "นับสต็อกใหม่", style = PharmText.h2)
             }
-            Box(modifier = Modifier.weight(1f).widthIn(max = 320.dp)) {
+            Box(modifier = Modifier.widthIn(min = 220.dp, max = 320.dp)) {
                 PharmTextField(
                     value = state.query,
                     onValueChange = callbacks.onSearchChange,

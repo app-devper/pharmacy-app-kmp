@@ -24,10 +24,10 @@ fun PharmListToolbar(
     searchValue: String,
     onSearchChange: (String) -> Unit,
     searchPlaceholder: String,
-    actions: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     titleStyle: TextStyle = PharmText.h1,
-    badge: @Composable () -> Unit = {},
+    badge: (@Composable () -> Unit)? = null,
+    actions: @Composable () -> Unit,
 ) {
     val t = pharmTokens
     FlowRow(
@@ -47,7 +47,7 @@ fun PharmListToolbar(
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
         }
-        badge()
+        badge?.invoke()
         Box(modifier = Modifier.weight(1f).widthIn(max = 280.dp)) {
             PharmTextField(
                 value = searchValue,
