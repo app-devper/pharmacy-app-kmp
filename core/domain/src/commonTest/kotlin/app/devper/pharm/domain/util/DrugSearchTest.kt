@@ -58,4 +58,23 @@ class DrugSearchTest {
         val drugs = listOf(drug("1", name = "Paracetamol"))
         assertEquals(emptyList(), DrugSearch.filter(drugs, "nonexistent"))
     }
+
+    @Test
+    fun ranks_exact_then_prefix_then_substring() {
+        val drugs = listOf(
+            drug("sub", name = "Extra Para Plus"),
+            drug("exact", name = "Para"),
+            drug("prefix", name = "Paracetamol"),
+        )
+        assertEquals(listOf("exact", "prefix", "sub"), DrugSearch.filter(drugs, "para").map { it.id })
+    }
+
+    @Test
+    fun ranks_exact_barcode_above_name_substring() {
+        val drugs = listOf(
+            drug("name", name = "888 Tablets"),
+            drug("bc", name = "Zzz", barcode = "888"),
+        )
+        assertEquals(listOf("bc", "name"), DrugSearch.filter(drugs, "888").map { it.id })
+    }
 }
