@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.KyFormType
+import app.devper.pharm.ui.components.WindowSize
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -48,86 +50,88 @@ internal fun KyToolbar(
     onAddEntry: () -> Unit = {},
 ) {
     val t = pharmTokens
-    FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Box(modifier = Modifier.widthIn(min = 240.dp)) {
-            KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val showStats = WindowSize.fromWidth(maxWidth).isAtLeastMedium
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(t.shapes.lg)
+                .background(t.colors.surface)
+                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text("เดือน", style = PharmText.micro.copy(color = t.colors.fg3))
-            Box(modifier = Modifier.widthIn(min = 120.dp, max = 160.dp)) {
-                PharmTextField(
-                    value = month,
-                    onValueChange = onMonthChange,
-                    placeholder = "YYYY-MM",
+            KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text("เดือน", style = PharmText.micro.copy(color = t.colors.fg3))
+                Box(modifier = Modifier.widthIn(min = 120.dp, max = 160.dp)) {
+                    PharmTextField(
+                        value = month,
+                        onValueChange = onMonthChange,
+                        placeholder = "YYYY-MM",
+                    )
+                }
+                PharmButton(
+                    label = "ค้นหา",
+                    onClick = onApply,
+                    variant = PharmButtonVariant.Outline,
+                    size = PharmButtonSize.Sm,
                 )
             }
-            PharmButton(
-                label = "ค้นหา",
-                onClick = onApply,
-                variant = PharmButtonVariant.Outline,
-                size = PharmButtonSize.Sm,
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.widthIn(min = 220.dp),
-        ) {
-            Text(
-                text = "$rowCount รายการ",
-                style = PharmText.micro.copy(color = t.colors.fg3),
-            )
-            Text(text = "·", style = PharmText.micro.copy(color = t.colors.fgMuted))
-            Text(
-                text = "มูลค่ารวม",
-                style = PharmText.micro.copy(color = t.colors.fg3),
-            )
-            Text(
-                text = fmtBaht(totalValue),
-                style = PharmText.bodySm.copy(
-                    color = t.colors.fg1,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFeatureSettings = "tnum",
-                ),
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PharmButton(
-                label = "Excel",
-                onClick = onExportExcel,
-                variant = PharmButtonVariant.Outline,
-                size = PharmButtonSize.Sm,
-                leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
-            )
-            PharmButton(
-                label = if (exporting) "กำลังส่งออก…" else "PDF",
-                onClick = onExport,
-                variant = PharmButtonVariant.Outline,
-                size = PharmButtonSize.Sm,
-                enabled = !exporting,
-                leadingIcon = { Icon(PharmIcons.FilePdf, contentDescription = null) },
-            )
-            PharmButton(
-                label = "เพิ่มรายการ",
-                onClick = onAddEntry,
-                size = PharmButtonSize.Sm,
-                leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
-            )
+            if (showStats) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text(
+                        text = "$rowCount รายการ",
+                        style = PharmText.micro.copy(color = t.colors.fg3),
+                    )
+                    Text(text = "·", style = PharmText.micro.copy(color = t.colors.fgMuted))
+                    Text(
+                        text = "มูลค่ารวม",
+                        style = PharmText.micro.copy(color = t.colors.fg3),
+                    )
+                    Text(
+                        text = fmtBaht(totalValue),
+                        style = PharmText.bodySm.copy(
+                            color = t.colors.fg1,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFeatureSettings = "tnum",
+                        ),
+                    )
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PharmButton(
+                    label = "Excel",
+                    onClick = onExportExcel,
+                    variant = PharmButtonVariant.Outline,
+                    size = PharmButtonSize.Sm,
+                    leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
+                )
+                PharmButton(
+                    label = if (exporting) "กำลังส่งออก…" else "PDF",
+                    onClick = onExport,
+                    variant = PharmButtonVariant.Outline,
+                    size = PharmButtonSize.Sm,
+                    enabled = !exporting,
+                    leadingIcon = { Icon(PharmIcons.FilePdf, contentDescription = null) },
+                )
+                PharmButton(
+                    label = "เพิ่มรายการ",
+                    onClick = onAddEntry,
+                    size = PharmButtonSize.Sm,
+                    leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
+                )
+            }
         }
     }
 }

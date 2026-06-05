@@ -36,7 +36,7 @@ internal fun StockToolbar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(modifier = Modifier.weight(1f).widthIn(min = 180.dp)) {
+        Box(modifier = Modifier.weight(1f).widthIn(max = 280.dp)) {
             PharmTextField(
                 value = query,
                 onValueChange = callbacks.onQueryChange,

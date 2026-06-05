@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -38,7 +37,7 @@ internal fun MovementsFilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Box(modifier = Modifier.weight(1f).widthIn(min = 200.dp)) {
+        Box(modifier = Modifier.weight(1f)) {
             PharmDateRangeField(
                 range = range,
                 onRangeChange = { next ->
@@ -48,7 +47,7 @@ internal fun MovementsFilterBar(
                 formatDate = { millis -> formatYmdDisplay(millis) },
             )
         }
-        Box(modifier = Modifier.weight(1f).widthIn(min = 160.dp)) {
+        Box(modifier = Modifier.weight(1f)) {
             PharmTextField(
                 value = state.drugName,
                 onValueChange = callbacks.onSearchChange,
