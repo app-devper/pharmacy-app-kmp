@@ -17,7 +17,11 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartLine
@@ -44,6 +48,7 @@ import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
 import app.devper.pharm.presentation.sell.components.SwapToParkedDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
+import app.devper.pharm.presentation.sell.components.ShortcutLegend
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -63,6 +68,9 @@ fun SellScreen(
     val customerState by customerPickerVM.state.collectAsStateWithLifecycle()
     val parkedState by parkedCartVM.state.collectAsStateWithLifecycle()
     val voidState by voidSaleVM.state.collectAsStateWithLifecycle()
+
+    val searchFocus = remember { FocusRequester() }
+    var showShortcuts by remember { mutableStateOf(false) }
 
     val snackbar = LocalPharmSnackbar.current
     val onTapParkSlot: (Int) -> Unit = { slot ->
@@ -101,6 +109,7 @@ fun SellScreen(
 
     val onShortcutEscape: () -> Unit = {
         when {
+            showShortcuts                          -> showShortcuts = false
             combinedError != null                  -> dismissAllErrors()
             parkedState.overwriteSlot != null      -> parkedCartVM.cancelOverwrite()
             parkedState.swapSlot != null           -> parkedCartVM.cancelSwap()
@@ -120,14 +129,34 @@ fun SellScreen(
 
     val sellShortcuts = arrayOf(
         PharmShortcut(
+            key = Key.F1,
+            label = "F1",
+            action = { showShortcuts = true },
+        ),
+        PharmShortcut(
             key = Key.F2,
             label = "F2",
+            action = { runCatching { searchFocus.requestFocus() } },
+        ),
+        PharmShortcut(
+            key = Key.F3,
+            label = "F3",
             action = customerPickerVM::open,
         ),
         PharmShortcut(
             key = Key.F4,
             label = "F4",
             action = sellVM::onOpenCartDiscount,
+        ),
+        PharmShortcut(
+            key = Key.F6,
+            label = "F6",
+            action = onShortcutParkCart,
+        ),
+        PharmShortcut(
+            key = Key.F8,
+            label = "F8",
+            action = parkedCartVM::openSheet,
         ),
         PharmShortcut(
             key = Key.F9,
@@ -174,6 +203,7 @@ fun SellScreen(
                         activeTier = sellState.activeTier,
                         onAdd = drugPickerVM::onTapDrug,
                         modifier = Modifier.weight(0.62f),
+                        searchFocusRequester = searchFocus,
                     )
                     VerticalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                     SellCartPanel(
@@ -212,6 +242,7 @@ fun SellScreen(
                         activeTier = sellState.activeTier,
                         onAdd = drugPickerVM::onTapDrug,
                         modifier = Modifier.weight(1f).fillMaxWidth(),
+                        searchFocusRequester = searchFocus,
                     )
                     CartFooterBar(
                         itemCount = sellState.cartItemCount,
@@ -333,6 +364,8 @@ fun SellScreen(
         message = combinedError,
         onDismiss = dismissAllErrors,
     )
+
+    ShortcutLegend(open = showShortcuts, onClose = { showShortcuts = false })
 }
 
 @Composable
