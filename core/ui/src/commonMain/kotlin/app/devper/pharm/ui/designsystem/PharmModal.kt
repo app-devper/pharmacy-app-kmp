@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,9 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -61,8 +66,16 @@ fun PharmModal(
         ),
     ) {
         val shape = t.shapes.lg
+        val enterProgress = remember { Animatable(0f) }
+        LaunchedEffect(Unit) { enterProgress.animateTo(1f, tween(PharmMotion.Medium)) }
         Column(
             modifier = modifier
+                .graphicsLayer {
+                    alpha = enterProgress.value
+                    val scale = 0.92f + 0.08f * enterProgress.value
+                    scaleX = scale
+                    scaleY = scale
+                }
                 .widthIn(max = maxWidth)
                 .fillMaxWidth()
                 .padding(16.dp)

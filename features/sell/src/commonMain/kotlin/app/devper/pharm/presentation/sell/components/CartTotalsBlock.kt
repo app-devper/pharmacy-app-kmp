@@ -15,6 +15,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.ui.common.ShortcutHint
+import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
@@ -78,7 +79,7 @@ fun CartTotalsBlock(
             verticalAlignment = Alignment.Bottom,
         ) {
             Text("ยอดสุทธิ", style = PharmText.bodySm.copy(color = t.colors.fg3), modifier = Modifier.weight(1f))
-            Text(fmtBaht(total), style = PharmText.total)
+            PharmAnimatedBaht(value = total, style = PharmText.total)
         }
     }
 }

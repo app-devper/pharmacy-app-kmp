@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +37,7 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.util.KyRequiredCalculator
 import app.devper.pharm.ui.common.ShortcutHint
+import app.devper.pharm.ui.designsystem.pharmBannerEnter
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
@@ -106,12 +109,21 @@ fun CartPanel(
             showShortcutHint = showShortcutHints,
         )
 
-        customer?.allergyNote?.takeIf { it.isNotBlank() }?.let { note ->
-            CartAllergyBanner(note = note)
+        val allergyNote = customer?.allergyNote?.takeIf { it.isNotBlank() }
+        AnimatedVisibility(
+            visible = allergyNote != null,
+            enter = pharmBannerEnter(),
+            exit = ExitTransition.None,
+        ) {
+            CartAllergyBanner(note = allergyNote.orEmpty())
         }
 
         val kyRequired = remember(cart) { KyRequiredCalculator.calculate(cart) }
-        if (!kyRequired.isEmpty) {
+        AnimatedVisibility(
+            visible = !kyRequired.isEmpty,
+            enter = pharmBannerEnter(),
+            exit = ExitTransition.None,
+        ) {
             CartComplianceBanner(required = kyRequired)
         }
 
@@ -122,12 +134,14 @@ fun CartPanel(
                         cart,
                         key = { line -> "${line.drug.id}::${line.selectedUnit?.name.orEmpty()}" },
                     ) { line ->
-                        CartLineRow(
-                            line = line,
-                            onQtyChange = { displayQty -> onSetQty(line.key, displayQty) },
-                            onRemove = { onRemove(line.key) },
-                            onTapForDiscount = { onTapLineForDiscount(line) },
-                        )
+                        Box(modifier = Modifier.animateItem()) {
+                            CartLineRow(
+                                line = line,
+                                onQtyChange = { displayQty -> onSetQty(line.key, displayQty) },
+                                onRemove = { onRemove(line.key) },
+                                onTapForDiscount = { onTapLineForDiscount(line) },
+                            )
+                        }
                     }
                 }
             } else {
