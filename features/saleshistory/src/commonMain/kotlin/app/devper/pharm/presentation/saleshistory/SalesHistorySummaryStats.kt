@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.saleshistory
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
@@ -24,10 +25,10 @@ internal fun SalesHistorySummaryStats(
     val subtotal = sales.filterNot { it.voided }.sumOf { it.total }
     val voided = sales.count { it.voided }
 
-    Row(
+    FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         StatChunk(number = total.toString(), label = "รายการ")
         Row(

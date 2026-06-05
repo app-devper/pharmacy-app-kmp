@@ -34,7 +34,10 @@ fun UserFormContent(
     callbacks: UserFormCallbacks,
 ) {
     val t = pharmTokens
-    Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+    Box(
+        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         if (state.loading && state.form.firstName.isBlank()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 PharmCircularProgress(color = t.colors.accent)

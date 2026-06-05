@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.sell.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,17 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,10 +25,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +51,12 @@ fun ParkedCartsSheet(
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+    val t = pharmTokens
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = t.colors.surface,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -57,8 +66,7 @@ fun ParkedCartsSheet(
         ) {
             Text(
                 text = "บิลที่พัก",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                style = PharmText.h1,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
             Text(
@@ -67,8 +75,7 @@ fun ParkedCartsSheet(
                 } else {
                     "กดบิลที่พักไว้เพื่อเรียกคืน — ตะกร้าตอนนี้ว่าง"
                 },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.meta,
             )
 
             Spacer(Modifier.height(4.dp))
@@ -100,28 +107,26 @@ private fun EmptySlotRow(
     canPark: Boolean,
     onClick: () -> Unit,
 ) {
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    val t = pharmTokens
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = canPark, onClick = onClick),
+            .clip(t.shapes.md)
+            .background(t.colors.bgPage)
+            .clickable(enabled = canPark, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            SlotBadge(slotNumber, dimmed = !canPark)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = if (canPark) "พักบิลที่ช่องนี้" else "ว่าง",
-                    style = MaterialTheme.typography.titleMedium,
+        SlotBadge(slotNumber, dimmed = !canPark)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = if (canPark) "พักบิลที่ช่องนี้" else "ว่าง",
+                style = PharmText.body.copy(
                     fontWeight = FontWeight.Medium,
-                    color = if (canPark) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+                    color = if (canPark) t.colors.fg1 else t.colors.fgMuted,
+                ),
+            )
         }
     }
 }
@@ -135,96 +140,98 @@ private fun FilledSlotRow(
     canOverwrite: Boolean,
     onDiscard: () -> Unit,
 ) {
+    val t = pharmTokens
     var confirmingDiscard by remember { mutableStateOf(false) }
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.primaryContainer,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onRestore),
+            .clip(t.shapes.md)
+            .background(t.colors.accentBgSoft)
+            .clickable(onClick = onRestore)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            SlotBadge(slotNumber)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = parked.customer?.name ?: "ลูกค้าทั่วไป",
-                    style = MaterialTheme.typography.titleMedium,
+        SlotBadge(slotNumber)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = parked.customer?.name ?: "ลูกค้าทั่วไป",
+                style = PharmText.body.copy(
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-                Text(
-                    text = "${parked.itemCount} ชิ้น · ${fmtBaht(parked.total)}",
-                    style = MaterialTheme.typography.bodyMedium.tabular(),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            }
+                    color = t.colors.fg1,
+                ),
+            )
+            Text(
+                text = "${parked.itemCount} ชิ้น · ${fmtBaht(parked.total)}",
+                style = PharmText.meta.tabular(),
+            )
+        }
 
-            if (canOverwrite) {
-                TextButton(
-                    onClick = onOverwrite,
-                    colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    ),
-                ) { Text("ทับ") }
-            }
-            IconButton(onClick = { confirmingDiscard = true }) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "ลบบิลที่พัก",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
+        if (canOverwrite) {
+            PharmButton(
+                label = "ทับ",
+                onClick = onOverwrite,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+        }
+        IconButton(onClick = { confirmingDiscard = true }) {
+            Icon(
+                imageVector = PharmIcons.Close,
+                contentDescription = "ลบบิลที่พัก",
+                tint = t.colors.fg2,
+                modifier = Modifier.size(20.dp),
+            )
         }
     }
-    if (confirmingDiscard) {
-        AlertDialog(
-            onDismissRequest = { confirmingDiscard = false },
-            title = { Text("ลบบิลที่พักช่อง $slotNumber?") },
-            text = { Text("รายการ ${parked.itemCount} ชิ้นจะถูกลบ ไม่สามารถกู้คืนได้") },
-            confirmButton = {
-                TextButton(
-                    onClick = { confirmingDiscard = false; onDiscard() },
-                    colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                ) { Text("ลบ") }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmingDiscard = false }) { Text("ยกเลิก") }
-            },
-            shape = MaterialTheme.shapes.large,
+
+    PharmModal(
+        open = confirmingDiscard,
+        onDismiss = { confirmingDiscard = false },
+        title = "ลบบิลที่พักช่อง $slotNumber?",
+        size = PharmModalSize.Sm,
+        footer = {
+            PharmButton(
+                label = "ยกเลิก",
+                onClick = { confirmingDiscard = false },
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = "ลบ",
+                onClick = {
+                    confirmingDiscard = false
+                    onDiscard()
+                },
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Sm,
+            )
+        },
+    ) {
+        Text(
+            "รายการ ${parked.itemCount} ชิ้นจะถูกลบ ไม่สามารถกู้คืนได้",
+            style = PharmText.body,
         )
     }
 }
 
 @Composable
 private fun SlotBadge(slotNumber: Int, dimmed: Boolean = false) {
-    Surface(
-        shape = CircleShape,
-        color = if (dimmed) MaterialTheme.colorScheme.surfaceVariant
-                else MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(32.dp),
+    val t = pharmTokens
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(32.dp)
+            .clip(CircleShape)
+            .background(if (dimmed) t.colors.borderSubtle else t.colors.accent),
     ) {
-        androidx.compose.foundation.layout.Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxWidth().background(
-                if (dimmed) MaterialTheme.colorScheme.surfaceVariant
-                else MaterialTheme.colorScheme.primary,
-            ),
-        ) {
-            Text(
-                text = slotNumber.toString(),
-                style = MaterialTheme.typography.labelLarge,
+        Text(
+            text = slotNumber.toString(),
+            style = PharmText.badge.copy(
                 fontWeight = FontWeight.Bold,
-                color = if (dimmed) MaterialTheme.colorScheme.onSurfaceVariant
-                        else MaterialTheme.colorScheme.onPrimary,
-            )
-        }
+                color = if (dimmed) t.colors.fg2 else t.colors.surface,
+            ),
+        )
     }
 }
 
@@ -234,18 +241,27 @@ fun ParkOverwriteDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text("ทับบิลที่พักช่อง $slotNumber?") },
-        text = { Text("บิลที่พักไว้เดิมจะถูกแทนที่ด้วยบิลปัจจุบัน") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) { Text("ทับ") }
+    PharmModal(
+        open = true,
+        onDismiss = onCancel,
+        title = "ทับบิลที่พักช่อง $slotNumber?",
+        size = PharmModalSize.Sm,
+        footer = {
+            PharmButton(
+                label = "ยกเลิก",
+                onClick = onCancel,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = "ทับ",
+                onClick = onConfirm,
+                size = PharmButtonSize.Sm,
+            )
         },
-        dismissButton = {
-            TextButton(onClick = onCancel) { Text("ยกเลิก") }
-        },
-        shape = MaterialTheme.shapes.large,
-    )
+    ) {
+        Text("บิลที่พักไว้เดิมจะถูกแทนที่ด้วยบิลปัจจุบัน", style = PharmText.body)
+    }
 }
 
 @Composable
@@ -254,17 +270,28 @@ fun SwapToParkedDialog(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text("เปลี่ยนไปใช้บิลที่พักช่อง $slotNumber?") },
-        text = { Text("ตะกร้าปัจจุบันจะถูกแทนที่ด้วยบิลที่พัก รายการในตะกร้าเดิมจะหายไป") },
-        confirmButton = {
-            TextButton(onClick = onConfirm) { Text("เปลี่ยน") }
+    PharmModal(
+        open = true,
+        onDismiss = onCancel,
+        title = "เปลี่ยนไปใช้บิลที่พักช่อง $slotNumber?",
+        size = PharmModalSize.Sm,
+        footer = {
+            PharmButton(
+                label = "ยกเลิก",
+                onClick = onCancel,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = "เปลี่ยน",
+                onClick = onConfirm,
+                size = PharmButtonSize.Sm,
+            )
         },
-        dismissButton = {
-            TextButton(onClick = onCancel) { Text("ยกเลิก") }
-        },
-        shape = MaterialTheme.shapes.large,
-    )
+    ) {
+        Text(
+            "ตะกร้าปัจจุบันจะถูกแทนที่ด้วยบิลที่พัก รายการในตะกร้าเดิมจะหายไป",
+            style = PharmText.body,
+        )
+    }
 }
-

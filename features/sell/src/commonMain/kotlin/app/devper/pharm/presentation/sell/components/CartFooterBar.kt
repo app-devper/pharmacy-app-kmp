@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
@@ -56,14 +57,19 @@ fun CartFooterBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(text = "🛒", style = PharmText.body.copy(fontSize = 22.sp))
+        Icon(
+            imageVector = PharmIcons.Sell,
+            contentDescription = null,
+            tint = contentColor,
+            modifier = Modifier.size(22.dp),
+        )
 
         if (!empty) {
 
             Box(
                 modifier = Modifier
                     .clip(t.shapes.pill)
-                    .background(Color(0x40FFFFFF))
+                    .background(t.colors.surface.copy(alpha = 0.25f))
                     .padding(horizontal = 8.dp, vertical = 2.dp),
             ) {
                 Text(

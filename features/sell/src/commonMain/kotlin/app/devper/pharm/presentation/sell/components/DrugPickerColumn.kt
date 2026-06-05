@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,11 +27,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.pricing.resolvePrice
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -196,9 +197,11 @@ private fun EmptyState(searching: Boolean) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(
-            text = if (searching) "🔎" else "📦",
-            style = PharmText.body.copy(fontSize = 48.sp),
+        Icon(
+            imageVector = if (searching) PharmIcons.Search else PharmIcons.Imports,
+            contentDescription = null,
+            tint = t.colors.fgMuted,
+            modifier = Modifier.size(48.dp),
         )
         Text(
             text = if (searching) "ไม่พบยาที่ค้นหา" else "ยังไม่มีรายการยาในคลัง",

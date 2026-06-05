@@ -2,10 +2,6 @@ package app.devper.pharm.presentation.customers.form
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.pricing.Tier
 import app.devper.pharm.presentation.customers.CustomerFormFields
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmFilterChip
+import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -99,48 +97,34 @@ private fun AllergyNoteField(value: String, onChange: (String) -> Unit) {
     }
 }
 
+private const val TIER_RETAIL_ID = "retail"
+
+private val priceTierChips = listOf(
+    PharmFilterChip(id = TIER_RETAIL_ID, label = "หน้าร้าน"),
+    PharmFilterChip(id = Tier.Regular, label = "ทั่วไป"),
+    PharmFilterChip(id = Tier.Wholesale, label = "ส่ง"),
+)
+
 @Composable
 private fun PriceTierPicker(
     current: String,
     onPick: (String) -> Unit,
 ) {
     val t = pharmTokens
+    val activeId = when {
+        current.isEmpty() || current.equals(Tier.Retail, ignoreCase = true) -> TIER_RETAIL_ID
+        current.equals(Tier.Regular, ignoreCase = true) -> Tier.Regular
+        current.equals(Tier.Wholesale, ignoreCase = true) -> Tier.Wholesale
+        else -> TIER_RETAIL_ID
+    }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(text = "กลุ่มราคา", style = PharmText.h3.copy(color = t.colors.fg2))
-        Row(
-            modifier = Modifier.selectableGroup(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            TierChip(label = "หน้าร้าน", value = "", current = current, onPick = onPick)
-            TierChip(label = "ทั่วไป", value = Tier.Regular, current = current, onPick = onPick)
-            TierChip(label = "ส่ง", value = Tier.Wholesale, current = current, onPick = onPick)
-        }
-    }
-}
-
-@Composable
-private fun TierChip(
-    label: String,
-    value: String,
-    current: String,
-    onPick: (String) -> Unit,
-) {
-    val t = pharmTokens
-    val selected = (value.isEmpty() && (current.isEmpty() || current == Tier.Retail)) ||
-        value.equals(current, ignoreCase = true)
-    val borderColor = if (selected) t.colors.accent else t.colors.border
-    val bg = if (selected) t.colors.accentBgSoft else t.colors.surface
-    val fg = if (selected) t.colors.accent else t.colors.fg2
-
-    Row(
-        modifier = Modifier
-            .clip(t.shapes.pill)
-            .background(bg, t.shapes.pill)
-            .border(1.dp, borderColor, t.shapes.pill)
-            .selectable(selected = selected, role = Role.RadioButton, onClick = { onPick(value) })
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-    ) {
-        Text(text = label, style = PharmText.body.copy(color = fg))
+        PharmSingleSelectChips(
+            chips = priceTierChips,
+            activeId = activeId,
+            onSelect = { id -> onPick(if (id == TIER_RETAIL_ID) "" else id) },
+            scrollable = false,
+        )
     }
 }
 

@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.imports
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,22 +50,26 @@ internal fun ImportFormHeader(
                 }
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            ImportLabeledField(label = "เลขที่ Invoice", modifier = Modifier.weight(1f)) {
-                ImportFormField(
-                    value = state.form.invoiceNo,
-                    onValueChange = callbacks.onInvoiceNo,
-                    placeholder = "ออปชัน",
-                    enabled = !state.readOnly,
-                )
-            }
-            ImportLabeledField(label = "วันที่รับ", modifier = Modifier.weight(1f)) {
-                ImportFormField(
-                    value = state.form.receiveDate,
-                    onValueChange = callbacks.onReceiveDate,
-                    placeholder = "YYYY-MM-DD",
-                    enabled = !state.readOnly,
-                )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val twoCol = maxWidth >= 600.dp
+            if (twoCol) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    ImportLabeledField(label = "เลขที่ Invoice", modifier = Modifier.weight(1f)) {
+                        InvoiceNoField(state, callbacks)
+                    }
+                    ImportLabeledField(label = "วันที่รับ", modifier = Modifier.weight(1f)) {
+                        ReceiveDateField(state, callbacks)
+                    }
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    ImportLabeledField(label = "เลขที่ Invoice") {
+                        InvoiceNoField(state, callbacks)
+                    }
+                    ImportLabeledField(label = "วันที่รับ") {
+                        ReceiveDateField(state, callbacks)
+                    }
+                }
             }
         }
         ImportLabeledField(label = "หมายเหตุ") {
@@ -79,4 +84,24 @@ internal fun ImportFormHeader(
             }
         }
     }
+}
+
+@Composable
+private fun InvoiceNoField(state: ImportFormUiState, callbacks: ImportFormCallbacks) {
+    ImportFormField(
+        value = state.form.invoiceNo,
+        onValueChange = callbacks.onInvoiceNo,
+        placeholder = "ออปชัน",
+        enabled = !state.readOnly,
+    )
+}
+
+@Composable
+private fun ReceiveDateField(state: ImportFormUiState, callbacks: ImportFormCallbacks) {
+    ImportFormField(
+        value = state.form.receiveDate,
+        onValueChange = callbacks.onReceiveDate,
+        placeholder = "YYYY-MM-DD",
+        enabled = !state.readOnly,
+    )
 }

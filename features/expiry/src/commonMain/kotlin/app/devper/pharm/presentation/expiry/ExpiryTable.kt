@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,9 +19,11 @@ import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
+import app.devper.pharm.ui.designsystem.PharmCheckbox
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.designsystem.PharmTriStateCheckbox
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -49,13 +48,10 @@ internal fun ExpiryTable(
             header = "",
             weight = 0.4f,
             cell = { lot ->
-                Checkbox(
+                PharmCheckbox(
                     checked = lot.id in selected,
                     onCheckedChange = { callbacks.onToggleRow(lot.id) },
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = t.colors.accent,
-                        uncheckedColor = t.colors.border,
-                    ),
+                    contentDescription = lot.drugName,
                 )
             },
         ),
@@ -134,13 +130,10 @@ private fun SelectAllRow(state: ToggleableState, callbacks: ExpiryCallbacks) {
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        TriStateCheckbox(
+        PharmTriStateCheckbox(
             state = state,
             onClick = callbacks.onToggleAll,
-            colors = CheckboxDefaults.colors(
-                checkedColor = t.colors.accent,
-                uncheckedColor = t.colors.border,
-            ),
+            contentDescription = "เลือกทั้งหมด",
         )
         Text(
             text = when (state) {

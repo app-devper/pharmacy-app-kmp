@@ -1,7 +1,10 @@
 package app.devper.pharm.presentation.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -16,12 +19,26 @@ internal fun SettingsStoreTab(state: SettingsEditorUiState, editor: SettingsEdit
     SettingsLabeledField(label = "ที่อยู่") {
         SettingsFormField(value = f.storeAddress, onValueChange = editor.onStoreAddress)
     }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        SettingsLabeledField(label = "เบอร์โทร", modifier = Modifier.weight(1f)) {
-            SettingsFormField(value = f.storePhone, onValueChange = editor.onStorePhone, keyboardType = KeyboardType.Phone)
-        }
-        SettingsLabeledField(label = "เลขผู้เสียภาษี", modifier = Modifier.weight(1f)) {
-            SettingsFormField(value = f.storeTaxId, onValueChange = editor.onStoreTaxId)
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val twoCol = maxWidth >= 560.dp
+        if (twoCol) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                SettingsLabeledField(label = "เบอร์โทร", modifier = Modifier.weight(1f)) {
+                    SettingsFormField(value = f.storePhone, onValueChange = editor.onStorePhone, keyboardType = KeyboardType.Phone)
+                }
+                SettingsLabeledField(label = "เลขผู้เสียภาษี", modifier = Modifier.weight(1f)) {
+                    SettingsFormField(value = f.storeTaxId, onValueChange = editor.onStoreTaxId)
+                }
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                SettingsLabeledField(label = "เบอร์โทร") {
+                    SettingsFormField(value = f.storePhone, onValueChange = editor.onStorePhone, keyboardType = KeyboardType.Phone)
+                }
+                SettingsLabeledField(label = "เลขผู้เสียภาษี") {
+                    SettingsFormField(value = f.storeTaxId, onValueChange = editor.onStoreTaxId)
+                }
+            }
         }
     }
     SettingsLabeledField(label = "เขตเวลา (IANA)") {

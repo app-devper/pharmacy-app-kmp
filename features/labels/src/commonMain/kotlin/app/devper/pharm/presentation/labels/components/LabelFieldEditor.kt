@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -91,95 +94,165 @@ private fun LabelLineRow(
     onBarcodeChange: (String) -> Unit,
     onIncludePriceChange: (Boolean) -> Unit,
 ) {
-    val t = pharmTokens
-    Row(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(modifier = Modifier.weight(3f)) {
-            Text(
-                text = line.drugName,
-                style = PharmText.body.copy(color = t.colors.fg1, fontWeight = FontWeight.Medium),
-                maxLines = 1,
-            )
-            Text(
-                text = "ล็อต: ${line.lotNumber.ifBlank { "(ไม่ระบุ)" }}",
-                style = PharmText.micro.copy(color = t.colors.fg3),
-            )
-        }
-        PharmTextField(
-            value = line.barcode,
-            onValueChange = onBarcodeChange,
-            modifier = Modifier.weight(2f),
-        )
-        Row(
-            modifier = Modifier.weight(2f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = "จำนวน",
-                style = PharmText.micro.copy(color = t.colors.fg2),
-            )
-            PharmTextField(
-                value = line.copies.toString(),
-                onValueChange = { raw ->
-                    val n = raw.filter { it.isDigit() }.toIntOrNull() ?: 0
-                    onCopiesChange(n)
-                },
-                keyboardType = KeyboardType.Number,
-                modifier = Modifier.width(72.dp),
-            )
-        }
-        Row(
-            modifier = Modifier
-                .weight(2f)
-                .toggleable(
-                    value = line.includePrice,
-                    role = Role.Checkbox,
-                    onValueChange = { onIncludePriceChange(it) },
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(16.dp)
-                    .clip(t.shapes.sm)
-                    .background(if (line.includePrice) t.colors.accent else t.colors.surface)
-                    .border(1.dp, t.colors.border, t.shapes.sm),
-                contentAlignment = Alignment.Center,
+        val singleLine = maxWidth >= 600.dp
+        if (singleLine) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (line.includePrice) {
-                    Text(
-                        text = "✓",
-                        style = PharmText.micro.copy(color = t.colors.surface, fontWeight = FontWeight.Bold),
-                    )
-                }
+                NameBlock(line, modifier = Modifier.weight(3f))
+                BarcodeField(line, onBarcodeChange, modifier = Modifier.weight(2f))
+                CopiesField(line, onCopiesChange, modifier = Modifier.weight(2f))
+                IncludePriceToggle(line, onIncludePriceChange, modifier = Modifier.weight(2f))
+                RemoveButton(onRemove)
             }
-            Text(
-                text = "รวมราคา",
-                style = PharmText.micro.copy(color = t.colors.fg2),
-            )
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    NameBlock(line, modifier = Modifier.weight(1f))
+                    RemoveButton(onRemove)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    BarcodeField(line, onBarcodeChange, modifier = Modifier.weight(1f))
+                    CopiesField(line, onCopiesChange)
+                }
+                IncludePriceToggle(line, onIncludePriceChange)
+            }
         }
+    }
+}
+
+@Composable
+private fun NameBlock(line: LabelLine, modifier: Modifier = Modifier) {
+    val t = pharmTokens
+    Column(modifier = modifier) {
+        Text(
+            text = line.drugName,
+            style = PharmText.body.copy(color = t.colors.fg1, fontWeight = FontWeight.Medium),
+            maxLines = 1,
+        )
+        Text(
+            text = "ล็อต: ${line.lotNumber.ifBlank { "(ไม่ระบุ)" }}",
+            style = PharmText.micro.copy(color = t.colors.fg3),
+        )
+    }
+}
+
+@Composable
+private fun BarcodeField(
+    line: LabelLine,
+    onBarcodeChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PharmTextField(
+        value = line.barcode,
+        onValueChange = onBarcodeChange,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun CopiesField(
+    line: LabelLine,
+    onCopiesChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val t = pharmTokens
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = "จำนวน",
+            style = PharmText.micro.copy(color = t.colors.fg2),
+        )
+        PharmTextField(
+            value = line.copies.toString(),
+            onValueChange = { raw ->
+                val n = raw.filter { it.isDigit() }.toIntOrNull() ?: 0
+                onCopiesChange(n)
+            },
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.width(72.dp),
+        )
+    }
+}
+
+@Composable
+private fun IncludePriceToggle(
+    line: LabelLine,
+    onIncludePriceChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val t = pharmTokens
+    Row(
+        modifier = modifier
+            .toggleable(
+                value = line.includePrice,
+                role = Role.Checkbox,
+                onValueChange = { onIncludePriceChange(it) },
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
         Box(
             modifier = Modifier
-                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                .size(16.dp)
                 .clip(t.shapes.sm)
-                .clickable(onClick = onRemove)
-                .semantics {
-                    contentDescription = "ลบบรรทัด"
-                    role = Role.Button
-                },
+                .background(if (line.includePrice) t.colors.accent else t.colors.surface)
+                .border(1.dp, t.colors.border, t.shapes.sm),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = "×",
-                style = PharmText.h3.copy(color = t.colors.fg3),
-            )
+            if (line.includePrice) {
+                Icon(
+                    imageVector = PharmIcons.Check,
+                    contentDescription = null,
+                    tint = t.colors.surface,
+                    modifier = Modifier.size(12.dp),
+                )
+            }
         }
+        Text(
+            text = "รวมราคา",
+            style = PharmText.micro.copy(color = t.colors.fg2),
+        )
+    }
+}
+
+@Composable
+private fun RemoveButton(onRemove: () -> Unit) {
+    val t = pharmTokens
+    Box(
+        modifier = Modifier
+            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+            .clip(t.shapes.sm)
+            .clickable(onClick = onRemove)
+            .semantics {
+                contentDescription = "ลบบรรทัด"
+                role = Role.Button
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = PharmIcons.Trash,
+            contentDescription = "ลบบรรทัด",
+            tint = t.colors.fg3,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }

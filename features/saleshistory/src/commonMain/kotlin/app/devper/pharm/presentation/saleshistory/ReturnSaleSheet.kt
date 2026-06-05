@@ -1,11 +1,14 @@
 package app.devper.pharm.presentation.saleshistory
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,17 +16,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Remove
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,8 +31,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
+import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +75,12 @@ fun ReturnSaleSheet(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(pharmTokens.colors.border),
+            )
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().height(280.dp),
@@ -88,37 +96,42 @@ fun ReturnSaleSheet(
                 }
             }
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
-
-            OutlinedTextField(
-                value = reason,
-                onValueChange = onReasonChange,
-                placeholder = { Text("เหตุผลการคืน เช่น ลูกค้าเปลี่ยนใจ, สินค้าเสีย ฯลฯ") },
-                singleLine = false,
-                maxLines = 3,
-                modifier = Modifier.fillMaxWidth().height(96.dp),
-                shape = MaterialTheme.shapes.medium,
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(pharmTokens.colors.border),
             )
+
+            FormField(label = "เหตุผล", required = true) {
+                Box(modifier = Modifier.heightIn(min = 96.dp)) {
+                    PharmTextField(
+                        value = reason,
+                        onValueChange = onReasonChange,
+                        placeholder = "เหตุผลการคืน เช่น ลูกค้าเปลี่ยนใจ, สินค้าเสีย ฯลฯ",
+                        singleLine = false,
+                    )
+                }
+            }
 
             Spacer(Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
-                TextButton(onClick = onDismiss, enabled = !submitting) {
-                    Text("ยกเลิก", style = MaterialTheme.typography.titleMedium)
-                }
-                Button(onClick = onConfirm, enabled = canSubmit) {
-                    if (submitting) {
-                        PharmCircularProgress(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    } else {
-                        Text("ยืนยันคืนสินค้า", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
+                PharmButton(
+                    label = "ยกเลิก",
+                    onClick = onDismiss,
+                    variant = PharmButtonVariant.Ghost,
+                    enabled = !submitting,
+                )
+                PharmButton(
+                    label = "ยืนยันคืนสินค้า",
+                    onClick = onConfirm,
+                    variant = PharmButtonVariant.Primary,
+                    enabled = canSubmit,
+                    loading = submitting,
+                )
             }
         }
     }
