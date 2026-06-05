@@ -14,7 +14,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -42,6 +41,8 @@ import app.devper.pharm.presentation.sell.components.SwapToParkedDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +63,7 @@ fun CartScreen(
     val parkedState by parkedCartVM.state.collectAsStateWithLifecycle()
     val voidState by voidSaleVM.state.collectAsStateWithLifecycle()
 
+    val t = pharmTokens
     val snackbar = LocalPharmSnackbar.current
     val onTapParkSlot: (Int) -> Unit = { slot ->
         val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
@@ -77,13 +79,13 @@ fun CartScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = t.colors.bgPage,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         text = "ตะกร้า",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = PharmText.h1,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
@@ -97,9 +99,9 @@ fun CartScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    containerColor = t.colors.surface,
+                    titleContentColor = t.colors.fg1,
+                    navigationIconContentColor = t.colors.fg1,
                 ),
             )
         },

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -50,6 +49,7 @@ import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.ShortcutLegend
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
+import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -69,6 +69,7 @@ fun SellScreen(
     val parkedState by parkedCartVM.state.collectAsStateWithLifecycle()
     val voidState by voidSaleVM.state.collectAsStateWithLifecycle()
 
+    val t = pharmTokens
     val searchFocus = remember { FocusRequester() }
     var showShortcuts by remember { mutableStateOf(false) }
 
@@ -184,7 +185,7 @@ fun SellScreen(
     )
 
     Surface(
-        color = MaterialTheme.colorScheme.background,
+        color = t.colors.bgPage,
         modifier = Modifier
             .fillMaxSize()
             .scanBarcodes(onScan = drugPickerVM::onScanBarcode)
@@ -205,7 +206,7 @@ fun SellScreen(
                         modifier = Modifier.weight(0.62f),
                         searchFocusRequester = searchFocus,
                     )
-                    VerticalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    VerticalDivider(color = t.colors.divider)
                     SellCartPanel(
                         sellState = sellState,
                         canCheckout = checkoutState.canCheckout,
