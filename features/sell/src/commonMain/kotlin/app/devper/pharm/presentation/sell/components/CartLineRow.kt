@@ -47,6 +47,8 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.designsystem.LocalPharmDensity
+import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -62,12 +64,13 @@ fun CartLineRow(
     modifier: Modifier = Modifier,
 ) {
     var showRemoveConfirm by remember { mutableStateOf(false) }
+    val rowVerticalPadding = if (LocalPharmDensity.current == PharmDensity.Compact) 8.dp else 14.dp
 
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onTapForDiscount)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = rowVerticalPadding),
     ) {
         if (maxWidth < 360.dp) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
