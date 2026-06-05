@@ -19,7 +19,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.pricing.Tier
 import app.devper.pharm.presentation.customers.CustomerFormFields
+import androidx.compose.ui.Alignment
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -118,7 +120,15 @@ private fun PriceTierPicker(
         else -> TIER_RETAIL_ID
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = "กลุ่มราคา", style = PharmText.h3.copy(color = t.colors.fg2))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(text = "กลุ่มราคา", style = PharmText.h3.copy(color = t.colors.fg2))
+            PharmHelpHint(
+                text = "กลุ่มราคาเริ่มต้นของลูกค้า เวลาขายระบบจะใช้ราคาตามกลุ่มนี้ ถ้ายาไม่มีราคากลุ่มนั้นจะใช้ราคาหน้าร้านแทน",
+            )
+        }
         PharmSingleSelectChips(
             chips = priceTierChips,
             activeId = activeId,

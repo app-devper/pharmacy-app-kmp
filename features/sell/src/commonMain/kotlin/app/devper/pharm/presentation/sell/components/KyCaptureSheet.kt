@@ -30,6 +30,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -67,11 +68,20 @@ fun KyCaptureSheet(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(
-                text = "บันทึก ขย. ก่อนออกบิล",
-                style = PharmText.h1.copy(color = t.colors.fg1),
-                modifier = Modifier.padding(top = 8.dp),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "บันทึก ขย. ก่อนออกบิล",
+                    style = PharmText.h1.copy(color = t.colors.fg1),
+                    modifier = Modifier.weight(1f),
+                )
+                PharmHelpHint(
+                    text = "ยาควบคุมพิเศษ (ขย.10–13) ต้องบันทึกชื่อเภสัชกร เลขที่ใบอนุญาต ผู้สั่งใช้ และข้อมูลผู้ซื้อ/ผู้ป่วย ก่อนออกบิลตามข้อกำหนด",
+                )
+            }
             Text(
                 text = "ระบบจะออกบิลแล้วบันทึก ขย. ตามรายการต่อไปนี้",
                 style = PharmText.body.copy(color = t.colors.fg2),
