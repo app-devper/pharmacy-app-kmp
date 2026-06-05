@@ -17,6 +17,7 @@ import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -86,10 +87,17 @@ internal fun SalesHistoryTable(
         onRowClick = { sale -> callbacks.onOpenReceipt(sale) },
         rowHeight = 56.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบบิลที่ค้นหา" else "ไม่พบบิลในช่วงเวลาที่เลือก",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบบิลที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.SalesHistory,
+                    title = "ไม่พบบิลในช่วงเวลาที่เลือก",
+                )
+            }
         },
     )
 }

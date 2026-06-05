@@ -12,6 +12,7 @@ import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
@@ -115,10 +116,17 @@ internal fun SuppliersListTable(
         onRowClick = { supplier -> callbacks.onOpenDetail(supplier) },
         rowHeight = 56.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบซัพพลายเออร์ตามที่ค้นหา" else "ยังไม่มีซัพพลายเออร์",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบซัพพลายเออร์ตามที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.Suppliers,
+                    title = "ยังไม่มีซัพพลายเออร์",
+                )
+            }
         },
     )
 }

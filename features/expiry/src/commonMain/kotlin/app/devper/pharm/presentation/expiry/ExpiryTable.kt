@@ -21,6 +21,8 @@ import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCheckbox
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.designsystem.PharmTriStateCheckbox
@@ -109,9 +111,9 @@ internal fun ExpiryTable(
             onRowClick = { lot -> callbacks.onToggleRow(lot.id) },
             rowHeight = 56.dp,
             emptyContent = {
-                Text(
-                    text = "ไม่มีล็อตในช่วงเวลานี้",
-                    style = PharmText.meta,
+                PharmEmptyState(
+                    icon = PharmIcons.Expiry,
+                    title = "ไม่มีล็อตในช่วงเวลานี้",
                 )
             },
             bottomRow = if (lots.isNotEmpty()) ({ SelectAllRow(headerState, callbacks) }) else null,

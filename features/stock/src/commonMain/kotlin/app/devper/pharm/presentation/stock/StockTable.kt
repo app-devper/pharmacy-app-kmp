@@ -21,6 +21,7 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
@@ -166,10 +167,17 @@ internal fun StockTable(
         onRowClick = { drug -> callbacks.onEditDrug(drug) },
         rowHeight = 60.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบยาที่ค้นหา" else "ยังไม่มีรายการยาในคลัง",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบยาที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.Stock,
+                    title = "ยังไม่มีรายการยาในคลัง",
+                )
+            }
         },
     )
 }

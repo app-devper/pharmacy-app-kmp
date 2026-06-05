@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -79,10 +80,17 @@ internal fun CustomersListTable(
         onRowClick = { callbacks.onOpenDetail(it) },
         rowHeight = 56.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบลูกค้าตามที่ค้นหา" else "ยังไม่มีรายชื่อลูกค้า",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบลูกค้าตามที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.Customers,
+                    title = "ยังไม่มีรายชื่อลูกค้า",
+                )
+            }
         },
     )
 }

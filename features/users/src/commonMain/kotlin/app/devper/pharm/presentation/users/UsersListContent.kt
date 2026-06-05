@@ -34,7 +34,8 @@ import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmLoadingState
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmTableSurface
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
@@ -52,8 +53,9 @@ fun UsersListContent(
         Column(modifier = Modifier.fillMaxSize()) {
             UsersHeader(state = state, callbacks = callbacks)
             when {
-                state.loading && state.users.isEmpty() -> PharmLoadingState()
+                state.loading && state.users.isEmpty() -> PharmListSkeleton()
                 state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
+                    icon = PharmIcons.Users,
                     title = "ยังไม่มีผู้ใช้งาน",
                     action = {
                         if (UmRoleValidator.canManageUsers(state.currentUserRole)) {

@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.reports
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,7 +25,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
 fun ReportsContent(
@@ -42,7 +41,7 @@ fun ReportsContent(
         else Modifier.fillMaxSize()
 
         if (state.loading && state.dashboard == null) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { PharmCircularProgress() }
+            PharmListSkeleton(modifier = contentModifier)
         } else {
             LazyColumn(
                 modifier = contentModifier,

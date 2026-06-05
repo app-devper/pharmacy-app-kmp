@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
@@ -96,9 +98,10 @@ internal fun BulkImportResultTable(
             key = { it.row },
             rowHeight = 56.dp,
             emptyContent = {
-                Text(
-                    text = "ยังไม่มีรายการ — ตรวจสอบ JSON ก่อน",
-                    style = PharmText.meta,
+                PharmEmptyState(
+                    icon = PharmIcons.Imports,
+                    title = "ยังไม่มีรายการ",
+                    subtitle = "ตรวจสอบ JSON ก่อน",
                 )
             },
         )

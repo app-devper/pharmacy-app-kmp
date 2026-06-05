@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStickyTotalRow
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
@@ -41,9 +43,9 @@ internal fun KyTable(
         modifier = modifier,
         rowHeight = 44.dp,
         emptyContent = {
-            Text(
-                text = "ไม่มีรายการในเดือนนี้",
-                style = PharmText.meta,
+            PharmEmptyState(
+                icon = PharmIcons.KyForms,
+                title = "ไม่มีรายการในเดือนนี้",
             )
         },
         bottomRow = {
