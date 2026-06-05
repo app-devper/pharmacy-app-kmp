@@ -37,6 +37,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCheckbox
+import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -82,7 +83,7 @@ fun OversellConfirmSheet(
                         modifier = Modifier.size(22.dp),
                     )
                 }
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         "สต็อกไม่พอ",
                         style = PharmText.h2,
@@ -90,6 +91,9 @@ fun OversellConfirmSheet(
                     )
                     Text("ยา ${shortfalls.size} รายการเกินสต็อก", style = PharmText.meta)
                 }
+                PharmHelpHint(
+                    text = "ขายล่วงหน้า: ยอมขายเกินสต็อกที่มีได้ ระบบบันทึกจำนวนที่เกินไว้และจะกระทบยอดเมื่อรับเข้า/ปรับสต็อกครั้งถัดไป จำนวนที่ขายเกินยังคืนไม่ได้จนกว่าจะผูกกับล็อตจริง",
+                )
             }
 
             Divider()
