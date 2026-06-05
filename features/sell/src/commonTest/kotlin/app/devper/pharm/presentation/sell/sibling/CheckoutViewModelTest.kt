@@ -341,6 +341,7 @@ class CheckoutViewModelTest {
 
         assertNull(vm.state.value.kyCapturePending)
         assertNotNull(sales.lastCheckout)
+        assertEquals(true, sales.lastCheckout!!.kySkippedByCashier)
 
         assertEquals(0, ky.ky10Submissions.size)
     }
