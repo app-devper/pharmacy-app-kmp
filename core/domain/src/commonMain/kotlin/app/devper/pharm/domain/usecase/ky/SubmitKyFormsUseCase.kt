@@ -73,7 +73,7 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
                 patientName = param.captured.ky12PatientName,
                 doctor = param.captured.ky12Doctor,
                 hospital = param.captured.ky12Hospital,
-                totalValue = line.unitPrice * line.qty,
+                totalValue = line.unitPrice * line.displayQty,
                 status = param.captured.ky12Status,
             )
             runCatching { ky.submitKy12(form) }
