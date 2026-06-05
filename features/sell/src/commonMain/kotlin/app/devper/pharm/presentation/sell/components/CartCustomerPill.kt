@@ -74,7 +74,7 @@ fun CartCustomerPill(
             }
         } else {
             if (showShortcutHint) {
-                ShortcutHint(label = "F2", modifier = Modifier.padding(end = 6.dp))
+                ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
             }
             Text(
                 "›",

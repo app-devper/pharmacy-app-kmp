@@ -48,9 +48,10 @@ fun DrugPickerColumn(
     activeTier: String,
     onAdd: (Drug) -> Unit,
     modifier: Modifier = Modifier,
+    searchFocusRequester: FocusRequester? = null,
 ) {
     val t = pharmTokens
-    val searchFocus = remember { FocusRequester() }
+    val searchFocus = searchFocusRequester ?: remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { searchFocus.requestFocus() } }
     val onSubmitSearch = {
         if (query.isNotBlank()) {
