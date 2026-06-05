@@ -35,8 +35,21 @@ enum class FontSizePreference(val wire: String, val scale: Float) {
 data class UiPreferences(
     val theme: ThemePreference = ThemePreference.Auto,
     val fontSize: FontSizePreference = FontSizePreference.Md,
+    val density: DensityPreference = DensityPreference.Comfortable,
 ) {
     companion object {
         val Default: UiPreferences = UiPreferences()
+    }
+}
+
+enum class DensityPreference(val wire: String) {
+    Comfortable("comfortable"),
+    Compact("compact");
+
+    companion object {
+        fun parse(raw: String?): DensityPreference = when (raw?.lowercase()) {
+            "compact" -> Compact
+            else      -> Comfortable
+        }
     }
 }

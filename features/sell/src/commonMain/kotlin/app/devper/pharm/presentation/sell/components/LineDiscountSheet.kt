@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.theme.tabular
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +63,7 @@ fun LineDiscountSheet(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("ราคาเดิม", style = PharmText.bodySm.copy(color = t.colors.fg2))
-                Text(fmtBaht(line.unitPrice), style = PharmText.bodySm)
+                Text(fmtBaht(line.unitPrice), style = PharmText.bodySm.tabular())
             }
 
             FormField(

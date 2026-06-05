@@ -1,6 +1,7 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
@@ -27,6 +28,7 @@ class UiPreferencesRepositoryImpl(
             internal.value = UiPreferences(
                 theme = ThemePreference.parse(settings.getStringOrNull(KEY_THEME)),
                 fontSize = FontSizePreference.parse(settings.getStringOrNull(KEY_FONT_SIZE)),
+                density = DensityPreference.parse(settings.getStringOrNull(KEY_DENSITY)),
             )
         }
     }
@@ -41,8 +43,14 @@ class UiPreferencesRepositoryImpl(
         scope.launch { settings.putString(KEY_FONT_SIZE, size.wire) }
     }
 
+    override fun setDensity(density: DensityPreference) {
+        internal.value = internal.value.copy(density = density)
+        scope.launch { settings.putString(KEY_DENSITY, density.wire) }
+    }
+
     private companion object {
         const val KEY_THEME = "ui.theme"
         const val KEY_FONT_SIZE = "ui.fontSize"
+        const val KEY_DENSITY = "ui.density"
     }
 }

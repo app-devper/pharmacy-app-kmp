@@ -36,6 +36,15 @@ internal fun ProfileDisplayPreferences(
                 scrollable = false,
             )
         }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = "ความหนาแน่นตาราง", style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
+            PharmSingleSelectChips(
+                chips = DensityChips,
+                activeId = state.density,
+                onSelect = callbacks.onDensityChange,
+                scrollable = false,
+            )
+        }
     }
 }
 
@@ -50,4 +59,9 @@ private val FontSizeChips = listOf(
     PharmFilterChip(id = "md", label = "ปกติ"),
     PharmFilterChip(id = "lg", label = "ใหญ่"),
     PharmFilterChip(id = "xl", label = "ใหญ่มาก"),
+)
+
+private val DensityChips = listOf(
+    PharmFilterChip(id = "comfortable", label = "สบายตา"),
+    PharmFilterChip(id = "compact", label = "กระชับ"),
 )

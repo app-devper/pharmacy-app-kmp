@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
@@ -18,6 +19,8 @@ class FakeUiPreferencesRepository(
         private set
     var lastFontSize: FontSizePreference? = null
         private set
+    var lastDensity: DensityPreference? = null
+        private set
 
     override fun setTheme(theme: ThemePreference) {
         lastTheme = theme
@@ -27,5 +30,10 @@ class FakeUiPreferencesRepository(
     override fun setFontSize(size: FontSizePreference) {
         lastFontSize = size
         internal.value = internal.value.copy(fontSize = size)
+    }
+
+    override fun setDensity(density: DensityPreference) {
+        lastDensity = density
+        internal.value = internal.value.copy(density = density)
     }
 }

@@ -16,6 +16,7 @@ data class ProfileCallbacks(
     val onDismissPasswordError: () -> Unit = {},
     val onThemeChange: (String) -> Unit = {},
     val onFontSizeChange: (String) -> Unit = {},
+    val onDensityChange: (String) -> Unit = {},
     val onBack: () -> Unit = {},
 ) {
     companion object {
