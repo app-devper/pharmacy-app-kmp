@@ -9,14 +9,19 @@ import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.domain.util.BarcodeMatcher
 import app.devper.pharm.domain.util.DrugSearch
 import app.devper.pharm.ui.common.BaseViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 
 class DrugPickerViewModel(
     private val getDrugs: GetDrugsUseCase,
     private val addToCart: AddToCartUseCase,
     stockChangeBus: StockChangeBus,
 ) : BaseViewModel<DrugPickerUiState>(DrugPickerUiState()) {
+
+    private val _added = Channel<String>(Channel.BUFFERED)
+    val added = _added.receiveAsFlow()
 
     init {
         load()
@@ -51,7 +56,7 @@ class DrugPickerViewModel(
         if (drug.altUnits.any { !it.hidden }) {
             setState { copy(altUnitPickerFor = drug) }
         } else {
-            addToCart(drug, null)
+            add(drug, null)
         }
     }
 
@@ -59,17 +64,22 @@ class DrugPickerViewModel(
 
     fun onPickAltUnit(altUnit: AltUnit?) {
         val drug = current.altUnitPickerFor ?: return
-        addToCart(drug, altUnit)
+        add(drug, altUnit)
         setState { copy(altUnitPickerFor = null) }
     }
 
     fun onScanBarcode(code: String) {
         val match = BarcodeMatcher.match(current.drugs, code)
         if (match != null) {
-            addToCart(match.drug, match.altUnit)
+            add(match.drug, match.altUnit)
         } else {
             setState { copy(error = "ไม่พบยาสำหรับบาร์โค้ด ${code.trim()}") }
         }
+    }
+
+    private fun add(drug: Drug, altUnit: AltUnit?) {
+        addToCart(drug, altUnit)
+        _added.trySend(drug.name)
     }
 
     fun dismissError() = setState { copy(error = null) }

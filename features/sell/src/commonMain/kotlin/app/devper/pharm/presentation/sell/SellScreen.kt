@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,11 @@ fun SellScreen(
     var showShortcuts by remember { mutableStateOf(false) }
 
     val snackbar = LocalPharmSnackbar.current
+    LaunchedEffect(Unit) {
+        drugPickerVM.added.collect { name ->
+            snackbar.showToast(PharmToast.Success(message = "เพิ่ม $name"))
+        }
+    }
     val onTapParkSlot: (Int) -> Unit = { slot ->
         val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
         parkedCartVM.tapSlot(slot)

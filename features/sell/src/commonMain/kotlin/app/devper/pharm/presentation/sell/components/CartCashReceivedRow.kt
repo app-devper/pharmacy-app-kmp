@@ -1,22 +1,28 @@
 package app.devper.pharm.presentation.sell.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -36,6 +42,7 @@ fun CartCashReceivedRow(
     val receivedNum = received.toDoubleOrNull() ?: 0.0
     val short = total - receivedNum
     val isShort = receivedNum > 0.0 && short > 0.0
+    val addCash = { amount: Int -> onReceivedChange(plainAmount(receivedNum + amount)) }
 
     Column(
         modifier = Modifier
@@ -61,6 +68,24 @@ fun CartCashReceivedRow(
                     keyboardType = KeyboardType.Decimal,
                     enabled = !checkingOut,
                     isWarning = isShort,
+                    trailingSlot = if (received.isNotEmpty() && !checkingOut) {
+                        {
+                            Box(
+                                modifier = Modifier
+                                    .clip(t.shapes.sm)
+                                    .clickable(role = Role.Button) { onReceivedChange("") }
+                                    .padding(2.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    imageVector = PharmIcons.Close,
+                                    contentDescription = "ล้างยอดรับเงิน",
+                                    tint = t.colors.fgMuted,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                            }
+                        }
+                    } else null,
                 )
             }
         }
@@ -77,24 +102,24 @@ fun CartCashReceivedRow(
                 modifier = Modifier.weight(1f),
             )
             PharmButton(
-                label = "฿100",
-                onClick = { onReceivedChange("100") },
+                label = "+100",
+                onClick = { addCash(100) },
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
                 enabled = !checkingOut,
                 modifier = Modifier.weight(1f),
             )
             PharmButton(
-                label = "฿500",
-                onClick = { onReceivedChange("500") },
+                label = "+500",
+                onClick = { addCash(500) },
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
                 enabled = !checkingOut,
                 modifier = Modifier.weight(1f),
             )
             PharmButton(
-                label = "฿1000",
-                onClick = { onReceivedChange("1000") },
+                label = "+1000",
+                onClick = { addCash(1000) },
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
                 enabled = !checkingOut,
