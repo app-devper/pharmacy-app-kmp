@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,7 +20,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.ui.common.ShortcutHint
-import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
@@ -32,56 +36,69 @@ fun CartTotalsBlock(
     showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
+    val hasDiscount = itemDiscountTotal > 0.0 || cartDiscountAmount > 0.0
+    var expanded by remember { mutableStateOf(false) }
+    val open = expanded || hasDiscount
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        CartTotalsRow("ยอดรวม", fmtBaht(grossSubtotal), color = t.colors.fg2)
-        if (itemDiscountTotal > 0) {
-            CartTotalsRow(
-                "ส่วนลดรายการ",
-                "−${fmtBaht(itemDiscountTotal)}",
-                color = t.colors.discount,
-            )
-        }
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onOpenCartDiscount)
-                .padding(vertical = 2.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val label = when (cartDiscount) {
-                is CartDiscount.None -> "ส่วนลดบิล"
-                is CartDiscount.Flat -> "ส่วนลดบิล"
-                is CartDiscount.Percent -> "ส่วนลดบิล ${cartDiscount.percent.toInt()}%"
-            }
-            Text(label, style = PharmText.bodySm.copy(color = t.colors.fg2), modifier = Modifier.weight(1f))
-            if (cartDiscountAmount > 0) {
-                Text(
-                    "−${fmtBaht(cartDiscountAmount)}",
-                    style = PharmText.bodySm.copy(color = t.colors.discount),
-                )
-            } else {
-                if (showShortcutHint) {
-                    ShortcutHint(label = "F4", modifier = Modifier.padding(end = 6.dp))
+            Text(
+                text = if (open) "ซ่อนยอดย่อย" else "ดูยอดย่อย",
+                style = PharmText.micro.copy(color = t.colors.fg3),
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(enabled = !hasDiscount) { expanded = !expanded }
+                    .padding(vertical = 4.dp),
+            )
+            Row(
+                modifier = Modifier
+                    .clickable(onClick = onOpenCartDiscount)
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                if (showShortcutHint && cartDiscountAmount <= 0.0) {
+                    ShortcutHint(label = "F4")
                 }
-                Text("เพิ่ม ›", style = PharmText.micro.copy(color = t.colors.accent))
+                Text(
+                    text = if (cartDiscountAmount > 0.0) {
+                        "${cartDiscountLabel(cartDiscount)} −${fmtBaht(cartDiscountAmount)}"
+                    } else {
+                        "เพิ่มส่วนลด ›"
+                    },
+                    style = PharmText.micro.copy(
+                        color = if (cartDiscountAmount > 0.0) t.colors.discount else t.colors.accent,
+                    ),
+                )
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp),
-            verticalAlignment = Alignment.Bottom,
-        ) {
-            Text("ยอดสุทธิ", style = PharmText.bodySm.copy(color = t.colors.fg3), modifier = Modifier.weight(1f))
-            PharmAnimatedBaht(value = total, style = PharmText.total)
+        AnimatedVisibility(visible = open) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                CartTotalsRow("ยอดรวม", fmtBaht(grossSubtotal), color = t.colors.fg2)
+                if (itemDiscountTotal > 0.0) {
+                    CartTotalsRow("ส่วนลดรายการ", "−${fmtBaht(itemDiscountTotal)}", color = t.colors.discount)
+                }
+                if (cartDiscountAmount > 0.0) {
+                    CartTotalsRow(cartDiscountLabel(cartDiscount), "−${fmtBaht(cartDiscountAmount)}", color = t.colors.discount)
+                }
+            }
         }
     }
+}
+
+private fun cartDiscountLabel(cartDiscount: CartDiscount): String = when (cartDiscount) {
+    is CartDiscount.None -> "ส่วนลดบิล"
+    is CartDiscount.Flat -> "ส่วนลดบิล"
+    is CartDiscount.Percent -> "ส่วนลดบิล ${cartDiscount.percent.toInt()}%"
 }
 
 @Composable

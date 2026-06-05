@@ -224,7 +224,7 @@ fun SellScreen(
                         onPickCustomer = customerPickerVM::open,
                         onClearCustomer = customerPickerVM::clear,
                         onOpenParkedSheet = parkedCartVM::openSheet,
-                        modifier = Modifier.width(400.dp),
+                        modifier = Modifier.width(420.dp),
                     )
 
                     CartSlotRail(

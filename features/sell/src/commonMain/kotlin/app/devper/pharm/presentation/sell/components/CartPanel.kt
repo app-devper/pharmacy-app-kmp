@@ -38,6 +38,7 @@ import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.util.KyRequiredCalculator
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.pharmBannerEnter
+import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
@@ -45,7 +46,6 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
-import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
@@ -99,7 +99,6 @@ fun CartPanel(
             onConfirmClearCart = onConfirmClearCart,
             onCancelClearCart = onCancelClearCart,
         )
-        CartSectionDivider()
 
         CartCustomerPill(
             customer = customer,
@@ -162,7 +161,6 @@ fun CartPanel(
                 showShortcutHint = showShortcutHints,
             )
 
-            CartSectionDivider()
             CartCashReceivedRow(
                 received = received,
                 total = total,
@@ -197,7 +195,7 @@ private fun CartPanelHeader(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
@@ -297,8 +295,8 @@ private fun CartCheckoutButton(
                             ),
                         )
                     }
-                    Text(
-                        fmtBaht(total),
+                    PharmAnimatedBaht(
+                        value = total,
                         style = PharmText.total.copy(color = t.colors.surface),
                     )
                 }
@@ -326,7 +324,7 @@ private fun CartAllergyBanner(note: String) {
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clip(t.shapes.md)
             .background(t.colors.dangerBg)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
@@ -364,7 +362,7 @@ private fun CartComplianceBanner(required: KyRequired) {
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clip(t.shapes.md)
             .background(t.colors.warningBg)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
