@@ -10,9 +10,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.presentation.AppViewModel
 import app.devper.pharm.presentation.navigation.AppNavHost
+import app.devper.pharm.ui.designsystem.LocalPharmDensity
+import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmSnackbarHost
 import app.devper.pharm.ui.common.PharmSnackbarHostUi
@@ -40,12 +43,17 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
         )
     }
     val snackbarHost = remember { PharmSnackbarHost() }
+    val density = when (state.uiPreferences.density) {
+        DensityPreference.Comfortable -> PharmDensity.Comfortable
+        DensityPreference.Compact     -> PharmDensity.Compact
+    }
     PharmacyTheme(
         darkTheme = darkTheme,
         fontScale = state.uiPreferences.fontSize.scale,
     ) {
         CompositionLocalProvider(
             LocalThemeController provides themeController,
+            LocalPharmDensity provides density,
             LocalPharmSnackbar provides snackbarHost,
         ) {
             Surface {

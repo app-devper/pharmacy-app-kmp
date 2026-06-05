@@ -52,13 +52,16 @@ fun <T> PharmTable(
     columns: List<PharmTableColumn<T>>,
     key: ((T) -> Any)? = null,
     modifier: Modifier = Modifier,
-    rowHeight: Dp = 48.dp,
-    headerHeight: Dp = 36.dp,
+    rowHeight: Dp = Dp.Unspecified,
+    headerHeight: Dp = Dp.Unspecified,
     onRowClick: ((T) -> Unit)? = null,
     emptyContent: @Composable (() -> Unit)? = null,
     bottomRow: @Composable (() -> Unit)? = null,
 ) {
     val t = pharmTokens
+    val density = LocalPharmDensity.current
+    val effRowHeight = if (rowHeight == Dp.Unspecified) density.rowHeight else rowHeight
+    val effHeaderHeight = if (headerHeight == Dp.Unspecified) density.headerHeight else headerHeight
     val listState = rememberLazyListState()
 
     if (rows.isEmpty() && emptyContent != null) {
@@ -103,7 +106,7 @@ fun <T> PharmTable(
         Box(modifier = outerModifier) {
             LazyColumn(state = listState, modifier = listModifier) {
                 stickyHeader {
-                    PharmTableHeader(columns = columns, height = headerHeight)
+                    PharmTableHeader(columns = columns, height = effHeaderHeight)
                 }
                 items(items = rows, key = key) { row ->
                     val onClickRow = remember(row, onRowClick) {
@@ -112,7 +115,7 @@ fun <T> PharmTable(
                     PharmTableRow(
                         columns = columns,
                         row = row,
-                        height = rowHeight,
+                        height = effRowHeight,
                         onClick = onClickRow,
                     )
                 }

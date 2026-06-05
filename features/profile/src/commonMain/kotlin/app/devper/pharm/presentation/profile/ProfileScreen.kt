@@ -37,6 +37,7 @@ fun ProfileScreen(
             onDismissPasswordError = viewModel::dismissPasswordError,
             onThemeChange = viewModel::onThemeChange,
             onFontSizeChange = viewModel::onFontSizeChange,
+            onDensityChange = viewModel::onDensityChange,
             onBack = onBack,
         ),
     )

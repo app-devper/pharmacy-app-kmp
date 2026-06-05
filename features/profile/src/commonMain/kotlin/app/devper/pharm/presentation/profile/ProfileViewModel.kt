@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.profile
 
 import androidx.lifecycle.viewModelScope
+import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UmUser
@@ -9,6 +10,7 @@ import app.devper.pharm.domain.param.ChangePasswordParam
 import app.devper.pharm.domain.param.UpdateProfileParam
 import app.devper.pharm.domain.usecase.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.GetProfileUseCase
+import app.devper.pharm.domain.usecase.SetDensityPreferenceUseCase
 import app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase
 import app.devper.pharm.domain.usecase.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.UpdateProfileUseCase
@@ -23,12 +25,15 @@ class ProfileViewModel(
     uiPreferences: UiPreferencesProvider,
     private val setTheme: SetThemePreferenceUseCase,
     private val setFontSize: SetFontSizePreferenceUseCase,
+    private val setDensity: SetDensityPreferenceUseCase,
 ) : BaseFormViewModel<ProfileUiState>(ProfileUiState()) {
 
     init {
         load()
         uiPreferences.state
-            .onEach { prefs -> setState { copy(theme = prefs.theme.wire, fontSize = prefs.fontSize.wire) } }
+            .onEach { prefs ->
+                setState { copy(theme = prefs.theme.wire, fontSize = prefs.fontSize.wire, density = prefs.density.wire) }
+            }
             .launchIn(viewModelScope)
     }
 
@@ -57,6 +62,10 @@ class ProfileViewModel(
 
     fun onFontSizeChange(value: String) {
         setFontSize(FontSizePreference.parse(value))
+    }
+
+    fun onDensityChange(value: String) {
+        setDensity(DensityPreference.parse(value))
     }
 
     fun submitPasswordChange() {

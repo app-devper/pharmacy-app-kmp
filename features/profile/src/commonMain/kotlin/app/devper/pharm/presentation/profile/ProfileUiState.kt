@@ -29,6 +29,7 @@ data class ProfileUiState(
     val passwordError: String? = null,
     val theme: String = "auto",
     val fontSize: String = "md",
+    val density: String = "comfortable",
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,

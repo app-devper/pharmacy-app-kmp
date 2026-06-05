@@ -27,6 +27,7 @@ class ProfileViewModelTest {
             uiPreferences = app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
             setTheme = app.devper.pharm.domain.usecase.SetThemePreferenceUseCase(uiPrefs),
             setFontSize = app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase(uiPrefs),
+            setDensity = app.devper.pharm.domain.usecase.SetDensityPreferenceUseCase(uiPrefs),
         )
     }
 
@@ -143,5 +144,15 @@ class ProfileViewModelTest {
         assertFalse(state.loading)
         assertNull(state.user)
         assertEquals("token expired", state.error)
+    }
+
+    @Test
+    fun density_change_is_reflected_in_state() = runVmTest { dispatchers ->
+        val fake = FakeProfileRepository()
+        val vm = bundle(fake, dispatchers)
+        advanceUntilIdle()
+        vm.onDensityChange("compact")
+        advanceUntilIdle()
+        assertEquals("compact", vm.state.value.density)
     }
 }

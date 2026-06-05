@@ -4,6 +4,7 @@ package app.devper.pharm.data.repository
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.data.storage.MemorySettings
+import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.ThemePreference
 import com.russhwolf.settings.Settings
@@ -63,6 +64,25 @@ class UiPreferencesRepositoryImplTest {
 
         assertEquals(FontSizePreference.Xl, repo.state.value.fontSize)
         assertEquals(FontSizePreference.Xl.wire, settings.getStringOrNull("ui.fontSize"))
+    }
+
+    @Test
+    fun setDensity_updates_state_synchronously_and_persists() = runTest {
+        val settings = MemorySettings()
+        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+
+        repo.setDensity(DensityPreference.Compact)
+
+        assertEquals(DensityPreference.Compact, repo.state.value.density)
+        assertEquals(DensityPreference.Compact.wire, settings.getStringOrNull("ui.density"))
+    }
+
+    @Test
+    fun fresh_settings_yields_comfortable_density_default() = runTest {
+        val settings = MemorySettings()
+        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+
+        assertEquals(DensityPreference.Comfortable, repo.state.value.density)
     }
 
     @Test
