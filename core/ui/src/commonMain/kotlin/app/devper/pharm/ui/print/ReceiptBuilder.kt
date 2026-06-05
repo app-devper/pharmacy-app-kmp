@@ -15,7 +15,7 @@ fun buildReceiptTemplate(
     received: Double,
     soldAtFormatted: String,
 ): ReceiptTemplate {
-    val grossSubtotal = cartSnapshot.sumOf { it.unitPrice * it.qty }
+    val grossSubtotal = cartSnapshot.sumOf { it.unitPrice * it.displayQty }
     val subtotalAfterLineDiscounts = cartSnapshot.sumOf { it.lineTotal }
     val itemDiscountTotal = grossSubtotal - subtotalAfterLineDiscounts
     return ReceiptTemplate(
