@@ -37,6 +37,8 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
+private val DRUG_CARD_HEIGHT = 148.dp
+
 @Composable
 fun DrugPickerColumn(
     query: String,
@@ -109,6 +111,7 @@ fun DrugPickerColumn(
                 ) {
                     items(visible, key = { it.id }) { drug ->
                         DrugCard(
+                            modifier = Modifier.height(DRUG_CARD_HEIGHT),
                             name = drug.name,
                             generic = drug.genericName,
                             price = resolvePrice(drug.sellPrice, drug.prices, activeTier),
