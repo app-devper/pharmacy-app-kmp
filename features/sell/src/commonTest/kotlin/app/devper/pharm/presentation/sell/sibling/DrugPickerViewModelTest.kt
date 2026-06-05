@@ -10,6 +10,7 @@ import app.devper.pharm.domain.usecase.AddToCartUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -162,6 +163,15 @@ class DrugPickerViewModelTest {
         vm.onScanBarcode("8851234567890")
         advanceUntilIdle()
         assertEquals(d, cart.lastAdd?.drug)
+    }
+
+    @Test
+    fun successful_add_emits_added_event_with_drug_name() = runVmTest { dispatchers ->
+        val d = drug(name = "Amoxicillin")
+        val (vm, _) = newVm(dispatchers, repo = FakeDrugRepository(seed = listOf(d)))
+        advanceUntilIdle()
+        vm.onTapDrug(d)
+        assertEquals("Amoxicillin", vm.added.first())
     }
 
     @Test
