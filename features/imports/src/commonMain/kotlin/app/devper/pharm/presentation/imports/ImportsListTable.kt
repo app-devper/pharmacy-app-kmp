@@ -14,6 +14,7 @@ import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -87,10 +88,17 @@ internal fun ImportsListTable(
         onRowClick = { row -> callbacks.onOpenImport(row) },
         rowHeight = 56.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบใบนำเข้าตามที่ค้นหา" else "ยังไม่มีใบนำเข้า",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบใบนำเข้าตามที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.Imports,
+                    title = "ยังไม่มีใบนำเข้า",
+                )
+            }
         },
     )
 }

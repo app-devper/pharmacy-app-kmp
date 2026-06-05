@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -18,7 +17,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
 fun MovementsContent(
@@ -58,9 +57,7 @@ fun MovementsContent(
         ) {
             when {
                 state.loading && state.items.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmCircularProgress(color = t.colors.accent)
-                    }
+                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
                 else -> MovementsTable(state = state, callbacks = callbacks)
             }
         }

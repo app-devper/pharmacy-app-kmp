@@ -15,6 +15,7 @@ import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -81,10 +82,17 @@ internal fun StockCountsListTable(
         onRowClick = { callbacks.onOpenDetail(it) },
         rowHeight = 56.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบรอบนับตามที่ค้นหา" else "ยังไม่มีรอบนับสต็อก",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบรอบนับตามที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.StockCount,
+                    title = "ยังไม่มีรอบนับสต็อก",
+                )
+            }
         },
     )
 }

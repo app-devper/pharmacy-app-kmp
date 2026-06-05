@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,13 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.pricing.resolvePrice
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
@@ -194,27 +193,10 @@ private fun ResultLine(query: String, total: Int, visibleCount: Int) {
 
 @Composable
 private fun EmptyState(searching: Boolean) {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(
-            imageVector = if (searching) PharmIcons.Search else PharmIcons.Imports,
-            contentDescription = null,
-            tint = t.colors.fgMuted,
-            modifier = Modifier.size(48.dp),
-        )
-        Text(
-            text = if (searching) "ไม่พบยาที่ค้นหา" else "ยังไม่มีรายการยาในคลัง",
-            style = PharmText.body.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = t.colors.fg2,
-            ),
-            modifier = Modifier.padding(top = 12.dp),
-        )
-    }
+    PharmEmptyState(
+        icon = if (searching) PharmIcons.Search else PharmIcons.Imports,
+        title = if (searching) "ไม่พบยาที่ค้นหา" else "ยังไม่มีรายการยาในคลัง",
+    )
 }
 
 private fun inferType(drug: Drug): DrugCardType {

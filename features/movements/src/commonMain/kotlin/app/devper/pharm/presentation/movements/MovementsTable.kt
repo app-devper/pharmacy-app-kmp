@@ -24,6 +24,8 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.theme.PharmText
@@ -80,9 +82,9 @@ internal fun MovementsTable(
         modifier = modifier,
         rowHeight = 52.dp,
         emptyContent = {
-            Text(
-                text = "ไม่มีรายการในช่วงเวลานี้",
-                style = PharmText.meta,
+            PharmEmptyState(
+                icon = PharmIcons.Movements,
+                title = "ไม่มีรายการในช่วงเวลานี้",
             )
         },
         bottomRow = {

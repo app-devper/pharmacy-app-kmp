@@ -22,6 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -101,10 +102,17 @@ internal fun UsersListTable(
         onRowClick = { callbacks.onEditUser(it) },
         rowHeight = 60.dp,
         emptyContent = {
-            Text(
-                text = if (emptySearching) "ไม่พบผู้ใช้งานที่ค้นหา" else "ยังไม่มีผู้ใช้งาน",
-                style = PharmText.meta,
-            )
+            if (emptySearching) {
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = "ไม่พบผู้ใช้งานที่ค้นหา",
+                )
+            } else {
+                PharmEmptyState(
+                    icon = PharmIcons.Users,
+                    title = "ยังไม่มีผู้ใช้งาน",
+                )
+            }
         },
     )
 }

@@ -27,7 +27,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
 fun ProfitContent(
@@ -67,10 +67,7 @@ fun ProfitContent(
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
             when {
-                state.loading && state.report == null ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmCircularProgress(color = t.colors.accent)
-                    }
+                state.loading && state.report == null -> PharmListSkeleton()
                 else -> ProfitTable(rows = rows, totals = totals)
             }
         }

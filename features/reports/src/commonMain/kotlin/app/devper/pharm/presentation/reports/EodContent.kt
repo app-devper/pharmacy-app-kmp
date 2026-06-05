@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.reports
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
@@ -22,7 +20,7 @@ import app.devper.pharm.presentation.reports.components.EodBillsHeader
 import app.devper.pharm.presentation.reports.components.EodClosedReceiptCard
 import app.devper.pharm.presentation.reports.components.EodHeader
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -52,10 +50,7 @@ fun EodContent(
         )
 
         when {
-            state.loading && report == null ->
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    PharmCircularProgress(color = t.colors.accent)
-                }
+            state.loading && report == null -> PharmListSkeleton()
 
             report == null -> EmptyEod()
 

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -24,11 +23,11 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun LowStockContent(
@@ -54,17 +53,13 @@ fun LowStockContent(
             LowStockHeader(total = state.drugs.size, onReload = callbacks.onReload)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {
-                state.loading && state.drugs.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmCircularProgress(color = t.colors.accent)
-                    }
+                state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
                 state.drugs.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmEmptyState(
-                            title = "ไม่มียาใกล้หมด",
-                            subtitle = "สต็อกยาทุกรายการสูงกว่าระดับขั้นต่ำ",
-                        )
-                    }
+                    PharmEmptyState(
+                        icon = PharmIcons.Stock,
+                        title = "ไม่มียาใกล้หมด",
+                        subtitle = "สต็อกยาทุกรายการสูงกว่าระดับขั้นต่ำ",
+                    )
                 else -> LowStockTable(drugs = state.drugs, callbacks = callbacks)
             }
         }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -24,11 +23,11 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun ReorderSuggestionsContent(
@@ -54,17 +53,13 @@ fun ReorderSuggestionsContent(
             ReorderHeader(total = state.suggestions.size, onReload = callbacks.onReload)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {
-                state.loading && state.suggestions.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmCircularProgress(color = t.colors.accent)
-                    }
+                state.loading && state.suggestions.isEmpty() -> PharmListSkeleton()
                 state.suggestions.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmEmptyState(
-                            title = "ไม่มีรายการที่ต้องสั่งซื้อ",
-                            subtitle = "ยังไม่มียาที่ถึงเกณฑ์แนะนำให้สั่งซื้อเพิ่ม",
-                        )
-                    }
+                    PharmEmptyState(
+                        icon = PharmIcons.Reports,
+                        title = "ไม่มีรายการที่ต้องสั่งซื้อ",
+                        subtitle = "ยังไม่มียาที่ถึงเกณฑ์แนะนำให้สั่งซื้อเพิ่ม",
+                    )
                 else -> ReorderSuggestionsTable(suggestions = state.suggestions, callbacks = callbacks)
             }
         }
