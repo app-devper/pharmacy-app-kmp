@@ -82,10 +82,16 @@ class CheckoutViewModel(
         if (!current.canCheckout) return
 
         val required = KyRequiredCalculator.calculate(lastCart)
-        if (!required.isEmpty && !lastSettings.ky.skipAuto) {
-            pendingKyRequired = required
-            setState { copy(kyCapturePending = required) }
-            return
+        if (!required.isEmpty) {
+            if (lastSettings.ky.skipAuto) {
+                pendingKyRequired = null
+                pendingKyFields = null
+                pendingKySkippedByCashier = true
+            } else {
+                pendingKyRequired = required
+                setState { copy(kyCapturePending = required) }
+                return
+            }
         }
         startNewCheckout(allowOversell = false)
     }
