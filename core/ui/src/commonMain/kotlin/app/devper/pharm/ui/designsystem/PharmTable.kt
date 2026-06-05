@@ -43,6 +43,7 @@ data class PharmTableColumn<T>(
     val align: PharmColumnAlign = PharmColumnAlign.Start,
     val hideInCompact: Boolean = false,
     val compactTitle: Boolean = false,
+    val hideInCardWhenEmpty: ((row: T) -> Boolean)? = null,
     val cell: @Composable (row: T) -> Unit,
 )
 
@@ -180,6 +181,7 @@ private fun <T> PharmTableCard(
     ) {
         title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
         details.forEach { col ->
+            if (col.hideInCardWhenEmpty?.invoke(row) == true) return@forEach
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

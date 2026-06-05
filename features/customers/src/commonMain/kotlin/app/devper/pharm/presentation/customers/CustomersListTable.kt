@@ -50,6 +50,7 @@ internal fun CustomersListTable(
         PharmTableColumn(
             header = "โรคประจำตัว / แพ้ยา",
             weight = 1.8f,
+            hideInCardWhenEmpty = { customer -> customer.allergyNote.isNullOrBlank() },
             cell = { customer -> CustomerAllergyCell(customer) },
         ),
         PharmTableColumn(
@@ -136,10 +137,7 @@ private fun CustomerPhoneCell(customer: Customer) {
 private fun CustomerAllergyCell(customer: Customer) {
     val t = pharmTokens
     val note = customer.allergyNote?.takeIf { it.isNotBlank() }
-    if (note == null) {
-        Text(text = "—", style = PharmText.micro.copy(color = t.colors.fgMuted))
-        return
-    }
+    if (note == null) return
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
