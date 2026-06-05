@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -135,16 +134,18 @@ fun CartLineRow(
 
 @Composable
 private fun CartLineInfoIcon() {
+    val t = pharmTokens
     Icon(
         imageVector = Icons.Outlined.Info,
         contentDescription = "รายละเอียด",
-        tint = MaterialTheme.colorScheme.primary,
+        tint = t.colors.accent,
         modifier = Modifier.size(18.dp),
     )
 }
 
 @Composable
 private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
+    val t = pharmTokens
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -152,7 +153,7 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = line.drug.name,
-                style = MaterialTheme.typography.bodyLarge,
+                style = PharmText.body,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 modifier = Modifier.weight(1f, fill = false),
@@ -160,16 +161,16 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
             line.selectedUnit?.let { alt ->
                 Text(
                     text = alt.name,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PharmText.micro,
+                    color = t.colors.fg2,
                 )
             }
         }
         if (line.selectedUnit == null) {
             Text(
                 text = line.drug.unit ?: "ชิ้น",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.micro,
+                color = t.colors.fg2,
             )
         }
     }
@@ -177,6 +178,7 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
 
 @Composable
 private fun CartLinePrice(line: CartLine) {
+    val t = pharmTokens
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -184,17 +186,17 @@ private fun CartLinePrice(line: CartLine) {
     ) {
         Text(
             text = formatBahtCurrency(line.lineTotal),
-            style = MaterialTheme.typography.bodyLarge.tabular(),
+            style = PharmText.body.tabular(),
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = t.colors.fg1,
             maxLines = 1,
             textAlign = TextAlign.End,
         )
         Text(
             text = priceMetaLabel(line),
-            style = MaterialTheme.typography.labelSmall.tabular(),
-            color = if (line.discount > 0) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
+            style = PharmText.micro.tabular(),
+            color = if (line.discount > 0) t.colors.dangerFg
+                    else t.colors.fg2,
             maxLines = 1,
             textAlign = TextAlign.End,
         )
@@ -203,11 +205,12 @@ private fun CartLinePrice(line: CartLine) {
 
 @Composable
 private fun CartLineRemoveButton(onClick: () -> Unit) {
+    val t = pharmTokens
     IconButton(onClick = onClick, modifier = Modifier.size(44.dp)) {
         Icon(
             imageVector = Icons.Rounded.Close,
             contentDescription = "ลบรายการ",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = t.colors.fg2,
             modifier = Modifier.size(20.dp),
         )
     }
@@ -233,6 +236,7 @@ private fun QtyStepper(
     qty: Int,
     onQtyChange: (Int) -> Unit,
 ) {
+    val t = pharmTokens
     var editing by remember { mutableStateOf(false) }
     var draft by remember(qty) { mutableStateOf(qty.toString()) }
 
@@ -251,8 +255,8 @@ private fun QtyStepper(
 
         StepperCircle(
             onClick = { onQtyChange(qty - 1) },
-            container = MaterialTheme.colorScheme.errorContainer,
-            iconTint = MaterialTheme.colorScheme.error,
+            container = t.colors.dangerBg,
+            iconTint = t.colors.dangerFg,
             icon = Icons.Outlined.Remove,
             description = "ลด",
             enabled = qty > 1,
@@ -268,12 +272,12 @@ private fun QtyStepper(
                     value = draft,
                     onValueChange = { draft = it.filter(Char::isDigit).take(4) },
                     singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyLarge.tabular().copy(
+                    textStyle = PharmText.body.tabular().copy(
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
-                        color = pharmTokens.colors.fg1,
+                        color = t.colors.fg1,
                     ),
-                    cursorBrush = SolidColor(pharmTokens.colors.accent),
+                    cursorBrush = SolidColor(t.colors.accent),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done,
@@ -285,7 +289,7 @@ private fun QtyStepper(
             } else {
                 Text(
                     text = "${qty}x",
-                    style = MaterialTheme.typography.bodyLarge.tabular(),
+                    style = PharmText.body.tabular(),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { editing = true },
                 )
@@ -294,8 +298,8 @@ private fun QtyStepper(
 
         StepperCircle(
             onClick = { onQtyChange((qty + 1).coerceAtMost(MAX_QTY)) },
-            container = MaterialTheme.colorScheme.primary,
-            iconTint = MaterialTheme.colorScheme.onPrimary,
+            container = t.colors.accent,
+            iconTint = t.colors.surface,
             icon = Icons.Outlined.Add,
             description = "เพิ่ม",
             enabled = qty < MAX_QTY,
@@ -312,6 +316,7 @@ private fun StepperCircle(
     description: String,
     enabled: Boolean,
 ) {
+    val t = pharmTokens
     IconButton(
         onClick = onClick,
         enabled = enabled,
@@ -323,7 +328,7 @@ private fun StepperCircle(
                 .clip(CircleShape)
                 .background(
                     if (enabled) container
-                    else MaterialTheme.colorScheme.surfaceContainerHigh
+                    else t.colors.surfaceRaised
                 ),
             contentAlignment = Alignment.Center,
         ) {
@@ -331,7 +336,7 @@ private fun StepperCircle(
                 imageVector = icon,
                 contentDescription = description,
                 tint = if (enabled) iconTint
-                       else MaterialTheme.colorScheme.onSurfaceVariant,
+                       else t.colors.fg2,
                 modifier = Modifier.size(16.dp),
             )
         }

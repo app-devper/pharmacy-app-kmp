@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +34,7 @@ import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
@@ -52,6 +52,7 @@ fun ReturnSaleSheet(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val t = pharmTokens
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val anyDraft = draft.values.any { it > 0 }
     val canSubmit = anyDraft && reason.isNotBlank() && !submitting
@@ -66,13 +67,13 @@ fun ReturnSaleSheet(
         ) {
             Text(
                 text = "คืนสินค้าจากบิล ${sale.billNo}",
-                style = MaterialTheme.typography.titleLarge,
+                style = PharmText.h1,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
                 text = "เลือกจำนวนที่จะคืน — ระบบจะคำนวณยอดคืนให้เอง",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.bodySm,
+                color = t.colors.fg2,
             )
 
             Box(
@@ -144,6 +145,7 @@ private fun ReturnLineRow(
     enabled: Boolean,
     onChange: (displayQty: Int) -> Unit,
 ) {
+    val t = pharmTokens
     val factor = if (item.unitFactor > 1) item.unitFactor else 1
     val draftDisplay = draftBaseQty / factor
     val maxDisplay = item.remainingDisplayQty
@@ -157,28 +159,28 @@ private fun ReturnLineRow(
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = item.drugName,
-                style = MaterialTheme.typography.bodyLarge,
+                style = PharmText.body,
                 fontWeight = FontWeight.Medium,
                 maxLines = 2,
             )
             Text(
                 text = "ขายไป ${item.displayQty} ${item.displayUnit} · เหลือคืน ${item.remainingDisplayQty}",
-                style = MaterialTheme.typography.labelSmall.tabular(),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.micro.tabular(),
+                color = t.colors.fg2,
             )
             if (refund > 0) {
                 Text(
                     text = "คืนเงิน ${app.devper.pharm.ui.format.formatBahtCurrency(refund)}",
-                    style = MaterialTheme.typography.labelMedium.tabular(),
-                    color = MaterialTheme.colorScheme.primary,
+                    style = PharmText.meta.tabular(),
+                    color = t.colors.accent,
                     fontWeight = FontWeight.SemiBold,
                 )
             }
         }
 
         Surface(
-            shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            shape = t.shapes.xl,
+            color = t.colors.surfaceRaised,
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -197,7 +199,7 @@ private fun ReturnLineRow(
                 }
                 Text(
                     text = draftDisplay.toString(),
-                    style = MaterialTheme.typography.titleMedium.tabular(),
+                    style = PharmText.total.tabular(),
                     fontWeight = FontWeight.SemiBold,
                 )
                 IconButton(
