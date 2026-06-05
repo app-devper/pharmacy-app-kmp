@@ -19,10 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -92,8 +92,8 @@ fun CartFooterBar(
                 style = PharmText.micro.copy(color = contentColor.copy(alpha = 0.8f)),
             )
             if (!empty) {
-                Text(
-                    text = fmtBaht(total),
+                PharmAnimatedBaht(
+                    value = total,
                     style = PharmText.total.copy(color = contentColor),
                 )
             }
