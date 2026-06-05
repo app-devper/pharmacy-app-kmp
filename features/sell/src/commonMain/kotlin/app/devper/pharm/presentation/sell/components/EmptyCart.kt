@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -39,7 +40,12 @@ internal fun EmptyCart(
                 .background(t.colors.accentBgSoft),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = "🛒", style = PharmText.body.copy(fontSize = 40.sp))
+            Icon(
+                imageVector = PharmIcons.Sell,
+                contentDescription = null,
+                tint = t.colors.fgMuted,
+                modifier = Modifier.size(40.dp),
+            )
         }
         Text(
             text = "ตะกร้าว่างเปล่า",

@@ -41,7 +41,10 @@ fun ProfileContent(
     callbacks: ProfileCallbacks,
 ) {
     val t = pharmTokens
-    Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+    Box(
+        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         if (state.loading && state.user == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 PharmCircularProgress(color = t.colors.accent)

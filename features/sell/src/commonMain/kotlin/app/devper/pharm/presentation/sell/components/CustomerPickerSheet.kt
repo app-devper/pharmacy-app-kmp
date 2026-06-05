@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -26,12 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.pricing.tierLabel
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -138,9 +139,11 @@ private fun EmptyCustomers(searching: Boolean) {
         modifier = Modifier.fillMaxWidth().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = if (searching) "🔎" else "👥",
-            style = PharmText.body.copy(fontSize = 36.sp),
+        Icon(
+            imageVector = if (searching) PharmIcons.Search else PharmIcons.Customers,
+            contentDescription = null,
+            tint = t.colors.fgMuted,
+            modifier = Modifier.size(36.dp),
         )
         Text(
             text = if (searching) "ไม่พบลูกค้าที่ค้นหา" else "ยังไม่มีรายชื่อลูกค้า",

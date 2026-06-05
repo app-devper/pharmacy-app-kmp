@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,6 +14,7 @@ import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.print.PharmReceiptPreview
@@ -43,10 +45,17 @@ fun ReceiptDialog(
             }
             if (onPrint != null) {
                 PharmButton(
-                    label = "🖨 พิมพ์",
+                    label = "พิมพ์",
                     onClick = onPrint,
                     variant = PharmButtonVariant.Secondary,
                     size = PharmButtonSize.Md,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = PharmIcons.Print,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    },
                 )
             }
             PharmButton(

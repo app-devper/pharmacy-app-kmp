@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -19,12 +19,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.devper.pharm.domain.model.OversellShortfall
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
@@ -32,6 +36,8 @@ import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmCheckbox
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -69,10 +75,19 @@ fun OversellConfirmSheet(
                         .background(t.colors.dangerBg),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(text = "⚠", style = PharmText.body.copy(fontSize = 22.sp, color = t.colors.dangerFg))
+                    Icon(
+                        imageVector = PharmIcons.Warning,
+                        contentDescription = null,
+                        tint = t.colors.dangerFg,
+                        modifier = Modifier.size(22.dp),
+                    )
                 }
                 Column {
-                    Text("สต็อกไม่พอ", style = PharmText.h2)
+                    Text(
+                        "สต็อกไม่พอ",
+                        style = PharmText.h2,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
+                    )
                     Text("ยา ${shortfalls.size} รายการเกินสต็อก", style = PharmText.meta)
                 }
             }
@@ -88,8 +103,16 @@ fun OversellConfirmSheet(
                 style = PharmText.micro,
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Checkbox(checked = ack, onCheckedChange = { ack = it })
+            Row(
+                modifier = Modifier.toggleable(
+                    value = ack,
+                    role = Role.Checkbox,
+                    onValueChange = { ack = it },
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                PharmCheckbox(checked = ack, onCheckedChange = null)
                 Text("ฉันยืนยันการขายล่วงหน้า", style = PharmText.body)
             }
 

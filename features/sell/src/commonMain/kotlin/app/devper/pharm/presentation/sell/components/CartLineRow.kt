@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -23,8 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -50,6 +50,7 @@ import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
+import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -263,27 +264,22 @@ private fun QtyStepper(
                 .height(28.dp),
         ) {
             if (editing) {
-                TextField(
+                BasicTextField(
                     value = draft,
                     onValueChange = { draft = it.filter(Char::isDigit).take(4) },
                     singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyLarge.tabular()
-                        .copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
+                    textStyle = MaterialTheme.typography.bodyLarge.tabular().copy(
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        color = pharmTokens.colors.fg1,
+                    ),
+                    cursorBrush = SolidColor(pharmTokens.colors.accent),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done,
                     ),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp)
                         .onFocusChanged { if (!it.isFocused) commit() },
                 )
             } else {

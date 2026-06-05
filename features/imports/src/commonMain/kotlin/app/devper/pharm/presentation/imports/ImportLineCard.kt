@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -105,34 +106,66 @@ internal fun ImportLineCard(
                 )
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ImportLabeledField(label = "จำนวน", required = true, modifier = Modifier.weight(1f)) {
-                ImportFormField(
-                    value = fields.qty,
-                    onValueChange = onQty,
-                    placeholder = "0",
-                    keyboardType = KeyboardType.Number,
-                    enabled = !readOnly,
-                )
-            }
-            ImportLabeledField(label = "ราคาทุน", modifier = Modifier.weight(1f)) {
-                ImportFormField(
-                    value = fields.costPrice,
-                    onValueChange = onCost,
-                    placeholder = "0.00",
-                    keyboardType = KeyboardType.Decimal,
-                    enabled = !readOnly,
-                )
-            }
-            ImportLabeledField(label = "ราคาขาย", modifier = Modifier.weight(1f)) {
-                ImportFormField(
-                    value = fields.sellPrice,
-                    onValueChange = onSell,
-                    placeholder = "default",
-                    keyboardType = KeyboardType.Decimal,
-                    enabled = !readOnly,
-                )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val threeCol = maxWidth >= 600.dp
+            if (threeCol) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ImportLabeledField(label = "จำนวน", required = true, modifier = Modifier.weight(1f)) {
+                        QtyField(fields, onQty, readOnly)
+                    }
+                    ImportLabeledField(label = "ราคาทุน", modifier = Modifier.weight(1f)) {
+                        CostField(fields, onCost, readOnly)
+                    }
+                    ImportLabeledField(label = "ราคาขาย", modifier = Modifier.weight(1f)) {
+                        SellField(fields, onSell, readOnly)
+                    }
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ImportLabeledField(label = "จำนวน", required = true) {
+                        QtyField(fields, onQty, readOnly)
+                    }
+                    ImportLabeledField(label = "ราคาทุน") {
+                        CostField(fields, onCost, readOnly)
+                    }
+                    ImportLabeledField(label = "ราคาขาย") {
+                        SellField(fields, onSell, readOnly)
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun QtyField(fields: ImportLineFields, onQty: (String) -> Unit, readOnly: Boolean) {
+    ImportFormField(
+        value = fields.qty,
+        onValueChange = onQty,
+        placeholder = "0",
+        keyboardType = KeyboardType.Number,
+        enabled = !readOnly,
+    )
+}
+
+@Composable
+private fun CostField(fields: ImportLineFields, onCost: (String) -> Unit, readOnly: Boolean) {
+    ImportFormField(
+        value = fields.costPrice,
+        onValueChange = onCost,
+        placeholder = "0.00",
+        keyboardType = KeyboardType.Decimal,
+        enabled = !readOnly,
+    )
+}
+
+@Composable
+private fun SellField(fields: ImportLineFields, onSell: (String) -> Unit, readOnly: Boolean) {
+    ImportFormField(
+        value = fields.sellPrice,
+        onValueChange = onSell,
+        placeholder = "default",
+        keyboardType = KeyboardType.Decimal,
+        enabled = !readOnly,
+    )
 }

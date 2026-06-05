@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,9 +10,12 @@ import androidx.compose.ui.Modifier
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmToggleSwitch
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
 internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
+    val t = pharmTokens
     val f = state.form
     SettingsLabeledField(label = "ข้อความบนหัวบิล") {
         SettingsFormField(
@@ -42,11 +44,10 @@ internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEd
     }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.weight(1f)) {
-            Text("แสดงชื่อเภสัชกร", style = MaterialTheme.typography.bodyMedium)
+            Text("แสดงชื่อเภสัชกร", style = PharmText.body.copy(color = t.colors.fg1))
             Text(
                 "ปรากฏที่ส่วนล่างของใบเสร็จ",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.micro.copy(color = t.colors.fg3),
             )
         }
         PharmToggleSwitch(checked = f.receiptShowPharmacist, onCheckedChange = editor.onReceiptShowPharmacist)
