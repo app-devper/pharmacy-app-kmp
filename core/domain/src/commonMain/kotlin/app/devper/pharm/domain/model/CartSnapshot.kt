@@ -10,4 +10,9 @@ data class CartSnapshot(
     val activeTier: String,
     val cashReceived: String,
     val lastReceipt: Sale?,
-)
+) {
+    val isEmpty: Boolean get() = items.isEmpty()
+    val subtotal: Double get() = items.sumOf { it.lineTotal }
+    val cartDiscountAmount: Double get() = cartDiscount.apply(subtotal)
+    val total: Double get() = (subtotal - cartDiscountAmount).coerceAtLeast(0.0)
+}

@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.sell.sibling
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.CartLine
-import app.devper.pharm.domain.model.CartSnapshot
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
 import app.devper.pharm.domain.model.Customer
@@ -64,11 +63,10 @@ class CheckoutViewModel(
                 lastCustomer = snap.selectedCustomer
                 val received = snap.cashReceived.toDoubleOrNull() ?: 0.0
                 lastReceivedNum = received
-                val total = computeTotal(snap)
                 setState {
                     copy(
-                        cartIsEmpty = snap.items.isEmpty(),
-                        tenderOk = received >= total,
+                        cartIsEmpty = snap.isEmpty,
+                        tenderOk = received >= snap.total,
                     )
                 }
             }
@@ -273,10 +271,4 @@ class CheckoutViewModel(
         pendingKyFields = null
         pendingKySkippedByCashier = false
     }
-}
-
-private fun computeTotal(snap: CartSnapshot): Double {
-    val subtotal = snap.items.sumOf { it.lineTotal }
-    val cartDiscount = snap.cartDiscount.apply(subtotal)
-    return (subtotal - cartDiscount).coerceAtLeast(0.0)
 }
