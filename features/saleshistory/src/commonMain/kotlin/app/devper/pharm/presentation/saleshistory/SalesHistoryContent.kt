@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.saleshistory
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,10 +33,7 @@ fun SalesHistoryContent(
             .fillMaxSize()
             .background(t.colors.bgPage)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        SalesHistorySummaryStats(sales = state.sales)
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -51,6 +47,7 @@ fun SalesHistoryContent(
                 total = state.sales.size,
                 noun = "บิล",
                 searching = searching,
+                trailing = { SalesHistoryTotalStat(sales = state.sales) },
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
