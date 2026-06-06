@@ -1,0 +1,59 @@
+package app.devper.pharm.presentation.navigation
+
+import androidx.compose.ui.graphics.vector.ImageVector
+import app.devper.pharm.presentation.customers.Customers
+import app.devper.pharm.presentation.expiry.Expiry
+import app.devper.pharm.presentation.help.Help
+import app.devper.pharm.presentation.imports.Imports
+import app.devper.pharm.presentation.ky.Ky9
+import app.devper.pharm.presentation.labels.LabelPrint
+import app.devper.pharm.presentation.movements.Movements
+import app.devper.pharm.presentation.offlinesync.OfflineSync
+import app.devper.pharm.presentation.reports.Profit
+import app.devper.pharm.presentation.reports.Reports
+import app.devper.pharm.presentation.saleshistory.SalesHistory
+import app.devper.pharm.presentation.sell.Sell
+import app.devper.pharm.presentation.settings.Settings as SettingsRoute
+import app.devper.pharm.presentation.stock.Stock
+import app.devper.pharm.presentation.stockcount.StockCounts
+import app.devper.pharm.presentation.suppliers.Suppliers
+import app.devper.pharm.presentation.users.Users
+import app.devper.pharm.ui.components.NavItem
+import app.devper.pharm.ui.designsystem.PharmIcons
+
+private fun routeKey(route: Any): String =
+    requireNotNull(route::class.qualifiedName) { "main nav route ${route::class.simpleName} must have a qualified name" }
+
+private data class MainNavEntry(
+    val route: Any,
+    val label: String,
+    val icon: ImageVector,
+    val admin: Boolean = false,
+)
+
+private val MAIN_NAV_TABLE: List<MainNavEntry> = listOf(
+    MainNavEntry(Sell,          "หน้าขายยา",           PharmIcons.Sell),
+    MainNavEntry(SalesHistory,  "ประวัติการขาย",       PharmIcons.SalesHistory),
+    MainNavEntry(Stock,         "สต็อกยา",             PharmIcons.Stock),
+    MainNavEntry(StockCounts,   "ตรวจนับสต็อก",        PharmIcons.StockCount, admin = true),
+    MainNavEntry(Expiry,        "จัดการวันหมดอายุ",    PharmIcons.Expiry,     admin = true),
+    MainNavEntry(LabelPrint,    "พิมพ์ฉลาก",           PharmIcons.Print,      admin = true),
+    MainNavEntry(Movements,     "ความเคลื่อนไหวสต็อก", PharmIcons.Movements),
+    MainNavEntry(OfflineSync,   "รายการค้างซิงค์",     PharmIcons.OfflineSync),
+    MainNavEntry(Imports,       "นำเข้าสินค้า",        PharmIcons.Imports,    admin = true),
+    MainNavEntry(Suppliers,     "ซัพพลายเออร์",        PharmIcons.Suppliers,  admin = true),
+    MainNavEntry(Customers,     "ลูกค้า",              PharmIcons.Customers),
+    MainNavEntry(Reports,       "รายงาน",              PharmIcons.Reports),
+    MainNavEntry(Profit,        "กำไร",                PharmIcons.Profit,     admin = true),
+    MainNavEntry(Ky9,           "แบบฟอร์ม ขย. 9–12",   PharmIcons.KyForms,    admin = true),
+    MainNavEntry(Users,         "จัดการผู้ใช้งาน",     PharmIcons.Users,      admin = true),
+    MainNavEntry(SettingsRoute, "ตั้งค่าระบบ",         PharmIcons.Settings,   admin = true),
+    MainNavEntry(Help,          "คู่มือการใช้งาน",     PharmIcons.Help),
+)
+
+val mainNavConfig: MainNavConfig = MainNavConfig(
+    items = MAIN_NAV_TABLE.map { entry ->
+        NavItem(route = routeKey(entry.route), label = entry.label, icon = entry.icon, admin = entry.admin)
+    },
+    routeForKey = { key -> MAIN_NAV_TABLE.firstOrNull { routeKey(it.route) == key }?.route },
+)
