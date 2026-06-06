@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ fun PharmButton(
 
     Row(
         modifier = modifier
+            .heightIn(min = t.dimens.controlHeight)
             .pharmFocusRing(interactionSource = interaction, shape = shape)
             .clip(shape)
             .alpha(if (enabled || loading) 1f else 0.5f)

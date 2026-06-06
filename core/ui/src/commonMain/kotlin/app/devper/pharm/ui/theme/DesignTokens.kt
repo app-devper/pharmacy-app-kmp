@@ -170,10 +170,11 @@ data class PharmShapes(
 
 @Immutable
 data class PharmDimens(
-    val sidebarWidth: Dp = 224.dp,
-    val topbarHeight: Dp = 57.dp,
-    val cartWidth:    Dp = 288.dp,
-    val modalMax:     Dp = 448.dp,
+    val sidebarWidth:  Dp = 224.dp,
+    val topbarHeight:  Dp = 57.dp,
+    val cartWidth:     Dp = 288.dp,
+    val modalMax:      Dp = 448.dp,
+    val controlHeight: Dp = 40.dp,
 )
 
 @Immutable
