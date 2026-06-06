@@ -27,7 +27,9 @@ class CartRepositoryImpl(
     private val parkedCartStorage: ParkedCartStorage,
 ) : CartRepository {
 
-    private val _state = MutableStateFlow(CartState.Empty)
+    private val _state = MutableStateFlow(
+        parkedCartStorage.loadActive()?.let { CartState(active = it) } ?: CartState.Empty,
+    )
     override val state: StateFlow<CartState> = _state.asStateFlow()
 
     private val _parkedSlots = MutableStateFlow<List<ParkedCart?>>(
@@ -128,6 +130,7 @@ class CartRepositoryImpl(
 
     override fun commitReceipt(sale: Sale) {
         _state.value = CartState(active = ActiveCart.Empty, lastReceipt = sale)
+        persistActive(ActiveCart.Empty)
     }
 
     override fun dismissReceipt() {
@@ -136,6 +139,7 @@ class CartRepositoryImpl(
 
     override fun clear() {
         _state.value = CartState.Empty
+        persistActive(ActiveCart.Empty)
     }
 
     override fun parkCart(slot: Int) {
@@ -170,6 +174,7 @@ class CartRepositoryImpl(
             ),
             lastReceipt = null,
         )
+        persistActive(_state.value.active)
 
         parkedCartStorage.clear(slot)
         _parkedSlots.update { current -> current.replaceAt(slot, null) }
@@ -183,6 +188,12 @@ class CartRepositoryImpl(
 
     private inline fun mutateActive(crossinline transform: (ActiveCart) -> ActiveCart) {
         _state.update { it.copy(active = transform(it.active)) }
+        persistActive(_state.value.active)
+    }
+
+    private fun persistActive(active: ActiveCart) {
+        if (active.items.isEmpty()) parkedCartStorage.clearActive()
+        else parkedCartStorage.saveActive(active)
     }
 
     private fun isValidSlot(slot: Int) = slot in 0 until PARK_SLOT_COUNT
