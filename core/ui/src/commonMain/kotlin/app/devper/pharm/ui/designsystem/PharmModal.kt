@@ -104,7 +104,7 @@ fun PharmModal(
 
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(48.dp)
                                 .clip(t.shapes.sm)
                                 .clickable(onClick = onDismiss)
                                 .semantics(mergeDescendants = true) {

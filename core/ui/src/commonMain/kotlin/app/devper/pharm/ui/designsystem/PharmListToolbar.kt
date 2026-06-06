@@ -58,7 +58,7 @@ fun PharmListToolbar(
                 if (onBack != null) {
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(48.dp)
                             .clip(t.shapes.md)
                             .clickable(role = Role.Button, onClick = onBack),
                         contentAlignment = Alignment.Center,
