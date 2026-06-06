@@ -30,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -48,22 +49,38 @@ fun BulkImportContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .verticalScroll(scroll)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .background(t.colors.bgPage),
     ) {
-        BulkImportHeader(onDownloadTemplate = callbacks.onDownloadTemplate)
+        PharmListToolbar(
+            title = "นำเข้ายาด้วย JSON",
+            subtitle = "อัปโหลดไฟล์ JSON หรือวางข้อความเพื่อสร้างยาทีเดียวหลายรายการ",
+            actions = {
+                PharmButton(
+                    label = "ดาวน์โหลด Template",
+                    onClick = callbacks.onDownloadTemplate,
+                    variant = PharmButtonVariant.Outline,
+                    size = PharmButtonSize.Sm,
+                    leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
+                )
+            },
+        )
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .fillMaxSize()
+                .verticalScroll(scroll)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(t.shapes.lg)
+                    .background(t.colors.surface)
+                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
             BulkImportDropZone(onPickFile = callbacks.onPickFile)
 
             BulkImportJsonInput(
@@ -102,34 +119,10 @@ fun BulkImportContent(
                 }
             }
         }
+        }
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun BulkImportHeader(onDownloadTemplate: () -> Unit) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(text = "นำเข้ายาด้วย JSON", style = PharmText.h1)
-            Text(
-                text = "อัปโหลดไฟล์ JSON หรือวางข้อความเพื่อสร้างยาทีเดียวหลายรายการ",
-                style = PharmText.meta.copy(color = t.colors.fg3),
-            )
-        }
-        PharmButton(
-            label = "ดาวน์โหลด Template",
-            onClick = onDownloadTemplate,
-            variant = PharmButtonVariant.Outline,
-            size = PharmButtonSize.Sm,
-            leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
-        )
-    }
 }
 
 @Composable
