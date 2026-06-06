@@ -35,50 +35,57 @@ fun Ky9Content(
     val totalValue = state.entries.sumOf { it.totalValue }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(t.colors.bgPage).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
     ) {
-        state.message?.let { msg -> KyMessageBanner(msg, callbacks.onDismissMessage) }
-
+        KyToolbar(
+            currentForm = KyFormType.Ky9,
+            onSwitchForm = callbacks.onSwitchForm,
+            month = state.month,
+            onMonthChange = callbacks.onMonthChange,
+            onApply = callbacks.onApply,
+            onExport = callbacks.onExport,
+            exporting = state.exporting,
+            onAddEntry = callbacks.onAddEntry,
+        )
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            KyToolbar(
-                currentForm = KyFormType.Ky9,
-                onSwitchForm = callbacks.onSwitchForm,
-                month = state.month,
-                onMonthChange = callbacks.onMonthChange,
-                onApply = callbacks.onApply,
-                onExport = callbacks.onExport,
-                exporting = state.exporting,
-                onAddEntry = callbacks.onAddEntry,
-            )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            PharmListResultLine(
-                total = state.entries.size,
-                noun = "รายการ",
-                trailing = { KyValueStat(totalValue = totalValue) },
-            )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            state.message?.let { msg -> KyMessageBanner(msg, callbacks.onDismissMessage) }
 
-            when {
-                state.loading && state.entries.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmCircularProgress(color = t.colors.accent)
-                    }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .clip(t.shapes.lg)
+                    .background(t.colors.surface)
+                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+            ) {
+                PharmListResultLine(
+                    total = state.entries.size,
+                    noun = "รายการ",
+                    trailing = { KyValueStat(totalValue = totalValue) },
+                )
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
-                else -> KyTable(rows = rows, formType = KyFormType.Ky9)
+                when {
+                    state.loading && state.entries.isEmpty() ->
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            PharmCircularProgress(color = t.colors.accent)
+                        }
+
+                    else -> KyTable(rows = rows, formType = KyFormType.Ky9)
+                }
             }
-        }
 
-        Text(
-            text = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข",
-            style = PharmText.micro.copy(color = t.colors.fgMuted),
-        )
+            Text(
+                text = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข",
+                style = PharmText.micro.copy(color = t.colors.fgMuted),
+            )
+        }
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)

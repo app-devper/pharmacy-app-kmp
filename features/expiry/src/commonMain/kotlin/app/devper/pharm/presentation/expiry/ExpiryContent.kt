@@ -43,24 +43,23 @@ fun ExpiryContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .background(t.colors.bgPage),
     ) {
+        ExpiryToolbar(
+            window = state.window,
+            selectedCount = state.totalSelected,
+            writingOff = state.writingOff,
+            callbacks = callbacks,
+        )
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp)
                 .clip(t.shapes.lg)
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            ExpiryToolbar(
-                window = state.window,
-                selectedCount = state.totalSelected,
-                writingOff = state.writingOff,
-                callbacks = callbacks,
-            )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(
                 total = state.lots.size,
                 noun = "ล็อต",

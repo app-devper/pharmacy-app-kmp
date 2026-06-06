@@ -40,23 +40,22 @@ fun ImportsListContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .background(t.colors.bgPage),
     ) {
+        ImportsListToolbar(
+            query = state.query,
+            draftCount = state.draftCount,
+            callbacks = callbacks,
+        )
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp)
                 .clip(t.shapes.lg)
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            ImportsListToolbar(
-                query = state.query,
-                draftCount = state.draftCount,
-                callbacks = callbacks,
-            )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(total = state.orders.size, noun = "ใบ", visible = visible.size, searching = searching)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
