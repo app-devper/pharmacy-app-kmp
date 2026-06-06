@@ -28,8 +28,14 @@ fun NavGraphBuilder.kyGraph(
             role = role,
             user = user,
         ) {
-            Ky9Screen(onSwitchForm = { switchKyForm(it, navController) })
+            Ky9Screen(
+                onSwitchForm = { switchKyForm(it, navController) },
+                onAddEntry = { navController.navigate(Ky9Add) { launchSingleTop = true } },
+            )
         }
+    }
+    composable<Ky9Add> {
+        Ky9AddScreen(onBack = { navController.popBackStack() })
     }
     composable<Ky10> {
         ShelledScreen(
