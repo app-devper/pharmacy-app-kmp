@@ -2,9 +2,7 @@ package app.devper.pharm.presentation.stock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -14,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,15 +39,7 @@ fun DrugAdjustScreen(
         onDismissError = viewModel::dismissError,
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        DrugSubPageHeader(title = "ปรับสต็อก", onBack = onBack)
-
+    PharmSubPage(title = "ปรับสต็อก", onBack = onBack) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
