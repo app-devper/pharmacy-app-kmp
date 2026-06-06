@@ -1,4 +1,4 @@
-package app.devper.pharm.presentation.sell.sibling
+package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.usecase.ClearCustomerUseCase

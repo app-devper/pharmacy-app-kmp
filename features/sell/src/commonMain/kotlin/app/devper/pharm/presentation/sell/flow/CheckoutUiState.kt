@@ -1,4 +1,4 @@
-package app.devper.pharm.presentation.sell.sibling
+package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.KyRequired
