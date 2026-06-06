@@ -9,17 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -52,7 +51,12 @@ fun StockContent(
                 callbacks = callbacks,
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            StockResultLine(visible = visible.size, total = state.drugs.size, searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All)
+            PharmListResultLine(
+                total = state.drugs.size,
+                noun = "รายการ",
+                visible = visible.size,
+                searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
+            )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {
@@ -68,18 +72,6 @@ fun StockContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun StockResultLine(visible: Int, total: Int, searching: Boolean) {
-    val t = pharmTokens
-    val text = if (searching) "พบ $visible รายการ จากทั้งหมด $total"
-    else "ทั้งหมด $total รายการ"
-    Text(
-        text = text,
-        style = PharmText.micro.copy(color = t.colors.fg3),
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 private val sampleDrugs = listOf(
