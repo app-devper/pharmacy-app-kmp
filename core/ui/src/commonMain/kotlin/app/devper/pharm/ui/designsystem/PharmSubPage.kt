@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -15,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -36,7 +38,9 @@ fun PharmSubPage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(t.colors.bgPage),
+            .clip(t.shapes.lg)
+            .background(t.colors.surface)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
     ) {
         PharmSubPageHeader(
             title = title,

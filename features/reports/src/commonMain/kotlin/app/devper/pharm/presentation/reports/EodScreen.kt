@@ -6,10 +6,11 @@ import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun EodScreen(viewModel: EodViewModel = koinViewModel()) {
+fun EodScreen(onBack: () -> Unit = {}, viewModel: EodViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     EodContent(
         state = state,
+        onBack = onBack,
         callbacks = EodCallbacks(
             onDateChange = viewModel::onDateChange,
             onApplyDate = viewModel::applyDate,

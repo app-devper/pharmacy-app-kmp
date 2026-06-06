@@ -22,6 +22,6 @@ fun NavGraphBuilder.reportsNav(navController: NavController) {
         ProfitScreen()
     }
     composable<Eod> {
-        EodScreen()
+        EodScreen(onBack = { navController.popBackStack() })
     }
 }
