@@ -62,6 +62,7 @@ fun PharmSubPage(
                 .then(bodyScroll)
                 .padding(contentPadding),
             verticalArrangement = if (contentSpacing) Arrangement.spacedBy(12.dp) else Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
             content = content,
         )
 
