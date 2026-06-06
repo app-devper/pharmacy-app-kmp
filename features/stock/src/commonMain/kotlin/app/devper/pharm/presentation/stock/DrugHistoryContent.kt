@@ -2,13 +2,11 @@ package app.devper.pharm.presentation.stock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,6 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.theme.PharmText
@@ -44,15 +43,7 @@ fun DrugHistoryContent(
 ) {
     val t = pharmTokens
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        DrugSubPageHeader(title = "ประวัติสต็อก", subtitle = state.drugName, onBack = onBack)
-
+    PharmSubPage(title = "ประวัติสต็อก", subtitle = state.drugName, onBack = onBack) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
