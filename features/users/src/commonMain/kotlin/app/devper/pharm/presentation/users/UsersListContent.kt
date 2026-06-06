@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,11 +34,13 @@ import app.devper.pharm.domain.util.UmRoleValidator
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.designsystem.PharmTableSurface
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -49,9 +53,33 @@ fun UsersListContent(
     callbacks: UsersListCallbacks,
 ) {
     val t = pharmTokens
-    Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            UsersHeader(state = state, callbacks = callbacks)
+    val visible = state.filtered
+    val searching = state.searchQuery.isNotBlank()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(t.colors.bgPage)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(t.shapes.lg)
+                .background(t.colors.surface)
+                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+        ) {
+            UsersListToolbar(state = state, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmListResultLine(
+                total = state.users.size,
+                noun = "คน",
+                visible = visible.size,
+                searching = searching,
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+
             when {
                 state.loading && state.users.isEmpty() -> PharmListSkeleton()
                 state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
@@ -60,76 +88,53 @@ fun UsersListContent(
                     action = {
                         if (UmRoleValidator.canManageUsers(state.currentUserRole)) {
                             PharmButton(
-                                label = "+ เพิ่มผู้ใช้งานคนแรก",
+                                label = "เพิ่มผู้ใช้งานคนแรก",
                                 onClick = callbacks.onAddUser,
                                 variant = PharmButtonVariant.Primary,
+                                size = PharmButtonSize.Sm,
+                                leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
                             )
                         }
                     },
                 )
-                else -> UsersTableSection(state = state, callbacks = callbacks)
+                else -> UsersListTable(
+                    users = visible,
+                    actorRole = state.currentUserRole,
+                    currentUserId = state.currentUserId,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
             }
         }
     }
+
     ActionDialog(state = state, callbacks = callbacks)
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
 }
 
 @Composable
-private fun UsersHeader(
+private fun UsersListToolbar(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = "จัดการผู้ใช้งาน", style = PharmText.h1)
-                Text(
-                    text = "บัญชีผู้ใช้ในระบบ User Management",
-                    style = PharmText.micro.copy(color = t.colors.fgMuted),
-                )
-            }
+    PharmListToolbar(
+        title = "จัดการผู้ใช้งาน",
+        subtitle = "บัญชีผู้ใช้ในระบบ User Management",
+        searchValue = state.searchQuery,
+        onSearchChange = callbacks.onSearch,
+        searchPlaceholder = "ค้นหาชื่อ / username / อีเมล…",
+        titleStyle = PharmText.h2,
+        actions = {
             if (UmRoleValidator.canManageUsers(state.currentUserRole)) {
                 PharmButton(
-                    label = "+ เพิ่มผู้ใช้งาน",
+                    label = "เพิ่มผู้ใช้งาน",
                     onClick = callbacks.onAddUser,
-                    variant = PharmButtonVariant.Primary,
+                    size = PharmButtonSize.Sm,
+                    leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
                 )
             }
-        }
-        Box(modifier = Modifier.widthIn(max = 360.dp)) {
-            PharmTextField(
-                value = state.searchQuery,
-                onValueChange = callbacks.onSearch,
-                placeholder = "ค้นหาชื่อ / username / อีเมล…",
-            )
-        }
-    }
-}
-
-@Composable
-private fun UsersTableSection(
-    state: UsersListUiState,
-    callbacks: UsersListCallbacks,
-) {
-    PharmTableSurface(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 8.dp),
-    ) {
-        UsersListTable(
-            users = state.filtered,
-            actorRole = state.currentUserRole,
-            currentUserId = state.currentUserId,
-            callbacks = callbacks,
-            emptySearching = state.searchQuery.isNotBlank(),
-        )
-    }
+        },
+    )
 }
 
 @Composable

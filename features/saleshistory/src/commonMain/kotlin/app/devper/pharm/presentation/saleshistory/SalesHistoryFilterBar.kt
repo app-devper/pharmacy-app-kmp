@@ -1,24 +1,19 @@
 package app.devper.pharm.presentation.saleshistory
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.saleshistory.internal.formatYmdDisplay
 import app.devper.pharm.presentation.saleshistory.internal.ymdToMillis
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
-import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun SalesHistoryFilterBar(
+internal fun SalesHistoryListToolbar(
     state: SalesHistoryUiState,
     callbacks: SalesHistoryCallbacks,
     modifier: Modifier = Modifier,
@@ -28,12 +23,13 @@ internal fun SalesHistoryFilterBar(
         toMillis = ymdToMillis(state.to),
     )
 
-    FlowRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Box(modifier = Modifier.weight(1f)) {
+    PharmListToolbar(
+        title = "ประวัติการขาย",
+        modifier = modifier,
+        searchValue = state.query,
+        onSearchChange = callbacks.onQueryChange,
+        searchPlaceholder = "เลขบิล หรือ ชื่อลูกค้า…",
+        filters = {
             PharmDateRangeField(
                 range = range,
                 onRangeChange = { next ->
@@ -41,19 +37,15 @@ internal fun SalesHistoryFilterBar(
                     if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                 },
                 formatDate = { millis -> formatYmdDisplay(millis) },
+                modifier = Modifier.weight(1f),
             )
-        }
-        Box(modifier = Modifier.weight(1f)) {
-            PharmTextField(
-                value = state.query,
-                onValueChange = callbacks.onQueryChange,
-                placeholder = "เลขบิล หรือ ชื่อลูกค้า…",
+        },
+        actions = {
+            PharmButton(
+                label = "ค้นหา",
+                onClick = callbacks.onApplyFilter,
+                size = PharmButtonSize.Sm,
             )
-        }
-        PharmButton(
-            label = "ค้นหา",
-            onClick = callbacks.onApplyFilter,
-            size = PharmButtonSize.Md,
-        )
-    }
+        },
+    )
 }

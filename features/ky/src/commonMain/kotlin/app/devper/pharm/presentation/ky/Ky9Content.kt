@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -29,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -48,20 +50,6 @@ fun Ky9Content(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        KyFormHeader(form = KyFormType.Ky9)
-        KyToolbar(
-            currentForm = KyFormType.Ky9,
-            onSwitchForm = callbacks.onSwitchForm,
-            month = state.month,
-            onMonthChange = callbacks.onMonthChange,
-            onApply = callbacks.onApply,
-            onExport = callbacks.onExport,
-            exporting = state.exporting,
-            rowCount = state.entries.size,
-            totalValue = totalValue,
-            onAddEntry = callbacks.onToggleAddForm,
-        )
-
         state.message?.let { msg -> KyMessageBanner(msg, callbacks.onDismissMessage) }
 
         if (state.addFormOpen) {
@@ -75,6 +63,24 @@ fun Ky9Content(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            KyToolbar(
+                currentForm = KyFormType.Ky9,
+                onSwitchForm = callbacks.onSwitchForm,
+                month = state.month,
+                onMonthChange = callbacks.onMonthChange,
+                onApply = callbacks.onApply,
+                onExport = callbacks.onExport,
+                exporting = state.exporting,
+                onAddEntry = callbacks.onToggleAddForm,
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmListResultLine(
+                total = state.entries.size,
+                noun = "รายการ",
+                trailing = { KyValueStat(totalValue = totalValue) },
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+
             when {
                 state.loading && state.entries.isEmpty() ->
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
