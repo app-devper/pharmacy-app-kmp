@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -178,7 +179,7 @@ private fun HelpToc(
                     .fillMaxWidth()
                     .clip(t.shapes.md)
                     .background(bg)
-                    .clickable { onSelect(section.id) }
+                    .clickable(role = Role.Button) { onSelect(section.id) }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             )
         }

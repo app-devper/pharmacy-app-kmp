@@ -60,7 +60,7 @@ fun PharmActionMenu(
                     contentDescription = "เปิดเมนู"
                     role = Role.Button
                 }
-                .clickable { expanded = true },
+                .clickable(role = Role.Button) { expanded = true },
             contentAlignment = Alignment.Center,
         ) {
             Box(

@@ -241,7 +241,7 @@ private fun RemoveButton(onRemove: () -> Unit) {
         modifier = Modifier
             .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
             .clip(t.shapes.sm)
-            .clickable(onClick = onRemove)
+            .clickable(role = Role.Button, onClick = onRemove)
             .semantics {
                 contentDescription = "ลบบรรทัด"
                 role = Role.Button

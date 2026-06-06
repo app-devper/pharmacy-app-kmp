@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -86,7 +87,7 @@ fun ImportDrugPickerDialog(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(t.shapes.sm)
-                                .clickable { query = "" },
+                                .clickable(role = Role.Button) { query = "" },
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
@@ -108,7 +109,7 @@ fun ImportDrugPickerDialog(
                                 .fillMaxWidth()
                                 .clip(t.shapes.md)
                                 .background(t.colors.surface, t.shapes.md)
-                                .clickable { onPick(drug) }
+                                .clickable(role = Role.Button) { onPick(drug) }
                                 .padding(horizontal = 12.dp, vertical = 10.dp),
                         ) {
                             Text(drug.name, style = PharmText.body.copy(color = t.colors.fg1))

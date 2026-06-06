@@ -43,7 +43,7 @@ fun CartCustomerPill(
             .padding(horizontal = 12.dp, vertical = 8.dp)
             .clip(t.shapes.md)
             .background(t.colors.accentBgSoft)
-            .clickable(onClick = onPick)
+            .clickable(role = Role.Button, onClick = onPick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

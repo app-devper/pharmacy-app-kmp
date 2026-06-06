@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,7 +43,7 @@ fun PharmListCard(
         .clip(shape)
         .background(t.colors.surface, shape)
         .border(1.dp, borderColor, shape)
-    if (onClick != null) surface = surface.clickable(onClick = onClick)
+    if (onClick != null) surface = surface.clickable(role = Role.Button, onClick = onClick)
 
     Row(
         modifier = surface.padding(12.dp),

@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -147,7 +148,7 @@ private fun FilledSlotRow(
             .fillMaxWidth()
             .clip(t.shapes.md)
             .background(t.colors.accentBgSoft)
-            .clickable(onClick = onRestore)
+            .clickable(role = Role.Button, onClick = onRestore)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
