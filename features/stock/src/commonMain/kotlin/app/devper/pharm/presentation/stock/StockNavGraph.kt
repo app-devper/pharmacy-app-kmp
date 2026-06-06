@@ -6,7 +6,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import app.devper.pharm.presentation.movements.Movements
 import app.devper.pharm.presentation.navigation.ShelledScreen
 import app.devper.pharm.presentation.planning.ReorderSuggestions
 
@@ -35,7 +34,7 @@ fun NavGraphBuilder.stockGraph(
                 onEditDrug = { id -> navController.navigate(DrugEdit(id)) { launchSingleTop = true } },
                 onOpenLots = { id -> navController.navigate(DrugEdit(id)) { launchSingleTop = true } },
                 onOpenAdjust = { id -> navController.navigate(DrugEdit(id)) { launchSingleTop = true } },
-                onOpenHistory = { navController.navigate(Movements) { launchSingleTop = true } },
+                onOpenHistory = { id, name -> navController.navigate(DrugHistory(id, name)) { launchSingleTop = true } },
                 onOpenReorderSuggestions = { navController.navigate(ReorderSuggestions) { launchSingleTop = true } },
             )
         }
@@ -50,6 +49,13 @@ fun NavGraphBuilder.stockGraph(
         val route = entry.toRoute<DrugEdit>()
         DrugFormScreen(
             drugId = route.id,
+            onBack = { navController.popBackStack() },
+        )
+    }
+    composable<DrugHistory> { entry ->
+        val route = entry.toRoute<DrugHistory>()
+        DrugHistoryScreen(
+            drugName = route.drugName,
             onBack = { navController.popBackStack() },
         )
     }
