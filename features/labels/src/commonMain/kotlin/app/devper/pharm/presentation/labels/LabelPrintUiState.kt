@@ -16,16 +16,15 @@ data class LabelPrintUiState(
     override val error: String? = null,
 ) : BaseUiState {
 
-    val filteredDrugs: List<Drug>
-        get() {
-            val q = query.trim().lowercase()
-            return if (q.isEmpty()) drugs
-            else drugs.filter { it.matches(q) }
-        }
+    val filteredDrugs: List<Drug> = run {
+        val q = query.trim().lowercase()
+        if (q.isEmpty()) drugs
+        else drugs.filter { it.matches(q) }
+    }
 
-    val totalCopies: Int get() = lines.sumOf { it.copies.coerceAtLeast(0) }
-    val canPrint: Boolean get() = !printing && totalCopies > 0
-    val previewLine: LabelLine? get() = lines.firstOrNull()
+    val totalCopies: Int = lines.sumOf { it.copies.coerceAtLeast(0) }
+    val canPrint: Boolean = !printing && totalCopies > 0
+    val previewLine: LabelLine? = lines.firstOrNull()
 
     private fun Drug.matches(q: String): Boolean =
         name.lowercase().contains(q) ||

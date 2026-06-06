@@ -11,6 +11,5 @@ data class StockUiState(
     val drugs: List<Drug> = emptyList(),
     override val error: String? = null,
 ) : BaseUiState {
-    val filtered: List<Drug>
-        get() = DrugSearch.filter(drugs, query).filter { typeFilter.matches(it.type) }
+    val filtered: List<Drug> = DrugSearch.filter(drugs, query).filter { typeFilter.matches(it.type) }
 }

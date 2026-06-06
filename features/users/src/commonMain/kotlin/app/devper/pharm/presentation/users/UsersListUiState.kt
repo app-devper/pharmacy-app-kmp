@@ -18,15 +18,15 @@ data class UsersListUiState(
     override val error: String? = null,
 ) : BaseUiState {
 
-    val filtered: List<UmUser>
-        get() {
-            if (searchQuery.isBlank()) return users
-            val q = searchQuery.trim().lowercase()
-            return users.filter { u ->
-                u.firstName.lowercase().contains(q) ||
-                    u.lastName.lowercase().contains(q) ||
-                    u.username.lowercase().contains(q) ||
-                    u.email.lowercase().contains(q)
-            }
+    val filtered: List<UmUser> = if (searchQuery.isBlank()) {
+        users
+    } else {
+        val q = searchQuery.trim().lowercase()
+        users.filter { u ->
+            u.firstName.lowercase().contains(q) ||
+                u.lastName.lowercase().contains(q) ||
+                u.username.lowercase().contains(q) ||
+                u.email.lowercase().contains(q)
         }
+    }
 }

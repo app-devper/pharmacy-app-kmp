@@ -9,13 +9,13 @@ data class StockCountsListUiState(
     val counts: List<StockCount> = emptyList(),
     override val error: String? = null,
 ) : BaseUiState {
-    val filtered: List<StockCount>
-        get() {
-            if (query.isBlank()) return counts
-            val q = query.trim().lowercase()
-            return counts.filter { c ->
-                c.countNo.lowercase().contains(q) ||
-                    c.note.lowercase().contains(q)
-            }
+    val filtered: List<StockCount> = if (query.isBlank()) {
+        counts
+    } else {
+        val q = query.trim().lowercase()
+        counts.filter { c ->
+            c.countNo.lowercase().contains(q) ||
+                c.note.lowercase().contains(q)
         }
+    }
 }
