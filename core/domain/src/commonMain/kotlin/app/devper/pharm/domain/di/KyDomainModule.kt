@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.di
 
+import app.devper.pharm.domain.usecase.AddKy10UseCase
+import app.devper.pharm.domain.usecase.AddKy11UseCase
+import app.devper.pharm.domain.usecase.AddKy12UseCase
 import app.devper.pharm.domain.usecase.AddKy9UseCase
 import app.devper.pharm.domain.usecase.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.GetKy10EntriesUseCase
@@ -16,6 +19,9 @@ val kyDomainModule = module {
     factoryOf(::GetKy10EntriesUseCase)
     factoryOf(::GetKy11EntriesUseCase)
     factoryOf(::GetKy12EntriesUseCase)
+    factoryOf(::AddKy10UseCase)
+    factoryOf(::AddKy11UseCase)
+    factoryOf(::AddKy12UseCase)
     factoryOf(::ExportKyFormUseCase)
     factoryOf(::SubmitKyFormsUseCase)
 }
