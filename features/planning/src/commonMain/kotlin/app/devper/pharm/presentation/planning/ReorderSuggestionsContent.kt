@@ -2,13 +2,11 @@ package app.devper.pharm.presentation.planning
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,7 +21,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,16 +29,24 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun ReorderSuggestionsContent(
     state: ReorderSuggestionsUiState,
+    onBack: () -> Unit,
     callbacks: ReorderSuggestionsCallbacks = ReorderSuggestionsCallbacks(),
 ) {
     val t = pharmTokens
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    PharmSubPage(
+        title = "คำแนะนำสั่งซื้อ",
+        subtitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม",
+        onBack = onBack,
+        actions = {
+            PharmButton(
+                label = "รีเฟรช",
+                onClick = callbacks.onReload,
+                size = PharmButtonSize.Sm,
+                variant = PharmButtonVariant.Outline,
+                leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
+            )
+        },
     ) {
         Column(
             modifier = Modifier
@@ -49,8 +55,6 @@ fun ReorderSuggestionsContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            ReorderToolbar(onReload = callbacks.onReload)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(total = state.suggestions.size, noun = "รายการ")
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {
@@ -67,23 +71,6 @@ fun ReorderSuggestionsContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun ReorderToolbar(onReload: () -> Unit) {
-    PharmListToolbar(
-        title = "คำแนะนำสั่งซื้อ",
-        subtitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม",
-        actions = {
-            PharmButton(
-                label = "รีเฟรช",
-                onClick = onReload,
-                size = PharmButtonSize.Sm,
-                variant = PharmButtonVariant.Outline,
-                leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-            )
-        },
-    )
 }
 
 private val sampleSuggestions = listOf(
@@ -132,7 +119,7 @@ private val sampleSuggestions = listOf(
 @Composable
 private fun ReorderSuggestionsContent_Loaded_Preview() {
     PharmacyTheme {
-        ReorderSuggestionsContent(state = ReorderSuggestionsUiState(suggestions = sampleSuggestions))
+        ReorderSuggestionsContent(state = ReorderSuggestionsUiState(suggestions = sampleSuggestions), onBack = {})
     }
 }
 
@@ -140,7 +127,7 @@ private fun ReorderSuggestionsContent_Loaded_Preview() {
 @Composable
 private fun ReorderSuggestionsContent_Empty_Preview() {
     PharmacyTheme {
-        ReorderSuggestionsContent(state = ReorderSuggestionsUiState(suggestions = emptyList()))
+        ReorderSuggestionsContent(state = ReorderSuggestionsUiState(suggestions = emptyList()), onBack = {})
     }
 }
 
@@ -148,6 +135,6 @@ private fun ReorderSuggestionsContent_Empty_Preview() {
 @Composable
 private fun ReorderSuggestionsContent_Loading_Preview() {
     PharmacyTheme {
-        ReorderSuggestionsContent(state = ReorderSuggestionsUiState(loading = true))
+        ReorderSuggestionsContent(state = ReorderSuggestionsUiState(loading = true), onBack = {})
     }
 }
