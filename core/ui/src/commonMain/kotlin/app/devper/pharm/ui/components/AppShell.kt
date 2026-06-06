@@ -18,10 +18,12 @@ import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +43,15 @@ data class NavItem(
     val icon: ImageVector,
     val admin: Boolean = false,
 )
+
+@Immutable
+data class SidebarState(
+    val collapsed: Boolean = false,
+    val canCollapse: Boolean = false,
+    val toggle: () -> Unit = {},
+)
+
+val LocalSidebarState = staticCompositionLocalOf { SidebarState() }
 
 private fun Role.canSeeAdminNav(): Boolean = this == Role.SUPER || this == Role.ADMIN || this == Role.MANAGER
 
@@ -170,7 +181,7 @@ private fun ExpandedShell(
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
-    var collapsed by remember { mutableStateOf(false) }
+    val sidebar = LocalSidebarState.current
 
     Row(
         modifier = Modifier
@@ -188,8 +199,8 @@ private fun ExpandedShell(
                 icon = logoutItem.icon,
                 label = logoutItem.label,
             ),
-            collapsed = collapsed,
-            onToggleCollapse = { collapsed = !collapsed },
+            collapsed = sidebar.collapsed,
+            onToggleCollapse = if (sidebar.canCollapse) sidebar.toggle else null,
         )
 
         Column(

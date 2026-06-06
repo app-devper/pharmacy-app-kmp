@@ -8,12 +8,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.presentation.AppViewModel
 import app.devper.pharm.presentation.navigation.AppNavHost
+import app.devper.pharm.ui.components.LocalSidebarState
+import app.devper.pharm.ui.components.SidebarState
 import app.devper.pharm.ui.designsystem.LocalPharmDensity
 import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.common.LocalPharmSnackbar
@@ -47,6 +51,14 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
         DensityPreference.Comfortable -> PharmDensity.Comfortable
         DensityPreference.Compact     -> PharmDensity.Compact
     }
+    var sidebarCollapsed by remember { mutableStateOf(false) }
+    val sidebarState = remember(sidebarCollapsed) {
+        SidebarState(
+            collapsed = sidebarCollapsed,
+            canCollapse = true,
+            toggle = { sidebarCollapsed = !sidebarCollapsed },
+        )
+    }
     PharmacyTheme(
         darkTheme = darkTheme,
         fontScale = state.uiPreferences.fontSize.scale,
@@ -54,6 +66,7 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
         CompositionLocalProvider(
             LocalThemeController provides themeController,
             LocalPharmDensity provides density,
+            LocalSidebarState provides sidebarState,
             LocalPharmSnackbar provides snackbarHost,
         ) {
             Surface {
