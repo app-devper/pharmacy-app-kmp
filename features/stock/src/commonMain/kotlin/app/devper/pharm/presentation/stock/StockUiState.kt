@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.util.DrugSearch
+import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.ui.common.BaseUiState
 
 data class StockUiState(
@@ -11,5 +11,5 @@ data class StockUiState(
     val drugs: List<Drug> = emptyList(),
     override val error: String? = null,
 ) : BaseUiState {
-    val filtered: List<Drug> = DrugSearch.filter(drugs, query).filter { typeFilter.matches(it.type) }
+    val filtered: List<Drug> = drugs.searchByQuery(query).filter { typeFilter.matches(it.type) }
 }

@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.pricing
+package app.devper.pharm.domain.extension
 
 object Tier {
     const val Retail    = "retail"

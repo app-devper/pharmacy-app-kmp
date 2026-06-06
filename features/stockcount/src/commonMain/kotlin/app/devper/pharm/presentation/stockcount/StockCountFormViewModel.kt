@@ -3,7 +3,8 @@ package app.devper.pharm.presentation.stockcount
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.param.CreateStockCountParam
-import app.devper.pharm.domain.parser.StockCountInputBuilder
+import app.devper.pharm.domain.extension.buildStockCountInput
+import app.devper.pharm.domain.extension.parsePendingStockCounts
 import app.devper.pharm.domain.usecase.ClearStockCountDraftUseCase
 import app.devper.pharm.domain.usecase.CreateStockCountUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
@@ -103,7 +104,7 @@ class StockCountFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val s = current
-        val lines = StockCountInputBuilder.build(s.counts)
+        val lines = buildStockCountInput(s.counts)
         val result = createStockCount(CreateStockCountParam(note = s.note.trim(), items = lines)).map { Unit }
         if (result.isSuccess) {
             clearDraft(Unit)

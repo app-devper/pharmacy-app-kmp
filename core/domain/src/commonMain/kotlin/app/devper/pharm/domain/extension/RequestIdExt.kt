@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.util
+package app.devper.pharm.domain.extension
 
 import kotlin.random.Random
 

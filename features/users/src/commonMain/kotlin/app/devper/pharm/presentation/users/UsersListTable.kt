@@ -12,7 +12,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.util.UmRoleValidator
+import app.devper.pharm.domain.extension.canManage
+import app.devper.pharm.domain.extension.canManageUsers
+import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
@@ -183,7 +185,7 @@ private fun UsersRowActions(
     isSelf: Boolean,
     callbacks: UsersListCallbacks,
 ) {
-    val canManage = UmRoleValidator.canManage(actor = actorRole, target = user.role, isSelf = isSelf)
+    val canManage = actorRole.canManage(target = user.role, isSelf = isSelf)
     val actions = buildList {
         add(
             PharmAction(

@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.domain.parser.Ky9DraftBuilder
+import app.devper.pharm.domain.extension.buildKy9Draft
+import app.devper.pharm.domain.extension.isKy9DraftValid
 import app.devper.pharm.ui.common.BaseUiState
 
 data class Ky9AddUiState(
@@ -11,7 +12,7 @@ data class Ky9AddUiState(
     override val error: String? = null,
 ) : BaseUiState {
     val canSubmitDraft: Boolean
-        get() = !saving && Ky9DraftBuilder.isDraftValid(
+        get() = !saving && isKy9DraftValid(
             date = draft.date,
             drugName = draft.drugName,
             unit = draft.unit,

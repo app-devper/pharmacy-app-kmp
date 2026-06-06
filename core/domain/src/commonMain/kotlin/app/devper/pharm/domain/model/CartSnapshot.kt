@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.model
 
-import app.devper.pharm.domain.pricing.Tier
+import app.devper.pharm.domain.extension.Tier
 
 data class CartSnapshot(
     val items: List<CartLine>,

@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.domain.parser.Ky10DraftBuilder
+import app.devper.pharm.domain.extension.buildKy10Draft
+import app.devper.pharm.domain.extension.isKy10DraftValid
 import app.devper.pharm.domain.usecase.AddKy10UseCase
 import app.devper.pharm.ui.common.BaseViewModel
 
@@ -22,7 +23,7 @@ class Ky10AddViewModel(
     fun submitAdd() {
         val s = current
         if (!s.canSubmitDraft) return
-        val form = Ky10DraftBuilder.build(
+        val form = buildKy10Draft(
             date = s.draft.date,
             drugName = s.draft.drugName,
             regNo = s.draft.regNo,

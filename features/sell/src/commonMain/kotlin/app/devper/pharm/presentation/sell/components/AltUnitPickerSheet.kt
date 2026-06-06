@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.pricing.resolvePrice
+import app.devper.pharm.domain.extension.resolvePrice
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens

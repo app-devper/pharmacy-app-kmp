@@ -1,8 +1,9 @@
 package app.devper.pharm.presentation.stockcount
 
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.parser.StockCountInputBuilder
-import app.devper.pharm.domain.util.DrugSearch
+import app.devper.pharm.domain.extension.buildStockCountInput
+import app.devper.pharm.domain.extension.parsePendingStockCounts
+import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.ui.common.BaseFormUiState
 
 data class StockCountFormUiState(
@@ -18,9 +19,9 @@ data class StockCountFormUiState(
 ) : BaseFormUiState<StockCountFormUiState> {
     private val drugById: Map<String, Drug> = drugs.associateBy { it.id }
 
-    val filtered: List<Drug> = DrugSearch.filter(drugs, query)
+    val filtered: List<Drug> = drugs.searchByQuery(query)
 
-    val pendingLines: List<Pair<String, Int>> = StockCountInputBuilder.parsePending(counts)
+    val pendingLines: List<Pair<String, Int>> = parsePendingStockCounts(counts)
 
     val changedLines: List<Pair<String, Int>> = pendingLines.filter { (id, counted) ->
         val drug = drugById[id] ?: return@filter false

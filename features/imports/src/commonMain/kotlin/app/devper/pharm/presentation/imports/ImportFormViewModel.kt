@@ -5,7 +5,8 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.param.AddPurchaseOrderParam
 import app.devper.pharm.domain.param.UpdatePurchaseOrderParam
-import app.devper.pharm.domain.parser.PurchaseOrderInputBuilder
+import app.devper.pharm.domain.extension.buildPurchaseOrderItemInput
+import app.devper.pharm.domain.extension.isPurchaseOrderLineValid
 import app.devper.pharm.domain.usecase.AddPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
@@ -57,7 +58,7 @@ class ImportFormViewModel(
         val f = current.form
 
         val itemInputs = f.items.map { line ->
-            PurchaseOrderInputBuilder.build(
+            buildPurchaseOrderItemInput(
                 drugId = line.drugId,
                 drugName = line.drugName,
                 lotNumber = line.lotNumber,

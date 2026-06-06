@@ -4,7 +4,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.repository.ExportRepository
-import app.devper.pharm.domain.util.CsvBuilder
+import app.devper.pharm.domain.extension.buildCsv
+import app.devper.pharm.domain.extension.buildCsvBytes
 
 class ExportMovementsCsvUseCase(
     private val export: ExportRepository,
@@ -13,7 +14,7 @@ class ExportMovementsCsvUseCase(
 
     override suspend fun execute(param: ExportMovementsCsvParam): String {
         val filename = buildFilename(param.from, param.to, param.drugName)
-        val bytes = CsvBuilder.buildBytes(
+        val bytes = buildCsvBytes(
             headers = listOf("เวลา", "ประเภท", "ยา", "จำนวน", "อ้างอิง", "หมายเหตุ"),
             rows = param.rows.map { it.toCsvRow() },
         )
