@@ -12,7 +12,7 @@ fun StockScreen(
     onEditDrug: (drugId: String) -> Unit = {},
     onOpenLots: (drugId: String) -> Unit = {},
     onOpenAdjust: (drugId: String) -> Unit = {},
-    onOpenHistory: (drugId: String) -> Unit = {},
+    onOpenHistory: (drugId: String, drugName: String) -> Unit = { _, _ -> },
     onOpenReorderSuggestions: () -> Unit = {},
     viewModel: StockViewModel = koinViewModel(),
 ) {
@@ -28,7 +28,7 @@ fun StockScreen(
             onEditDrug = { onEditDrug(byId(it)) },
             onOpenLots = { onOpenLots(byId(it)) },
             onOpenAdjust = { onOpenAdjust(byId(it)) },
-            onOpenHistory = { onOpenHistory(byId(it)) },
+            onOpenHistory = { onOpenHistory(it.id, it.name) },
             onOpenReorderSuggestions = onOpenReorderSuggestions,
             onDismissError = viewModel::dismissError,
         ),
