@@ -6,8 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
@@ -32,6 +33,7 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -45,68 +47,34 @@ fun CustomerDetailContent(
     callbacks: CustomerDetailCallbacks = CustomerDetailCallbacks(),
 ) {
     val t = pharmTokens
-    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        CustomerDetailToolbar(
-            title = state.customer?.name ?: "ลูกค้า",
-            onBack = callbacks.onBack,
-            onEdit = callbacks.onEdit,
-        )
+    PharmSubPage(
+        title = state.customer?.name ?: "ลูกค้า",
+        onBack = callbacks.onBack,
+        contentPadding = PaddingValues(0.dp),
+        contentSpacing = false,
+        actions = {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(t.shapes.md)
+                    .clickable(role = Role.Button, onClick = callbacks.onEdit),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    PharmIcons.Pencil,
+                    contentDescription = "แก้ไข",
+                    tint = t.colors.fg2,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        },
+    ) {
         CustomerHeader(customer = state.customer, loading = state.customerLoading)
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         SalesSection(state = state)
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun CustomerDetailToolbar(
-    title: String,
-    onBack: () -> Unit,
-    onEdit: () -> Unit,
-) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .clip(t.shapes.sm)
-                .clickable(onClick = onBack)
-                .defaultMinSize(minHeight = 44.dp)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Icon(
-                PharmIcons.ReturnArrow,
-                contentDescription = "ย้อนกลับ",
-                tint = t.colors.fg3,
-                modifier = Modifier.size(16.dp),
-            )
-            Text("กลับ", style = PharmText.body.copy(color = t.colors.fg3))
-        }
-        Text("/", style = PharmText.body.copy(color = t.colors.fgMuted))
-        Text(title, style = PharmText.h1, modifier = Modifier.weight(1f))
-        Row(
-            modifier = Modifier
-                .clip(t.shapes.sm)
-                .clickable(onClick = onEdit)
-                .defaultMinSize(minWidth = 44.dp, minHeight = 44.dp)
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                PharmIcons.Pencil,
-                contentDescription = "แก้ไข",
-                tint = t.colors.fg3,
-                modifier = Modifier.size(20.dp),
-            )
-        }
-    }
 }
 
 @Composable
