@@ -259,7 +259,7 @@ purpose isn't clear from its name, rename the method.
             :core:ui:jvmTest :core:data:jvmTest
   ```
   Quick smoke (runs the full dependent tree): `./gradlew :composeApp:check`.
-  Project test count today: 513 `@Test` functions across ~70 commonTest files
+  Project test count today: 547 `@Test` functions across 71 commonTest files
   (most concentrated in the 20 per-feature modules). Re-measure with
   `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`.
 - **Design system**: tokens in `:core:ui` →
@@ -267,7 +267,25 @@ purpose isn't clear from its name, rename the method.
   `ui/designsystem/Pharm*.kt`
 - **No M3 widgets** in net-new files: use `PharmButton` / `PharmBadge` /
   `PharmTextField` / `FormField` / `PharmModal` / `MetricCard` / `DrugCard` /
-  `PharmTable` / `PharmFilterChips` / `PharmIcons` (SVG vectors)
+  `PharmTable` / `PharmStaticTable` / `PharmFilterChips` / `PharmIcons` (SVG vectors)
+- **Page scaffold primitives** (use these so every screen looks the same):
+  - `PharmListToolbar(title, subtitle, searchValue, filters, actions)` — list-page header
+    (used by every list screen — stock/expiry/movements/imports/customers/suppliers/users/
+    saleshistory/stockcount/ky/planning).
+  - `PharmListResultLine(total, noun, visible, searching, trailing)` — "ทั้งหมด N <noun>"
+    band; pass a `trailing` slot for per-page totals (e.g. saleshistory ยอดรวม, expiry stat).
+  - `PharmSubPage(title, onBack, subtitle, actions, bottomBar, scrollable, contentPadding,
+    contentSpacing)` — the canonical back sub-page scaffold. Every detail/form page uses it
+    (customers detail, imports detail, drug form, customer/supplier/user form, imports form,
+    stock-count form, profile, drug lots/adjust/history, ky add pages, planning reorder).
+  - `PharmFormCard(title, subtitle)` — form section card (rounded surface + 1dp border + h2
+    title + optional subtitle + 16dp inner spacing). Wrap each form section in one;
+    `UserForm/CustomerForm/SupplierForm/DrugForm/ImportForm/SettingsTab/Ky9-12Add` all use it.
+  - `PharmSaveAction(saving, canSubmit, onSubmit, label)` — the save control that goes in the
+    `actions` slot of `PharmSubPage`. Forms no longer ship a bottom save bar.
+  - `ReloadOnResume(onResume)` (in `ui/common/`) — wraps a `LifecycleEventObserver` to call
+    `viewModel::reload` on `ON_RESUME`. Every list/dashboard screen uses it so a record
+    added on a detail page shows up when you navigate back.
 - **DTO field convention (camelCase Kotlin + explicit `@SerialName`)**: in
   `:core:data/.../data/remote/dto/` and `:core:data/.../data/storage/*Dto.kt`,
   every `@Serializable data class` property must:

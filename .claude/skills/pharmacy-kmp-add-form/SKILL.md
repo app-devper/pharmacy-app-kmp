@@ -68,17 +68,50 @@ class CustomerFormViewModel(
 For **edit** forms, load existing values in `init { launchResult(...) { setState { copy(...) } } }`.
 
 ## 3. Callbacks + Screen + Content
-- Callbacks: `onNameChange: (String) -> Unit`, `onPhoneChange`, `onSubmit`, `onDismissError`.
+- Callbacks: `onBack`, `onNameChange: (String) -> Unit`, `onPhoneChange`, `onSubmit`, `onDismissError`.
 - Screen collects `collectAsStateWithLifecycle()` and watches `saved` to navigate back:
   ```kotlin
-  LaunchedEffect(state.saved) { if (state.saved) { vm.resetSaved(); onDone() } }
+  LaunchedEffect(state.saved) { if (state.saved) { vm.resetSaved(); onBack() } }
   ```
-- Content uses the **FormField pattern** for layout stability:
+- Content wraps the body in `PharmSubPage`; the Save lives in the header **`actions`** slot —
+  **no bottom save bar, no separate Cancel button** (the back arrow is the way out).
+  Each form section goes in a `PharmFormCard(title)`; the outer column caps width at 960dp:
+  ```kotlin
+  PharmSubPage(
+      title = state.titleLabel,                      // "เพิ่มลูกค้า" / "แก้ไขลูกค้า"
+      onBack = callbacks.onBack,
+      scrollable = !state.loading,
+      contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+      actions = {
+          PharmSaveAction(
+              saving = state.saving,
+              canSubmit = state.canSubmit,
+              onSubmit = callbacks.onSubmit,
+          )
+      },
+  ) {
+      Column(
+          modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
+          verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+          PharmFormCard(title = "ข้อมูลลูกค้า") {
+              Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                  FormField(label = "ชื่อ", required = true) {
+                      PharmTextField(value = state.name, onValueChange = callbacks.onNameChange)
+                  }
+                  FormField(label = "เบอร์โทร") {
+                      PharmTextField(value = state.phone, onValueChange = callbacks.onPhoneChange)
+                  }
+              }
+          }
+      }
+  }
+  ErrorBottomSheet(state.error, callbacks.onDismissError)
+  ```
+- **FormField pattern** for input layout stability:
   - Wrap each input in `FormField(label = "ชื่อ", required = true) { PharmTextField(...) }` — static label above, **not** the floating `label = {}` slot.
   - Pin single-line fields to `Modifier.height(56.dp)` to avoid per-keystroke bounce.
   - Conditional `trailingIcon` must keep its slot reserved: always render the `IconButton`, gate the inner `Icon`, set `enabled = cond`.
-  - Submit button: `PharmButton(label = "บันทึก", enabled = state.canSubmit, loading = state.saving, onClick = callbacks.onSubmit)`.
-  - End with `ErrorBottomSheet(state.error, callbacks.onDismissError)`.
 
 ## 4. DI + wire + test
 `di/<Feat>Module.kt`: `factoryOf(::CustomerFormViewModel)` (VMs only). Test via `pharmacy-kmp-test`:
