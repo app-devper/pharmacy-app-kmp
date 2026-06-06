@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -16,8 +15,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
-import app.devper.pharm.ui.designsystem.PharmButton
-import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -37,6 +35,13 @@ fun UserFormContent(
         onBack = callbacks.onBack,
         scrollable = !loadingEmpty,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+        actions = {
+            PharmSaveAction(
+                saving = state.saving,
+                canSubmit = state.canSubmit,
+                onSubmit = callbacks.onSubmit,
+            )
+        },
     ) {
         if (loadingEmpty) {
             Box(
@@ -51,7 +56,6 @@ fun UserFormContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 FormFields(state = state, callbacks = callbacks)
-                ActionsRow(state = state, callbacks = callbacks)
             }
         }
     }
@@ -110,27 +114,6 @@ private fun FormFields(
             value = state.form.email,
             onValueChange = callbacks.onEmail,
             keyboardType = KeyboardType.Email,
-        )
-    }
-}
-
-@Composable
-private fun ActionsRow(
-    state: UserFormUiState,
-    callbacks: UserFormCallbacks,
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        PharmButton(
-            label = "ยกเลิก",
-            onClick = callbacks.onBack,
-            variant = PharmButtonVariant.Ghost,
-            enabled = !state.saving,
-        )
-        PharmButton(
-            label = if (state.saving) "กำลังบันทึก…" else "บันทึก",
-            onClick = callbacks.onSubmit,
-            variant = PharmButtonVariant.Primary,
-            enabled = state.canSubmit,
         )
     }
 }

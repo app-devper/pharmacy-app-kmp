@@ -16,6 +16,7 @@ import app.devper.pharm.presentation.customers.CustomerFormMode
 import app.devper.pharm.presentation.customers.CustomerFormUiState
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -32,11 +33,10 @@ fun CustomerFormContent(
         onBack = callbacks.onBack,
         scrollable = !state.loading,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-        bottomBar = {
-            CustomerFormSaveBar(
+        actions = {
+            PharmSaveAction(
                 saving = state.saving,
                 canSubmit = state.canSubmit,
-                onCancel = callbacks.onBack,
                 onSubmit = callbacks.onSubmit,
             )
         },
