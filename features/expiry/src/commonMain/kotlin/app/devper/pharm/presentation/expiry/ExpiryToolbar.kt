@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.expiry
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,7 @@ internal fun ExpiryToolbar(
                 chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label) },
                 activeId = window.name,
                 onSelect = { id -> callbacks.onWindowChange(ExpiryWindow.valueOf(id)) },
-                scrollable = false,
+                modifier = Modifier.fillMaxWidth(),
             )
         },
         actions = {
