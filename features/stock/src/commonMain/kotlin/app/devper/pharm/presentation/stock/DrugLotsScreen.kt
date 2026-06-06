@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.stock
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -12,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.devper.pharm.ui.designsystem.PharmSubPage
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,10 +44,13 @@ fun DrugLotsScreen(
         onDismissError = viewModel::dismissError,
     )
 
-    PharmSubPage(title = "จัดการล็อต", onBack = onBack) {
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(title = "จัดการล็อต", onBack = onBack)
         Column(
             modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
+                .padding(16.dp)
                 .clip(t.shapes.lg)
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),

@@ -1,12 +1,14 @@
 package app.devper.pharm.presentation.suppliers.form
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,8 +18,8 @@ import app.devper.pharm.presentation.suppliers.SupplierFormMode
 import app.devper.pharm.presentation.suppliers.SupplierFormUiState
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
-import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,31 +30,34 @@ fun SupplierFormContent(
     callbacks: SupplierFormCallbacks,
 ) {
     val t = pharmTokens
-    PharmSubPage(
-        title = state.titleLabel,
-        onBack = callbacks.onBack,
-        scrollable = !state.loading,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-        actions = {
-            PharmSaveAction(
-                saving = state.saving,
-                canSubmit = state.canSubmit,
-                onSubmit = callbacks.onSubmit,
-            )
-        },
-    ) {
-        if (state.loading) {
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                PharmCircularProgress(color = t.colors.accent)
-            }
-        } else {
-            Column(
-                modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = state.titleLabel,
+            onBack = callbacks.onBack,
+            actions = {
+                PharmSaveAction(
+                    saving = state.saving,
+                    canSubmit = state.canSubmit,
+                    onSubmit = callbacks.onSubmit,
+                )
+            },
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            if (state.loading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    PharmCircularProgress(color = t.colors.accent)
+                }
+            } else {
                 SupplierFormInfoSection(form = state.form, callbacks = callbacks)
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,7 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.designsystem.PharmSubPage
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,23 +35,26 @@ fun ReorderSuggestionsContent(
 ) {
     val t = pharmTokens
 
-    PharmSubPage(
-        title = "คำแนะนำสั่งซื้อ",
-        subtitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม",
-        onBack = onBack,
-        actions = {
-            PharmButton(
-                label = "รีเฟรช",
-                onClick = callbacks.onReload,
-                size = PharmButtonSize.Sm,
-                variant = PharmButtonVariant.Outline,
-                leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-            )
-        },
-    ) {
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = "คำแนะนำสั่งซื้อ",
+            subtitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม",
+            onBack = onBack,
+            actions = {
+                PharmButton(
+                    label = "รีเฟรช",
+                    onClick = callbacks.onReload,
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Outline,
+                    leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
+                )
+            },
+        )
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp)
                 .clip(t.shapes.lg)
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
