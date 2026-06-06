@@ -30,6 +30,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -60,7 +61,11 @@ fun ExpiryContent(
                 callbacks = callbacks,
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            ExpiryResultLine(count = state.lots.size, totalRemaining = state.totalRemaining)
+            PharmListResultLine(
+                total = state.lots.size,
+                noun = "ล็อต",
+                trailing = { ExpiryRemainingStat(totalRemaining = state.totalRemaining) },
+            )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {
