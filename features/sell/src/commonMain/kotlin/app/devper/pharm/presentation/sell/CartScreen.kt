@@ -5,29 +5,20 @@ import app.devper.pharm.presentation.sell.flow.ParkedCartViewModel
 import app.devper.pharm.presentation.sell.flow.CustomerPickerViewModel
 import app.devper.pharm.presentation.sell.flow.DrugPickerViewModel
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
 import app.devper.pharm.presentation.sell.components.CartDiscountSheet
 import app.devper.pharm.presentation.sell.components.CartPanel
@@ -41,11 +32,9 @@ import app.devper.pharm.presentation.sell.components.SwapToParkedDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
-import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
     onBack: () -> Unit,
@@ -78,35 +67,12 @@ fun CartScreen(
         }
     }
 
-    Scaffold(
-        containerColor = t.colors.bgPage,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "ตะกร้า",
-                        style = PharmText.h1,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "ย้อนกลับ",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = t.colors.surface,
-                    titleContentColor = t.colors.fg1,
-                    navigationIconContentColor = t.colors.fg1,
-                ),
-            )
-        },
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = "ตะกร้า",
+            onBack = onBack,
+        )
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             CartPanel(
                 cart = sellState.cart,
                 customer = sellState.customer,
