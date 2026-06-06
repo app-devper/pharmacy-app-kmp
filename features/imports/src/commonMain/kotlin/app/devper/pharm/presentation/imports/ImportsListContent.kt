@@ -19,6 +19,7 @@ import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
@@ -56,7 +57,7 @@ fun ImportsListContent(
                 callbacks = callbacks,
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            ImportsResultLine(visible = visible.size, total = state.orders.size, searching = searching)
+            PharmListResultLine(total = state.orders.size, noun = "ใบ", visible = visible.size, searching = searching)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {
@@ -89,18 +90,6 @@ fun ImportsListContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun ImportsResultLine(visible: Int, total: Int, searching: Boolean) {
-    val t = pharmTokens
-    val text = if (searching) "พบ $visible ใบ จากทั้งหมด $total"
-    else "ทั้งหมด $total ใบ"
-    Text(
-        text = text,
-        style = PharmText.micro.copy(color = t.colors.fg3),
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 @Composable

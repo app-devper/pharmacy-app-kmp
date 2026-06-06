@@ -21,6 +21,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -48,9 +49,10 @@ fun StockCountsListContent(
         ) {
             StockCountsListToolbar(query = state.query, callbacks = callbacks)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            StockCountsResultLine(
-                visible = visible.size,
+            PharmListResultLine(
                 total = state.counts.size,
+                noun = "รอบ",
+                visible = visible.size,
                 searching = searching,
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
@@ -68,18 +70,6 @@ fun StockCountsListContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun StockCountsResultLine(visible: Int, total: Int, searching: Boolean) {
-    val t = pharmTokens
-    val text = if (searching) "พบ $visible รอบ จากทั้งหมด $total"
-    else "ทั้งหมด $total รอบ"
-    Text(
-        text = text,
-        style = PharmText.micro.copy(color = t.colors.fg3),
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 private val sampleCounts = listOf(

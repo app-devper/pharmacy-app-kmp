@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,9 +16,9 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.pricing.Tier
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -48,9 +47,10 @@ fun CustomersListContent(
         ) {
             CustomersListToolbar(query = state.query, callbacks = callbacks)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            CustomersResultLine(
-                visible = visible.size,
+            PharmListResultLine(
                 total = state.customers.size,
+                noun = "ราย",
+                visible = visible.size,
                 searching = searching,
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
@@ -67,18 +67,6 @@ fun CustomersListContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun CustomersResultLine(visible: Int, total: Int, searching: Boolean) {
-    val t = pharmTokens
-    val text = if (searching) "พบ $visible ราย จากทั้งหมด $total"
-    else "ทั้งหมด $total ราย"
-    Text(
-        text = text,
-        style = PharmText.micro.copy(color = t.colors.fg3),
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 private val sampleCustomers = listOf(
