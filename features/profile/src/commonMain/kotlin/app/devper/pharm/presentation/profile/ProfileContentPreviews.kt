@@ -5,7 +5,7 @@ import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.ui.theme.PharmacyTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 private val PreviewUser = UmUser(
     id = "u1",

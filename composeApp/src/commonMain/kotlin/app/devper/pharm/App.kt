@@ -26,7 +26,7 @@ import app.devper.pharm.ui.common.PharmSnackbarHostUi
 import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.ThemeController
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
