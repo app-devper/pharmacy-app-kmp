@@ -25,6 +25,7 @@ import app.devper.pharm.presentation.stock.DrugFormUiState
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmSubPage
@@ -90,7 +91,7 @@ private fun DrugFormLotsAndAdjustmentsCard(
     onOpenLots: (String, String) -> Unit,
     onOpenAdjustments: (String, String) -> Unit,
 ) {
-    FormCard(
+    PharmFormCard(
         title = "ล็อต & การปรับสต็อก",
         subtitle = "เพิ่ม / ดู / ลบล็อต — รักษาการตรวจสอบ FEFO",
     ) {

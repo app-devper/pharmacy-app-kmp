@@ -1,7 +1,5 @@
 package app.devper.pharm.presentation.suppliers.form
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,11 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.suppliers.SupplierFormFields
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -29,7 +27,7 @@ fun SupplierFormInfoSection(
     callbacks: SupplierFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    SectionCard(modifier = modifier, title = "ข้อมูลผู้จัดจำหน่าย") {
+    PharmFormCard(modifier = modifier, title = "ข้อมูลผู้จัดจำหน่าย") {
         SupplierInfoGrid(form = form, callbacks = callbacks)
         AddressField(value = form.address, onChange = callbacks.onAddress)
         NotesField(value = form.notes, onChange = callbacks.onNotes)
@@ -147,32 +145,5 @@ private fun NotesField(value: String, onChange: (String) -> Unit) {
                 singleLine = false,
             )
         }
-    }
-}
-
-@Composable
-internal fun SectionCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    content: @Composable () -> Unit,
-) {
-    val t = pharmTokens
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface, t.shapes.lg)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(PaddingValues(horizontal = 20.dp, vertical = 20.dp)),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(text = title, style = PharmText.h2)
-            if (subtitle != null) {
-                Text(text = subtitle, style = PharmText.micro)
-            }
-        }
-        content()
     }
 }

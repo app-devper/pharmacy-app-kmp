@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.stock.DrugFormFields
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTextField
 
 @Composable
@@ -20,7 +21,7 @@ fun DrugFormInitialStockSection(
     callbacks: DrugFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    FormCard(
+    PharmFormCard(
         title = "สต็อกเริ่มต้น (ถ้ามี)",
         subtitle = "หากใส่จำนวน > 0 ต้องระบุเลขล็อตและวันหมดอายุ",
         modifier = modifier,

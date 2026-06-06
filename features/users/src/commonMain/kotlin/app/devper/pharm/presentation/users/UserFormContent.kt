@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -52,10 +53,12 @@ fun UserFormContent(
             }
         } else {
             Column(
-                modifier = Modifier.widthIn(max = 720.dp).fillMaxWidth(),
+                modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                FormFields(state = state, callbacks = callbacks)
+                PharmFormCard(title = "ข้อมูลผู้ใช้") {
+                    FormFields(state = state, callbacks = callbacks)
+                }
             }
         }
     }
