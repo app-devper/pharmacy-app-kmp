@@ -6,8 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +34,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.format.formatBaht
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
@@ -49,34 +50,26 @@ fun ImportDetailContent(
 ) {
     val t = pharmTokens
 
-    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().background(t.colors.surface).padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                modifier = Modifier.clip(t.shapes.sm).clickable(role = Role.Button, onClick = callbacks.onBack).defaultMinSize(minHeight = 44.dp).padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Icon(PharmIcons.ReturnArrow, contentDescription = "ย้อนกลับ", tint = t.colors.fg3, modifier = Modifier.size(16.dp))
-                Text("กลับ", style = PharmText.body.copy(color = t.colors.fg3))
-            }
-            Text("/", style = PharmText.body.copy(color = t.colors.fgMuted))
-            Text(state.po?.docNo ?: "ใบรับสินค้า", style = PharmText.h1, modifier = Modifier.weight(1f))
+    PharmSubPage(
+        title = state.po?.docNo ?: "ใบรับสินค้า",
+        onBack = callbacks.onBack,
+        contentPadding = PaddingValues(0.dp),
+        contentSpacing = false,
+        actions = {
             state.po?.let { po ->
-                Row(
-                    modifier = Modifier.clip(t.shapes.sm).clickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }).defaultMinSize(minWidth = 44.dp, minHeight = 44.dp).padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(t.shapes.md)
+                        .clickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(PharmIcons.Pencil, contentDescription = "แก้ไข", tint = t.colors.fg2, modifier = Modifier.size(20.dp))
                 }
             }
-        }
-
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        },
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             when {
                 state.loading && state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     PharmCircularProgress()
