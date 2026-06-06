@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.stock.DrugFormFields
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.KyBadge
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -40,7 +41,7 @@ fun DrugFormDrugInfoSection(
     callbacks: DrugFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    FormCard(modifier = modifier, title = "ข้อมูลยา") {
+    PharmFormCard(modifier = modifier, title = "ข้อมูลยา") {
         DrugInfoGrid(form = form, callbacks = callbacks)
         KyChecklist(
             selected = form.reportTypes,
@@ -300,29 +301,3 @@ private fun CheckMark(checked: Boolean) {
     }
 }
 
-@Composable
-internal fun FormCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    content: @Composable () -> Unit,
-) {
-    val t = pharmTokens
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface, t.shapes.lg)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(PaddingValues(horizontal = 20.dp, vertical = 20.dp)),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(text = title, style = PharmText.h2)
-            if (subtitle != null) {
-                Text(text = subtitle, style = PharmText.micro)
-            }
-        }
-        content()
-    }
-}

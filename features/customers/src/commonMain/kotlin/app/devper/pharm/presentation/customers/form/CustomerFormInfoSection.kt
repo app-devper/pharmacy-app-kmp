@@ -1,7 +1,5 @@
 package app.devper.pharm.presentation.customers.form
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,13 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.pricing.Tier
 import app.devper.pharm.presentation.customers.CustomerFormFields
 import androidx.compose.ui.Alignment
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
@@ -34,7 +32,7 @@ fun CustomerFormInfoSection(
     callbacks: CustomerFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    SectionCard(modifier = modifier, title = "ข้อมูลลูกค้า") {
+    PharmFormCard(modifier = modifier, title = "ข้อมูลลูกค้า") {
         CustomerInfoGrid(form = form, callbacks = callbacks)
         AllergyNoteField(value = form.allergyNote, onChange = callbacks.onAllergyNote)
         PriceTierPicker(current = form.priceTier, onPick = callbacks.onPriceTier)
@@ -135,32 +133,5 @@ private fun PriceTierPicker(
             onSelect = { id -> onPick(if (id == TIER_RETAIL_ID) "" else id) },
             scrollable = false,
         )
-    }
-}
-
-@Composable
-internal fun SectionCard(
-    title: String,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    content: @Composable () -> Unit,
-) {
-    val t = pharmTokens
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface, t.shapes.lg)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(PaddingValues(horizontal = 20.dp, vertical = 20.dp)),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(text = title, style = PharmText.h2)
-            if (subtitle != null) {
-                Text(text = subtitle, style = PharmText.micro)
-            }
-        }
-        content()
     }
 }
