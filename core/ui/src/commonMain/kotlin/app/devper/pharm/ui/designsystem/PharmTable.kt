@@ -287,13 +287,13 @@ fun PharmTableSurface(
     }
 }
 
-private fun PharmColumnAlign.toBoxAlignment(): Alignment = when (this) {
+internal fun PharmColumnAlign.toBoxAlignment(): Alignment = when (this) {
     PharmColumnAlign.Start  -> Alignment.CenterStart
     PharmColumnAlign.Center -> Alignment.Center
     PharmColumnAlign.End    -> Alignment.CenterEnd
 }
 
-private fun PharmColumnAlign.toTextAlign(): TextAlign = when (this) {
+internal fun PharmColumnAlign.toTextAlign(): TextAlign = when (this) {
     PharmColumnAlign.Start  -> TextAlign.Start
     PharmColumnAlign.Center -> TextAlign.Center
     PharmColumnAlign.End    -> TextAlign.End
