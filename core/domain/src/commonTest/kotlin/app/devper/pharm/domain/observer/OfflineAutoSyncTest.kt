@@ -2,7 +2,6 @@
 
 package app.devper.pharm.domain.observer
 
-import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.PrintlnLogger
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.domain.model.PendingSale
@@ -13,6 +12,7 @@ import app.devper.pharm.domain.param.MarkOfflineSaleFailedParam
 import app.devper.pharm.domain.param.VoidSaleParam
 import app.devper.pharm.domain.repository.OfflineSaleQueue
 import app.devper.pharm.domain.repository.SaleRepository
+import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -37,7 +37,7 @@ class OfflineAutoSyncTest {
         return OfflineAutoSync(
             connectivity = object : ConnectivityObserver { override val online = online },
             queue = queue,
-            retry = RetryOfflineSaleUseCase(queue, sales, AppDispatchers(main = d, io = d, default = d)),
+            retry = RetryOfflineSaleUseCase(queue, sales, testDispatchers(d)),
             logger = PrintlnLogger(),
         )
     }
