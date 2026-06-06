@@ -34,6 +34,7 @@ internal fun MovementsListToolbar(
 
     PharmListToolbar(
         title = "ความเคลื่อนไหวสต็อก",
+        subtitle = "ประวัติการเข้า-ออกของสต็อก",
         modifier = modifier,
         searchValue = state.drugName,
         onSearchChange = callbacks.onSearchChange,

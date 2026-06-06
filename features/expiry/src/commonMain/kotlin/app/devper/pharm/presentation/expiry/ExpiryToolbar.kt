@@ -30,6 +30,7 @@ internal fun ExpiryToolbar(
 ) {
     PharmListToolbar(
         title = "ยาใกล้หมดอายุ",
+        subtitle = "ตรวจล็อตใกล้หมดอายุ และตัดจำหน่าย",
         modifier = modifier,
         filters = {
             PharmSingleSelectChips(

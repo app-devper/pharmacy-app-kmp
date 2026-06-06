@@ -73,6 +73,7 @@ fun LowStockContent(
 private fun LowStockToolbar(onReload: () -> Unit) {
     PharmListToolbar(
         title = "ยาใกล้หมด",
+        subtitle = "ยาที่ต่ำกว่าระดับสต็อกขั้นต่ำ",
         actions = {
             PharmButton(
                 label = "รีเฟรช",

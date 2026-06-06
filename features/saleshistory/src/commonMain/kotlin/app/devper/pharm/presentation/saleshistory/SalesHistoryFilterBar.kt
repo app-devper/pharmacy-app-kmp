@@ -25,6 +25,7 @@ internal fun SalesHistoryListToolbar(
 
     PharmListToolbar(
         title = "ประวัติการขาย",
+        subtitle = "บิลขายย้อนหลังและการคืน/ยกเลิก",
         modifier = modifier,
         searchValue = state.query,
         onSearchChange = callbacks.onQueryChange,
