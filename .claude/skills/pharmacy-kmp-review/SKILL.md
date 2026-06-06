@@ -54,7 +54,17 @@ Run it: `./gradlew :composeApp:auditArchitecture`. If a diff trips one of these,
 - **Design system**: net-new UI uses `Pharm*` primitives + `pharmTokens` — **no raw Material 3
   widgets**, no hardcoded colors (use tokens), no emoji-as-icons (use `PharmIcons`).
 - **Forms**: `FormField` static-label pattern, pin single-line fields to `height(56.dp)`, reserve
-  conditional `trailingIcon` slots.
+  conditional `trailingIcon` slots. Wrap each form section in `PharmFormCard(title)`; cap the
+  body at `widthIn(max = 960.dp)`. Save lives in the `PharmSubPage` `actions` slot via
+  `PharmSaveAction(saving, canSubmit, onSubmit)` — **a net-new form that ships a bottom save bar
+  or an inline Cancel button is `[HIGH]`** (back arrow is the way out).
+- **Page scaffolds**: list/dashboard screens use `PharmListToolbar` + `PharmListResultLine` +
+  `PharmEmptyState`; sub-pages (detail/form) wrap the body in `PharmSubPage(title, onBack,
+  actions?, bottomBar?)`. A net-new sub-page that builds its own back-header / breadcrumb
+  instead of `PharmSubPage` is `[HIGH]`.
+- **List resume reload**: every list/dashboard `Screen.kt` calls `ReloadOnResume(vm::reload)`
+  (or `applyFilter` / `loadList`) so a record added on a detail page reflects on return.
+  Missing observer on a list screen is `[MEDIUM]` (stale UI after add/edit).
 - **DTO mapping**: domain `*Param` → wire `*Request` via `private fun *Param.toRequest()` at file
   bottom in `:core:data`; domain never sees DTOs.
 - **Thai copy** for all user-facing strings.

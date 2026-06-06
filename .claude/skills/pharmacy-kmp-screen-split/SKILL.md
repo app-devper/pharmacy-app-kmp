@@ -43,6 +43,10 @@ fun StockContent(state: StockUiState, callbacks: StockCallbacks = StockCallbacks
    direct `viewModel::foo` calls inside the body with `callbacks.foo`.
 3. **Slim `Screen`** — keep only `koinViewModel()`, `collectAsStateWithLifecycle()`, and the
    `Callbacks(...)` wiring. **Always `collectAsStateWithLifecycle`** (not `collectAsState`) for battery.
+   For **list/dashboard screens** also call `ReloadOnResume(vm::reload)` (from
+   `:core:ui/ui/common/`) so adding/editing on a child page reflects when the user navigates
+   back. Use the public refetch fn the VM exposes (`reload`, or `applyFilter` / `loadList`
+   for filter-driven VMs).
 4. **Add `@Preview`** — at least loaded / loading / empty using `PharmacyTheme { … }` and local
    sample data (`private val sampleRows = …`). Previews must compile without a backend.
 5. **Strip comments** as part of the edit; rename unclear locals instead of commenting.
