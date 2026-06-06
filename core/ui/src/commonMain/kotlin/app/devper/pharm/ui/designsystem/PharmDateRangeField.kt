@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.theme.tabular
 
 data class PharmDateRange(
     val fromMillis: Long? = null,
@@ -111,28 +112,31 @@ private fun DateField(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
-    val display = valueMillis?.let(formatDate) ?: "—"
+    val display = valueMillis?.let(formatDate)
 
-    Box(
+    Row(
         modifier = modifier
+            .heightIn(min = t.dimens.controlHeight)
             .clip(t.shapes.md)
             .border(1.dp, t.colors.border, t.shapes.md)
             .background(t.colors.surface)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = label,
-                style = PharmText.micro,
-                modifier = Modifier.align(Alignment.TopStart),
-            )
-            Text(
-                text = display,
-                style = PharmText.body,
-                modifier = Modifier.align(Alignment.BottomStart).padding(top = 14.dp),
-            )
-        }
+        Text(
+            text = label,
+            style = PharmText.micro.copy(color = t.colors.fgMuted),
+        )
+        Text(
+            text = display ?: "—",
+            style = PharmText.bodySm.copy(
+                color = if (display != null) t.colors.fg1 else t.colors.fgMuted,
+            ).tabular(),
+            maxLines = 1,
+            modifier = Modifier.weight(1f),
+        )
     }
 }
 
