@@ -74,7 +74,7 @@ kotlin {
 
             implementation(compose.runtime)
             implementation(compose.material3)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.ui.tooling.preview)
 
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)

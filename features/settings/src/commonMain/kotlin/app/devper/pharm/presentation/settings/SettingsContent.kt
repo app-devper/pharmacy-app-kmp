@@ -15,7 +15,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.theme.PharmacyTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 private val SETTINGS_TABS: List<PharmTab> =

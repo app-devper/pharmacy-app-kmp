@@ -21,7 +21,7 @@ import app.devper.pharm.presentation.labels.components.LabelPrintToolbar
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LabelPrintContent(

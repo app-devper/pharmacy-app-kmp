@@ -22,7 +22,7 @@ extensions.configure<KotlinMultiplatformExtension>("kotlin") {
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
     }
