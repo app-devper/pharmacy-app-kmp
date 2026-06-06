@@ -53,6 +53,25 @@ class SettingsEditorViewModel(
         )
     }
 
+    fun reload() {
+        if (current.saving) return
+        setState { copy(loading = true, error = null) }
+        launchResult(
+            block = { refreshSettings() },
+            onSuccess = { fresh ->
+                val fields = fresh.toForm()
+                setState {
+                    copy(
+                        loading = false,
+                        baseline = fields,
+                        form = if (dirty) form else fields,
+                    )
+                }
+            },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดการตั้งค่าไม่สำเร็จ") } },
+        )
+    }
+
     fun selectTab(tab: SettingsTab) = setState { copy(tab = tab) }
 
     fun onStoreName(v: String) = patch { copy(storeName = v) }
