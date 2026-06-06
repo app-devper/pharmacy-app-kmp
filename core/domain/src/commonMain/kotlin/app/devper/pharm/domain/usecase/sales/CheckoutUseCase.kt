@@ -62,7 +62,7 @@ class CheckoutUseCase(
                     priceTier = tier.takeIf { it.isNotBlank() } ?: "",
                     allowOversell = line.drug.id in oversoldDrugIds,
                     unit = line.selectedUnit?.name.orEmpty(),
-                    unitFactor = line.selectedUnit?.factor ?: 0,
+                    unitFactor = line.factor,
                 )
             },
             received = param.received,
