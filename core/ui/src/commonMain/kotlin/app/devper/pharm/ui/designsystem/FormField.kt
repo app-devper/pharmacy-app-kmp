@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -125,6 +126,7 @@ fun PharmTextField(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = t.dimens.controlHeight)
             .pharmFocusRing(interactionSource = interaction, shape = shape)
             .padding(2.dp)
             .clip(shape)

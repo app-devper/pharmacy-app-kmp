@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DatePicker
@@ -140,11 +141,13 @@ private fun QuickPeriodChip(label: String, onClick: () -> Unit) {
     val t = pharmTokens
     Box(
         modifier = Modifier
+            .heightIn(min = t.dimens.controlHeight)
             .clip(t.shapes.md)
             .border(1.dp, t.colors.border, t.shapes.md)
             .background(t.colors.bgPage)
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Text(text = label, style = PharmText.bodySm)
     }
