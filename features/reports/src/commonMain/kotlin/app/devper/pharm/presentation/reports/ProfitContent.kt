@@ -43,42 +43,39 @@ fun ProfitContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .background(t.colors.bgPage),
     ) {
-        Box(
-            modifier = Modifier
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-                .padding(16.dp),
-        ) {
-            ProfitFilterBar(state = state, callbacks = callbacks)
-        }
-
-        ProfitMetricsRow(summary = state.summary)
-
-        if (state.missingCostCount > 0) MissingCostBanner(count = state.missingCostCount)
+        ProfitFilterBar(state = state, callbacks = callbacks)
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            PharmListResultLine(total = rows.size, noun = "รายการ")
-            Box(modifier = Modifier.fillMaxWidth().padding(top = 1.dp))
-            when {
-                state.loading && state.report == null -> PharmListSkeleton()
-                rows.isEmpty() && state.report != null ->
-                    PharmEmptyState(
-                        icon = PharmIcons.Profit,
-                        title = "ไม่มียอดขายในช่วงเวลานี้",
-                        subtitle = "ลองเปลี่ยนช่วงวันที่ด้านบน",
-                    )
-                else -> ProfitTable(rows = rows, totals = totals)
+            ProfitMetricsRow(summary = state.summary)
+
+            if (state.missingCostCount > 0) MissingCostBanner(count = state.missingCostCount)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(t.shapes.lg)
+                    .background(t.colors.surface)
+                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+            ) {
+                PharmListResultLine(total = rows.size, noun = "รายการ")
+                Box(modifier = Modifier.fillMaxWidth().padding(top = 1.dp))
+                when {
+                    state.loading && state.report == null -> PharmListSkeleton()
+                    rows.isEmpty() && state.report != null ->
+                        PharmEmptyState(
+                            icon = PharmIcons.Profit,
+                            title = "ไม่มียอดขายในช่วงเวลานี้",
+                            subtitle = "ลองเปลี่ยนช่วงวันที่ด้านบน",
+                        )
+                    else -> ProfitTable(rows = rows, totals = totals)
+                }
             }
         }
     }

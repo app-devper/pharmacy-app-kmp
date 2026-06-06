@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTab
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.theme.PharmacyTheme
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,11 @@ fun SettingsContent(
     editor: SettingsEditorCallbacks = SettingsEditorCallbacks(),
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
+        PharmListToolbar(
+            title = "ตั้งค่าระบบ",
+            subtitle = "จัดการข้อมูลร้าน ใบเสร็จ สต็อก เภสัชกร และ ขย.",
+        )
+
         SettingsSaveBar(state = state, onSave = editor.onSubmit, onMessageDismiss = editor.onDismissMessage)
 
         PharmTabBar(

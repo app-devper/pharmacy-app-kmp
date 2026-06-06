@@ -2,15 +2,14 @@ package app.devper.pharm.presentation.reports
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.reports.internal.ProfitQuickPeriod
@@ -26,6 +25,7 @@ import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -56,26 +56,11 @@ internal fun ProfitFilterBar(
         ProfitSort.entries.map { PharmFilterChip(id = it.name, label = it.label) }
     }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
-                PharmDateRangeField(
-                    range = range,
-                    onRangeChange = { next ->
-                        if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
-                        if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
-                    },
-                    formatDate = { millis -> formatYmdDisplay(millis) },
-                    quickPeriods = quickPeriods,
-                )
-            }
+    PharmListToolbar(
+        title = "กำไรต่อยา",
+        subtitle = "กำไรแยกตามรายการยาในช่วงที่เลือก",
+        modifier = modifier,
+        actions = {
             PharmButton(
                 label = "Excel",
                 onClick = callbacks.onExportExcel,
@@ -90,21 +75,33 @@ internal fun ProfitFilterBar(
                     )
                 },
             )
-        }
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = "เรียงตาม",
-                style = PharmText.bodySm.copy(color = t.colors.fg3),
-            )
-            PharmSingleSelectChips(
-                chips = sortChips,
-                activeId = state.sort.name,
-                onSelect = { id -> callbacks.onSortChange(ProfitSort.valueOf(id)) },
-            )
-        }
-    }
+        },
+        filters = {
+            Box(modifier = Modifier.weight(1f)) {
+                PharmDateRangeField(
+                    range = range,
+                    onRangeChange = { next ->
+                        if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
+                        if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
+                    },
+                    formatDate = { millis -> formatYmdDisplay(millis) },
+                    quickPeriods = quickPeriods,
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "เรียงตาม",
+                    style = PharmText.bodySm.copy(color = t.colors.fg3),
+                )
+                PharmSingleSelectChips(
+                    chips = sortChips,
+                    activeId = state.sort.name,
+                    onSelect = { id -> callbacks.onSortChange(ProfitSort.valueOf(id)) },
+                )
+            }
+        },
+    )
 }
