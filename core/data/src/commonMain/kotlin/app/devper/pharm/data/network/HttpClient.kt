@@ -1,11 +1,14 @@
 package app.devper.pharm.data.network
 
 import app.devper.pharm.data.storage.TokenStorage
+import app.devper.pharm.common.AppException
 import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.ConflictException
 import app.devper.pharm.common.ForbiddenException
+import app.devper.pharm.common.NetworkException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.ServerException
+import kotlin.coroutines.cancellation.CancellationException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.HttpClientEngineFactory
@@ -73,6 +76,11 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
                     body = body,
                 )
             }
+        }
+        handleResponseExceptionWithRequest { cause, _ ->
+            if (cause is CancellationException) throw cause
+            if (cause is AppException) throw cause
+            throw NetworkException(cause = cause)
         }
     }
 }
