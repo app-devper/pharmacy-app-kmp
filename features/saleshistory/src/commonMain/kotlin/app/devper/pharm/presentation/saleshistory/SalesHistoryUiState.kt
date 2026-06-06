@@ -15,6 +15,7 @@ data class SalesHistoryUiState(
     val items: List<SaleItemSnapshot> = emptyList(),
     val itemsLoading: Boolean = false,
 
+    val billSheetOpen: Boolean = false,
     val returnSheetOpen: Boolean = false,
 
     val returnDraft: Map<String, Int> = emptyMap(),
