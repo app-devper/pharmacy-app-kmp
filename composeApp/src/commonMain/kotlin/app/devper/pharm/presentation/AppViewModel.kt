@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.observer.AuthStateProvider
+import app.devper.pharm.domain.observer.OfflineAutoSync
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.GetProfileUseCase
@@ -17,12 +18,15 @@ class AppViewModel(
     authState: AuthStateProvider,
     offlineQueue: OfflineQueueProvider,
     uiPreferences: UiPreferencesProvider,
+    offlineAutoSync: OfflineAutoSync,
     private val logout: LogoutUseCase,
     private val getProfile: GetProfileUseCase,
     private val setTheme: SetThemePreferenceUseCase,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
 
     init {
+
+        offlineAutoSync.start(viewModelScope)
 
         authState.isLoggedIn
             .onEach { loggedIn ->
