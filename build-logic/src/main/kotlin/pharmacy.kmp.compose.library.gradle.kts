@@ -2,6 +2,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
@@ -40,4 +41,10 @@ extensions.configure<ComposeExtension>("compose") {
         publicResClass = true
         generateResClass = ResourcesExtension.ResourceClassGeneration.Always
     }
+}
+
+extensions.configure<ComposeCompilerGradlePluginExtension>("composeCompiler") {
+    stabilityConfigurationFiles.add(
+        rootProject.layout.projectDirectory.file("compose_compiler_config.conf")
+    )
 }
