@@ -1,16 +1,13 @@
 package app.devper.pharm.presentation.users
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,8 +18,8 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.designsystem.PharmTextField
-import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,23 +31,25 @@ fun UserFormContent(
     callbacks: UserFormCallbacks,
 ) {
     val t = pharmTokens
-    Box(
-        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
-        contentAlignment = Alignment.TopCenter,
+    val loadingEmpty = state.loading && state.form.firstName.isBlank()
+    PharmSubPage(
+        title = state.titleLabel,
+        onBack = callbacks.onBack,
+        scrollable = !loadingEmpty,
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
     ) {
-        if (state.loading && state.form.firstName.isBlank()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (loadingEmpty) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                contentAlignment = Alignment.Center,
+            ) {
                 PharmCircularProgress(color = t.colors.accent)
             }
         } else {
             Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .widthIn(max = 720.dp)
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                modifier = Modifier.widthIn(max = 720.dp).fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text(text = state.titleLabel, style = PharmText.h1)
                 FormFields(state = state, callbacks = callbacks)
                 ActionsRow(state = state, callbacks = callbacks)
             }

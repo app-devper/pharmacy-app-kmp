@@ -1,25 +1,18 @@
 package app.devper.pharm.presentation.stockcount
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -49,34 +42,6 @@ internal fun StockCountFormToolbar(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.weight(1f),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                        .clickable(role = Role.Button, onClick = callbacks.onBack),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(t.shapes.pill)
-                            .background(t.colors.borderSubtle),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = PharmIcons.ReturnArrow,
-                            contentDescription = "ย้อนกลับ",
-                            tint = t.colors.fg2,
-                            modifier = Modifier.size(14.dp),
-                        )
-                    }
-                }
-                Text(text = "นับสต็อกใหม่", style = PharmText.h2)
-            }
             Box(modifier = Modifier.widthIn(min = 220.dp, max = 320.dp)) {
                 PharmTextField(
                     value = state.query,

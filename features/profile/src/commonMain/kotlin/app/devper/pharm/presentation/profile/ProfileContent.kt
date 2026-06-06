@@ -2,36 +2,28 @@ package app.devper.pharm.presentation.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.presentation.profile.components.ProfileDisplayPreferences
 import app.devper.pharm.presentation.profile.components.ProfileFormSection
 import app.devper.pharm.presentation.profile.components.ProfileHeaderCard
 import app.devper.pharm.presentation.profile.components.ProfilePasswordSection
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -41,23 +33,25 @@ fun ProfileContent(
     callbacks: ProfileCallbacks,
 ) {
     val t = pharmTokens
-    Box(
-        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
-        contentAlignment = Alignment.TopCenter,
+    val loadingEmpty = state.loading && state.user == null
+    PharmSubPage(
+        title = "โปรไฟล์ของฉัน",
+        onBack = callbacks.onBack,
+        scrollable = !loadingEmpty,
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
     ) {
-        if (state.loading && state.user == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (loadingEmpty) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                contentAlignment = Alignment.Center,
+            ) {
                 PharmCircularProgress(color = t.colors.accent)
             }
         } else {
             Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .widthIn(max = 760.dp)
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                modifier = Modifier.widthIn(max = 760.dp).fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                ProfileBackRow(onBack = callbacks.onBack)
                 state.user?.let { user -> ProfileHeaderCard(user) }
                 ProfileCard(
                     title = "ข้อมูลส่วนตัว",
@@ -83,28 +77,6 @@ fun ProfileContent(
     }
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
     ErrorBottomSheet(message = state.passwordError, onDismiss = callbacks.onDismissPasswordError)
-}
-
-@Composable
-private fun ProfileBackRow(onBack: () -> Unit) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .clip(t.shapes.sm)
-            .clickable(role = Role.Button, onClick = onBack)
-            .defaultMinSize(minHeight = 44.dp)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Icon(
-            imageVector = PharmIcons.ReturnArrow,
-            contentDescription = null,
-            tint = t.colors.fg3,
-            modifier = Modifier.size(16.dp),
-        )
-        Text(text = "กลับ", style = PharmText.body.copy(color = t.colors.fg3))
-    }
 }
 
 @Composable
