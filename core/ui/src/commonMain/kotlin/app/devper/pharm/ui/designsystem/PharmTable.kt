@@ -211,6 +211,7 @@ private fun <T> PharmTableHeader(columns: List<PharmTableColumn<T>>, height: Dp)
                 .fillMaxWidth()
                 .height(height)
                 .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             columns.forEach { col ->
@@ -252,6 +253,7 @@ private fun <T> PharmTableRow(
                 .height(height)
                 .then(clickable)
                 .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             columns.forEach { col ->
