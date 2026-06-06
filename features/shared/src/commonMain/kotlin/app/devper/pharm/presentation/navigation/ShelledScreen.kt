@@ -59,12 +59,6 @@ private val MAIN_NAV: List<NavItem> = MAIN_NAV_TABLE.map { entry ->
     NavItem(route = routeKey(entry.route), label = entry.label, icon = entry.icon, admin = entry.admin)
 }
 
-private val LOGOUT_ITEM = NavItem(
-    route = "logout",
-    label = "ออก",
-    icon = PharmIcons.Logout,
-)
-
 @Composable
 fun ShelledScreen(
     title: String,
@@ -89,7 +83,6 @@ fun ShelledScreen(
             onNavigateMain(typedRoute)
         },
         onLogout = onLogout,
-        logoutItem = LOGOUT_ITEM,
         pendingSyncCount = pendingSyncCount,
         role = role,
         user = user,
