@@ -7,6 +7,7 @@ data class KyListCallbacks(
     val onMonthChange: (String) -> Unit = {},
     val onApply: () -> Unit = {},
     val onExport: () -> Unit = {},
+    val onAddEntry: () -> Unit = {},
     val onDismissMessage: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

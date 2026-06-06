@@ -56,6 +56,7 @@ fun KyListContent(
                 onApply = callbacks.onApply,
                 onExport = callbacks.onExport,
                 exporting = state.exporting,
+                onAddEntry = callbacks.onAddEntry,
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(

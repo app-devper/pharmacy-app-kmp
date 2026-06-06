@@ -1,11 +1,8 @@
 package app.devper.pharm.presentation.ky
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
@@ -59,7 +56,7 @@ fun Ky9AddContent(
         ) {
             PharmFormCard(title = "ข้อมูลรายการ ขย.9") {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    TwoUpFields(
+                    KyTwoUp(
                         left = {
                             FormField(label = "วันที่ (YYYY-MM-DD)", required = true) {
                                 PharmTextField(value = state.draft.date, onValueChange = callbacks.onDate)
@@ -74,7 +71,7 @@ fun Ky9AddContent(
                     FormField(label = "ชื่อยา", required = true) {
                         PharmTextField(value = state.draft.drugName, onValueChange = callbacks.onDrugName)
                     }
-                    TwoUpFields(
+                    KyTwoUp(
                         left = {
                             FormField(label = "เลขทะเบียน") {
                                 PharmTextField(value = state.draft.regNo, onValueChange = callbacks.onRegNo)
@@ -86,7 +83,7 @@ fun Ky9AddContent(
                             }
                         },
                     )
-                    TwoUpFields(
+                    KyTwoUp(
                         left = {
                             FormField(label = "จำนวน", required = true) {
                                 PharmTextField(
@@ -115,26 +112,6 @@ fun Ky9AddContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun TwoUpFields(
-    left: @Composable () -> Unit,
-    right: @Composable () -> Unit,
-) {
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        if (maxWidth >= 560.dp) {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Box(modifier = Modifier.weight(1f)) { left() }
-                Box(modifier = Modifier.weight(1f)) { right() }
-            }
-        } else {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                left()
-                right()
-            }
-        }
-    }
 }
 
 @Preview

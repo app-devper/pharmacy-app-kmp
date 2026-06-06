@@ -48,8 +48,15 @@ fun NavGraphBuilder.kyGraph(
             role = role,
             user = user,
         ) {
-            KyListScreen(formType = KyFormType.Ky10, onSwitchForm = { switchKyForm(it, navController) })
+            KyListScreen(
+                formType = KyFormType.Ky10,
+                onSwitchForm = { switchKyForm(it, navController) },
+                onAddEntry = { navController.navigate(Ky10Add) { launchSingleTop = true } },
+            )
         }
+    }
+    composable<Ky10Add> {
+        Ky10AddScreen(onBack = { navController.popBackStack() })
     }
     composable<Ky11> {
         ShelledScreen(
@@ -62,8 +69,15 @@ fun NavGraphBuilder.kyGraph(
             role = role,
             user = user,
         ) {
-            KyListScreen(formType = KyFormType.Ky11, onSwitchForm = { switchKyForm(it, navController) })
+            KyListScreen(
+                formType = KyFormType.Ky11,
+                onSwitchForm = { switchKyForm(it, navController) },
+                onAddEntry = { navController.navigate(Ky11Add) { launchSingleTop = true } },
+            )
         }
+    }
+    composable<Ky11Add> {
+        Ky11AddScreen(onBack = { navController.popBackStack() })
     }
     composable<Ky12> {
         ShelledScreen(
@@ -76,8 +90,15 @@ fun NavGraphBuilder.kyGraph(
             role = role,
             user = user,
         ) {
-            KyListScreen(formType = KyFormType.Ky12, onSwitchForm = { switchKyForm(it, navController) })
+            KyListScreen(
+                formType = KyFormType.Ky12,
+                onSwitchForm = { switchKyForm(it, navController) },
+                onAddEntry = { navController.navigate(Ky12Add) { launchSingleTop = true } },
+            )
         }
+    }
+    composable<Ky12Add> {
+        Ky12AddScreen(onBack = { navController.popBackStack() })
     }
 }
 
