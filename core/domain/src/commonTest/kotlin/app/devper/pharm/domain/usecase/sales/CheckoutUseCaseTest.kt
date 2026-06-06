@@ -97,6 +97,29 @@ class CheckoutUseCaseTest {
     }
 
     @Test
+    fun line_without_alt_unit_sends_unit_factor_one_not_zero() = runTest {
+        val sales = FakeSales()
+        val line = CartLine(drug = drug("a", stock = 10), qty = 2)
+        useCase(cart(line), sales).invoke(received = 100.0).getOrThrow()
+        val itemParam = sales.lastParam!!.items.single()
+        assertEquals(1, itemParam.unitFactor)
+        assertEquals("", itemParam.unit)
+    }
+
+    @Test
+    fun line_with_alt_unit_sends_alt_unit_name_and_factor() = runTest {
+        val sales = FakeSales()
+        val alt = app.devper.pharm.domain.model.AltUnit(
+            name = "กล่อง", factor = 10, sellPrice = 100.0,
+        )
+        val line = CartLine(drug = drug("a", stock = 100), qty = 10, selectedUnit = alt)
+        useCase(cart(line), sales).invoke(received = 200.0).getOrThrow()
+        val itemParam = sales.lastParam!!.items.single()
+        assertEquals(10, itemParam.unitFactor)
+        assertEquals("กล่อง", itemParam.unit)
+    }
+
+    @Test
     fun success_commits_receipt_to_cart() = runTest {
         val sales = FakeSales()
         val fakeCart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
