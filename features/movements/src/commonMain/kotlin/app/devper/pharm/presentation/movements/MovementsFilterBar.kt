@@ -39,6 +39,11 @@ internal fun MovementsListToolbar(
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = "ค้นหาชื่อยา…",
         filters = {
+            MovementsTypeChips(
+                activeIds = state.activeTypeIds,
+                onToggle = callbacks.onToggleType,
+                modifier = Modifier.fillMaxWidth(),
+            )
             PharmDateRangeField(
                 range = range,
                 onRangeChange = { next ->

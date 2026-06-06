@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.movements
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,13 +33,7 @@ fun MovementsContent(
             .fillMaxSize()
             .background(t.colors.bgPage)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        MovementsTypeChips(
-            activeIds = state.activeTypeIds,
-            onToggle = callbacks.onToggleType,
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
