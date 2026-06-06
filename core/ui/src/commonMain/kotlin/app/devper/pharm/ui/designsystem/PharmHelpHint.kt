@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -16,8 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -36,15 +39,20 @@ fun PharmHelpHint(
     val offsetY = with(LocalDensity.current) { 22.dp.roundToPx() }
 
     Box(modifier = modifier) {
-        Icon(
-            imageVector = PharmIcons.Info,
-            contentDescription = label,
-            tint = t.colors.fgMuted,
+        Box(
             modifier = Modifier
-                .size(16.dp)
+                .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
                 .clip(t.shapes.pill)
-                .clickable { open = !open },
-        )
+                .clickable(role = Role.Button) { open = !open },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = PharmIcons.Info,
+                contentDescription = label,
+                tint = t.colors.fgMuted,
+                modifier = Modifier.size(16.dp),
+            )
+        }
         if (open) {
             Popup(
                 alignment = Alignment.TopStart,

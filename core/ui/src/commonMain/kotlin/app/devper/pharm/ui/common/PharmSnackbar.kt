@@ -30,6 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
@@ -160,7 +164,13 @@ private fun ToastCard(
             .clip(t.shapes.lg)
             .background(colors.bg)
             .border(1.dp, colors.fg.copy(alpha = 0.35f), t.shapes.lg)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .semantics(mergeDescendants = true) {
+                liveRegion = when (toast) {
+                    is PharmToast.Error, is PharmToast.Warning -> LiveRegionMode.Assertive
+                    else -> LiveRegionMode.Polite
+                }
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -178,9 +188,9 @@ private fun ToastCard(
         toast.action?.let { action ->
             Box(
                 modifier = Modifier
-                    .heightIn(min = 40.dp)
+                    .heightIn(min = 48.dp)
                     .clip(t.shapes.sm)
-                    .clickable(onClick = onAction)
+                    .clickable(role = Role.Button, onClick = onAction)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -192,9 +202,9 @@ private fun ToastCard(
         }
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(48.dp)
                 .clip(t.shapes.pill)
-                .clickable(onClick = onClose),
+                .clickable(role = Role.Button, onClick = onClose),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

@@ -12,6 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -24,7 +28,10 @@ internal fun KyMessageBanner(message: String, onDismiss: () -> Unit) {
             .fillMaxWidth()
             .clip(t.shapes.md)
             .background(t.colors.successBg)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .semantics(mergeDescendants = true) {
+                liveRegion = LiveRegionMode.Polite
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -35,8 +42,8 @@ internal fun KyMessageBanner(message: String, onDismiss: () -> Unit) {
         Box(
             modifier = Modifier
                 .clip(t.shapes.sm)
-                .clickable(onClick = onDismiss)
-                .defaultMinSize(minWidth = 44.dp, minHeight = 44.dp)
+                .clickable(role = Role.Button, onClick = onDismiss)
+                .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
                 .padding(horizontal = 8.dp, vertical = 2.dp),
             contentAlignment = Alignment.Center,
         ) {
