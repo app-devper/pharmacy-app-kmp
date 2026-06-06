@@ -31,17 +31,6 @@ fun NavGraphBuilder.planningGraph(
         }
     }
     composable<ReorderSuggestions> {
-        ShelledScreen(
-            title = "คำแนะนำสั่งซื้อ",
-            currentRoute = ReorderSuggestions::class.qualifiedName!!,
-            onNavigateMain = onNavigateMain,
-            onProfileClick = onProfileClick,
-            onLogout = onLogout,
-            pendingSyncCount = pendingSyncCount,
-            role = role,
-            user = user,
-        ) {
-            ReorderSuggestionsScreen()
-        }
+        ReorderSuggestionsScreen(onBack = { navController.popBackStack() })
     }
 }

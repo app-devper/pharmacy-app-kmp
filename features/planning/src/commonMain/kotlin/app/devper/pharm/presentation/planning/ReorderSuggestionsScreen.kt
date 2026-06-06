@@ -6,10 +6,14 @@ import androidx.compose.runtime.getValue
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ReorderSuggestionsScreen(viewModel: ReorderSuggestionsViewModel = koinViewModel()) {
+fun ReorderSuggestionsScreen(
+    onBack: () -> Unit,
+    viewModel: ReorderSuggestionsViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ReorderSuggestionsContent(
         state = state,
+        onBack = onBack,
         callbacks = ReorderSuggestionsCallbacks(
             onReload = viewModel::reload,
             onDismissError = viewModel::dismissError,
