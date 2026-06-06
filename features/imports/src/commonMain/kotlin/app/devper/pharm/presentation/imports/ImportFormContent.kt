@@ -4,21 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,13 +27,13 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportFormContent(
     state: ImportFormUiState,
@@ -49,57 +43,39 @@ fun ImportFormContent(
     var pickerForLine by remember { mutableStateOf<Int?>(null) }
     var supplierPickerOpen by remember { mutableStateOf(false) }
 
-    Scaffold(
-        containerColor = t.colors.bgPage,
-        topBar = {
-            TopAppBar(
-                title = { Text(text = state.titleLabel, style = PharmText.h1) },
-                navigationIcon = {
-                    IconButton(onClick = callbacks.onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = "ย้อนกลับ",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                },
-                actions = {
-                    if (state.saving) {
-                        PharmCircularProgress(
-                            color = t.colors.accent,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(20.dp).padding(end = 12.dp),
-                        )
-                    } else if (!state.readOnly) {
-                        PharmButton(
-                            label = "บันทึก",
-                            onClick = callbacks.onSubmit,
-                            enabled = state.canSubmit,
-                            size = PharmButtonSize.Sm,
-                            modifier = Modifier.padding(end = 12.dp),
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = t.colors.surface,
-                    titleContentColor = t.colors.fg1,
-                ),
-            )
-        },
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            if (state.loading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    PharmCircularProgress(color = t.colors.accent)
-                }
-            } else {
-                ImportFormBody(
-                    state = state,
-                    callbacks = callbacks,
-                    onPickDrug = { idx -> pickerForLine = idx },
-                    onPickSupplier = { supplierPickerOpen = true },
+    PharmSubPage(
+        title = state.titleLabel,
+        onBack = callbacks.onBack,
+        contentPadding = PaddingValues(0.dp),
+        contentSpacing = false,
+        actions = {
+            if (state.saving) {
+                PharmCircularProgress(
+                    color = t.colors.accent,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(20.dp),
+                )
+            } else if (!state.readOnly) {
+                PharmButton(
+                    label = "บันทึก",
+                    onClick = callbacks.onSubmit,
+                    enabled = state.canSubmit,
+                    size = PharmButtonSize.Sm,
                 )
             }
+        },
+    ) {
+        if (state.loading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                PharmCircularProgress(color = t.colors.accent)
+            }
+        } else {
+            ImportFormBody(
+                state = state,
+                callbacks = callbacks,
+                onPickDrug = { idx -> pickerForLine = idx },
+                onPickSupplier = { supplierPickerOpen = true },
+            )
         }
     }
 
