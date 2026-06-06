@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -40,6 +41,14 @@ fun StockCountFormContent(
         onBack = callbacks.onBack,
         contentPadding = PaddingValues(0.dp),
         contentSpacing = false,
+        actions = {
+            PharmSaveAction(
+                saving = false,
+                canSubmit = state.canSubmit,
+                onSubmit = callbacks.onSave,
+                label = "บันทึก ${state.changedCount} รายการ",
+            )
+        },
     ) {
         StockCountFormToolbar(state = state, callbacks = callbacks)
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))

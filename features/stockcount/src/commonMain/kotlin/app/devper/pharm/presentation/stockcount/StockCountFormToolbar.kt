@@ -71,13 +71,6 @@ internal fun StockCountFormToolbar(
                 size = PharmButtonSize.Sm,
                 enabled = state.counts.isNotEmpty() || state.note.isNotBlank(),
             )
-            PharmButton(
-                label = "บันทึก ${state.changedCount} รายการ",
-                onClick = callbacks.onSave,
-                size = PharmButtonSize.Sm,
-                enabled = state.canSubmit,
-                leadingIcon = { Icon(PharmIcons.Check, contentDescription = null) },
-            )
         }
         StockCountFormStatusLine(state = state)
     }

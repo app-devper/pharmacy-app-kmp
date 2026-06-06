@@ -26,6 +26,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -44,11 +45,10 @@ fun DrugFormContent(
         onBack = callbacks.onBack,
         scrollable = !state.loading,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-        bottomBar = {
-            DrugFormSaveBar(
+        actions = {
+            PharmSaveAction(
                 saving = state.saving,
                 canSubmit = state.canSubmit,
-                onCancel = callbacks.onBack,
                 onSubmit = callbacks.onSubmit,
             )
         },
