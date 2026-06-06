@@ -4,32 +4,34 @@ import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.param.ReportRangeParam
 import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
 import app.devper.pharm.domain.usecase.GetProfitReportUseCase
-import app.devper.pharm.presentation.reports.internal.ProfitQuickPeriod
 import app.devper.pharm.presentation.reports.internal.millisToYmd
-import app.devper.pharm.presentation.reports.internal.resolve
+import app.devper.pharm.presentation.reports.internal.startOfMonth
+import app.devper.pharm.presentation.reports.internal.todayDate
+import app.devper.pharm.presentation.reports.internal.toYmd
 import app.devper.pharm.ui.common.BaseViewModel
 
 class ProfitViewModel(
     private val getProfitReport: GetProfitReportUseCase,
     private val exportProfitCsv: ExportProfitCsvUseCase,
-) : BaseViewModel<ProfitUiState>(ProfitUiState()) {
+) : BaseViewModel<ProfitUiState>(
+    ProfitUiState(from = todayDate().startOfMonth().toYmd(), to = todayDate().toYmd()),
+) {
 
     init { reload() }
 
-    fun onFromChange(v: String) = setState { copy(from = v) }
-    fun onToChange(v: String) = setState { copy(to = v) }
-    fun onFromMillisChange(millis: Long?) = onFromChange(millisToYmd(millis))
-    fun onToMillisChange(millis: Long?) = onToChange(millisToYmd(millis))
-    fun onSort(sort: ProfitSort) = setState { copy(sort = sort) }
-    fun applyRange() = reload()
-    fun dismissError() = setState { copy(error = null) }
-    fun dismissMessage() = setState { copy(message = null) }
-
-    fun onQuickPeriod(period: ProfitQuickPeriod) {
-        val range = period.resolve()
-        setState { copy(from = millisToYmd(range.fromMillis), to = millisToYmd(range.toMillis)) }
+    fun onFromMillisChange(millis: Long?) {
+        setState { copy(from = millisToYmd(millis)) }
         reload()
     }
+
+    fun onToMillisChange(millis: Long?) {
+        setState { copy(to = millisToYmd(millis)) }
+        reload()
+    }
+
+    fun onSort(sort: ProfitSort) = setState { copy(sort = sort) }
+    fun dismissError() = setState { copy(error = null) }
+    fun dismissMessage() = setState { copy(message = null) }
 
     fun onExportExcel() {
         val s = current

@@ -9,6 +9,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import app.devper.pharm.ui.format.formatYmdDisplay as sharedFormatYmdDisplay
@@ -20,6 +21,16 @@ internal fun millisToYmd(millis: Long?): String = sharedMillisToYmd(millis)
 internal fun ymdToMillis(ymd: String): Long? = sharedYmdToMillis(ymd)
 
 internal fun formatYmdDisplay(millis: Long): String = sharedFormatYmdDisplay(millis)
+
+internal fun LocalDate.startOfMonth(): LocalDate = LocalDate(year, month, 1)
+
+internal fun LocalDate.toYmd(): String = buildString {
+    append(year)
+    append('-')
+    append(month.number.toString().padStart(2, '0'))
+    append('-')
+    append(day.toString().padStart(2, '0'))
+}
 
 @OptIn(ExperimentalTime::class)
 internal fun todayDate(): LocalDate =
