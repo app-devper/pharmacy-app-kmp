@@ -67,7 +67,7 @@ internal val LightPharmColors = PharmColors(
     fg1                = Gray800,
     fg2                = Gray600,
     fg3                = Gray500,
-    fgMuted            = Gray400,
+    fgMuted            = Gray500,
 
     border             = Gray200,
     borderSubtle       = Gray100,
