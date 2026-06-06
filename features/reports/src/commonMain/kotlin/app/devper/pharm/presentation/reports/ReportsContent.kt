@@ -22,6 +22,9 @@ import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,46 +42,60 @@ fun ReportsContent(
     ) {
         val contentModifier = if (maxWidth >= 1000.dp) Modifier.widthIn(max = 1040.dp).fillMaxSize()
         else Modifier.fillMaxSize()
+        val stackTopAndSlow = maxWidth < 700.dp
 
-        if (state.loading && state.dashboard == null) {
-            PharmListSkeleton(modifier = contentModifier)
-        } else {
-            LazyColumn(
-                modifier = contentModifier,
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                item("header") { ReportsHeaderRow(onCloseEod = callbacks.onCloseEod) }
-                state.dashboard?.summary?.let {
-                    item("metrics") { ReportsMetricsRow(summary = it) }
-                }
-                item("window") {
-                    ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
-                }
-                state.dashboard?.daily?.let { daily ->
-                    item("daily") { ReportsDailyBarChart(daily = daily) }
-                }
-                state.dashboard?.monthly?.let { monthly ->
-                    item("monthly") { ReportsMonthlyGroupedBars(monthly = monthly) }
-                }
-                item("top-and-slow") {
-                    if (maxWidth < 700.dp) {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
-                            ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
-                        }
-                    } else {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
-                            ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+        Column(modifier = contentModifier) {
+            PharmListToolbar(
+                title = "รายงานสรุป",
+                subtitle = "ภาพรวมยอดขาย สต็อก และสินค้าขายดี",
+                actions = {
+                    PharmButton(
+                        label = "ปิดรอบ EOD",
+                        onClick = callbacks.onCloseEod,
+                        size = PharmButtonSize.Md,
+                    )
+                },
+            )
+
+            if (state.loading && state.dashboard == null) {
+                PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    state.dashboard?.summary?.let {
+                        item("metrics") { ReportsMetricsRow(summary = it) }
+                    }
+                    item("window") {
+                        ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
+                    }
+                    state.dashboard?.daily?.let { daily ->
+                        item("daily") { ReportsDailyBarChart(daily = daily) }
+                    }
+                    state.dashboard?.monthly?.let { monthly ->
+                        item("monthly") { ReportsMonthlyGroupedBars(monthly = monthly) }
+                    }
+                    item("top-and-slow") {
+                        if (stackTopAndSlow) {
+                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
+                                ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
+                            }
+                        } else {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
+                                ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+                            }
                         }
                     }
-                }
-                state.dashboard?.recentSales?.let { recent ->
-                    item("recent") { ReportsRecentSalesSection(recent = recent) }
+                    state.dashboard?.recentSales?.let { recent ->
+                        item("recent") { ReportsRecentSalesSection(recent = recent) }
+                    }
                 }
             }
         }
