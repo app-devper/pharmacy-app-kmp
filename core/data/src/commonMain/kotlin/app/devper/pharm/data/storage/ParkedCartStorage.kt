@@ -1,5 +1,6 @@
 package app.devper.pharm.data.storage
 
+import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
@@ -42,7 +43,40 @@ class ParkedCartStorage(private val settings: Settings) {
         settings.remove(keyFor(slot))
     }
 
+    fun loadActive(): ActiveCart? {
+        val raw = settings.getStringOrNull(KEY_ACTIVE) ?: return null
+        return try {
+            json.decodeFromString(ParkedCartDto.serializer(), raw)
+                .takeIf { it.version == ParkedCartDto.SCHEMA_VERSION }
+                ?.toDomain()
+                ?.let { ActiveCart(it.items, it.customer, it.cartDiscount, it.activeTier, it.cashReceived) }
+        } catch (_: SerializationException) {
+            settings.remove(KEY_ACTIVE)
+            null
+        }
+    }
+
+    fun saveActive(active: ActiveCart) {
+        val parked = ParkedCart(
+            items = active.items,
+            customer = active.customer,
+            cartDiscount = active.cartDiscount,
+            activeTier = active.activeTier,
+            cashReceived = active.cashReceived,
+            parkedAt = 0L,
+        )
+        settings.putString(KEY_ACTIVE, json.encodeToString(ParkedCartDto.serializer(), parked.toDto()))
+    }
+
+    fun clearActive() {
+        settings.remove(KEY_ACTIVE)
+    }
+
     private fun keyFor(slot: Int) = "cart.park.slot.$slot"
+
+    private companion object {
+        const val KEY_ACTIVE = "cart.active"
+    }
 }
 
 private fun ParkedCart.toDto() = ParkedCartDto(
