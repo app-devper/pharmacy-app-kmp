@@ -1,20 +1,16 @@
 package app.devper.pharm.presentation.stock.form
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +26,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -42,88 +39,48 @@ fun DrugFormContent(
     callbacks: DrugFormCallbacks,
 ) {
     val t = pharmTokens
-    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
-            if (state.loading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    PharmCircularProgress(color = t.colors.accent)
+    PharmSubPage(
+        title = state.titleLabel,
+        onBack = callbacks.onBack,
+        scrollable = !state.loading,
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
+        bottomBar = {
+            DrugFormSaveBar(
+                saving = state.saving,
+                canSubmit = state.canSubmit,
+                onCancel = callbacks.onBack,
+                onSubmit = callbacks.onSubmit,
+            )
+        },
+    ) {
+        if (state.loading) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                PharmCircularProgress(color = t.colors.accent)
+            }
+        } else {
+            Column(
+                modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                DrugFormDrugInfoSection(form = state.form, callbacks = callbacks)
+                when (val mode = state.mode) {
+                    is DrugFormMode.Add ->
+                        DrugFormInitialStockSection(form = state.form, callbacks = callbacks)
+                    is DrugFormMode.Edit ->
+                        DrugFormLotsAndAdjustmentsCard(
+                            drugId = mode.drugId,
+                            drugName = state.form.name,
+                            onOpenLots = callbacks.onOpenLots,
+                            onOpenAdjustments = callbacks.onOpenAdjustments,
+                        )
                 }
-            } else {
-                DrugFormBody(state = state, callbacks = callbacks)
             }
         }
-        DrugFormSaveBar(
-            saving = state.saving,
-            canSubmit = state.canSubmit,
-            onCancel = callbacks.onBack,
-            onSubmit = callbacks.onSubmit,
-        )
     }
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun DrugFormBody(
-    state: DrugFormUiState,
-    callbacks: DrugFormCallbacks,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .widthIn(max = 960.dp)
-            .padding(PaddingValues(horizontal = 24.dp, vertical = 20.dp)),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        DrugFormHeader(state = state, onBack = callbacks.onBack)
-        DrugFormDrugInfoSection(form = state.form, callbacks = callbacks)
-        when (val mode = state.mode) {
-            is DrugFormMode.Add -> {
-                DrugFormInitialStockSection(form = state.form, callbacks = callbacks)
-            }
-            is DrugFormMode.Edit -> {
-                DrugFormLotsAndAdjustmentsCard(
-                    drugId = mode.drugId,
-                    drugName = state.form.name,
-                    onOpenLots = callbacks.onOpenLots,
-                    onOpenAdjustments = callbacks.onOpenAdjustments,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DrugFormHeader(
-    state: DrugFormUiState,
-    onBack: () -> Unit,
-) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .clip(t.shapes.sm)
-                .clickable(onClick = onBack)
-                .defaultMinSize(minHeight = 44.dp)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Icon(
-                imageVector = PharmIcons.ReturnArrow,
-                contentDescription = "ย้อนกลับ",
-                tint = t.colors.fg3,
-                modifier = Modifier.size(16.dp),
-            )
-            Text(text = "กลับ", style = PharmText.body.copy(color = t.colors.fg3))
-        }
-        Text(text = "/", style = PharmText.body.copy(color = t.colors.fgMuted))
-        Text(text = state.titleLabel, style = PharmText.h1)
-    }
 }
 
 @Composable
