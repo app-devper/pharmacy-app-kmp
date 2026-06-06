@@ -62,7 +62,6 @@ fun AppShell(
     currentRoute: String,
     onNavigate: (String) -> Unit,
     onLogout: () -> Unit,
-    logoutItem: NavItem,
 
     pendingSyncCount: Int = 0,
 
@@ -87,7 +86,6 @@ fun AppShell(
                 currentRoute = currentRoute,
                 onNavigate = onNavigate,
                 onLogout = onLogout,
-                logoutItem = logoutItem,
                 pendingSyncCount = pendingSyncCount,
                 user = user,
                 onProfileClick = onProfileClick,
@@ -100,7 +98,6 @@ fun AppShell(
                 currentRoute = currentRoute,
                 onNavigate = onNavigate,
                 onLogout = onLogout,
-                logoutItem = logoutItem,
                 pendingSyncCount = pendingSyncCount,
                 user = user,
                 onProfileClick = onProfileClick,
@@ -117,7 +114,6 @@ private fun CompactShell(
     currentRoute: String,
     onNavigate: (String) -> Unit,
     onLogout: () -> Unit,
-    logoutItem: NavItem,
     pendingSyncCount: Int,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
@@ -155,13 +151,9 @@ private fun CompactShell(
                 activeId = currentRoute,
                 onSelect = { id ->
                     drawerOpen = false
-                    if (id == logoutItem.route) onLogout() else onNavigate(id)
+                    onNavigate(id)
                 },
-                items = sidebarItems + SidebarNavItem(
-                    id = logoutItem.route,
-                    icon = logoutItem.icon,
-                    label = logoutItem.label,
-                ),
+                items = sidebarItems,
             )
         }
     }
@@ -174,7 +166,6 @@ private fun ExpandedShell(
     currentRoute: String,
     onNavigate: (String) -> Unit,
     onLogout: () -> Unit,
-    logoutItem: NavItem,
     pendingSyncCount: Int,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
@@ -191,14 +182,8 @@ private fun ExpandedShell(
 
         PharmSidebar(
             activeId = currentRoute,
-            onSelect = { id ->
-                if (id == logoutItem.route) onLogout() else onNavigate(id)
-            },
-            items = sidebarItems + SidebarNavItem(
-                id = logoutItem.route,
-                icon = logoutItem.icon,
-                label = logoutItem.label,
-            ),
+            onSelect = onNavigate,
+            items = sidebarItems,
             collapsed = sidebar.collapsed,
             onToggleCollapse = if (sidebar.canCollapse) sidebar.toggle else null,
         )
