@@ -8,7 +8,6 @@ kotlin {
             implementation(project(":core:common"))
             implementation(project(":core:domain"))
             implementation(project(":core:ui"))
-            implementation(project(":features:shared"))
 
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.navigation.compose)

@@ -1,12 +1,13 @@
 # Module graph — pharmacy-app KMP companion
 
-**27-module Gradle layout** after the per-feature split arc
-(`5b4d0ed` → `9a76123`). Dependency direction flows **inward only**:
+**26-module Gradle layout**. Dependency direction flows **inward only**:
 from entry point `:composeApp` down through 20 `:features:<x>` →
-`:features:shared` → `:core:{ui,data}` → `:core:domain` → `:core:common`,
+`:core:{ui,data}` → `:core:domain` → `:core:common`,
 with `:core:common` at the bottom depending on nothing else in the
 project. A test-only side module `:features:test-fixtures` hosts shared
 `Fake*Repository` classes consumed by feature `commonTest` source sets.
+The app shell + navigation live entirely in `:composeApp` (`MainShell` +
+`AppNavHost` + `MainNav.kt`); the former `:features:shared` module was removed.
 
 ## Graph
 
@@ -23,15 +24,10 @@ project. A test-only side module `:features:test-fixtures` hosts shared
         │  saleshistory sell settings stock stockcount suppliers  │
         │  users                                                  │
         └────────────────────────────┬────────────────────────────┘
-                                     ▼
-                         ┌────────────────────┐
-                         │  :features:shared  │  shell + nav contract
-                         │                    │  (ShelledScreen + LocalMainNav)
-                         └─────────┬──────────┘
-                                   │       (:features:test-fixtures sits
-                                   │        beside :features:shared as a
-                                   │        commonTest-only dependency of
-                                   │        each :features:<x> module)
+                                     │       (:features:test-fixtures sits
+                                     │        beside :features:<x> as a
+                                     │        commonTest-only dependency of
+                                     │        each :features:<x> module)
               ┌────────────────────┼────────────────────┐
               ▼                    ▼                    ▼
        ┌────────────┐       ┌────────────┐       ┌────────────┐
@@ -62,10 +58,9 @@ project. A test-only side module `:features:test-fixtures` hosts shared
 
 | Module                       | depends on                                                       |
 |------------------------------|------------------------------------------------------------------|
-| `:composeApp`                | `:core:{common,domain,ui,data}` + `:features:shared` + all 20 `:features:<x>` |
-| `:features:<x>` (20 modules) | `:core:domain` + `:core:ui` + `:features:shared` (+ kotlinx-datetime where needed) |
-| `:features:<x>` `commonTest` | `:features:test-fixtures` (test-only dep for the 11 features that use shared fakes; help/saleshistory/auth/bulkimport/reports/stockcount don't need it because their tests use their own co-located fakes or are pure-logic) |
-| `:features:shared`           | `:core:domain` + `:core:ui` (only) — must not depend on `:features` or `:composeApp` (would be a cycle) |
+| `:composeApp`                | `:core:{common,domain,ui,data}` + all 20 `:features:<x>` |
+| `:features:<x>` (20 modules) | `:core:domain` + `:core:ui` (+ kotlinx-datetime where needed) |
+| `:features:<x>` `commonTest` | `:features:test-fixtures` (test-only dep for the features that use shared fakes; help/saleshistory/auth/bulkimport/reports/stockcount don't need it because their tests use their own co-located fakes or are pure-logic) |
 | `:features:test-fixtures`    | `:core:common` + `:core:domain` (only) — test-only; commonMain is fakes-as-production-code |
 | `:core:ui`                   | `:core:domain`, `:core:common` (+ compose)                       |
 | `:core:data`                 | `:core:domain`, `:core:common` (+ ktor + multiplatform-settings + koin-core) |
@@ -190,28 +185,21 @@ The ktor engines (`ktor-client-okhttp`/`darwin`/`java`/`js`) live in
 | `data/remote/dto/` | DTOs + Request/Response types. A24 + A25 enforced (camelCase + `@SerialName`) |
 | `data/di/DataModule.kt` | Koin `dataModule` — every `<X>Api` + every `<X>RepositoryImpl bind <X>Repository::class` |
 
-### `:features:shared` — shell + nav contract (route-agnostic)
+### Navigation lives in `:composeApp` (single shell, two-level NavHost)
 
-Sits between `:core:ui` and the 20 per-feature modules. Originally extracted
-in `5b4d0ed` as the route hub; routes were later moved into each feature
-(`presentation/<x>/navigation/`) and `:features:shared` slimmed to just the
-shell + a CompositionLocal-based nav contract — so it no longer references any
-concrete route object.
+There is no `:features:shared` module. The app shell + navigation are owned by
+`:composeApp`:
 
 | Path | Contents |
 |---|---|
-| `presentation/navigation/ShelledScreen.kt` | `AppShell` wrapper. Reads `LocalMainNav` for the sidebar items + key→route resolver; never imports a route object. Public function callable from every feature's NavGraph. |
-| `presentation/navigation/MainNav.kt` | `MainNavConfig(items, routeForKey)` + `LocalMainNav` (staticCompositionLocalOf, empty default). `:composeApp` provides the real value wrapping `NavHost`. |
+| `presentation/navigation/AppNavHost.kt` | Outer `NavHost(startDestination = Login)` with two destinations: `authNav` (Login, no shell) and `composable<MainRoot> { MainShell(...) }`. `LaunchedEffect(isLoggedIn)` swaps Login↔MainRoot. |
+| `presentation/navigation/MainNav.kt` | `MainRoot` route, `MAIN_NAV_TABLE` (sidebar items), `DEST_INFO` map (`route qualified name → title + sectionKey`), and `MainShell` — renders `AppShell` ONCE around a nested `NavHost(startDestination = Sell)` that composes all 20 `<x>Nav` builders. Active item + title derive from `nestedNav.currentBackStackEntryAsState()`. |
 
-Route data objects now live in each feature at
-`features/<x>/.../presentation/<x>/navigation/<X>Routes.kt`. The `MAIN_NAV` table
-(route objects + labels + icons) lives in `:composeApp/.../navigation/MainNav.kt`.
-Cross-feature navigation is done via hoisted `() -> Unit` callbacks resolved in
-`:composeApp` (e.g. `auth→Sell`, `stock→ReorderSuggestions`), not by importing
-another feature's route.
-
-`deps`: `:core:domain` + `:core:ui` only. Cannot depend on
-`:features:<x>` (would be a cycle).
+Each feature owns its routes + nav builder at
+`features/<x>/.../presentation/<x>/navigation/<X>Nav.kt` (`@Serializable` route
+objects + `fun NavGraphBuilder.<x>Nav(...)`, no shell). Cross-feature navigation
+is done via hoisted `() -> Unit` callbacks resolved in `MainShell` (e.g.
+`auth→Sell`, `stock→ReorderSuggestions`), not by importing another feature's route.
 
 ### `:features:test-fixtures` — shared test doubles (commonMain only)
 
@@ -257,13 +245,13 @@ them as `AppException` subclasses would be ceremony for no value.
 
 Each `:features:<x>` follows the same pattern:
 - `build.gradle.kts` applies `pharmacy.kmp.compose.library`, depends on
-  `:core:domain` + `:core:ui` + `:features:shared` (+ kotlinx-datetime
-  when the feature touches dates)
+  `:core:domain` + `:core:ui` (+ kotlinx-datetime when the feature touches dates)
 - `commonMain/kotlin/app/devper/pharm/di/<Feature>Module.kt` — ONLY VM
   `factoryOf` bindings
 - `commonMain/kotlin/app/devper/pharm/presentation/<feature>/` — Screen,
-  Content, Callbacks, ViewModel, UiState, NavGraph + section files +
-  sometimes `components/`, `internal/`, `form/`, `sibling/` sub-folders
+  Content, Callbacks, ViewModel, UiState + section files +
+  sometimes `components/`, `internal/`, `form/` sub-folders, and
+  `navigation/<Feature>Nav.kt` (routes + `fun NavGraphBuilder.<x>Nav(...)`, no shell)
 - `commonTest/kotlin/app/devper/pharm/presentation/<feature>/` (when tests
   exist) — VM tests + locally-scoped fakes
 - `composeResources/` (rare — only `:features:help` ships one today)
@@ -284,7 +272,6 @@ to check them.
 | `:core:domain`  | `:core:ui` / `:core:data` / `:features:*` / `:composeApp` | ❌ P0 |
 | `:core:ui` / `:core:data` | `:features:*` | ❌ P0 |
 | `:core:*`       | `:composeApp`     | ❌ P0 |
-| `:features:shared` | `:features:<x>` / `:composeApp` / `:core:data` | ❌ P0 (would be a cycle — `:features:<x>` depends on `:features:shared`, not the reverse) |
 | `:features:<x>` | `:core:data` (any class — even via DI) | ❌ P0 (use `:core:domain` repo interfaces) |
 | `:features:<x>` | `:composeApp` | ❌ P0 |
 | `:features:<x>` | `:features:<y>` (different feature, production code) | ❌ P0 **Kotlin compile error** (was P1 before split arc; the audit check became redundant) |
@@ -300,7 +287,6 @@ to check them.
 | `:core:domain`               | `commonTest`    | 88 |
 | `:core:ui`                   | `commonTest`    | 62 (incl. MoneyFormatTest) |
 | `:core:data`                 | `commonTest`    | 41 (incl. UiPreferencesRepositoryImpl + CartRepositoryImpl atomicity) |
-| `:features:shared`           | none yet        | 0 |
 | `:features:test-fixtures`    | none (fakes are commonMain) | 0 |
 | 20× `:features:<x>`          | `commonTest`    | 305 across 29 module test suites |
 | `:composeApp`                | `commonTest`    | 1 (`AppModuleWiringTest` — resolves every VM via Koin) |
@@ -346,40 +332,35 @@ Quick smoke (no per-feature breakdown — runs the dependent tree):
 | A new DTO / API endpoint | `:core:data/remote/{dto,api}/` |
 | A new design primitive | `:core:ui/designsystem/` |
 | Anything theme / color / token | `:core:ui/theme/` |
-| A new feature route data object | `:features:<feature>/presentation/<feature>/navigation/<Feature>Routes.kt` |
-| A new sidebar entry for that route | `composeApp/.../navigation/MainNav.kt` (`MAIN_NAV_TABLE`) |
+| A new feature route + nav builder | `:features:<feature>/presentation/<feature>/navigation/<Feature>Nav.kt` (routes + `fun NavGraphBuilder.<x>Nav(...)`, no shell) |
+| A new sidebar entry + topbar title for a route | `composeApp/.../navigation/MainNav.kt` (`MAIN_NAV_TABLE` + `DEST_INFO`) |
 | A new feature screen + VM | `:features:<feature>/presentation/<feature>/` |
 | Its DI bindings | `:features:<feature>/di/<Feature>Module.kt` |
-| Its NavGraph | `:features:<feature>/presentation/<feature>/<Feature>NavGraph.kt` |
 | A new VM test | `:features:<feature>/commonTest/.../<feature>/` |
 | A test double used by only one feature | Co-locate in that feature's `commonTest/.../fakes/` |
 | A test double used by ≥2 features | `:features:test-fixtures/commonMain/.../repository/` |
-| Wiring a new feature into nav | `composeApp/.../presentation/navigation/AppNavHost.kt` |
+| Wiring a new feature into nav | `composeApp/.../navigation/MainNav.kt` (call `<x>Nav(nestedNav)` in `MainShell`) |
 | Wiring a new feature into DI | `composeApp/.../di/AppModule.kt` (`includes(…)`) |
 
-## Per-feature split migration recipe
+## Per-feature recipe
 
-For a brand-new feature, follow the 6-step recipe (also documented in
-CLAUDE.md):
+For a brand-new feature (also documented in CLAUDE.md):
 
 1. `mkdir -p features/<feat>/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/`
 2. Add `features/<feat>/build.gradle.kts` mirroring an existing leaf
    feature (`:features:help` is the smallest template)
 3. Add `:features:<feat>` to `settings.gradle.kts`
-4. Add `<Feat>Routes.kt` to `features/<feat>/.../presentation/<feat>/navigation/`
-   (one-file `@Serializable data object Feat`; package stays
-   `app.devper.pharm.presentation.<feat>`)
+4. Add `navigation/<Feat>Nav.kt` to the feature — `@Serializable` route objects +
+   `fun NavGraphBuilder.<feat>Nav(navController)` declaring `composable<Route>`
+   destinations directly (NO `ShelledScreen`); package stays
+   `app.devper.pharm.presentation.<feat>`
 5. Create `features/<feat>/.../presentation/<feat>/<Feat>{Screen,Content,
-   Callbacks,ViewModel,UiState,NavGraph}.kt` + `features/<feat>/.../di/<Feat>Module.kt`
+   Callbacks,ViewModel,UiState}.kt` + `features/<feat>/.../di/<Feat>Module.kt`
 6. Wire from `:composeApp`: add `implementation(project(":features:<feat>"))`
-   to `composeApp/build.gradle.kts`, append `<feat>Graph(...)` to
-   `AppNavHost.kt`, append `<feat>Module` to `AppModule.kt`'s `includes(...)`,
-   register the route in `composeApp/.../navigation/MainNav.kt`'s
-   `MAIN_NAV_TABLE` if it gets a sidebar item.
-
-The recipe was pilot-tested on `:features:help` (`26d9589`) and then
-repeated 19 more times. Average time per feature: ~20-30 minutes once
-the foundation is in place.
+   to `composeApp/build.gradle.kts`, call `<feat>Nav(nestedNav)` inside `MainShell`'s
+   nested `NavHost` + add `DEST_INFO` entries (and a `MAIN_NAV_TABLE` row if it gets a
+   sidebar item) in `composeApp/.../navigation/MainNav.kt`, and append `<feat>Module`
+   to `AppModule.kt`'s `includes(...)`.
 
 ## Convention plugin (`build-logic/`)
 
