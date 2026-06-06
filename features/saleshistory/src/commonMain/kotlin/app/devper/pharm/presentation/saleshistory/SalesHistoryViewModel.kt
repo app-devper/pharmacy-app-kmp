@@ -47,11 +47,18 @@ class SalesHistoryViewModel(
     }
 
     fun onSelectSale(sale: SaleSummary) {
+        val targetId = sale.id
         setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
         launchResult(
-            block = { getItems(sale.id) },
-            onSuccess = { items -> setState { copy(itemsLoading = false, items = items) } },
-            onFailure = { e -> setState { copy(itemsLoading = false, error = e.message ?: "โหลดรายการสินค้าไม่สำเร็จ") } },
+            block = { getItems(targetId) },
+            onSuccess = { items ->
+                if (current.selected?.id != targetId) return@launchResult
+                setState { copy(itemsLoading = false, items = items) }
+            },
+            onFailure = { e ->
+                if (current.selected?.id != targetId) return@launchResult
+                setState { copy(itemsLoading = false, error = e.message ?: "โหลดรายการสินค้าไม่สำเร็จ") }
+            },
         )
     }
 
@@ -64,10 +71,12 @@ class SalesHistoryViewModel(
 
     fun onStartReturn(sale: SaleSummary) {
         if (sale.voided) return
+        val targetId = sale.id
         setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
         launchResult(
-            block = { getItems(sale.id) },
+            block = { getItems(targetId) },
             onSuccess = { items ->
+                if (current.selected?.id != targetId) return@launchResult
                 val zero = items.associate { it.id to 0 }
                 setState {
                     copy(
@@ -79,7 +88,10 @@ class SalesHistoryViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(itemsLoading = false, error = e.message ?: "โหลดรายการสินค้าไม่สำเร็จ") } },
+            onFailure = { e ->
+                if (current.selected?.id != targetId) return@launchResult
+                setState { copy(itemsLoading = false, error = e.message ?: "โหลดรายการสินค้าไม่สำเร็จ") }
+            },
         )
     }
 

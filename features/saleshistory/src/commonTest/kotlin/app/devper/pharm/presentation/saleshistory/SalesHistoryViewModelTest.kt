@@ -149,6 +149,32 @@ class SalesHistoryViewModelTest {
     }
 
     @Test
+    fun onSelectSale_ignores_stale_results_when_selection_changes_mid_flight() = runVmTest { dispatchers ->
+        val saleA = summary(id = "sA", billNo = "A")
+        val saleB = summary(id = "sB", billNo = "B")
+        val itemA = item("iA", qty = 5).copy(drugName = "DrugA")
+        val itemB = item("iB", qty = 7).copy(drugName = "DrugB")
+        val (vm, _) = newVm(
+            dispatchers,
+            FakeSaleHistoryRepository(
+                seed = listOf(saleA, saleB),
+                itemsBySale = mapOf("sA" to listOf(itemA), "sB" to listOf(itemB)),
+            ),
+        )
+        advanceUntilIdle()
+
+        vm.onSelectSale(saleA)
+        vm.onSelectSale(saleB)
+        advanceUntilIdle()
+
+        val s = vm.state.value
+        assertEquals("sB", s.selected?.id)
+        assertEquals(1, s.items.size)
+        assertEquals("DrugB", s.items.single().drugName)
+        assertFalse(s.itemsLoading)
+    }
+
+    @Test
     fun onClearSelection_resets_detail_state() = runVmTest { dispatchers ->
         val sale = summary("s1")
         val (vm, _) = newVm(
