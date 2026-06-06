@@ -19,6 +19,7 @@ import app.devper.pharm.presentation.labels.components.LabelFieldEditor
 import app.devper.pharm.presentation.labels.components.LabelPreviewPane
 import app.devper.pharm.presentation.labels.components.LabelPrintToolbar
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,11 +34,17 @@ fun LabelPrintContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .background(t.colors.bgPage),
     ) {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        PharmListToolbar(
+            title = "พิมพ์ฉลาก",
+            subtitle = "ออกแบบและพิมพ์ฉลากยา",
+        )
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+        ) {
             val sideBySide = maxWidth >= 600.dp
             if (sideBySide) {
                 Row(
