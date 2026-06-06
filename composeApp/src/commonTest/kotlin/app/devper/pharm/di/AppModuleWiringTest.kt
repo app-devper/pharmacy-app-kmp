@@ -40,6 +40,7 @@ import app.devper.pharm.presentation.suppliers.SuppliersListViewModel
 import app.devper.pharm.presentation.users.UserFormViewModel
 import app.devper.pharm.presentation.users.UsersListViewModel
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.print.ReceiptPrinter
@@ -93,6 +94,11 @@ private val testPlatformModule = module {
         object : FileDownloader {
             override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> =
                 Result.success("noop")
+        }
+    }
+    single<ConnectivityObserver> {
+        object : ConnectivityObserver {
+            override val online = kotlinx.coroutines.flow.flowOf(true)
         }
     }
     single<FilePicker> {

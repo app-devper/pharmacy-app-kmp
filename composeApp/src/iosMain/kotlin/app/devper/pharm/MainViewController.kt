@@ -2,12 +2,14 @@ package app.devper.pharm
 
 import androidx.compose.ui.window.ComposeUIViewController
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
+import app.devper.pharm.platform.ConnectivityObserverImpl
 import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.FilePickerImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
@@ -31,6 +33,7 @@ private fun ensureKoinStarted() {
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
         single<FileDownloader> { FileDownloaderImpl(logger = get()) }
+        single<ConnectivityObserver> { ConnectivityObserverImpl() }
         single<FilePicker> { FilePickerImpl() }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
     }
