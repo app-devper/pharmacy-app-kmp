@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,10 +30,10 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
-import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.format.formatBaht
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.theme.PharmText
@@ -50,26 +49,25 @@ fun ImportDetailContent(
 ) {
     val t = pharmTokens
 
-    PharmSubPage(
-        title = state.po?.docNo ?: "ใบรับสินค้า",
-        onBack = callbacks.onBack,
-        contentPadding = PaddingValues(0.dp),
-        contentSpacing = false,
-        actions = {
-            state.po?.let { po ->
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(t.shapes.md)
-                        .clickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(PharmIcons.Pencil, contentDescription = "แก้ไข", tint = t.colors.fg2, modifier = Modifier.size(20.dp))
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = state.po?.docNo ?: "ใบรับสินค้า",
+            onBack = callbacks.onBack,
+            actions = {
+                state.po?.let { po ->
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(t.shapes.md)
+                            .clickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(PharmIcons.Pencil, contentDescription = "แก้ไข", tint = t.colors.fg2, modifier = Modifier.size(20.dp))
+                    }
                 }
-            }
-        },
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+            },
+        )
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when {
                 state.loading && state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     PharmCircularProgress()

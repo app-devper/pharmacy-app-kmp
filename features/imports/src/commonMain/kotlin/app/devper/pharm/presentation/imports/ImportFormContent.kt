@@ -5,11 +5,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmSubPage
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -43,40 +44,43 @@ fun ImportFormContent(
     var pickerForLine by remember { mutableStateOf<Int?>(null) }
     var supplierPickerOpen by remember { mutableStateOf(false) }
 
-    PharmSubPage(
-        title = state.titleLabel,
-        onBack = callbacks.onBack,
-        scrollable = !state.loading,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-        actions = {
-            if (state.saving) {
-                PharmCircularProgress(
-                    color = t.colors.accent,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier.size(20.dp),
-                )
-            } else if (!state.readOnly) {
-                PharmButton(
-                    label = "บันทึก",
-                    onClick = callbacks.onSubmit,
-                    enabled = state.canSubmit,
-                    size = PharmButtonSize.Sm,
-                )
-            }
-        },
-    ) {
-        if (state.loading) {
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                PharmCircularProgress(color = t.colors.accent)
-            }
-        } else {
-            Column(
-                modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = state.titleLabel,
+            onBack = callbacks.onBack,
+            actions = {
+                if (state.saving) {
+                    PharmCircularProgress(
+                        color = t.colors.accent,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(20.dp),
+                    )
+                } else if (!state.readOnly) {
+                    PharmButton(
+                        label = "บันทึก",
+                        onClick = callbacks.onSubmit,
+                        enabled = state.canSubmit,
+                        size = PharmButtonSize.Sm,
+                    )
+                }
+            },
+        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            if (state.loading) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    PharmCircularProgress(color = t.colors.accent)
+                }
+            } else {
                 PharmFormCard(title = "ข้อมูลใบรับสินค้า") {
                     ImportFormHeader(
                         state = state,

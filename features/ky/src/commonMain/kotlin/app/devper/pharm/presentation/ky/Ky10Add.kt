@@ -1,10 +1,13 @@
 package app.devper.pharm.presentation.ky
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,9 +22,10 @@ import app.devper.pharm.ui.common.BaseViewModel
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmFormCard
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
-import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
 data class Ky10Draft(
@@ -104,21 +108,25 @@ fun Ky10AddScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.saved) { if (state.saved) onBack() }
 
-    PharmSubPage(
-        title = "เพิ่มรายการ ขย.10",
-        onBack = onBack,
-        scrollable = true,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
-        actions = {
-            PharmSaveAction(
-                saving = state.saving,
-                canSubmit = state.canSubmitDraft,
-                onSubmit = viewModel::submitAdd,
-            )
-        },
-    ) {
+    val t = pharmTokens
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = "เพิ่มรายการ ขย.10",
+            onBack = onBack,
+            actions = {
+                PharmSaveAction(
+                    saving = state.saving,
+                    canSubmit = state.canSubmitDraft,
+                    onSubmit = viewModel::submitAdd,
+                )
+            },
+        )
         Column(
-            modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             PharmFormCard(title = "ข้อมูลรายการ ขย.10") {

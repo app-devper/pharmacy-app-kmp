@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
-import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,30 +35,31 @@ fun StockCountFormContent(
 ) {
     val t = pharmTokens
 
-    PharmSubPage(
-        title = "นับสต็อกใหม่",
-        onBack = callbacks.onBack,
-        contentPadding = PaddingValues(0.dp),
-        contentSpacing = false,
-        actions = {
-            PharmSaveAction(
-                saving = false,
-                canSubmit = state.canSubmit,
-                onSubmit = callbacks.onSave,
-                label = "บันทึก ${state.changedCount} รายการ",
-            )
-        },
-    ) {
-        StockCountFormToolbar(state = state, callbacks = callbacks)
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = "นับสต็อกใหม่",
+            onBack = callbacks.onBack,
+            actions = {
+                PharmSaveAction(
+                    saving = false,
+                    canSubmit = state.canSubmit,
+                    onSubmit = callbacks.onSave,
+                    label = "บันทึก ${state.changedCount} รายการ",
+                )
+            },
+        )
+        Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            StockCountFormToolbar(state = state, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            when {
-                state.loading && state.drugs.isEmpty() ->
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        PharmCircularProgress(color = t.colors.accent)
-                    }
-                else -> DualPaneBody(state = state, callbacks = callbacks, history = history)
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                when {
+                    state.loading && state.drugs.isEmpty() ->
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            PharmCircularProgress(color = t.colors.accent)
+                        }
+                    else -> DualPaneBody(state = state, callbacks = callbacks, history = history)
+                }
             }
         }
     }

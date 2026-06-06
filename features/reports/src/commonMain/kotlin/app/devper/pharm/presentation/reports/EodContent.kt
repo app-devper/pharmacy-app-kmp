@@ -1,8 +1,12 @@
 package app.devper.pharm.presentation.reports
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -20,8 +24,9 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.designsystem.PharmSubPage
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmacyTheme
+import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -31,45 +36,55 @@ fun EodContent(
     onBack: () -> Unit = {},
 ) {
     val report = state.report
+    val t = pharmTokens
 
-    PharmSubPage(
-        title = "ปิดยอดสิ้นวัน",
-        subtitle = "สรุปยอดขาย / ส่วนลด / เงินสดของวัน — ยืนยันก่อนปิดรอบ",
-        onBack = onBack,
-        actions = {
-            if (state.closed) PharmBadge(text = "ปิดแล้ว", tone = PharmBadgeTone.Green)
-        },
-    ) {
-        EodControls(
-            date = state.date,
-            loading = state.loading,
-            closing = state.closing,
-            closed = state.closed,
-            hasReport = report != null,
-            callbacks = callbacks,
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = "ปิดยอดสิ้นวัน",
+            subtitle = "สรุปยอดขาย / ส่วนลด / เงินสดของวัน — ยืนยันก่อนปิดรอบ",
+            onBack = onBack,
+            actions = {
+                if (state.closed) PharmBadge(text = "ปิดแล้ว", tone = PharmBadgeTone.Green)
+            },
         )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            EodControls(
+                date = state.date,
+                loading = state.loading,
+                closing = state.closing,
+                closed = state.closed,
+                hasReport = report != null,
+                callbacks = callbacks,
+            )
 
-        when {
-            state.loading && report == null -> PharmListSkeleton()
+            when {
+                state.loading && report == null -> PharmListSkeleton()
 
-            report == null -> EmptyEod()
+                report == null -> EmptyEod()
 
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                item("summary") { EodSummaryCards(report) }
-                item("balance") { EodBalanceCard(report) }
-                if (state.closed) item("closed") {
-                    EodClosedReceiptCard(
-                        report = report,
-                        template = state.closedTemplate,
-                        onPrint = callbacks.onPrint,
-                    )
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    item("summary") { EodSummaryCards(report) }
+                    item("balance") { EodBalanceCard(report) }
+                    if (state.closed) item("closed") {
+                        EodClosedReceiptCard(
+                            report = report,
+                            template = state.closedTemplate,
+                            onPrint = callbacks.onPrint,
+                        )
+                    }
+                    item("bills-header") { EodBillsHeader(count = report.billCount) }
+                    items(report.bills, key = { it.id }) { bill -> EodBillRow(bill = bill) }
                 }
-                item("bills-header") { EodBillsHeader(count = report.billCount) }
-                items(report.bills, key = { it.id }) { bill -> EodBillRow(bill = bill) }
             }
         }
     }

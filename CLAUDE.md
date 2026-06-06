@@ -299,17 +299,20 @@ purpose isn't clear from its name, rename the method.
     list-page titles are otherwise hidden in favour of the shell topbar).
   - `PharmListResultLine(total, noun, visible, searching, trailing)` — "ทั้งหมด N <noun>"
     band; pass a `trailing` slot for per-page totals (e.g. saleshistory ยอดรวม, expiry stat).
-  - `PharmSubPage(title, onBack, subtitle, actions, bottomBar, scrollable, contentPadding,
-    contentSpacing)` — the canonical back sub-page scaffold. Every detail/form page uses it
-    (customers detail, imports detail, drug form, customer/supplier/user form, imports form,
-    stock-count form, profile, drug lots/adjust/history, ky add pages, planning reorder). Its
-    header is a `PharmListToolbar(onBack=…, titleStyle=h2)` so sub-pages match the list-page
-    header style.
+  - **Sub-pages** (detail/form pages with a back button) use the SAME structure as main pages,
+    NOT a separate scaffold (the old `PharmSubPage` was removed): wrap in
+    `Column(Modifier.fillMaxSize().background(bgPage)) { PharmListToolbar(title, subtitle,
+    onBack, actions); <content> }`. The content area is a `Column(Modifier.weight(1f).fillMaxWidth()
+    [.verticalScroll(rememberScrollState())].padding(…))` — full-width like main pages (no
+    centered max-width). Every detail/form page follows this (customers detail, imports detail,
+    drug form, customer/supplier/user form, imports form, stock-count form, profile, drug
+    lots/adjust/history, ky add pages, planning reorder, eod). `onBack` on `PharmListToolbar`
+    renders a back button and forces the title to show at all widths.
   - `PharmFormCard(title, subtitle)` — form section card (rounded surface + 1dp border + h2
     title + optional subtitle + 16dp inner spacing). Wrap each form section in one;
     `UserForm/CustomerForm/SupplierForm/DrugForm/ImportForm/SettingsTab/Ky9-12Add` all use it.
   - `PharmSaveAction(saving, canSubmit, onSubmit, label)` — the save control that goes in the
-    `actions` slot of `PharmSubPage`. Forms no longer ship a bottom save bar.
+    `actions` slot of a sub-page's `PharmListToolbar`. Forms no longer ship a bottom save bar.
   - `ReloadOnResume(onResume)` (in `ui/common/`) — wraps a `LifecycleEventObserver` to call
     `viewModel::reload` on `ON_RESUME`. Every list/dashboard screen uses it so a record
     added on a detail page shows up when you navigate back.
