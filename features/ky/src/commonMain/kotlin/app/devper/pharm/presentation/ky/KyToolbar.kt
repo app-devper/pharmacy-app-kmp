@@ -1,30 +1,22 @@
 package app.devper.pharm.presentation.ky
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.KyFormType
-import app.devper.pharm.ui.components.WindowSize
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -34,7 +26,6 @@ import app.devper.pharm.ui.theme.pharmTokens
 
 private const val KY_TAB_PREFIX = "ky"
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun KyToolbar(
     currentForm: KyFormType,
@@ -44,68 +35,20 @@ internal fun KyToolbar(
     onApply: () -> Unit,
     onExport: () -> Unit,
     exporting: Boolean,
-    rowCount: Int,
-    totalValue: Double,
     onExportExcel: () -> Unit = {},
     onAddEntry: () -> Unit = {},
+    modifier: Modifier = Modifier,
 ) {
-    val t = pharmTokens
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val showStats = WindowSize.fromWidth(maxWidth).isAtLeastMedium
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
+    val meta = kyFormMeta(currentForm)
+    PharmListToolbar(
+        title = meta.title,
+        modifier = modifier,
+        subtitle = meta.subtitle,
+        filters = {
             KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Text("เดือน", style = PharmText.micro.copy(color = t.colors.fg3))
-                Box(modifier = Modifier.widthIn(min = 120.dp, max = 160.dp)) {
-                    PharmTextField(
-                        value = month,
-                        onValueChange = onMonthChange,
-                        placeholder = "YYYY-MM",
-                    )
-                }
-                PharmButton(
-                    label = "ค้นหา",
-                    onClick = onApply,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                )
-            }
-            if (showStats) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text(
-                        text = "$rowCount รายการ",
-                        style = PharmText.micro.copy(color = t.colors.fg3),
-                    )
-                    Text(text = "·", style = PharmText.micro.copy(color = t.colors.fgMuted))
-                    Text(
-                        text = "มูลค่ารวม",
-                        style = PharmText.micro.copy(color = t.colors.fg3),
-                    )
-                    Text(
-                        text = fmtBaht(totalValue),
-                        style = PharmText.bodySm.copy(
-                            color = t.colors.fg1,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFeatureSettings = "tnum",
-                        ),
-                    )
-                }
-            }
+            KyMonthField(month = month, onMonthChange = onMonthChange, onApply = onApply)
+        },
+        actions = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -132,7 +75,55 @@ internal fun KyToolbar(
                     leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
                 )
             }
+        },
+    )
+}
+
+@Composable
+private fun KyMonthField(
+    month: String,
+    onMonthChange: (String) -> Unit,
+    onApply: () -> Unit,
+) {
+    val t = pharmTokens
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text("เดือน", style = PharmText.micro.copy(color = t.colors.fg3))
+        Box(modifier = Modifier.widthIn(min = 120.dp, max = 160.dp)) {
+            PharmTextField(
+                value = month,
+                onValueChange = onMonthChange,
+                placeholder = "YYYY-MM",
+            )
         }
+        PharmButton(
+            label = "ค้นหา",
+            onClick = onApply,
+            variant = PharmButtonVariant.Outline,
+            size = PharmButtonSize.Sm,
+        )
+    }
+}
+
+@Composable
+internal fun KyValueStat(totalValue: Double, modifier: Modifier = Modifier) {
+    val t = pharmTokens
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(text = "มูลค่ารวม", style = PharmText.micro.copy(color = t.colors.fg3))
+        Text(
+            text = fmtBaht(totalValue),
+            style = PharmText.bodySm.copy(
+                color = t.colors.fg1,
+                fontWeight = FontWeight.SemiBold,
+                fontFeatureSettings = "tnum",
+            ),
+        )
     }
 }
 

@@ -3,8 +3,11 @@ package app.devper.pharm.presentation.ky
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +19,7 @@ import app.devper.pharm.domain.model.Ky10Entry
 import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -35,18 +39,6 @@ fun KyListContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        KyFormHeader(form = state.formType)
-        KyToolbar(
-            currentForm = state.formType,
-            onSwitchForm = callbacks.onSwitchForm,
-            month = state.month,
-            onMonthChange = callbacks.onMonthChange,
-            onApply = callbacks.onApply,
-            onExport = callbacks.onExport,
-            exporting = state.exporting,
-            rowCount = state.rows.size,
-            totalValue = state.rows.sumOf { row -> rowTotalValue(row) },
-        )
         state.message?.let { msg -> KyMessageBanner(msg, callbacks.onDismissMessage) }
 
         Column(
@@ -56,6 +48,25 @@ fun KyListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            KyToolbar(
+                currentForm = state.formType,
+                onSwitchForm = callbacks.onSwitchForm,
+                month = state.month,
+                onMonthChange = callbacks.onMonthChange,
+                onApply = callbacks.onApply,
+                onExport = callbacks.onExport,
+                exporting = state.exporting,
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmListResultLine(
+                total = state.rows.size,
+                noun = "รายการ",
+                trailing = {
+                    KyValueStat(totalValue = state.rows.sumOf { row -> rowTotalValue(row) })
+                },
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+
             when {
                 state.loading && state.rows.isEmpty() -> PharmListSkeleton()
 

@@ -5,13 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,8 +21,9 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -50,7 +49,9 @@ fun ReorderSuggestionsContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            ReorderHeader(total = state.suggestions.size, onReload = callbacks.onReload)
+            ReorderToolbar(onReload = callbacks.onReload)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmListResultLine(total = state.suggestions.size, noun = "รายการ")
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {
                 state.loading && state.suggestions.isEmpty() -> PharmListSkeleton()
@@ -69,31 +70,19 @@ fun ReorderSuggestionsContent(
 }
 
 @Composable
-private fun ReorderHeader(total: Int, onReload: () -> Unit) {
-    val t = pharmTokens
-    FlowRow(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Text(text = "คำแนะนำสั่งซื้อ", style = PharmText.h1)
-            Text(
-                text = "ทั้งหมด $total รายการ",
-                style = PharmText.micro.copy(color = t.colors.fgMuted),
+private fun ReorderToolbar(onReload: () -> Unit) {
+    PharmListToolbar(
+        title = "คำแนะนำสั่งซื้อ",
+        actions = {
+            PharmButton(
+                label = "รีเฟรช",
+                onClick = onReload,
+                size = PharmButtonSize.Sm,
+                variant = PharmButtonVariant.Outline,
+                leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
             )
-        }
-        PharmButton(
-            label = "รีเฟรช",
-            onClick = onReload,
-            size = PharmButtonSize.Sm,
-            variant = PharmButtonVariant.Outline,
-            leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-        )
-    }
+        },
+    )
 }
 
 private val sampleSuggestions = listOf(

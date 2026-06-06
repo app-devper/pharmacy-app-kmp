@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -33,16 +36,6 @@ fun MovementsContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-                .padding(16.dp),
-        ) {
-            MovementsFilterBar(state = state, callbacks = callbacks)
-        }
-
         MovementsTypeChips(
             activeIds = state.activeTypeIds,
             onToggle = callbacks.onToggleType,
@@ -55,6 +48,11 @@ fun MovementsContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            MovementsListToolbar(state = state, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmListResultLine(total = state.items.size, noun = "รายการ")
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+
             when {
                 state.loading && state.items.isEmpty() ->
                     PharmListSkeleton(modifier = Modifier.fillMaxSize())
