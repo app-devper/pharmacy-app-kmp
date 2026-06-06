@@ -55,6 +55,13 @@ class SalesHistoryViewModel(
         )
     }
 
+    fun onViewBill(sale: SaleSummary) {
+        setState { copy(billSheetOpen = true) }
+        onSelectSale(sale)
+    }
+
+    fun onCloseBill() = setState { copy(billSheetOpen = false) }
+
     fun onStartReturn(sale: SaleSummary) {
         if (sale.voided) return
         setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
