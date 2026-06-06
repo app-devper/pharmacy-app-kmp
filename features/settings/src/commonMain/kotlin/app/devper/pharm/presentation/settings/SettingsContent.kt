@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -57,14 +60,23 @@ private fun SettingsTabBody(state: SettingsEditorUiState, editor: SettingsEditor
             .fillMaxSize()
             .verticalScroll(scroll)
             .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        when (state.tab) {
-            SettingsTab.Store      -> SettingsStoreTab(state, editor)
-            SettingsTab.Receipt    -> SettingsReceiptTab(state, editor)
-            SettingsTab.Stock      -> SettingsStockTab(state, editor)
-            SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
-            SettingsTab.Ky         -> SettingsKyTab(state, editor)
+        Column(
+            modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            PharmFormCard(title = state.tab.label) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    when (state.tab) {
+                        SettingsTab.Store      -> SettingsStoreTab(state, editor)
+                        SettingsTab.Receipt    -> SettingsReceiptTab(state, editor)
+                        SettingsTab.Stock      -> SettingsStockTab(state, editor)
+                        SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
+                        SettingsTab.Ky         -> SettingsKyTab(state, editor)
+                    }
+                }
+            }
         }
     }
 }
