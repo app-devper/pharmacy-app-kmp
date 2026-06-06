@@ -4,13 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSubPage
 import app.devper.pharm.ui.theme.PharmText
@@ -46,8 +46,8 @@ fun ImportFormContent(
     PharmSubPage(
         title = state.titleLabel,
         onBack = callbacks.onBack,
-        contentPadding = PaddingValues(0.dp),
-        contentSpacing = false,
+        scrollable = !state.loading,
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 20.dp),
         actions = {
             if (state.saving) {
                 PharmCircularProgress(
@@ -66,16 +66,59 @@ fun ImportFormContent(
         },
     ) {
         if (state.loading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                contentAlignment = Alignment.Center,
+            ) {
                 PharmCircularProgress(color = t.colors.accent)
             }
         } else {
-            ImportFormBody(
-                state = state,
-                callbacks = callbacks,
-                onPickDrug = { idx -> pickerForLine = idx },
-                onPickSupplier = { supplierPickerOpen = true },
-            )
+            Column(
+                modifier = Modifier.widthIn(max = 960.dp).fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                PharmFormCard(title = "ข้อมูลใบรับสินค้า") {
+                    ImportFormHeader(
+                        state = state,
+                        callbacks = callbacks,
+                        onPickSupplier = { supplierPickerOpen = true },
+                    )
+                }
+                PharmFormCard(
+                    title = "รายการสินค้า",
+                    subtitle = if (state.form.items.isEmpty()) "ยังไม่มีรายการ" else "${state.form.items.size} รายการ",
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        state.form.items.forEachIndexed { index, fields ->
+                            ImportLineCard(
+                                index = index,
+                                fields = fields,
+                                readOnly = state.readOnly,
+                                onPickDrug = { pickerForLine = index },
+                                onLot = { callbacks.onLineLotNumber(index, it) },
+                                onExpiry = { callbacks.onLineExpiry(index, it) },
+                                onQty = { callbacks.onLineQty(index, it) },
+                                onCost = { callbacks.onLineCost(index, it) },
+                                onSell = { callbacks.onLineSell(index, it) },
+                                onRemove = { callbacks.onRemoveLine(index) },
+                            )
+                        }
+                        if (!state.readOnly) {
+                            PharmButton(
+                                onClick = callbacks.onAddLine,
+                                variant = PharmButtonVariant.Outline,
+                                leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(text = "เพิ่มรายการ", style = PharmText.buttonMd)
+                            }
+                        }
+                        if (state.readOnly) {
+                            ReadOnlyNote()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -102,63 +145,6 @@ fun ImportFormContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun ImportFormBody(
-    state: ImportFormUiState,
-    callbacks: ImportFormCallbacks,
-    onPickDrug: (lineIndex: Int) -> Unit,
-    onPickSupplier: () -> Unit,
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        item("header") { ImportFormHeader(state, callbacks, onPickSupplier) }
-
-        item("section") {
-            Text(
-                text = "รายการสินค้า",
-                style = PharmText.h3,
-                modifier = Modifier.padding(top = 4.dp),
-            )
-        }
-
-        items(state.form.items.size) { index ->
-            ImportLineCard(
-                index = index,
-                fields = state.form.items[index],
-                readOnly = state.readOnly,
-                onPickDrug = { onPickDrug(index) },
-                onLot = { callbacks.onLineLotNumber(index, it) },
-                onExpiry = { callbacks.onLineExpiry(index, it) },
-                onQty = { callbacks.onLineQty(index, it) },
-                onCost = { callbacks.onLineCost(index, it) },
-                onSell = { callbacks.onLineSell(index, it) },
-                onRemove = { callbacks.onRemoveLine(index) },
-            )
-        }
-
-        item("add-line") {
-            if (!state.readOnly) {
-                PharmButton(
-                    onClick = callbacks.onAddLine,
-                    variant = PharmButtonVariant.Outline,
-                    leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = "เพิ่มรายการ", style = PharmText.buttonMd)
-                }
-            }
-        }
-
-        item("readonly-note") {
-            if (state.readOnly) {
-                ReadOnlyNote()
-            }
-        }
-    }
 }
 
 @Composable
