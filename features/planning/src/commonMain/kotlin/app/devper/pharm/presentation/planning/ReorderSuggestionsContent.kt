@@ -73,6 +73,7 @@ fun ReorderSuggestionsContent(
 private fun ReorderToolbar(onReload: () -> Unit) {
     PharmListToolbar(
         title = "คำแนะนำสั่งซื้อ",
+        subtitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม",
         actions = {
             PharmButton(
                 label = "รีเฟรช",

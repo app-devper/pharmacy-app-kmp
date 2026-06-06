@@ -24,6 +24,7 @@ internal fun StockToolbar(
 ) {
     PharmListToolbar(
         title = "คลังยา",
+        subtitle = "จัดการรายการยาและสต็อกคงเหลือ",
         modifier = modifier,
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
