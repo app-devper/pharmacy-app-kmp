@@ -1,4 +1,4 @@
-package app.devper.pharm.presentation.sell.sibling
+package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.domain.param.VoidSaleParam
 import app.devper.pharm.domain.usecase.DismissReceiptUseCase

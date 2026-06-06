@@ -1,11 +1,11 @@
 package app.devper.pharm.di
 
 import app.devper.pharm.presentation.sell.SellViewModel
-import app.devper.pharm.presentation.sell.sibling.CheckoutViewModel
-import app.devper.pharm.presentation.sell.sibling.CustomerPickerViewModel
-import app.devper.pharm.presentation.sell.sibling.DrugPickerViewModel
-import app.devper.pharm.presentation.sell.sibling.ParkedCartViewModel
-import app.devper.pharm.presentation.sell.sibling.VoidSaleViewModel
+import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
+import app.devper.pharm.presentation.sell.flow.CustomerPickerViewModel
+import app.devper.pharm.presentation.sell.flow.DrugPickerViewModel
+import app.devper.pharm.presentation.sell.flow.ParkedCartViewModel
+import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

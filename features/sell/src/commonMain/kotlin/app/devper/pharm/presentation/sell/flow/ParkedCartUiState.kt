@@ -1,4 +1,4 @@
-package app.devper.pharm.presentation.sell.sibling
+package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.ui.common.BaseUiState

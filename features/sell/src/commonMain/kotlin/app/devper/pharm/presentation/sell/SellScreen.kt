@@ -1,9 +1,9 @@
 package app.devper.pharm.presentation.sell
-import app.devper.pharm.presentation.sell.sibling.CheckoutViewModel
-import app.devper.pharm.presentation.sell.sibling.VoidSaleViewModel
-import app.devper.pharm.presentation.sell.sibling.ParkedCartViewModel
-import app.devper.pharm.presentation.sell.sibling.CustomerPickerViewModel
-import app.devper.pharm.presentation.sell.sibling.DrugPickerViewModel
+import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
+import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
+import app.devper.pharm.presentation.sell.flow.ParkedCartViewModel
+import app.devper.pharm.presentation.sell.flow.CustomerPickerViewModel
+import app.devper.pharm.presentation.sell.flow.DrugPickerViewModel
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
