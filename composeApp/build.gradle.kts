@@ -111,6 +111,8 @@ kotlin {
         wasmJsMain.dependencies {
             implementation(libs.ktor.client.js)
             implementation(libs.kotlinx.browser)
+            implementation(npm("@js-joda/core", "5.6.0"))
+            implementation(npm("@js-joda/timezone", "2.18.2"))
         }
 
         commonTest.dependencies {
