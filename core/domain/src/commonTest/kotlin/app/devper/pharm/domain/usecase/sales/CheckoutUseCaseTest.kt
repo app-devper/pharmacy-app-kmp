@@ -2,7 +2,7 @@
 
 package app.devper.pharm.domain.usecase
 
-import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
@@ -25,7 +25,6 @@ import app.devper.pharm.domain.repository.SaleRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,11 +33,6 @@ import kotlin.test.assertTrue
 
 class CheckoutUseCaseTest {
 
-    private fun dispatchers(): AppDispatchers {
-        val one = UnconfinedTestDispatcher()
-        return AppDispatchers(main = one, io = one, default = one)
-    }
-
     private fun drug(id: String, stock: Int) = Drug(
         id = id, name = "Drug $id", genericName = null, type = null, strength = null,
         barcode = null, sellPrice = 10.0, costPrice = 0.0, stock = stock, minStock = 0,
@@ -46,7 +40,7 @@ class CheckoutUseCaseTest {
     )
 
     private fun useCase(active: ActiveCart, sales: FakeSales) =
-        CheckoutUseCase(FakeCart(active), sales, dispatchers())
+        CheckoutUseCase(FakeCart(active), sales, testDispatchers())
 
     private fun cart(vararg lines: CartLine, received: String = "100") =
         ActiveCart(items = lines.toList(), cashReceived = received)
@@ -123,7 +117,7 @@ class CheckoutUseCaseTest {
     fun success_commits_receipt_to_cart() = runTest {
         val sales = FakeSales()
         val fakeCart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
-        val outcome = CheckoutUseCase(fakeCart, sales, dispatchers()).invoke(received = 100.0).getOrThrow()
+        val outcome = CheckoutUseCase(fakeCart, sales, testDispatchers()).invoke(received = 100.0).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         assertEquals(sales.sale.id, fakeCart.committed?.id)
     }
@@ -135,7 +129,7 @@ class CheckoutUseCaseTest {
         val result = CheckoutUseCase(
             FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1))),
             sales,
-            dispatchers(),
+            testDispatchers(),
         ).invoke(received = 100.0, clientRequestId = "req-1")
         assertTrue(result.isFailure)
         val failure = result.exceptionOrNull() as CheckoutFailure

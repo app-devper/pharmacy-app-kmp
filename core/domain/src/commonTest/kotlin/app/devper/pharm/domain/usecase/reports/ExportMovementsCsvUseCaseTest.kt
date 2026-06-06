@@ -2,13 +2,12 @@
 
 package app.devper.pharm.domain.usecase
 
-import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.domain.param.ExportKyFormParam
 import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.repository.ExportRepository
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,13 +29,8 @@ class ExportMovementsCsvUseCaseTest {
         }
     }
 
-    private fun dispatchers(): AppDispatchers {
-        val one = UnconfinedTestDispatcher()
-        return AppDispatchers(main = one, io = one, default = one)
-    }
-
     private fun useCase(repo: ExportRepository = CapturingExportRepository()) =
-        ExportMovementsCsvUseCase(repo, dispatchers()) to repo
+        ExportMovementsCsvUseCase(repo, testDispatchers()) to repo
 
     private fun sampleRows(): List<StockMovement> = listOf(
         StockMovement(

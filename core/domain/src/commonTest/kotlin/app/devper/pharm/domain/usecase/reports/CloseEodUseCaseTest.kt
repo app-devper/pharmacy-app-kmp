@@ -2,7 +2,7 @@
 
 package app.devper.pharm.domain.usecase
 
-import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.ConflictException
 import app.devper.pharm.common.NetworkException
@@ -20,7 +20,6 @@ import app.devper.pharm.domain.param.EodReportParam
 import app.devper.pharm.domain.param.ReportRangeParam
 import app.devper.pharm.domain.param.TopOrSlowDrugsParam
 import app.devper.pharm.domain.repository.ReportsRepository
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -67,11 +66,6 @@ private class StubReportsRepository(
 
 class CloseEodUseCaseTest {
 
-    private fun dispatchers(): AppDispatchers {
-        val one = UnconfinedTestDispatcher()
-        return AppDispatchers(main = one, io = one, default = one)
-    }
-
     private val sampleReport = EodReport(
         date = "2026-05-19",
         billCount = 2,
@@ -94,7 +88,7 @@ class CloseEodUseCaseTest {
     @Test
     fun happy_path_returns_repo_result_and_passes_param_through() = runTest {
         val repo = StubReportsRepository(closeResult = sampleClose)
-        val uc = CloseEodUseCase(repo, dispatchers())
+        val uc = CloseEodUseCase(repo, testDispatchers())
         val outcome = uc(CloseEodParam(date = "2026-05-19"))
         assertTrue(outcome.isSuccess)
         assertEquals(sampleClose, outcome.getOrThrow())
@@ -104,7 +98,7 @@ class CloseEodUseCaseTest {
     @Test
     fun network_failure_propagates_as_typed_AppException_in_Result_failure() = runTest {
         val repo = StubReportsRepository(closeThrows = NetworkException())
-        val uc = CloseEodUseCase(repo, dispatchers())
+        val uc = CloseEodUseCase(repo, testDispatchers())
         val outcome = uc(CloseEodParam(date = "2026-05-19"))
         assertTrue(outcome.isFailure)
         val e = outcome.exceptionOrNull()
@@ -115,7 +109,7 @@ class CloseEodUseCaseTest {
     @Test
     fun conflict_failure_propagates_as_typed_ConflictException_in_Result_failure() = runTest {
         val repo = StubReportsRepository(closeThrows = ConflictException(message = "already closed"))
-        val uc = CloseEodUseCase(repo, dispatchers())
+        val uc = CloseEodUseCase(repo, testDispatchers())
         val outcome = uc(CloseEodParam(date = "2026-05-19"))
         assertTrue(outcome.isFailure)
         val e = outcome.exceptionOrNull()
