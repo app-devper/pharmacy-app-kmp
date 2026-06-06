@@ -69,23 +69,44 @@ fun StockAdjustmentsBottomSheet(
         sheetState = sheetState,
         containerColor = t.colors.surface,
     ) {
-        Column(
+        StockAdjustmentsContent(
+            state = state,
+            callbacks = callbacks,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            HeaderRow(state, callbacks)
-            Divider()
-            HistoryBody(state)
-            if (state.addFormOpen) {
-                Divider()
-                AddAdjustmentForm(state, callbacks)
-            }
-        }
+        )
     }
 
+    StockAdjustmentsDialogs(state = state, callbacks = callbacks)
+}
+
+@Composable
+fun StockAdjustmentsContent(
+    state: StockAdjustmentsUiState,
+    callbacks: StockAdjustmentsCallbacks,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        HeaderRow(state, callbacks)
+        Divider()
+        HistoryBody(state)
+        if (state.addFormOpen) {
+            Divider()
+            AddAdjustmentForm(state, callbacks)
+        }
+    }
+}
+
+@Composable
+fun StockAdjustmentsDialogs(
+    state: StockAdjustmentsUiState,
+    callbacks: StockAdjustmentsCallbacks,
+) {
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
 }
 
