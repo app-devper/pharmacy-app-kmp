@@ -9,13 +9,13 @@ data class CustomersListUiState(
     val customers: List<Customer> = emptyList(),
     override val error: String? = null,
 ) : BaseUiState {
-    val filtered: List<Customer>
-        get() {
-            if (query.isBlank()) return customers
-            val q = query.trim().lowercase()
-            return customers.filter { c ->
-                c.name.lowercase().contains(q) ||
-                    (c.phone?.lowercase()?.contains(q) == true)
-            }
+    val filtered: List<Customer> = if (query.isBlank()) {
+        customers
+    } else {
+        val q = query.trim().lowercase()
+        customers.filter { c ->
+            c.name.lowercase().contains(q) ||
+                (c.phone?.lowercase()?.contains(q) == true)
         }
+    }
 }

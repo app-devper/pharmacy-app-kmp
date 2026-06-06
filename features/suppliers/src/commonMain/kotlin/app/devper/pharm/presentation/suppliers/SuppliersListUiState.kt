@@ -11,14 +11,14 @@ data class SuppliersListUiState(
     val deleting: Boolean = false,
     override val error: String? = null,
 ) : BaseUiState {
-    val filtered: List<Supplier>
-        get() {
-            if (query.isBlank()) return suppliers
-            val q = query.trim().lowercase()
-            return suppliers.filter { s ->
-                s.name.lowercase().contains(q) ||
-                    s.phone.lowercase().contains(q) ||
-                    s.contactName.lowercase().contains(q)
-            }
+    val filtered: List<Supplier> = if (query.isBlank()) {
+        suppliers
+    } else {
+        val q = query.trim().lowercase()
+        suppliers.filter { s ->
+            s.name.lowercase().contains(q) ||
+                s.phone.lowercase().contains(q) ||
+                s.contactName.lowercase().contains(q)
         }
+    }
 }

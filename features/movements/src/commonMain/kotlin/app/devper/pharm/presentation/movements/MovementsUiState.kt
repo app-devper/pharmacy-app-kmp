@@ -18,19 +18,23 @@ data class MovementsUiState(
     override val error: String? = null,
 ) : BaseUiState {
 
-    val pageCount: Int
-        get() {
-            if (pageSize <= 0) return 1
+    val pageCount: Int = run {
+        if (pageSize <= 0) 1
+        else {
             val c = (items.size + pageSize - 1) / pageSize
-            return if (c <= 0) 1 else c
+            if (c <= 0) 1 else c
         }
+    }
 
-    val pageItems: List<StockMovement>
-        get() {
-            if (items.isEmpty()) return emptyList()
+    val pageItems: List<StockMovement> = run {
+        if (items.isEmpty()) emptyList()
+        else {
             val start = ((page - 1).coerceAtLeast(0)) * pageSize
-            if (start >= items.size) return emptyList()
-            val end = (start + pageSize).coerceAtMost(items.size)
-            return items.subList(start, end)
+            if (start >= items.size) emptyList()
+            else {
+                val end = (start + pageSize).coerceAtMost(items.size)
+                items.subList(start, end)
+            }
         }
+    }
 }

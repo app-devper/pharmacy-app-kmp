@@ -13,17 +13,16 @@ data class ImportsListUiState(
     val busy: Boolean = false,
     override val error: String? = null,
 ) : BaseUiState {
-    val filtered: List<PurchaseOrderSummary>
-        get() {
-            if (query.isBlank()) return orders
-            val q = query.trim().lowercase()
-            return orders.filter { o ->
-                o.docNo.lowercase().contains(q) ||
-                    o.supplier.lowercase().contains(q) ||
-                    o.invoiceNo.lowercase().contains(q)
-            }
+    val filtered: List<PurchaseOrderSummary> = if (query.isBlank()) {
+        orders
+    } else {
+        val q = query.trim().lowercase()
+        orders.filter { o ->
+            o.docNo.lowercase().contains(q) ||
+                o.supplier.lowercase().contains(q) ||
+                o.invoiceNo.lowercase().contains(q)
         }
+    }
 
-    val draftCount: Int
-        get() = orders.count { it.status == PurchaseOrderStatus.Draft }
+    val draftCount: Int = orders.count { it.status == PurchaseOrderStatus.Draft }
 }
