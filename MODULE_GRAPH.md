@@ -25,8 +25,8 @@ project. A test-only side module `:features:test-fixtures` hosts shared
         └────────────────────────────┬────────────────────────────┘
                                      ▼
                          ┌────────────────────┐
-                         │  :features:shared  │  nav hub + 20 Route
-                         │                    │  data objects + ShelledScreen
+                         │  :features:shared  │  shell + nav contract
+                         │                    │  (ShelledScreen + LocalMainNav)
                          └─────────┬──────────┘
                                    │       (:features:test-fixtures sits
                                    │        beside :features:shared as a
@@ -190,16 +190,25 @@ The ktor engines (`ktor-client-okhttp`/`darwin`/`java`/`js`) live in
 | `data/remote/dto/` | DTOs + Request/Response types. A24 + A25 enforced (camelCase + `@SerialName`) |
 | `data/di/DataModule.kt` | Koin `dataModule` — every `<X>Api` + every `<X>RepositoryImpl bind <X>Repository::class` |
 
-### `:features:shared` — navigation hub + route data objects
+### `:features:shared` — shell + nav contract (route-agnostic)
 
-Sits between `:core:ui` and the 20 per-feature modules. The split
-foundation extracted in `5b4d0ed` so per-feature splits became feasible
-without route-import cycles.
+Sits between `:core:ui` and the 20 per-feature modules. Originally extracted
+in `5b4d0ed` as the route hub; routes were later moved into each feature
+(`presentation/<x>/navigation/`) and `:features:shared` slimmed to just the
+shell + a CompositionLocal-based nav contract — so it no longer references any
+concrete route object.
 
 | Path | Contents |
 |---|---|
-| `presentation/navigation/ShelledScreen.kt` | `AppShell` wrapper + `MAIN_NAV` table (17 sidebar items + 3 unlinked routes). Public function callable from every feature's NavGraph. |
-| `presentation/<feature>/<Feature>Routes.kt` × 20 | All `@Serializable data object`/`data class` route definitions. Keeping them here means feature modules can navigate to each other's routes via the shared module without depending on each other's production code. |
+| `presentation/navigation/ShelledScreen.kt` | `AppShell` wrapper. Reads `LocalMainNav` for the sidebar items + key→route resolver; never imports a route object. Public function callable from every feature's NavGraph. |
+| `presentation/navigation/MainNav.kt` | `MainNavConfig(items, routeForKey)` + `LocalMainNav` (staticCompositionLocalOf, empty default). `:composeApp` provides the real value wrapping `NavHost`. |
+
+Route data objects now live in each feature at
+`features/<x>/.../presentation/<x>/navigation/<X>Routes.kt`. The `MAIN_NAV` table
+(route objects + labels + icons) lives in `:composeApp/.../navigation/MainNav.kt`.
+Cross-feature navigation is done via hoisted `() -> Unit` callbacks resolved in
+`:composeApp` (e.g. `auth→Sell`, `stock→ReorderSuggestions`), not by importing
+another feature's route.
 
 `deps`: `:core:domain` + `:core:ui` only. Cannot depend on
 `:features:<x>` (would be a cycle).
@@ -337,7 +346,8 @@ Quick smoke (no per-feature breakdown — runs the dependent tree):
 | A new DTO / API endpoint | `:core:data/remote/{dto,api}/` |
 | A new design primitive | `:core:ui/designsystem/` |
 | Anything theme / color / token | `:core:ui/theme/` |
-| A new feature route data object | `:features:shared/presentation/<feature>/<Feature>Routes.kt` |
+| A new feature route data object | `:features:<feature>/presentation/<feature>/navigation/<Feature>Routes.kt` |
+| A new sidebar entry for that route | `composeApp/.../navigation/MainNav.kt` (`MAIN_NAV_TABLE`) |
 | A new feature screen + VM | `:features:<feature>/presentation/<feature>/` |
 | Its DI bindings | `:features:<feature>/di/<Feature>Module.kt` |
 | Its NavGraph | `:features:<feature>/presentation/<feature>/<Feature>NavGraph.kt` |
@@ -356,15 +366,16 @@ CLAUDE.md):
 2. Add `features/<feat>/build.gradle.kts` mirroring an existing leaf
    feature (`:features:help` is the smallest template)
 3. Add `:features:<feat>` to `settings.gradle.kts`
-4. Add `<Feat>Routes.kt` to `:features:shared` (one-file `@Serializable
-   data object Feat`)
+4. Add `<Feat>Routes.kt` to `features/<feat>/.../presentation/<feat>/navigation/`
+   (one-file `@Serializable data object Feat`; package stays
+   `app.devper.pharm.presentation.<feat>`)
 5. Create `features/<feat>/.../presentation/<feat>/<Feat>{Screen,Content,
    Callbacks,ViewModel,UiState,NavGraph}.kt` + `features/<feat>/.../di/<Feat>Module.kt`
 6. Wire from `:composeApp`: add `implementation(project(":features:<feat>"))`
    to `composeApp/build.gradle.kts`, append `<feat>Graph(...)` to
    `AppNavHost.kt`, append `<feat>Module` to `AppModule.kt`'s `includes(...)`,
-   register the route in `:features:shared/.../navigation/ShelledScreen.kt`'s
-   `MAIN_NAV` table if it gets a sidebar item.
+   register the route in `composeApp/.../navigation/MainNav.kt`'s
+   `MAIN_NAV_TABLE` if it gets a sidebar item.
 
 The recipe was pilot-tested on `:features:help` (`26d9589`) and then
 repeated 19 more times. Average time per feature: ~20-30 minutes once

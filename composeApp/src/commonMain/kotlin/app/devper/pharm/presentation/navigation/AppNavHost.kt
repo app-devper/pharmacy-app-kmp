@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import app.devper.pharm.presentation.ky.kyGraph
 import app.devper.pharm.presentation.labels.labelPrintGraph
 import app.devper.pharm.presentation.movements.movementsGraph
 import app.devper.pharm.presentation.offlinesync.offlineSyncGraph
+import app.devper.pharm.presentation.planning.ReorderSuggestions
 import app.devper.pharm.presentation.planning.planningGraph
 import app.devper.pharm.presentation.profile.Profile
 import app.devper.pharm.presentation.profile.profileGraph
@@ -68,10 +70,20 @@ fun AppNavHost(viewModel: AppViewModel = koinViewModel()) {
         }
     }
 
+    CompositionLocalProvider(LocalMainNav provides mainNavConfig) {
     NavHost(navController = navController, startDestination = Login) {
-        authGraph(navController)
+        authGraph(
+            onLoggedIn = {
+                navController.navigate(Sell) {
+                    popUpTo(Login) { inclusive = true }
+                }
+            },
+        )
         sellGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
-        stockGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
+        stockGraph(
+            navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick,
+            onOpenReorderSuggestions = { navController.navigate(ReorderSuggestions) { launchSingleTop = true } },
+        )
         customersGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
         salesHistoryGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
         settingsGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
@@ -89,5 +101,6 @@ fun AppNavHost(viewModel: AppViewModel = koinViewModel()) {
         helpGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
         profileGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
         usersGraph(navController, onLogout, pendingSyncCount, role, user, onNavigateMain, onProfileClick)
+    }
     }
 }

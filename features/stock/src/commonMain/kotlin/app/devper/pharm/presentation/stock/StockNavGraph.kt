@@ -7,7 +7,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import app.devper.pharm.presentation.navigation.ShelledScreen
-import app.devper.pharm.presentation.planning.ReorderSuggestions
 
 fun NavGraphBuilder.stockGraph(
     navController: NavController,
@@ -17,6 +16,7 @@ fun NavGraphBuilder.stockGraph(
     user: TopbarUser? = null,
     onNavigateMain: (Any) -> Unit,
     onProfileClick: () -> Unit,
+    onOpenReorderSuggestions: () -> Unit,
 ) {
     composable<Stock> {
         ShelledScreen(
@@ -35,7 +35,7 @@ fun NavGraphBuilder.stockGraph(
                 onOpenLots = { id, name -> navController.navigate(DrugLots(id, name)) { launchSingleTop = true } },
                 onOpenAdjust = { id, name -> navController.navigate(DrugAdjust(id, name)) { launchSingleTop = true } },
                 onOpenHistory = { id, name -> navController.navigate(DrugHistory(id, name)) { launchSingleTop = true } },
-                onOpenReorderSuggestions = { navController.navigate(ReorderSuggestions) { launchSingleTop = true } },
+                onOpenReorderSuggestions = onOpenReorderSuggestions,
             )
         }
     }

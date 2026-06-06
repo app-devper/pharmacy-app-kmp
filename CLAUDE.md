@@ -60,14 +60,16 @@ the per-feature split arc `5b4d0ed` → `9a76123`):
   deps: ktor + multiplatform-settings + koin-core + :core:common + :core:domain
   rule: ไม่มี platform source folders
 
-:features:shared                         navigation hub + route data objects
-  ├─ presentation/<feature>/<Feature>Routes.kt × 20   @Serializable data objects
-  │    (Sell, Stock, Help, LabelPrint, etc. — one per per-feature module)
-  ├─ presentation/navigation/ShelledScreen.kt    public AppShell + MAIN_NAV table
+:features:shared                         shell + nav contract (route-agnostic)
+  ├─ presentation/navigation/ShelledScreen.kt    public AppShell wrapper; reads LocalMainNav
+  ├─ presentation/navigation/MainNav.kt          MainNavConfig(items, routeForKey) + LocalMainNav
+  │                                              (CompositionLocal; composeApp provides the value)
   deps: :core:domain + :core:ui ONLY
   rule: NO knowledge of :features:<x> or :composeApp (would be a cycle).
-        Declares routes that :features:<x>'s NavGraphs reference and
-        :composeApp's AppNavHost uses for startDestination + nav.
+        Holds the NAV CONTRACT only — never references concrete route objects.
+        Route data objects live in each :features:<x>/presentation/<x>/navigation/.
+        The MAIN_NAV table (route objects + labels + icons) lives in
+        :composeApp/.../navigation/MainNav.kt and is injected via LocalMainNav.
 
 :features:test-fixtures                  shared test doubles (commonMain only, test-only module)
   ├─ domain/repository/Fake{Cart,Customer,Drug,Ky,Label,OfflineSaleQueue,
@@ -83,9 +85,12 @@ the per-feature split arc `5b4d0ed` → `9a76123`):
   ├─ build.gradle.kts                    pharmacy.kmp.compose.library
   ├─ src/commonMain/kotlin/app/devper/pharm/
   │   ├─ di/<Feature>Module.kt           ONLY VM `factoryOf` bindings
-  │   └─ presentation/<feature>/         Screen/Content/Callbacks/ViewModel/
-  │                                      UiState/NavGraph + section/components/
-  │                                      sibling subdirs as needed
+  │   ├─ presentation/<feature>/         Screen/Content/Callbacks/ViewModel/
+  │   │                                  UiState/NavGraph + section/components/
+  │   │                                  sibling subdirs as needed
+  │   └─ presentation/<feature>/navigation/<Feature>Routes.kt   @Serializable route objects
+  │                                      (owned by the feature; package stays
+  │                                      app.devper.pharm.presentation.<feature>)
   ├─ src/commonTest/kotlin/...           (when tests exist)
   │   └─ presentation/<feature>/         VM tests + co-located fakes (when single-consumer)
   └─ composeResources/                   (only :features:help ships an asset today)
@@ -112,9 +117,10 @@ foundation is in place.
    only if the feature ships its own assets.
 3. **Register in `settings.gradle.kts`** — append `:features:<feat>` to
    `include(...)`.
-4. **Add the Route data object** to `:features:shared` — one file at
-   `features/shared/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/<Feat>Routes.kt`
-   with `@Serializable data object Feat` (and any sub-routes).
+4. **Add the Route data object** inside the feature — one file at
+   `features/<feat>/src/commonMain/kotlin/app/devper/pharm/presentation/<feat>/navigation/<Feat>Routes.kt`
+   with `@Serializable data object Feat` (and any sub-routes). Package stays
+   `app.devper.pharm.presentation.<feat>` — the `navigation/` folder is organisation only.
 5. **Build the feature production code** in
    `features/<feat>/.../presentation/<feat>/` (Screen, Content, Callbacks,
    ViewModel, UiState, NavGraph) + `.../di/<Feat>Module.kt` with the
@@ -123,7 +129,11 @@ foundation is in place.
    - `composeApp/build.gradle.kts`: `implementation(project(":features:<feat>"))`
    - `composeApp/.../presentation/navigation/AppNavHost.kt`: append `<feat>Graph(navController, …)`
    - `composeApp/.../di/AppModule.kt`: append `<feat>Module` to `includes(...)`
-   - `features/shared/.../navigation/ShelledScreen.kt`: register in `MAIN_NAV` if the feature gets a sidebar item
+   - `composeApp/.../navigation/MainNav.kt`: add a `MainNavEntry(<Route>, …)` to
+     `MAIN_NAV_TABLE` if the feature gets a sidebar item (composeApp imports the route)
+   - Cross-feature jumps (e.g. a sub-page in another feature) are **not** done by
+     importing the other feature's route — hoist a `() -> Unit` callback into your
+     `<feat>Graph(...)` and let `composeApp`'s AppNavHost supply the `navController.navigate(<OtherRoute>)`.
 
 If the feature has tests using shared fakes, add to
 `features/<feat>/build.gradle.kts`:
@@ -171,8 +181,12 @@ Wire / source-set discipline:
   features ใช้ Repository interface จาก :core:domain เท่านั้น; data
   bindings อยู่ใน :core:data/.../di/DataModule.kt ซึ่ง :composeApp include เอง)
 - `:features:<x>` ห้ามรู้จัก `:composeApp`
-- `:features:<x>` ห้ามรู้จัก `:features:<y>` ที่เป็น production code —
-  ใช้ Route object จาก `:features:shared` ถ้าต้อง navigate ข้าม feature
+- `:features:<x>` ห้ามรู้จัก `:features:<y>` ที่เป็น production code (รวมถึง Route
+  object ของ feature อื่น — แต่ละ feature เป็นเจ้าของ route ตัวเองใน
+  `presentation/<x>/navigation/`). ถ้าต้อง navigate ข้าม feature ให้ hoist callback
+  `() -> Unit` ขึ้นไปที่ `<x>Graph(...)` แล้วให้ `:composeApp` AppNavHost เป็นผู้
+  `navController.navigate(<OtherRoute>)` (composeApp เห็นทุก route). cross-feature
+  ที่มีอยู่: `auth→Sell` (post-login) และ `stock→ReorderSuggestions` ทำผ่าน callback ทั้งคู่
 - **A26**: เฉพาะ `:composeApp` เท่านั้นที่มี platform source folders
   (`androidMain` / `iosMain` / `jvmMain` / `wasmJsMain`); module อื่นเป็น
   `commonMain` + `commonTest` ล้วน ๆ
@@ -227,7 +241,7 @@ purpose isn't clear from its name, rename the method.
   8.13.2 / Gradle 8.14.3
 - **Targets**: `jvm`, `android`, `iosArm64`, `iosSimulatorArm64`, `wasmJs`
 - **Modules (27)**: `:composeApp` (entry), `:core:{common,domain,ui,data}` (4 core),
-  `:features:shared` (nav hub + routes), `:features:test-fixtures` (test doubles),
+  `:features:shared` (shell + nav contract; routes live per-feature), `:features:test-fixtures` (test doubles),
   20 `:features:<x>` (auth, bulkimport, customers, expiry, help, imports, ky,
   labels, movements, offlinesync, planning, profile, reports, saleshistory,
   sell, settings, stock, stockcount, suppliers, users). See `MODULE_GRAPH.md`
