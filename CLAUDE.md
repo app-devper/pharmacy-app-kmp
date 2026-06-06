@@ -291,15 +291,20 @@ purpose isn't clear from its name, rename the method.
   `PharmTextField` / `FormField` / `PharmModal` / `MetricCard` / `DrugCard` /
   `PharmTable` / `PharmStaticTable` / `PharmFilterChips` / `PharmIcons` (SVG vectors)
 - **Page scaffold primitives** (use these so every screen looks the same):
-  - `PharmListToolbar(title, subtitle, searchValue, filters, actions)` — list-page header
-    (used by every list screen — stock/expiry/movements/imports/customers/suppliers/users/
-    saleshistory/stockcount/ky/planning).
+  - `PharmListToolbar(title, subtitle, onBack, searchValue, filters, actions)` — the single
+    page-header primitive for BOTH list pages and sub-pages. Used by every list screen
+    (stock/expiry/movements/imports/customers/suppliers/users/saleshistory/stockcount/ky/
+    planning + offlinesync/profit/settings). Pass `onBack` to render a back button before the
+    title (sub-page mode — title/subtitle then always show, even below the 600dp width where
+    list-page titles are otherwise hidden in favour of the shell topbar).
   - `PharmListResultLine(total, noun, visible, searching, trailing)` — "ทั้งหมด N <noun>"
     band; pass a `trailing` slot for per-page totals (e.g. saleshistory ยอดรวม, expiry stat).
   - `PharmSubPage(title, onBack, subtitle, actions, bottomBar, scrollable, contentPadding,
     contentSpacing)` — the canonical back sub-page scaffold. Every detail/form page uses it
     (customers detail, imports detail, drug form, customer/supplier/user form, imports form,
-    stock-count form, profile, drug lots/adjust/history, ky add pages, planning reorder).
+    stock-count form, profile, drug lots/adjust/history, ky add pages, planning reorder). Its
+    header is a `PharmListToolbar(onBack=…, titleStyle=h2)` so sub-pages match the list-page
+    header style.
   - `PharmFormCard(title, subtitle)` — form section card (rounded surface + 1dp border + h2
     title + optional subtitle + 16dp inner spacing). Wrap each form section in one;
     `UserForm/CustomerForm/SupplierForm/DrugForm/ImportForm/SettingsTab/Ky9-12Add` all use it.

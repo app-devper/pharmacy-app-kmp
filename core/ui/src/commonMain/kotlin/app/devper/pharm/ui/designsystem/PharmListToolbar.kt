@@ -1,5 +1,6 @@
 package app.devper.pharm.ui.designsystem
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -9,10 +10,15 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
@@ -26,6 +32,7 @@ fun PharmListToolbar(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    onBack: (() -> Unit)? = null,
     searchValue: String? = null,
     onSearchChange: ((String) -> Unit)? = null,
     searchPlaceholder: String = "",
@@ -36,7 +43,7 @@ fun PharmListToolbar(
 ) {
     val t = pharmTokens
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val showTitle = maxWidth >= TITLE_MIN_WIDTH
+        val showTitle = onBack != null || maxWidth >= TITLE_MIN_WIDTH
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -48,6 +55,22 @@ fun PharmListToolbar(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                if (onBack != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(t.shapes.md)
+                            .clickable(role = Role.Button, onClick = onBack),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = PharmIcons.ReturnArrow,
+                            contentDescription = "กลับ",
+                            tint = t.colors.fg1,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
                 if (showTitle) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(text = title, style = titleStyle)
