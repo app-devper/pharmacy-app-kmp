@@ -36,7 +36,7 @@ fun PharmToggleSwitch(
 
     Box(
         modifier = modifier
-            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+            .sizeIn(minWidth = 48.dp, minHeight = t.dimens.controlHeight)
             .toggleable(
                 value = checked,
                 interactionSource = interaction,
