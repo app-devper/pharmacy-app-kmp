@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
@@ -120,7 +121,7 @@ private fun DateField(
             .clip(t.shapes.md)
             .border(1.dp, t.colors.border, t.shapes.md)
             .background(t.colors.surface)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -149,7 +150,7 @@ private fun QuickPeriodChip(label: String, onClick: () -> Unit) {
             .clip(t.shapes.md)
             .border(1.dp, t.colors.border, t.shapes.md)
             .background(t.colors.bgPage)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {

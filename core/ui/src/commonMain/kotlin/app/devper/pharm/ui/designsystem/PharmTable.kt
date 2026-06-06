@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -168,7 +169,7 @@ private fun <T> PharmTableCard(
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
-    val clickable = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    val clickable = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -244,7 +245,7 @@ private fun <T> PharmTableRow(
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
-    val clickable = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    val clickable = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(

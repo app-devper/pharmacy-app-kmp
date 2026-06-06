@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -69,7 +70,7 @@ fun CartLineRow(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onTapForDiscount)
+            .clickable(role = Role.Button, onClick = onTapForDiscount)
             .padding(horizontal = 16.dp, vertical = rowVerticalPadding),
     ) {
         if (maxWidth < 360.dp) {
@@ -294,7 +295,7 @@ private fun QtyStepper(
                     text = "${qty}x",
                     style = PharmText.body.tabular(),
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { editing = true },
+                    modifier = Modifier.clickable(role = Role.Button) { editing = true },
                 )
             }
         }

@@ -181,7 +181,7 @@ private fun SidebarRow(
             .padding(horizontal = 8.dp, vertical = 2.dp)
             .clip(t.shapes.md)
             .background(bg)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .semantics(mergeDescendants = true) {
                 role = Role.Tab
                 selected = active
