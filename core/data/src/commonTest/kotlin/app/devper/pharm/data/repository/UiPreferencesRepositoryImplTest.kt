@@ -1,14 +1,10 @@
-@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-
 package app.devper.pharm.data.repository
 
-import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.data.storage.MemorySettings
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.ThemePreference
 import com.russhwolf.settings.Settings
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,15 +12,10 @@ import kotlin.test.assertNull
 
 class UiPreferencesRepositoryImplTest {
 
-    private fun dispatchers(): AppDispatchers {
-        val one = UnconfinedTestDispatcher()
-        return AppDispatchers(main = one, io = one, default = one)
-    }
-
     @Test
-    fun fresh_settings_yields_defaults_after_async_load() = runTest {
+    fun fresh_settings_yields_defaults() = runTest {
         val settings = MemorySettings()
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         val state = repo.state.value
         assertEquals(ThemePreference.Auto, state.theme)
@@ -37,7 +28,7 @@ class UiPreferencesRepositoryImplTest {
             putString("ui.theme", ThemePreference.Dark.wire)
             putString("ui.fontSize", FontSizePreference.Lg.wire)
         }
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         val state = repo.state.value
         assertEquals(ThemePreference.Dark, state.theme)
@@ -47,7 +38,7 @@ class UiPreferencesRepositoryImplTest {
     @Test
     fun setTheme_updates_state_synchronously_and_persists() = runTest {
         val settings = MemorySettings()
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         repo.setTheme(ThemePreference.Dark)
 
@@ -58,7 +49,7 @@ class UiPreferencesRepositoryImplTest {
     @Test
     fun setFontSize_updates_state_synchronously_and_persists() = runTest {
         val settings = MemorySettings()
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         repo.setFontSize(FontSizePreference.Xl)
 
@@ -69,7 +60,7 @@ class UiPreferencesRepositoryImplTest {
     @Test
     fun setDensity_updates_state_synchronously_and_persists() = runTest {
         val settings = MemorySettings()
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         repo.setDensity(DensityPreference.Compact)
 
@@ -80,7 +71,7 @@ class UiPreferencesRepositoryImplTest {
     @Test
     fun fresh_settings_yields_comfortable_density_default() = runTest {
         val settings = MemorySettings()
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         assertEquals(DensityPreference.Comfortable, repo.state.value.density)
     }
@@ -88,7 +79,7 @@ class UiPreferencesRepositoryImplTest {
     @Test
     fun setTheme_does_not_affect_font_size_or_vice_versa() = runTest {
         val settings = MemorySettings()
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         repo.setTheme(ThemePreference.Light)
         repo.setFontSize(FontSizePreference.Sm)
@@ -100,11 +91,11 @@ class UiPreferencesRepositoryImplTest {
     @Test
     fun a_second_repo_built_against_same_settings_replays_writes() = runTest {
         val settings: Settings = MemorySettings()
-        val first = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val first = UiPreferencesRepositoryImpl(settings)
         first.setTheme(ThemePreference.Dark)
         first.setFontSize(FontSizePreference.Xl)
 
-        val second = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val second = UiPreferencesRepositoryImpl(settings)
 
         assertEquals(ThemePreference.Dark, second.state.value.theme)
         assertEquals(FontSizePreference.Xl, second.state.value.fontSize)
@@ -116,7 +107,7 @@ class UiPreferencesRepositoryImplTest {
             putString("ui.theme", "neon-cyber-glow")
             putString("ui.fontSize", "xxxl")
         }
-        val repo = UiPreferencesRepositoryImpl(settings, dispatchers())
+        val repo = UiPreferencesRepositoryImpl(settings)
 
         assertEquals(ThemePreference.Auto, repo.state.value.theme)
         assertEquals(FontSizePreference.Md, repo.state.value.fontSize)
