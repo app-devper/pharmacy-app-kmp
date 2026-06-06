@@ -68,23 +68,44 @@ fun DrugLotsBottomSheet(
         sheetState = sheetState,
         containerColor = t.colors.surface,
     ) {
-        Column(
+        DrugLotsContent(
+            state = state,
+            callbacks = callbacks,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            HeaderRow(state)
-            Divider()
-            LotsBody(state, callbacks)
-            if (state.addFormOpen) {
-                Divider()
-                AddLotForm(state, callbacks)
-            }
-        }
+        )
     }
 
+    DrugLotsDialogs(state = state, callbacks = callbacks)
+}
+
+@Composable
+fun DrugLotsContent(
+    state: DrugLotsUiState,
+    callbacks: DrugLotsCallbacks,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        HeaderRow(state)
+        Divider()
+        LotsBody(state, callbacks)
+        if (state.addFormOpen) {
+            Divider()
+            AddLotForm(state, callbacks)
+        }
+    }
+}
+
+@Composable
+fun DrugLotsDialogs(
+    state: DrugLotsUiState,
+    callbacks: DrugLotsCallbacks,
+) {
     state.pendingDelete?.let { lot ->
         PharmModal(
             open = true,

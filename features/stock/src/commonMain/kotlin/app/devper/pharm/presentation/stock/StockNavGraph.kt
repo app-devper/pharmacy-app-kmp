@@ -32,8 +32,8 @@ fun NavGraphBuilder.stockGraph(
             StockScreen(
                 onAddDrug = { navController.navigate(DrugAdd) { launchSingleTop = true } },
                 onEditDrug = { id -> navController.navigate(DrugEdit(id)) { launchSingleTop = true } },
-                onOpenLots = { id -> navController.navigate(DrugEdit(id)) { launchSingleTop = true } },
-                onOpenAdjust = { id -> navController.navigate(DrugEdit(id)) { launchSingleTop = true } },
+                onOpenLots = { id, name -> navController.navigate(DrugLots(id, name)) { launchSingleTop = true } },
+                onOpenAdjust = { id, name -> navController.navigate(DrugAdjust(id, name)) { launchSingleTop = true } },
                 onOpenHistory = { id, name -> navController.navigate(DrugHistory(id, name)) { launchSingleTop = true } },
                 onOpenReorderSuggestions = { navController.navigate(ReorderSuggestions) { launchSingleTop = true } },
             )
@@ -55,6 +55,22 @@ fun NavGraphBuilder.stockGraph(
     composable<DrugHistory> { entry ->
         val route = entry.toRoute<DrugHistory>()
         DrugHistoryScreen(
+            drugName = route.drugName,
+            onBack = { navController.popBackStack() },
+        )
+    }
+    composable<DrugLots> { entry ->
+        val route = entry.toRoute<DrugLots>()
+        DrugLotsScreen(
+            drugId = route.drugId,
+            drugName = route.drugName,
+            onBack = { navController.popBackStack() },
+        )
+    }
+    composable<DrugAdjust> { entry ->
+        val route = entry.toRoute<DrugAdjust>()
+        DrugAdjustScreen(
+            drugId = route.drugId,
             drugName = route.drugName,
             onBack = { navController.popBackStack() },
         )

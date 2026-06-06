@@ -6,3 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable data object DrugAdd
 @Serializable data class DrugEdit(val id: String)
 @Serializable data class DrugHistory(val drugId: String, val drugName: String)
+@Serializable data class DrugLots(val drugId: String, val drugName: String)
+@Serializable data class DrugAdjust(val drugId: String, val drugName: String)
