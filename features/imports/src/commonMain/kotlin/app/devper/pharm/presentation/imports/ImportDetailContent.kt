@@ -154,7 +154,10 @@ private fun Body(po: PurchaseOrder) {
                 modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
             )
         }
-        items(po.items) { item -> ItemRow(item) }
+        items(
+            items = po.items,
+            key = { item -> "${item.drugId}|${item.lotNumber}|${item.expiryDate}" },
+        ) { item -> ItemRow(item) }
     }
 }
 
