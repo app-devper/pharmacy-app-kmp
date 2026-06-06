@@ -2,6 +2,7 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -16,6 +17,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+
+private val TITLE_MIN_WIDTH = 600.dp
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -32,45 +35,50 @@ fun PharmListToolbar(
     actions: (@Composable () -> Unit)? = null,
 ) {
     val t = pharmTokens
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val showTitle = maxWidth >= TITLE_MIN_WIDTH
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = title, style = titleStyle)
-                if (subtitle != null) {
-                    Text(
-                        text = subtitle,
-                        style = PharmText.micro.copy(color = t.colors.fgMuted),
-                    )
-                }
-            }
-            badge?.invoke()
-            if (searchValue != null && onSearchChange != null) {
-                Box(modifier = Modifier.weight(1f).widthIn(max = 280.dp)) {
-                    PharmTextField(
-                        value = searchValue,
-                        onValueChange = onSearchChange,
-                        placeholder = searchPlaceholder,
-                    )
-                }
-            }
-            actions?.invoke()
-        }
-        if (filters != null) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                content = filters,
-            )
+            ) {
+                if (showTitle) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = title, style = titleStyle)
+                        if (subtitle != null) {
+                            Text(
+                                text = subtitle,
+                                style = PharmText.micro.copy(color = t.colors.fgMuted),
+                            )
+                        }
+                    }
+                }
+                badge?.invoke()
+                if (searchValue != null && onSearchChange != null) {
+                    Box(modifier = Modifier.weight(1f).widthIn(max = 280.dp)) {
+                        PharmTextField(
+                            value = searchValue,
+                            onValueChange = onSearchChange,
+                            placeholder = searchPlaceholder,
+                        )
+                    }
+                }
+                actions?.invoke()
+            }
+            if (filters != null) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    content = filters,
+                )
+            }
         }
     }
 }
