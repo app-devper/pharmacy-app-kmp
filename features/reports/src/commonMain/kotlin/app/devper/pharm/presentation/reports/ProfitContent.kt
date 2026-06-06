@@ -22,7 +22,9 @@ import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -66,8 +68,16 @@ fun ProfitContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            PharmListResultLine(total = rows.size, noun = "รายการ")
+            Box(modifier = Modifier.fillMaxWidth().padding(top = 1.dp))
             when {
                 state.loading && state.report == null -> PharmListSkeleton()
+                rows.isEmpty() && state.report != null ->
+                    PharmEmptyState(
+                        icon = PharmIcons.Profit,
+                        title = "ไม่มียอดขายในช่วงเวลานี้",
+                        subtitle = "ลองเปลี่ยนช่วงวันที่ด้านบน",
+                    )
                 else -> ProfitTable(rows = rows, totals = totals)
             }
         }

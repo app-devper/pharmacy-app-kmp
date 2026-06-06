@@ -2,11 +2,13 @@ package app.devper.pharm.presentation.reports
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,7 +24,10 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmDateQuickPeriod
 import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
+import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -47,36 +52,59 @@ internal fun ProfitFilterBar(
             )
         }
     }
+    val sortChips = remember {
+        ProfitSort.entries.map { PharmFilterChip(id = it.name, label = it.label) }
+    }
 
-    FlowRow(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(modifier = Modifier.weight(1f)) {
-            PharmDateRangeField(
-                range = range,
-                onRangeChange = { next ->
-                    if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
-                    if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                PharmDateRangeField(
+                    range = range,
+                    onRangeChange = { next ->
+                        if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
+                        if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
+                    },
+                    formatDate = { millis -> formatYmdDisplay(millis) },
+                    quickPeriods = quickPeriods,
+                )
+            }
+            PharmButton(
+                label = "Excel",
+                onClick = callbacks.onExportExcel,
+                size = PharmButtonSize.Md,
+                variant = PharmButtonVariant.Outline,
+                leadingIcon = {
+                    Icon(
+                        imageVector = PharmIcons.Excel,
+                        contentDescription = null,
+                        tint = t.colors.successFg,
+                        modifier = Modifier.size(16.dp),
+                    )
                 },
-                formatDate = { millis -> formatYmdDisplay(millis) },
-                quickPeriods = quickPeriods,
             )
         }
-        PharmButton(
-            label = "Excel",
-            onClick = callbacks.onExportExcel,
-            size = PharmButtonSize.Md,
-            variant = PharmButtonVariant.Outline,
-            leadingIcon = {
-                Icon(
-                    imageVector = PharmIcons.Excel,
-                    contentDescription = null,
-                    tint = t.colors.successFg,
-                    modifier = Modifier.size(16.dp),
-                )
-            },
-        )
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = "เรียงตาม",
+                style = PharmText.bodySm.copy(color = t.colors.fg3),
+            )
+            PharmSingleSelectChips(
+                chips = sortChips,
+                activeId = state.sort.name,
+                onSelect = { id -> callbacks.onSortChange(ProfitSort.valueOf(id)) },
+            )
+        }
     }
 }

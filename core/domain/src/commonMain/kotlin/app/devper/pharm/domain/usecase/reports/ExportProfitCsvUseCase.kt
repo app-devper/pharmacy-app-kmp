@@ -37,10 +37,9 @@ class ExportProfitCsvUseCase(
     }
 
     private fun formatPercent(v: Double): String {
-        val rounded = ((v * 100.0) + if (v >= 0) 0.5 else -0.5).toLong() / 100.0
-        val cents = (rounded * 100.0 + 0.5).toLong()
+        val cents = (v * 100.0 + if (v >= 0) 0.5 else -0.5).toLong()
         val whole = cents / 100
-        val frac = (cents % 100).toString().padStart(2, '0')
+        val frac = (cents % 100).let { if (it < 0) -it else it }.toString().padStart(2, '0')
         return "$whole.$frac%"
     }
 
