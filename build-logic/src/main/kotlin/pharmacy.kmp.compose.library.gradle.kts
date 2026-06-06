@@ -26,6 +26,13 @@ extensions.configure<KotlinMultiplatformExtension>("kotlin") {
             implementation(libs.androidx.lifecycle.runtime.compose)
         }
     }
+
+    sourceSets.named("androidMain") {
+        dependencies {
+            val compose = ComposePlugin.Dependencies(project)
+            implementation(compose.uiTooling)
+        }
+    }
 }
 
 extensions.configure<ComposeExtension>("compose") {
