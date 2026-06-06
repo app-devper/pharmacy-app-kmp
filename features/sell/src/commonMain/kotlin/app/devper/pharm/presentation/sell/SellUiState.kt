@@ -6,7 +6,7 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.pricing.Tier
+import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.common.BaseUiState
 
 data class SellUiState(

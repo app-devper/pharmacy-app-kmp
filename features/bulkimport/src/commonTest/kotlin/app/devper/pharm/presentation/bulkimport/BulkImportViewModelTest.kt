@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.bulkimport
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.model.BulkImportResult
-import app.devper.pharm.domain.parser.BulkImportJsonParser
 import app.devper.pharm.domain.repository.FakeDrugRepositoryForBulk
 import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
@@ -28,7 +27,6 @@ class BulkImportViewModelTest {
         filePicker: FilePicker = NoopFilePicker,
     ): Pair<BulkImportViewModel, FakeDrugRepositoryForBulk> {
         val vm = BulkImportViewModel(
-            parser = BulkImportJsonParser(),
             bulkImportDrugs = BulkImportDrugsUseCase(repo, dispatchers),
             filePicker = filePicker,
         )

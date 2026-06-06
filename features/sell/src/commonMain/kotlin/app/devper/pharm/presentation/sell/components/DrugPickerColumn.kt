@@ -26,7 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.pricing.resolvePrice
+import app.devper.pharm.domain.extension.resolvePrice
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmEmptyState

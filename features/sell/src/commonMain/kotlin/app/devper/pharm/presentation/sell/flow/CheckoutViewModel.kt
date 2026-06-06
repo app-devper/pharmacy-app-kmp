@@ -16,9 +16,9 @@ import app.devper.pharm.domain.usecase.ClearCartUseCase
 import app.devper.pharm.domain.usecase.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.EnqueueOfflineSaleUseCase
 import app.devper.pharm.domain.usecase.SubmitKyFormsUseCase
-import app.devper.pharm.domain.util.KyRequiredCalculator
-import app.devper.pharm.domain.util.looksLikeNetworkError
-import app.devper.pharm.domain.util.newClientRequestId
+import app.devper.pharm.domain.extension.calculateKyRequired
+import app.devper.pharm.domain.extension.looksLikeNetworkError
+import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.common.BaseViewModel
@@ -79,7 +79,7 @@ class CheckoutViewModel(
     fun submit() {
         if (!current.canCheckout) return
 
-        val required = KyRequiredCalculator.calculate(lastCart)
+        val required = lastCart.calculateKyRequired()
         if (!required.isEmpty) {
             if (lastSettings.ky.skipAuto) {
                 pendingKyRequired = null

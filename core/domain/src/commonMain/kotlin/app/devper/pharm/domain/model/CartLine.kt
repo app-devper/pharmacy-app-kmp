@@ -1,7 +1,7 @@
 package app.devper.pharm.domain.model
 
-import app.devper.pharm.domain.pricing.Tier
-import app.devper.pharm.domain.pricing.resolvePrice
+import app.devper.pharm.domain.extension.Tier
+import app.devper.pharm.domain.extension.resolvePrice
 
 data class CartLine(
     val drug: Drug,

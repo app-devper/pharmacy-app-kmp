@@ -6,8 +6,9 @@ import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.usecase.AddToCartUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.util.BarcodeMatcher
-import app.devper.pharm.domain.util.DrugSearch
+import app.devper.pharm.domain.extension.BarcodeMatch
+import app.devper.pharm.domain.extension.matchBarcode
+import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -40,7 +41,7 @@ class DrugPickerViewModel(
                     copy(
                         drugsLoading = false,
                         drugs = list,
-                        filteredDrugs = DrugSearch.filter(list, query),
+                        filteredDrugs = list.searchByQuery(query),
                     )
                 }
             },
@@ -49,7 +50,7 @@ class DrugPickerViewModel(
     }
 
     fun onQueryChange(value: String) = setState {
-        copy(query = value, filteredDrugs = DrugSearch.filter(drugs, value))
+        copy(query = value, filteredDrugs = drugs.searchByQuery(value))
     }
 
     fun onTapDrug(drug: Drug) {
@@ -69,7 +70,7 @@ class DrugPickerViewModel(
     }
 
     fun onScanBarcode(code: String) {
-        val match = BarcodeMatcher.match(current.drugs, code)
+        val match = current.drugs.matchBarcode(code)
         if (match != null) {
             add(match.drug, match.altUnit)
         } else {

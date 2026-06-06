@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.pricing.Tier
+import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone

@@ -13,7 +13,9 @@ import app.devper.pharm.domain.usecase.GetUsersUseCase
 import app.devper.pharm.domain.usecase.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.SetUserRoleUseCase
 import app.devper.pharm.domain.usecase.SetUserStatusUseCase
-import app.devper.pharm.domain.util.UmRoleValidator
+import app.devper.pharm.domain.extension.canManage
+import app.devper.pharm.domain.extension.canManageUsers
+import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -134,8 +136,7 @@ class UsersListViewModelTest {
         val me = state.users.firstOrNull { it.id == state.currentUserId }
         assertNotNull(me)
         assertFalse(
-            UmRoleValidator.canManage(
-                actor = state.currentUserRole,
+            state.currentUserRole.canManage(
                 target = me.role,
                 isSelf = me.id == state.currentUserId,
             ),

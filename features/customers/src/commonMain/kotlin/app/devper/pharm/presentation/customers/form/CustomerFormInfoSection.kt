@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.domain.pricing.Tier
+import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.presentation.customers.CustomerFormFields
 import androidx.compose.ui.Alignment
 import app.devper.pharm.ui.designsystem.FormField

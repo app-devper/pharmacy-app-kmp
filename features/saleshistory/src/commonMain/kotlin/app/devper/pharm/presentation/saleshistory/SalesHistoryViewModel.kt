@@ -7,7 +7,7 @@ import app.devper.pharm.domain.param.SubmitReturnParam
 import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
-import app.devper.pharm.domain.util.SaleReturnQty
+import app.devper.pharm.domain.extension.resolveReturnQty
 import app.devper.pharm.presentation.saleshistory.internal.millisToYmd
 import app.devper.pharm.ui.common.BaseViewModel
 
@@ -112,7 +112,7 @@ class SalesHistoryViewModel(
 
     fun onReturnLineQtyChange(saleItemId: String, displayQty: Int) {
         val item = current.items.firstOrNull { it.id == saleItemId } ?: return
-        val baseQty = SaleReturnQty.resolve(item, displayQty)
+        val baseQty = item.resolveReturnQty(displayQty)
         setState { copy(returnDraft = returnDraft + (saleItemId to baseQty)) }
     }
 

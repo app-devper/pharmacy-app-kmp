@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.util.UmRoleValidator
+import app.devper.pharm.domain.extension.canManage
+import app.devper.pharm.domain.extension.canManageUsers
+import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -85,7 +87,7 @@ fun UsersListContent(
                     icon = PharmIcons.Users,
                     title = "ยังไม่มีผู้ใช้งาน",
                     action = {
-                        if (UmRoleValidator.canManageUsers(state.currentUserRole)) {
+                        if (state.currentUserRole.canManageUsers()) {
                             PharmButton(
                                 label = "เพิ่มผู้ใช้งานคนแรก",
                                 onClick = callbacks.onAddUser,
@@ -124,7 +126,7 @@ private fun UsersListToolbar(
         searchPlaceholder = "ค้นหาชื่อ / username / อีเมล…",
         titleStyle = PharmText.h2,
         actions = {
-            if (UmRoleValidator.canManageUsers(state.currentUserRole)) {
+            if (state.currentUserRole.canManageUsers()) {
                 PharmButton(
                     label = "เพิ่มผู้ใช้งาน",
                     onClick = callbacks.onAddUser,

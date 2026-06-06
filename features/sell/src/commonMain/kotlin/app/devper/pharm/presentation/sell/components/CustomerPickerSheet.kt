@@ -29,7 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.pricing.tierLabel
+import app.devper.pharm.domain.extension.tierLabel
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone

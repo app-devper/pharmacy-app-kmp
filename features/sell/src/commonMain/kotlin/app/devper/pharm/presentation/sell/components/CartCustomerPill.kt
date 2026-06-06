@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.pricing.Tier
+import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme

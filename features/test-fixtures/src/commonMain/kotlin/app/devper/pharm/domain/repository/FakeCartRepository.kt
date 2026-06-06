@@ -11,7 +11,7 @@ import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.param.AddCartItemParam
 import app.devper.pharm.domain.param.SetCartQtyParam
 import app.devper.pharm.domain.param.SetLineDiscountParam
-import app.devper.pharm.domain.pricing.Tier
+import app.devper.pharm.domain.extension.Tier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,12 +1,11 @@
 package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.common.platform.FilePicker
-import app.devper.pharm.domain.parser.BulkImportJsonParser
+import app.devper.pharm.domain.extension.parseBulkImportJson
 import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 
 class BulkImportViewModel(
-    private val parser: BulkImportJsonParser,
     private val bulkImportDrugs: BulkImportDrugsUseCase,
     private val filePicker: FilePicker,
 ) : BaseViewModel<BulkImportUiState>(BulkImportUiState()) {
@@ -37,7 +36,7 @@ class BulkImportViewModel(
     }
 
     fun preview() {
-        parser.parse(current.text).fold(
+        parseBulkImportJson(current.text).fold(
             onSuccess = { list ->
                 setState {
                     copy(parsed = list, previewCount = list.size, parseError = null, result = null)
@@ -50,7 +49,7 @@ class BulkImportViewModel(
     }
 
     fun submit() {
-        val parsed = parser.parse(current.text).getOrElse { e ->
+        val parsed = parseBulkImportJson(current.text).getOrElse { e ->
             setState { copy(parsed = emptyList(), parseError = e.message) }
             return
         }

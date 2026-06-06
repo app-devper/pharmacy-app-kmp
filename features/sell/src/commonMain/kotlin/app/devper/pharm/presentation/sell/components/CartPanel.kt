@@ -35,7 +35,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.KyRequired
-import app.devper.pharm.domain.util.KyRequiredCalculator
+import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.pharmBannerEnter
 import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
@@ -117,7 +117,7 @@ fun CartPanel(
             CartAllergyBanner(note = allergyNote.orEmpty())
         }
 
-        val kyRequired = remember(cart) { KyRequiredCalculator.calculate(cart) }
+        val kyRequired = remember(cart) { cart.calculateKyRequired() }
         AnimatedVisibility(
             visible = !kyRequired.isEmpty,
             enter = pharmBannerEnter(),
