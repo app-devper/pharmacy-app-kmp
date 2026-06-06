@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.ui.common.ReloadOnResume
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -18,6 +19,8 @@ fun StockScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val byId: (Drug) -> String = { it.id }
+
+    ReloadOnResume(viewModel::reload)
 
     StockContent(
         state = state,

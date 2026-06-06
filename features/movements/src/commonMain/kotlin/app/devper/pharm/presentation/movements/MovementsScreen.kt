@@ -6,11 +6,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.ReloadOnResume
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MovementsScreen(viewModel: MovementsViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ReloadOnResume(viewModel::applyFilter)
     val snackbar = LocalPharmSnackbar.current
 
     LaunchedEffect(state.message) {
