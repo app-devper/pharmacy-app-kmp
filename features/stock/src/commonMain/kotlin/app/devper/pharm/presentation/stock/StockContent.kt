@@ -32,41 +32,47 @@ fun StockContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .background(t.colors.bgPage),
     ) {
-        StockMetricsRow(drugs = state.drugs)
-
+        StockToolbar(
+            query = state.query,
+            typeFilter = state.typeFilter,
+            callbacks = callbacks,
+        )
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            StockToolbar(
-                query = state.query,
-                typeFilter = state.typeFilter,
-                callbacks = callbacks,
-            )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            PharmListResultLine(
-                total = state.drugs.size,
-                noun = "รายการ",
-                visible = visible.size,
-                searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
-            )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            StockMetricsRow(drugs = state.drugs)
 
-            when {
-                state.loading && state.drugs.isEmpty() ->
-                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                else -> StockTable(
-                    drugs = visible,
-                    callbacks = callbacks,
-                    emptySearching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .clip(t.shapes.lg)
+                    .background(t.colors.surface)
+                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+            ) {
+                PharmListResultLine(
+                    total = state.drugs.size,
+                    noun = "รายการ",
+                    visible = visible.size,
+                    searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
                 )
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+
+                when {
+                    state.loading && state.drugs.isEmpty() ->
+                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
+                    else -> StockTable(
+                        drugs = visible,
+                        callbacks = callbacks,
+                        emptySearching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
+                    )
+                }
             }
         }
     }
