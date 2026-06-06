@@ -170,6 +170,7 @@ private fun ExpandedShell(
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
+    var collapsed by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -187,6 +188,8 @@ private fun ExpandedShell(
                 icon = logoutItem.icon,
                 label = logoutItem.label,
             ),
+            collapsed = collapsed,
+            onToggleCollapse = { collapsed = !collapsed },
         )
 
         Column(

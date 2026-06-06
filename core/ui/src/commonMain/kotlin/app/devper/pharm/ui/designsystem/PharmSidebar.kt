@@ -1,5 +1,6 @@
 package app.devper.pharm.ui.designsystem
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,10 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+
+private val SidebarRailWidth: Dp = 64.dp
 
 data class SidebarNavItem(
     val id: String,
@@ -67,18 +71,21 @@ fun PharmSidebar(
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
     items: List<SidebarNavItem> = DefaultPharmNav,
+    collapsed: Boolean = false,
+    onToggleCollapse: (() -> Unit)? = null,
     online: Boolean = true,
     versionLabel: String = "v3.2.1",
 ) {
     val t = pharmTokens
+    val width by animateDpAsState(if (collapsed) SidebarRailWidth else t.dimens.sidebarWidth)
     Column(
         modifier = modifier
-            .width(t.dimens.sidebarWidth)
+            .width(width)
             .fillMaxHeight()
             .background(t.colors.sidebarBg),
     ) {
 
-        BrandHeader()
+        BrandHeader(collapsed = collapsed)
 
         LazyColumn(
             modifier = Modifier
@@ -90,23 +97,29 @@ fun PharmSidebar(
                 SidebarRow(
                     item = item,
                     active = item.id == activeId,
+                    collapsed = collapsed,
                     onClick = { onSelect(item.id) },
                 )
             }
         }
 
-        SidebarFooter(online = online, versionLabel = versionLabel)
+        SidebarFooter(
+            collapsed = collapsed,
+            online = online,
+            versionLabel = versionLabel,
+            onToggleCollapse = onToggleCollapse,
+        )
     }
 }
 
 @Composable
-private fun BrandHeader() {
+private fun BrandHeader(collapsed: Boolean) {
     val t = pharmTokens
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = if (collapsed) 0.dp else 16.dp, vertical = 16.dp),
+        horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -127,19 +140,21 @@ private fun BrandHeader() {
                 modifier = Modifier.size(18.dp),
             )
         }
-        Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-            Text(
-                text = "ร้านยา เฮลท์ตี้ฟาร์ม",
-                style = PharmText.body.copy(
-                    color = t.colors.sidebarFg,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                ),
-            )
-            Text(
-                text = "ระบบ POS ร้านขายยา",
-                style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
-            )
+        if (!collapsed) {
+            Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+                Text(
+                    text = "ร้านยา เฮลท์ตี้ฟาร์ม",
+                    style = PharmText.body.copy(
+                        color = t.colors.sidebarFg,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                    ),
+                )
+                Text(
+                    text = "ระบบ POS ร้านขายยา",
+                    style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
+                )
+            }
         }
     }
     Box(
@@ -154,6 +169,7 @@ private fun BrandHeader() {
 private fun SidebarRow(
     item: SidebarNavItem,
     active: Boolean,
+    collapsed: Boolean,
     onClick: () -> Unit,
 ) {
     val t = pharmTokens
@@ -170,39 +186,46 @@ private fun SidebarRow(
                 role = Role.Tab
                 selected = active
             }
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+            .padding(horizontal = if (collapsed) 0.dp else 12.dp, vertical = 8.dp),
+        horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = item.icon,
-            contentDescription = null,
+            contentDescription = if (collapsed) item.label else null,
             tint = fg,
             modifier = Modifier.size(18.dp),
         )
-        Text(
-            text = item.label,
-            style = PharmText.body.copy(color = fg),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-        if (item.admin && !active) {
+        if (!collapsed) {
             Text(
-                text = "ADMIN",
-                style = PharmText.micro.copy(
-                    color = t.colors.sidebarFgMuted,
-                    fontSize = 9.sp,
-                    letterSpacing = 0.5.sp,
-                    fontWeight = FontWeight.SemiBold,
-                ),
+                text = item.label,
+                style = PharmText.body.copy(color = fg),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
             )
+            if (item.admin && !active) {
+                Text(
+                    text = "ADMIN",
+                    style = PharmText.micro.copy(
+                        color = t.colors.sidebarFgMuted,
+                        fontSize = 9.sp,
+                        letterSpacing = 0.5.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun SidebarFooter(online: Boolean, versionLabel: String) {
+private fun SidebarFooter(
+    collapsed: Boolean,
+    online: Boolean,
+    versionLabel: String,
+    onToggleCollapse: (() -> Unit)?,
+) {
     val t = pharmTokens
     Box(
         modifier = Modifier
@@ -210,22 +233,49 @@ private fun SidebarFooter(online: Boolean, versionLabel: String) {
             .height(1.dp)
             .background(t.colors.sidebarItemHover),
     )
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
+    if (onToggleCollapse != null) {
+        Row(
             modifier = Modifier
-                .size(6.dp)
-                .clip(t.shapes.pill)
-                .background(if (online) t.colors.successFg else t.colors.fgMuted),
-        )
-        Text(
-            text = if (online) "ออนไลน์ · $versionLabel" else "ออฟไลน์ · $versionLabel",
-            style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
-        )
+                .fillMaxWidth()
+                .clickable(
+                    onClick = onToggleCollapse,
+                    role = Role.Button,
+                )
+                .padding(horizontal = if (collapsed) 0.dp else 16.dp, vertical = 12.dp),
+            horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = PharmIcons.Hamburger,
+                contentDescription = if (collapsed) "ขยายเมนู" else "ย่อเมนู",
+                tint = t.colors.sidebarFgMuted,
+                modifier = Modifier.size(18.dp),
+            )
+            if (!collapsed) {
+                Text(
+                    text = "ย่อเมนู",
+                    style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
+                )
+            }
+        }
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(t.shapes.pill)
+                    .background(if (online) t.colors.successFg else t.colors.fgMuted),
+            )
+            Text(
+                text = if (online) "ออนไลน์ · $versionLabel" else "ออฟไลน์ · $versionLabel",
+                style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
+            )
+        }
     }
 }
