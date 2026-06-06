@@ -1,21 +1,20 @@
 package app.devper.pharm.presentation.offlinesync
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -23,6 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -40,30 +40,56 @@ fun OfflineSyncContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(t.colors.bgPage)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .background(t.colors.bgPage),
     ) {
-        OfflineSyncHeader(
-            failedCount = state.failedCount,
-            pendingCount = state.totalCount,
-            onRefresh = callbacks.onRefresh,
-            onSyncAll = callbacks.onSyncAll,
+        PharmListToolbar(
+            title = "รายการค้างซิงก์",
+            subtitle = "ตรวจสอบบิล offline ที่ยังไม่ได้ส่งเข้า backend",
+            actions = {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PharmButton(
+                        label = "รีเฟรช",
+                        onClick = callbacks.onRefresh,
+                        variant = PharmButtonVariant.Secondary,
+                        size = PharmButtonSize.Md,
+                    )
+                    PharmButton(
+                        label = "ลองซิงก์ทั้งหมด",
+                        onClick = callbacks.onSyncAll,
+                        variant = PharmButtonVariant.Primary,
+                        size = PharmButtonSize.Md,
+                        enabled = state.totalCount > 0,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = PharmIcons.OfflineSync,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        },
+                    )
+                }
+            },
         )
-
-        OfflineSyncMetricsRow(pending = state.pending)
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            OfflineSyncMetricsRow(pending = state.pending)
+
             when {
                 state.loading && state.pending.isEmpty() -> PharmListSkeleton()
                 state.pending.isEmpty() -> EmptyOfflineSync()
-                else -> OfflineSyncTable(pending = state.pending, callbacks = callbacks)
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(state.pending, key = { it.id }) { row ->
+                        OfflineSyncCard(row = row, callbacks = callbacks)
+                    }
+                }
             }
         }
     }
@@ -97,49 +123,6 @@ fun OfflineSyncContent(
     }
 
     ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-}
-
-@Composable
-private fun OfflineSyncHeader(
-    failedCount: Int,
-    pendingCount: Int,
-    onRefresh: () -> Unit,
-    onSyncAll: () -> Unit,
-) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = "รายการค้างซิงก์", style = PharmText.h1)
-            Text(
-                text = "ตรวจสอบบิล offline ที่ยังไม่ได้ส่งเข้า backend",
-                style = PharmText.meta.copy(color = t.colors.fgMuted),
-            )
-        }
-        PharmButton(
-            label = "รีเฟรช",
-            onClick = onRefresh,
-            variant = PharmButtonVariant.Secondary,
-            size = PharmButtonSize.Md,
-        )
-        PharmButton(
-            label = "ลองซิงก์ทั้งหมด",
-            onClick = onSyncAll,
-            variant = PharmButtonVariant.Primary,
-            size = PharmButtonSize.Md,
-            enabled = pendingCount > 0,
-            leadingIcon = {
-                Icon(
-                    imageVector = PharmIcons.OfflineSync,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                )
-            },
-        )
-    }
 }
 
 @Composable
