@@ -66,20 +66,41 @@ class OfflineAutoSyncTest {
         autoSync(MutableStateFlow(true), Queue(emptyList()), sales).syncPending()
         assertEquals(0, sales.replayCount)
     }
+
+    @Test
+    fun syncPending_aborts_loop_on_network_error_to_avoid_attempts_inflation() = runTest {
+        val queue = Queue(listOf(pending("p1"), pending("p2"), pending("p3")))
+        val sales = Sales(failWith = RuntimeException("Network is unreachable"))
+        autoSync(MutableStateFlow(true), queue, sales).syncPending()
+
+        assertEquals(1, sales.replayCount)
+        assertEquals(setOf("p1"), queue.failedIds)
+    }
+
+    @Test
+    fun syncPending_continues_loop_on_non_network_error() = runTest {
+        val queue = Queue(listOf(pending("p1"), pending("p2"), pending("p3")))
+        val sales = Sales(failWith = IllegalStateException("validation error"))
+        autoSync(MutableStateFlow(true), queue, sales).syncPending()
+
+        assertEquals(3, sales.replayCount)
+        assertEquals(setOf("p1", "p2", "p3"), queue.failedIds)
+    }
 }
 
 private class Queue(initial: List<PendingSale>) : OfflineSaleQueue {
     private val _pending = MutableStateFlow(initial)
     override val pending: StateFlow<List<PendingSale>> = _pending.asStateFlow()
     val synced = mutableSetOf<String>()
+    val failedIds = mutableSetOf<String>()
 
     override fun enqueue(param: EnqueueOfflineSaleParam): String = ""
     override fun markSynced(id: String) { synced += id }
-    override fun markFailed(param: MarkOfflineSaleFailedParam) {}
+    override fun markFailed(param: MarkOfflineSaleFailedParam) { failedIds += param.id }
     override fun clear() {}
 }
 
-private class Sales : SaleRepository {
+private class Sales(private val failWith: Throwable? = null) : SaleRepository {
     var replayCount = 0
         private set
 
@@ -88,6 +109,7 @@ private class Sales : SaleRepository {
     override fun serializeCheckout(param: CheckoutParam): String = ""
     override suspend fun replayCheckout(payloadJson: String): Sale {
         replayCount++
+        failWith?.let { throw it }
         return sale()
     }
 
