@@ -1,5 +1,6 @@
 package app.devper.pharm.ui.format
 
+import kotlinx.datetime.toLocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -128,5 +129,28 @@ class DateFormatTest {
     @Test
     fun isoDateToBuddhist_handles_datetime_string_from_backend() {
         assertEquals("30/06/2570", isoDateToBuddhist("2027-06-30T00:00:00Z"))
+    }
+
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    @Test
+    fun ymdToMillis_produces_utc_midnight_for_m3_datepicker_roundtrip() {
+        val ms = ymdToMillis("2026-05-17") ?: error("parse")
+        val date = kotlin.time.Instant.fromEpochMilliseconds(ms)
+            .toLocalDateTime(kotlinx.datetime.TimeZone.UTC).date
+        assertEquals(kotlinx.datetime.LocalDate(2026, 5, 17), date)
+    }
+
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    @Test
+    fun millisToYmd_decodes_utc_midnight_back_to_same_ymd() {
+        val ms = ymdToMillis("2026-05-17") ?: error("parse")
+        assertEquals("2026-05-17", millisToYmd(ms))
+    }
+
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    @Test
+    fun ymdToMillis_returns_zero_offset_relative_to_utc_epoch() {
+        // sanity: 1970-01-01 UTC midnight = 0
+        assertEquals(0L, ymdToMillis("1970-01-01"))
     }
 }
