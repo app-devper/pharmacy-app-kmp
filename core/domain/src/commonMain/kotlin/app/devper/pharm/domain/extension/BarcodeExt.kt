@@ -1,9 +1,7 @@
 package app.devper.pharm.domain.extension
 
-import app.devper.pharm.domain.model.AltUnit
+import app.devper.pharm.domain.model.BarcodeMatch
 import app.devper.pharm.domain.model.Drug
-
-data class BarcodeMatch(val drug: Drug, val altUnit: AltUnit?)
 
 fun List<Drug>.matchBarcode(code: String): BarcodeMatch? {
     val needle = code.trim()
