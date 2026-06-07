@@ -113,7 +113,7 @@ class CustomerFormViewModelTest {
         advanceUntilIdle()
         val captured = repo.lastUpdate
         assertNotNull(captured)
-        assertEquals("c1", captured.id)
+        assertEquals("c1", repo.lastUpdateId)
         assertEquals("ใหม่", captured.name)
         assertTrue(vm.state.value.saved)
     }

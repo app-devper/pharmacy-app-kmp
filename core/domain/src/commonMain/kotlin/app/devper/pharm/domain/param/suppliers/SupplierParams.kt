@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.param
 
-data class AddSupplierParam(
+data class SupplierInput(
     val name: String,
     val contactName: String = "",
     val phone: String = "",
@@ -11,10 +11,5 @@ data class AddSupplierParam(
 
 data class UpdateSupplierParam(
     val id: String,
-    val name: String,
-    val contactName: String = "",
-    val phone: String = "",
-    val address: String = "",
-    val taxId: String = "",
-    val notes: String = "",
+    val input: SupplierInput,
 )

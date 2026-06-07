@@ -129,7 +129,7 @@ class SupplierFormViewModelTest {
         advanceUntilIdle()
         val p = repo.lastUpdate
         assertNotNull(p)
-        assertEquals("s99", p.id)
+        assertEquals("s99", repo.lastUpdateId)
         assertEquals("Renamed", p.name)
         assertTrue(vm.state.value.saved)
     }
