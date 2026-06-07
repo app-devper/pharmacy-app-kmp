@@ -23,10 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import app.devper.pharm.ui.resources.Res
-import app.devper.pharm.ui.resources.common_cancel
-import app.devper.pharm.ui.resources.common_confirm
-import org.jetbrains.compose.resources.stringResource
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -175,14 +172,14 @@ private fun DatePickerSheet(
         onDismissRequest = { onPick(null) },
         confirmButton = {
             PharmButton(
-                label = stringResource(Res.string.common_confirm),
+                label = pharmStrings.commonConfirm,
                 onClick = { onPick(state.selectedDateMillis) },
                 size = PharmButtonSize.Sm,
             )
         },
         dismissButton = {
             PharmButton(
-                label = stringResource(Res.string.common_cancel),
+                label = pharmStrings.commonCancel,
                 onClick = { onPick(null) },
                 size = PharmButtonSize.Sm,
                 variant = PharmButtonVariant.Ghost,

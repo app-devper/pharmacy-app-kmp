@@ -202,9 +202,22 @@ license headers required by upstream libraries.
     - **wasmJs** (`composeApp/wasmJsMain/Main.kt`) → JS-defined `Object.defineProperty(navigator, 'language', ...)`
       shim before `ComposeViewport` (effective on page reload — `getLanguage()` reads
       `navigator.language`, so the shim sticks for the session)
-  - **Live in-app switching** is not wired — CMP 1.11's `LocalComposeEnvironment` is
-    `@InternalResourceApi`. Restart-required is the current contract; the inline
-    'ภาษาจะเปลี่ยนหลังจากเปิดแอปใหม่' hint surfaces below the chip on selection.
+  - **Live in-app switching** — done via a Kotlin-typed string table
+    (`:core:ui/.../i18n/PharmStrings.kt`) instead of `compose.resources` because
+    CMP 1.11's `LocalComposeEnvironment` is package-private and ResourceEnvironment's
+    constructor is `internal`, blocking a CompositionLocal-based env override of the
+    generated `Res.string.X` lookups. The Kotlin table sidesteps this:
+    `PharmStrings` data class + `PharmStringsTh` / `PharmStringsEn` instances +
+    `LocalPharmStrings` `staticCompositionLocalOf`. `App {}` wraps content in
+    `AppLocaleProvider(localeWire = uiPreferences.locale.wire)` which picks the
+    right table from the user's chip (system → resolve via Compose
+    `androidx.compose.ui.text.intl.Locale.current`). Read in Composables via
+    `pharmStrings.commonSave` (the `@ReadOnlyComposable` getter on top of the
+    CompositionLocal). The chip change triggers an instant recomposition — no
+    restart needed for our migrated UI strings. The `strings.xml` + Cold-start
+    bootstrap is still in place for Compose built-ins that read `Locale.current`
+    directly (DatePicker month names, M3 widgets); the inline hint after a chip
+    change still mentions 'บางส่วน (เช่น ปฏิทิน) จะเปลี่ยนหลังจากเปิดแอปใหม่'.
   - **Migration playbook** (incremental): for each Thai literal, grep
     `"<thai-text>"` → add a `<string name="..."/>` entry to both `values/` and
     `values-en/` → replace the literal with `stringResource(Res.string.<key>)`.

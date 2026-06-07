@@ -23,6 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmSnackbarHost
 import app.devper.pharm.ui.common.PharmSnackbarHostUi
+import app.devper.pharm.ui.i18n.AppLocaleProvider
 import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.ThemeController
@@ -69,13 +70,15 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
             LocalSidebarState provides sidebarState,
             LocalPharmSnackbar provides snackbarHost,
         ) {
-            Surface {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    AppNavHost(viewModel = viewModel)
-                    PharmSnackbarHostUi(
-                        host = snackbarHost,
-                        modifier = Modifier.fillMaxSize(),
-                    )
+            AppLocaleProvider(localeWire = state.uiPreferences.locale.wire) {
+                Surface {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AppNavHost(viewModel = viewModel)
+                        PharmSnackbarHostUi(
+                            host = snackbarHost,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                 }
             }
         }
