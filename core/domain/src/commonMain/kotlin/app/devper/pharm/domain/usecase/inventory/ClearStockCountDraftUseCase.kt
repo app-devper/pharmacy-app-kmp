@@ -6,6 +6,6 @@ import app.devper.pharm.domain.repository.StockCountDraftRepository
 class ClearStockCountDraftUseCase(
     private val draftRepo: StockCountDraftRepository,
     dispatchers: AppDispatchers,
-) : BaseUseCase<Unit, Unit>(dispatchers) {
+) : BaseQueryUseCase<Unit>(dispatchers) {
     override suspend fun execute(param: Unit) = draftRepo.clear()
 }
