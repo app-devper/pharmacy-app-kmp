@@ -281,8 +281,9 @@ purpose isn't clear from its name, rename the method.
             :core:ui:jvmTest :core:data:jvmTest
   ```
   Quick smoke (runs the full dependent tree): `./gradlew :composeApp:check`.
-  Project test count today: 547 `@Test` functions across 71 commonTest files
-  (most concentrated in the 20 per-feature modules). Re-measure with
+  Project test count today: 759 `@Test` functions across 111 commonTest files
+  (most concentrated in the 20 per-feature modules — `:features:sell` alone
+  ships 83). Re-measure with
   `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`.
 - **Design system**: tokens in `:core:ui` →
   `ui/theme/DesignTokens.kt`; primitives in
@@ -331,6 +332,84 @@ purpose isn't clear from its name, rename the method.
   exempted (fakes throw `RuntimeException("...")` as a deliberate test
   signal). Use Storage / UnsupportedPlatform subclasses for IO/platform
   failures in `:composeApp/<plat>Main/platform/`.
+
+- **Money / Quantity value classes** (`:core:common/value/Money.kt` +
+  `Quantity.kt`): every monetary field on a domain model / param is
+  `Money` (wraps `Double`), every counted-stock field is `Quantity`
+  (wraps `Int`). The compiler enforces that you can't add a price to a
+  stock count, divide a price by another price by mistake, or pass a
+  `Quantity` where a `Money` was expected. End-to-end through the
+  domain layer: `Drug` / `AltUnit` prices + stock, `Sale` /
+  `SaleSummary` / `SaleItemSnapshot` prices, `CartLine` math chain
+  (`basePrice` / `unitPrice` / `effectiveUnitPrice` / `lineTotal`),
+  `CartDiscount.Flat.amount` + `CartDiscount.apply()`, `CartSnapshot`
+  / `ParkedCart` / `SellUiState` totals, `CheckoutParam` +
+  `CheckoutLineParam` + `RunCheckoutParam`, `DrugLot` / `AddLotParam`,
+  `PurchaseOrder` + `PurchaseOrderSummary` + `PurchaseOrderItem` +
+  `PurchaseOrderItemInput`, `ReorderSuggestion`.
+  - **DTO boundary stays Double/Int** (`@Serializable data class`
+    properties on wire). Mappers wrap inbound (`Money(dto.sellPrice)`,
+    `Quantity(dto.stock)`), unwrap outbound (`sellPrice.amount`,
+    `stock.value`). Wire-format compatibility preserved 1:1.
+  - **Display boundary**: `fmtBaht` / `formatBahtCurrency` take Double —
+    unwrap with `.amount` at the call site
+    (e.g. `fmtBaht(sale.total.amount)`). Same for `Quantity` when calling
+    APIs that want raw Int (`drug.stock.value`).
+  - **Predicates**: `money.isPositive` / `money.isZero` /
+    `qty.isPositive` replace `> 0` / `== 0.0` / `<= 0` comparisons.
+    Arithmetic operators (`+ - * /` and `coerceAtLeast` / `coerceAtMost`)
+    are defined on `Money` (multiply by `Int` keeps `Money`; divide by
+    `Int` keeps `Money`).
+  - **Aggregation**:
+    `items.fold(Money.Zero) { acc, line -> acc + line.lineTotal }`
+    (stays in `Money` space) instead of
+    `items.sumOf { it.lineTotal.amount }` (unwraps eagerly).
+  - **Defaults**: `Money.Zero` / `Quantity.Zero` instead of `0.0` / `0`
+    on constructor defaults so the type doesn't degrade.
+  - **Form-input boundary**: VM fields stay `String` (users type into
+    text fields). Conversion happens at submit:
+    `Money(field.toDoubleOrNull() ?: 0.0)` /
+    `Quantity(field.toIntOrNull() ?: 0)`.
+  - **Still `Double` (intentional)**: `ReportSummary` / `DailySales` /
+    `MonthlySales` (`todaySales` / `monthSales` / `stockValue` /
+    `total`), receipt template wire fields (`ReceiptTemplate.total` /
+    `subtotal` / `change` — printer protocol). Migrating those is a
+    separate RepX arc.
+
+- **Datetime / timezone (Asia/Bangkok)**: the backend stores `time.Time`
+  in MongoDB → JSON-serializes as RFC3339 with `Z` (UTC) or
+  `+00:00` / `+07:00` offset. The KMP app displays in Bangkok local
+  time. Use the existing helpers — they handle the conversion:
+  - `String?.parseLocalDateTimeOrNull()`
+    (`:core:data/data/internal/DateConv.kt`) parses ISO datetime,
+    converts UTC → `Asia/Bangkok` `LocalDateTime` when the input has a
+    `Z` / offset marker; passes through naked datetimes (assumed
+    already-local) for round-trip safety. Naked input
+    `2026-05-17T14:42:00Z` → `LocalDateTime(2026, 5, 17, 21, 42)`.
+  - `String?.parseLocalDateOrNull()` accepts both `YYYY-MM-DD` and a
+    full datetime string (`2027-06-30T00:00:00Z` →
+    `LocalDate(2027, 6, 30)`), falling back to `take(10)`. Backend
+    sends date-only fields (`Drug.ExpiryDate`, lot `expiry_date`,
+    `import_date`) as `time.Time` serialized to RFC3339 — without this
+    fallback the strict `LocalDate.parse` rejects them and the UI
+    shows blank.
+  - `isoDateTimeToBuddhist(s)` / `localDateTimeToBuddhist(dt)` /
+    `isoDateToBuddhist(s)` / `localDateToBuddhist(d)`
+    (`:core:ui/ui/format/DateFormat.kt`) format for Thai display
+    (`DD/MM/YYYY+543` with optional time). Same UTC→Bangkok /
+    datetime-as-date conversions inside.
+  - **M3 `DatePicker` round-trip uses UTC** (per its public contract).
+    `ymdToMillis(ymd)` / `millisToYmd(ms)` /
+    `LocalDate.toStartOfDayMillis()` use `TimeZone.UTC` internally
+    regardless of the `tz` parameter passed (param kept for source
+    compat with `@Suppress("UNUSED_PARAMETER")`). A YMD string
+    round-trips through M3 without an off-by-one day shift.
+  - Default `TimeZone` everywhere is `TimeZone.of("Asia/Bangkok")` —
+    `DEFAULT_ZONE` in `DateFormat.kt`, `BANGKOK` in `DateConv.kt`,
+    `FALLBACK` in `:core:domain/observer/TimeZoneProvider.kt`.
+    Outbound `LocalDate.toIso()` / `LocalDateTime.toIso()` emit the
+    plain ISO form (no Z / no offset) — round-trip with the parsers
+    above preserves the value for already-local datetimes.
 
 - **Responsive layout**: one codebase spans 320px phone → desktop. Breakpoints:
   320 (floor, nothing below) / 360 (stack `Row→Column`) / 600 (`WindowSize.Compact`
