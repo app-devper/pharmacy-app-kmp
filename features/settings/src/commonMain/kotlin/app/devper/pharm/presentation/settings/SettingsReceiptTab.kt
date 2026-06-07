@@ -10,28 +10,30 @@ import androidx.compose.ui.Modifier
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmToggleSwitch
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
 internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
     val t = pharmTokens
+    val s = pharmStrings
     val f = state.form
-    SettingsLabeledField(label = "ข้อความบนหัวบิล") {
+    SettingsLabeledField(label = s.settingsReceiptHeader) {
         SettingsFormField(
             value = f.receiptHeader,
             onValueChange = editor.onReceiptHeader,
-            placeholder = "ปรากฏใต้ชื่อร้านในใบเสร็จ",
+            placeholder = s.settingsReceiptHeaderPlaceholder,
         )
     }
-    SettingsLabeledField(label = "ข้อความท้ายบิล") {
+    SettingsLabeledField(label = s.settingsReceiptFooter) {
         SettingsFormField(
             value = f.receiptFooter,
             onValueChange = editor.onReceiptFooter,
-            placeholder = "เช่น ขอบคุณที่ใช้บริการ",
+            placeholder = s.settingsReceiptFooterPlaceholder,
         )
     }
-    SettingsLabeledField(label = "ความกว้างกระดาษ") {
+    SettingsLabeledField(label = s.settingsReceiptPaperWidth) {
         PharmSingleSelectChips(
             chips = listOf(
                 PharmFilterChip(id = "58", label = "58 mm"),
@@ -44,9 +46,9 @@ internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEd
     }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.weight(1f)) {
-            Text("แสดงชื่อเภสัชกร", style = PharmText.body.copy(color = t.colors.fg1))
+            Text(s.settingsReceiptShowPharmacist, style = PharmText.body.copy(color = t.colors.fg1))
             Text(
-                "ปรากฏที่ส่วนล่างของใบเสร็จ",
+                s.settingsReceiptFooterHint,
                 style = PharmText.micro.copy(color = t.colors.fg3),
             )
         }

@@ -2,19 +2,21 @@ package app.devper.pharm.presentation.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun SettingsStockTab(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
     val f = state.form
-    SettingsLabeledField(label = "เกณฑ์สต็อกขั้นต่ำ (ของยาที่ไม่ระบุ min_stock)") {
+    val s = pharmStrings
+    SettingsLabeledField(label = s.settingsStockLowThresholdLabel) {
         SettingsFormField(
             value = f.stockLowThreshold,
             onValueChange = editor.onStockLowThreshold,
             keyboardType = KeyboardType.Number,
-            placeholder = "0 = ไม่แจ้งเตือน",
+            placeholder = s.settingsStockLowThresholdPlaceholder,
         )
     }
-    SettingsLabeledField(label = "ช่วงเวลาวิเคราะห์ Reorder (วัน)") {
+    SettingsLabeledField(label = s.settingsStockReorderDays) {
         SettingsFormField(
             value = f.stockReorderDays,
             onValueChange = editor.onStockReorderDays,
@@ -22,7 +24,7 @@ internal fun SettingsStockTab(state: SettingsEditorUiState, editor: SettingsEdit
             placeholder = "30",
         )
     }
-    SettingsLabeledField(label = "Lookahead เป้า cover (วัน)") {
+    SettingsLabeledField(label = s.settingsStockReorderLookahead) {
         SettingsFormField(
             value = f.stockReorderLookahead,
             onValueChange = editor.onStockReorderLookahead,
@@ -30,7 +32,7 @@ internal fun SettingsStockTab(state: SettingsEditorUiState, editor: SettingsEdit
             placeholder = "14",
         )
     }
-    SettingsLabeledField(label = "ช่วงเตือนใกล้หมดอายุ (วัน)") {
+    SettingsLabeledField(label = s.settingsStockExpiringDays) {
         SettingsFormField(
             value = f.stockExpiringDays,
             onValueChange = editor.onStockExpiringDays,

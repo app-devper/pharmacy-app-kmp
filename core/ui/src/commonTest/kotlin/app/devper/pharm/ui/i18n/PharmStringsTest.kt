@@ -42,6 +42,16 @@ class PharmStringsTablesTest {
         check("settingsTabStore", PharmStringsTh.settingsTabStore, PharmStringsEn.settingsTabStore, mismatches)
         check("settingsTabReceipt", PharmStringsTh.settingsTabReceipt, PharmStringsEn.settingsTabReceipt, mismatches)
         check("settingsTabPharmacist", PharmStringsTh.settingsTabPharmacist, PharmStringsEn.settingsTabPharmacist, mismatches)
+        check("settingsStoreNameLabel", PharmStringsTh.settingsStoreNameLabel, PharmStringsEn.settingsStoreNameLabel, mismatches)
+        check("settingsStoreAddress", PharmStringsTh.settingsStoreAddress, PharmStringsEn.settingsStoreAddress, mismatches)
+        check("settingsStoreTaxId", PharmStringsTh.settingsStoreTaxId, PharmStringsEn.settingsStoreTaxId, mismatches)
+        check("settingsReceiptHeader", PharmStringsTh.settingsReceiptHeader, PharmStringsEn.settingsReceiptHeader, mismatches)
+        check("settingsReceiptPaperWidth", PharmStringsTh.settingsReceiptPaperWidth, PharmStringsEn.settingsReceiptPaperWidth, mismatches)
+        check("settingsStockLowThresholdLabel", PharmStringsTh.settingsStockLowThresholdLabel, PharmStringsEn.settingsStockLowThresholdLabel, mismatches)
+        check("settingsStockReorderDays", PharmStringsTh.settingsStockReorderDays, PharmStringsEn.settingsStockReorderDays, mismatches)
+        check("settingsPharmacistName", PharmStringsTh.settingsPharmacistName, PharmStringsEn.settingsPharmacistName, mismatches)
+        check("settingsKySkipAuto", PharmStringsTh.settingsKySkipAuto, PharmStringsEn.settingsKySkipAuto, mismatches)
+        check("settingsKyDefaultBuyerAddress", PharmStringsTh.settingsKyDefaultBuyerAddress, PharmStringsEn.settingsKyDefaultBuyerAddress, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
     }
 
