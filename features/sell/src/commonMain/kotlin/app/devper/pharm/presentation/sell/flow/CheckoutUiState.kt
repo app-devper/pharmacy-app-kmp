@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.sell.flow
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.model.OversellShortfall
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class CheckoutUiState(
     val checkingOut: Boolean = false,
@@ -16,9 +16,12 @@ data class CheckoutUiState(
     val cartIsEmpty: Boolean = true,
 
     val tenderOk: Boolean = false,
-) : BaseUiState {
+) : LoadableUiState<CheckoutUiState> {
 
     override val loading: Boolean get() = checkingOut
+
+    override fun withLoading(value: Boolean) = copy(checkingOut = value)
+    override fun withError(value: String?) = copy(error = value)
 
     val canCheckout: Boolean get() =
         !cartIsEmpty &&

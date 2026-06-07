@@ -1,27 +1,30 @@
 package app.devper.pharm.presentation.settings
 
-import app.devper.pharm.common.error.ErrorMessages
-
 import androidx.lifecycle.viewModelScope
+import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.userMessageOr
 import app.devper.pharm.domain.model.KySettings
 import app.devper.pharm.domain.model.PharmacistInfo
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StoreInfo
+import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.ReceiptSettingsInput
 import app.devper.pharm.domain.param.StockSettingsInput
-import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.UpdateSettingsParam
 import app.devper.pharm.domain.usecase.RefreshSettingsUseCase
 import app.devper.pharm.domain.usecase.UpdateSettingsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+
+private const val LOAD_SETTINGS_FAILED = "โหลดการตั้งค่าไม่สำเร็จ"
+private const val SAVED_OK = "บันทึกแล้ว"
 
 class SettingsEditorViewModel(
     settings: SettingsProvider,
     private val refreshSettings: RefreshSettingsUseCase,
     private val updateSettings: UpdateSettingsUseCase,
-) : BaseViewModel<SettingsEditorUiState>(SettingsEditorUiState()) {
+) : BaseLoadableViewModel<SettingsEditorUiState>(SettingsEditorUiState()) {
 
     private var hydrated = false
 
@@ -36,41 +39,26 @@ class SettingsEditorViewModel(
             }
             .launchIn(viewModelScope)
 
-        setState { copy(loading = true) }
-        launchResult(
+        launchLoad(
             block = { refreshSettings() },
+            fallback = LOAD_SETTINGS_FAILED,
             onSuccess = { fresh ->
-                val fields = fresh.toForm()
-                setState {
-                    copy(
-                        loading = false,
-                        baseline = fields,
-
-                        form = if (dirty) form else fields,
-                    )
-                }
                 hydrated = true
+                val fields = fresh.toForm()
+                copy(baseline = fields, form = if (dirty) form else fields)
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดการตั้งค่าไม่สำเร็จ") } },
         )
     }
 
     fun reload() {
         if (current.saving) return
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = { refreshSettings() },
+            fallback = LOAD_SETTINGS_FAILED,
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
-                setState {
-                    copy(
-                        loading = false,
-                        baseline = fields,
-                        form = if (dirty) form else fields,
-                    )
-                }
+                copy(baseline = fields, form = if (dirty) form else fields)
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดการตั้งค่าไม่สำเร็จ") } },
         )
     }
 
@@ -102,13 +90,12 @@ class SettingsEditorViewModel(
             block = { updateSettings(f.toParam()) },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
-                setState { copy(saving = false, baseline = fields, form = fields, message = "บันทึกแล้ว") }
+                setState { copy(saving = false, baseline = fields, form = fields, message = SAVED_OK) }
             },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
+            onFailure = { e -> setState { copy(saving = false, error = e.userMessageOr(ErrorMessages.SAVE_FAILED)) } },
         )
     }
 
-    fun dismissError() = setState { copy(error = null) }
     fun dismissMessage() = setState { copy(message = null) }
 
     private fun patch(transform: SettingsFormFields.() -> SettingsFormFields) {

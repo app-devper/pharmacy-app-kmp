@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.settings
 
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class SettingsFormFields(
 
@@ -36,7 +36,11 @@ data class SettingsEditorUiState(
     val saving: Boolean = false,
     val message: String? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<SettingsEditorUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+
     val dirty: Boolean get() = form != baseline
     val canSave: Boolean
         get() = !saving && !loading && dirty &&
