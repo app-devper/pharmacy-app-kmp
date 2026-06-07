@@ -39,6 +39,23 @@ class MoneyTest {
     }
 
     @Test
+    fun div_by_int_returns_money() {
+        assertEquals(Money(2.5), Money(10.0) / 4)
+    }
+
+    @Test
+    fun coerceAtLeast_clamps_to_minimum() {
+        assertEquals(Money(0.0), Money(-2.0).coerceAtLeast(Money.Zero))
+        assertEquals(Money(5.0), Money(5.0).coerceAtLeast(Money.Zero))
+    }
+
+    @Test
+    fun coerceAtMost_clamps_to_maximum() {
+        assertEquals(Money(5.0), Money(10.0).coerceAtMost(Money(5.0)))
+        assertEquals(Money(3.0), Money(3.0).coerceAtMost(Money(5.0)))
+    }
+
+    @Test
     fun comparison_orders_by_amount() {
         assertTrue(Money(1.0) < Money(2.0))
         assertTrue(Money(5.0) > Money(2.0))

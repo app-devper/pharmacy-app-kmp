@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.domain.extension.resolvePrice
 
@@ -7,7 +8,7 @@ data class CartLine(
     val drug: Drug,
     val qty: Int,
     val tier: String = Tier.Retail,
-    val discount: Double = 0.0,
+    val discount: Money = Money.Zero,
     val selectedUnit: AltUnit? = null,
 ) {
 
@@ -19,19 +20,19 @@ data class CartLine(
 
     val factor: Int get() = selectedUnit?.factor?.coerceAtLeast(1) ?: 1
 
-    val basePrice: Double
+    val basePrice: Money
         get() = if (selectedUnit != null) {
-            resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier).amount / factor
+            resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor
         } else {
-            resolvePrice(drug.sellPrice, drug.prices, tier).amount
+            resolvePrice(drug.sellPrice, drug.prices, tier)
         }
 
-    val unitPrice: Double get() = basePrice * factor
+    val unitPrice: Money get() = basePrice * factor
 
-    val effectiveUnitPrice: Double
-        get() = (unitPrice - discount * factor).coerceAtLeast(0.0)
+    val effectiveUnitPrice: Money
+        get() = (unitPrice - discount * factor).coerceAtLeast(Money.Zero)
 
-    val lineTotal: Double get() = (basePrice - discount).coerceAtLeast(0.0) * qty
+    val lineTotal: Money get() = (basePrice - discount).coerceAtLeast(Money.Zero) * qty
 }
 
 data class CartLineKey(

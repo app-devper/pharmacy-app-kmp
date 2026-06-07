@@ -11,7 +11,11 @@ value class Money(val amount: Double) : Comparable<Money> {
     operator fun minus(other: Money): Money = Money(amount - other.amount)
     operator fun times(multiplier: Int): Money = Money(amount * multiplier)
     operator fun times(multiplier: Double): Money = Money(amount * multiplier)
+    operator fun div(divisor: Int): Money = Money(amount / divisor)
     operator fun unaryMinus(): Money = Money(-amount)
+
+    fun coerceAtLeast(minimum: Money): Money = if (amount < minimum.amount) minimum else this
+    fun coerceAtMost(maximum: Money): Money = if (amount > maximum.amount) maximum else this
 
     override operator fun compareTo(other: Money): Int = amount.compareTo(other.amount)
 

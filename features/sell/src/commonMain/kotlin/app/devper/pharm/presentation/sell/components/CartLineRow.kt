@@ -192,7 +192,7 @@ private fun CartLinePrice(line: CartLine) {
         modifier = Modifier.width(96.dp),
     ) {
         Text(
-            text = formatBahtCurrency(line.lineTotal),
+            text = formatBahtCurrency(line.lineTotal.amount),
             style = PharmText.body.tabular(),
             fontWeight = FontWeight.Bold,
             color = t.colors.fg1,
@@ -202,7 +202,7 @@ private fun CartLinePrice(line: CartLine) {
         Text(
             text = priceMetaLabel(line),
             style = PharmText.micro.tabular(),
-            color = if (line.discount > 0) t.colors.dangerFg
+            color = if (line.discount.isPositive) t.colors.dangerFg
                     else t.colors.fg2,
             maxLines = 1,
             textAlign = TextAlign.End,
@@ -224,9 +224,9 @@ private fun CartLineRemoveButton(onClick: () -> Unit) {
 }
 
 private fun priceMetaLabel(line: CartLine): String {
-    if (line.discount > 0) {
+    if (line.discount.isPositive) {
         val saved = line.discount * line.qty
-        return "−${formatBahtCurrency(saved)}"
+        return "−${formatBahtCurrency(saved.amount)}"
     }
     return when (line.tier) {
         "wholesale" -> "ราคาส่ง"
@@ -383,7 +383,7 @@ private fun CartLineRow_Base_Preview() {
 private fun CartLineRow_Discounted_Preview() {
     PharmacyTheme {
         CartLineRow(
-            line = CartLine(drug = previewDrug(), qty = 5, discount = 3.0),
+            line = CartLine(drug = previewDrug(), qty = 5, discount = Money(3.0)),
             onQtyChange = {},
             onRemove = {},
             onTapForDiscount = {},

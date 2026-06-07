@@ -38,13 +38,14 @@ fun LineDiscountSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val t = pharmTokens
     val factor = line.factor
-    val perDisplayDiscount = line.discount * factor
+    val perDisplayDiscount = (line.discount * factor).amount
     var draft by remember(line.key, perDisplayDiscount) {
         mutableStateOf(if (perDisplayDiscount == 0.0) "" else perDisplayDiscount.toString().trimEnd('0').trimEnd('.'))
     }
     val parsed = draft.toDoubleOrNull()
-    val effective = (line.unitPrice - (parsed ?: 0.0)).coerceAtLeast(0.0)
-    val invalid = parsed != null && (parsed < 0.0 || parsed > line.unitPrice)
+    val unitPriceDouble = line.unitPrice.amount
+    val effective = (unitPriceDouble - (parsed ?: 0.0)).coerceAtLeast(0.0)
+    val invalid = parsed != null && (parsed < 0.0 || parsed > unitPriceDouble)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -63,12 +64,12 @@ fun LineDiscountSheet(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("ราคาเดิม", style = PharmText.bodySm.copy(color = t.colors.fg2))
-                Text(fmtBaht(line.unitPrice), style = PharmText.bodySm.tabular())
+                Text(fmtBaht(unitPriceDouble), style = PharmText.bodySm.tabular())
             }
 
             FormField(
                 label = "ส่วนลด (บาท)",
-                error = if (invalid) "0 ≤ ส่วนลด ≤ ${line.unitPrice}" else null,
+                error = if (invalid) "0 ≤ ส่วนลด ≤ $unitPriceDouble" else null,
             ) {
                 PharmTextField(
                     value = draft,
