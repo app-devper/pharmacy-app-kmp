@@ -102,6 +102,13 @@ data class PharmStrings(
     val profileFontXl: String,
     val profileDensityComfortable: String,
     val profileDensityCompact: String,
+    val settingsToolbarSubtitle: String,
+    val settingsDirtySubtitle: String,
+    val settingsTabStore: String,
+    val settingsTabReceipt: String,
+    val settingsTabStock: String,
+    val settingsTabPharmacist: String,
+    val settingsTabKy: String,
 )
 
 val PharmStringsTh: PharmStrings = PharmStrings(
@@ -202,6 +209,13 @@ val PharmStringsTh: PharmStrings = PharmStrings(
     profileFontXl = "ใหญ่มาก",
     profileDensityComfortable = "สบายตา",
     profileDensityCompact = "กระชับ",
+    settingsToolbarSubtitle = "จัดการข้อมูลร้าน ใบเสร็จ สต็อก เภสัชกร และ ขย.",
+    settingsDirtySubtitle = "มีการเปลี่ยนแปลง — แตะ \"บันทึก\" เพื่อยืนยัน",
+    settingsTabStore = "ร้านค้า",
+    settingsTabReceipt = "ใบเสร็จ",
+    settingsTabStock = "สต็อก",
+    settingsTabPharmacist = "เภสัชกร",
+    settingsTabKy = "ขย.",
 )
 
 val PharmStringsEn: PharmStrings = PharmStrings(
@@ -302,6 +316,13 @@ val PharmStringsEn: PharmStrings = PharmStrings(
     profileFontXl = "Extra large",
     profileDensityComfortable = "Comfortable",
     profileDensityCompact = "Compact",
+    settingsToolbarSubtitle = "Manage store, receipt, stock, pharmacist, and KY data",
+    settingsDirtySubtitle = "Changes pending — tap \"Save\" to confirm",
+    settingsTabStore = "Store",
+    settingsTabReceipt = "Receipt",
+    settingsTabStock = "Stock",
+    settingsTabPharmacist = "Pharmacist",
+    settingsTabKy = "KY",
 )
 
 val LocalPharmStrings = staticCompositionLocalOf { PharmStringsTh }

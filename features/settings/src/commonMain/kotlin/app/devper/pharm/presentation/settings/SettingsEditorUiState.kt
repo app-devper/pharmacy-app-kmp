@@ -48,10 +48,6 @@ data class SettingsEditorUiState(
             form.receiptPaperWidth in setOf("58", "80")
 }
 
-enum class SettingsTab(val label: String) {
-    Store("ร้านค้า"),
-    Receipt("ใบเสร็จ"),
-    Stock("สต็อก"),
-    Pharmacist("เภสัชกร"),
-    Ky("ขย."),
+enum class SettingsTab {
+    Store, Receipt, Stock, Pharmacist, Ky;
 }
