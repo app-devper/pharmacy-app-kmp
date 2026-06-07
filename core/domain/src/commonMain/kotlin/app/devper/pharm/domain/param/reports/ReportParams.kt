@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.param
 
+import kotlinx.datetime.LocalDate
+
 data class ReportRangeParam(
-    val from: String = "",
-    val to: String = "",
+    val from: LocalDate? = null,
+    val to: LocalDate? = null,
 )
 
 data class DashboardRangeParam(
@@ -14,9 +16,9 @@ data class TopOrSlowDrugsParam(
 )
 
 data class EodReportParam(
-    val date: String = "",
+    val date: LocalDate? = null,
 )
 
 data class CloseEodParam(
-    val date: String = "",
+    val date: LocalDate? = null,
 )

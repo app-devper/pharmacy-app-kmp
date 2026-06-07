@@ -9,6 +9,7 @@ import app.devper.pharm.domain.usecase.CloseEodUseCase
 import app.devper.pharm.domain.usecase.GetEodReportUseCase
 import app.devper.pharm.domain.usecase.PrintReceiptUseCase
 import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.format.toLocalDateOrNull
 import app.devper.pharm.ui.print.buildEodReceiptTemplate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,7 +44,7 @@ class EodViewModel(
         val s = current
         setState { copy(confirmClose = false, closing = true, error = null) }
         launchResult(
-            block = { closeEod(CloseEodParam(date = s.date)) },
+            block = { closeEod(CloseEodParam(date = s.date.toLocalDateOrNull())) },
             onSuccess = { result ->
                 val template = buildEodReceiptTemplate(closed = result, settings = lastSettings)
                 setState {
@@ -85,7 +86,7 @@ class EodViewModel(
         val s = current
         setState { copy(loading = true, error = null) }
         launchResult(
-            block = { getEodReport(EodReportParam(date = s.date)) },
+            block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
             onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
             onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดรายงานไม่สำเร็จ") } },
         )

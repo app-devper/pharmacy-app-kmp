@@ -108,7 +108,7 @@ private val sampleBills = listOf(
 )
 
 private val sampleReport = EodReport(
-    date = "2026-05-17",
+    date = kotlinx.datetime.LocalDate.parse("2026-05-17"),
     billCount = 4,
     totalSales = 3850.0,
     totalDiscount = 70.0,

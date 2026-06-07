@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+
 data class ReportSummary(
     val todaySales: Double,
     val todayBills: Int,
@@ -43,7 +46,7 @@ data class Dashboard(
 )
 
 data class EodReport(
-    val date: String,
+    val date: LocalDate?,
     val billCount: Int,
     val totalSales: Double,
     val totalDiscount: Double,
@@ -55,8 +58,8 @@ data class EodReport(
 
 data class EodCloseResult(
     val closeId: String,
-    val date: String,
-    val closedAt: String,
+    val date: LocalDate?,
+    val closedAt: LocalDateTime?,
     val closedBy: String,
     val report: EodReport,
 )

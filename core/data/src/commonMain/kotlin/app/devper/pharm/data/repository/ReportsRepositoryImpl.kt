@@ -1,6 +1,8 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.parseLocalDateOrNull
 import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.ReportsApi
 import app.devper.pharm.data.remote.dto.DailyDataDto
 import app.devper.pharm.data.remote.dto.DashboardDto
@@ -45,13 +47,13 @@ class ReportsRepositoryImpl(private val api: ReportsApi) : ReportsRepository {
         api.slowDrugs(param.days).map(::toDomain)
 
     override suspend fun profit(param: ReportRangeParam): ProfitReport =
-        api.profit(param.from.trim(), param.to.trim()).toDomain()
+        api.profit(param.from?.toIso().orEmpty(), param.to?.toIso().orEmpty()).toDomain()
 
     override suspend fun eod(param: EodReportParam): EodReport =
-        api.eod(param.date.trim()).toDomain()
+        api.eod(param.date?.toIso().orEmpty()).toDomain()
 
     override suspend fun closeEod(param: CloseEodParam): EodCloseResult =
-        api.closeEod(param.date.trim()).toDomain()
+        api.closeEod(param.date?.toIso().orEmpty()).toDomain()
 
     private fun DashboardDto.toDomain() = Dashboard(
         summary = summary.toDomain(),
@@ -103,7 +105,7 @@ class ReportsRepositoryImpl(private val api: ReportsApi) : ReportsRepository {
     )
 
     private fun EodReportDto.toDomain() = EodReport(
-        date = date,
+        date = date.parseLocalDateOrNull(),
         billCount = billCount,
         totalSales = totalSales,
         totalDiscount = totalDiscount,
@@ -115,8 +117,8 @@ class ReportsRepositoryImpl(private val api: ReportsApi) : ReportsRepository {
 
     private fun EodCloseResultDto.toDomain() = EodCloseResult(
         closeId = closeId,
-        date = date,
-        closedAt = closedAt,
+        date = date.parseLocalDateOrNull(),
+        closedAt = closedAt.parseLocalDateTimeOrNull(),
         closedBy = closedBy,
         report = report.toDomain(),
     )

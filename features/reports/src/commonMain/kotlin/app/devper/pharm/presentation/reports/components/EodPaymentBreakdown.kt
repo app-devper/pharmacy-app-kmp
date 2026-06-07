@@ -49,7 +49,7 @@ internal fun EodPaymentBreakdown(report: EodReport, onPrint: () -> Unit) {
                 modifier = Modifier.size(18.dp),
             )
             Text(
-                text = "ปิดรอบ EOD เรียบร้อย — วันที่ ${report.date.ifBlank { "วันนี้" }}",
+                text = "ปิดรอบ EOD เรียบร้อย — วันที่ ${app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { "วันนี้" }}",
                 style = PharmText.h2,
                 modifier = Modifier.weight(1f),
             )

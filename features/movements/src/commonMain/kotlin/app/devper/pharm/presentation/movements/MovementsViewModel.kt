@@ -7,6 +7,7 @@ import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
 import app.devper.pharm.presentation.movements.internal.millisToYmd
 import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class MovementsViewModel(
     private val getMovements: GetMovementsUseCase,
@@ -48,8 +49,8 @@ class MovementsViewModel(
             block = {
                 exportMovementsCsv(
                     ExportMovementsCsvParam(
-                        from = s.from,
-                        to = s.to,
+                        from = s.from.toLocalDateOrNull(),
+                        to = s.to.toLocalDateOrNull(),
                         drugName = s.drugName,
                         rows = s.items,
                     ),
@@ -72,8 +73,8 @@ class MovementsViewModel(
             block = {
                 getMovements(
                     MovementsFilterParam(
-                        from = s.from.takeIf { it.isNotBlank() },
-                        to = s.to.takeIf { it.isNotBlank() },
+                        from = s.from.toLocalDateOrNull(),
+                        to = s.to.toLocalDateOrNull(),
                         drugName = s.drugName.takeIf { it.isNotBlank() },
                         types = MovementsTypeCatalog.toEnumSet(s.activeTypeIds),
                         limit = 200,

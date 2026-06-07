@@ -1,9 +1,10 @@
 package app.devper.pharm.domain.param
 
 import app.devper.pharm.domain.model.DrugProfit
+import kotlinx.datetime.LocalDate
 
 data class ExportProfitCsvParam(
-    val from: String,
-    val to: String,
+    val from: LocalDate?,
+    val to: LocalDate?,
     val rows: List<DrugProfit>,
 )

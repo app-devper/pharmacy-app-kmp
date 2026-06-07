@@ -10,6 +10,7 @@ import app.devper.pharm.presentation.reports.internal.startOfMonth
 import app.devper.pharm.presentation.reports.internal.todayDate
 import app.devper.pharm.presentation.reports.internal.toYmd
 import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class ProfitViewModel(
     private val getProfitReport: GetProfitReportUseCase,
@@ -48,7 +49,7 @@ class ProfitViewModel(
         }
         setState { copy(exporting = true) }
         launchResult(
-            block = { exportProfitCsv(ExportProfitCsvParam(s.from, s.to, rows)) },
+            block = { exportProfitCsv(ExportProfitCsvParam(s.from.toLocalDateOrNull(), s.to.toLocalDateOrNull(), rows)) },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
             onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ส่งออกไม่สำเร็จ") } },
         )
@@ -58,7 +59,7 @@ class ProfitViewModel(
         val s = current
         setState { copy(loading = true, error = null) }
         launchResult(
-            block = { getProfitReport(ReportRangeParam(from = s.from, to = s.to)) },
+            block = { getProfitReport(ReportRangeParam(from = s.from.toLocalDateOrNull(), to = s.to.toLocalDateOrNull())) },
             onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
             onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดรายงานไม่สำเร็จ") } },
         )

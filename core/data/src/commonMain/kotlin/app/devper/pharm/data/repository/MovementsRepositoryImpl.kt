@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.MovementsApi
 import app.devper.pharm.data.remote.dto.MovementDto
 import app.devper.pharm.domain.model.MovementType
@@ -14,8 +15,8 @@ class MovementsRepositoryImpl(
 
     override suspend fun list(filter: MovementsFilterParam): StockMovementsPage {
         val dto = api.list(
-            from = filter.from,
-            to = filter.to,
+            from = filter.from?.toIso(),
+            to = filter.to?.toIso(),
             drugName = filter.drugName,
             types = filter.types.map { it.wire },
             limit = filter.limit,

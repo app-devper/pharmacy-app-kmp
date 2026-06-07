@@ -48,42 +48,42 @@ class ExportMovementsCsvUseCaseTest {
     @Test
     fun filename_uses_all_when_range_is_blank() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "", to = "", drugName = "", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = null, to = null, drugName = "", rows = sampleRows()))
         assertEquals("movements_all.csv", (repo as CapturingExportRepository).lastFilename)
     }
 
     @Test
     fun filename_uses_single_date_when_from_equals_to() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "2026-05-17", to = "2026-05-17", drugName = "", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = kotlinx.datetime.LocalDate.parse("2026-05-17"), to = kotlinx.datetime.LocalDate.parse("2026-05-17"), drugName = "", rows = sampleRows()))
         assertEquals("movements_2026-05-17.csv", (repo as CapturingExportRepository).lastFilename)
     }
 
     @Test
     fun filename_uses_range_when_from_and_to_differ() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "2026-05-01", to = "2026-05-31", drugName = "", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = kotlinx.datetime.LocalDate.parse("2026-05-01"), to = kotlinx.datetime.LocalDate.parse("2026-05-31"), drugName = "", rows = sampleRows()))
         assertEquals("movements_2026-05-01_2026-05-31.csv", (repo as CapturingExportRepository).lastFilename)
     }
 
     @Test
     fun filename_uses_any_placeholder_when_one_endpoint_blank() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "2026-05-01", to = "", drugName = "", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = kotlinx.datetime.LocalDate.parse("2026-05-01"), to = null, drugName = "", rows = sampleRows()))
         assertEquals("movements_2026-05-01_any.csv", (repo as CapturingExportRepository).lastFilename)
     }
 
     @Test
     fun filename_appends_normalized_drug_slug() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "", to = "", drugName = "Paracetamol 500mg", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = null, to = null, drugName = "Paracetamol 500mg", rows = sampleRows()))
         assertEquals("movements_all_paracetamol-500mg.csv", (repo as CapturingExportRepository).lastFilename)
     }
 
     @Test
     fun filename_strips_leading_trailing_non_alphanumeric_from_drug_slug() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "", to = "", drugName = "  ยา--ดี!!  ", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = null, to = null, drugName = "  ยา--ดี!!  ", rows = sampleRows()))
         val name = (repo as CapturingExportRepository).lastFilename!!
         assertTrue(name.startsWith("movements_all_"))
         assertTrue(name.endsWith(".csv"))
@@ -94,7 +94,7 @@ class ExportMovementsCsvUseCaseTest {
     fun filename_caps_drug_slug_at_40_chars() = runTest {
         val (uc, repo) = useCase()
         val longName = "abcdefghij".repeat(8)
-        uc(ExportMovementsCsvParam(from = "", to = "", drugName = longName, rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = null, to = null, drugName = longName, rows = sampleRows()))
         val name = (repo as CapturingExportRepository).lastFilename!!
         val slug = name.removePrefix("movements_all_").removeSuffix(".csv")
         assertTrue(slug.length <= 40, "slug too long: ${slug.length} ($slug)")
@@ -103,7 +103,7 @@ class ExportMovementsCsvUseCaseTest {
     @Test
     fun bytes_payload_starts_with_utf8_bom() = runTest {
         val (uc, repo) = useCase()
-        uc(ExportMovementsCsvParam(from = "", to = "", drugName = "", rows = sampleRows()))
+        uc(ExportMovementsCsvParam(from = null, to = null, drugName = "", rows = sampleRows()))
         val bytes = (repo as CapturingExportRepository).lastBytes!!
         assertEquals(0xEF.toByte(), bytes[0])
         assertEquals(0xBB.toByte(), bytes[1])
