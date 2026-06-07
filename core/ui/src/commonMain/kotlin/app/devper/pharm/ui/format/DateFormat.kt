@@ -15,20 +15,22 @@ private val DEFAULT_ZONE = TimeZone.of("Asia/Bangkok")
 private const val BUDDHIST_ERA_OFFSET = 543
 
 @OptIn(ExperimentalTime::class)
-fun millisToYmd(millis: Long?, tz: TimeZone = DEFAULT_ZONE): String {
+@Suppress("UNUSED_PARAMETER")
+fun millisToYmd(millis: Long?, tz: TimeZone = TimeZone.UTC): String {
     if (millis == null) return ""
-    val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(tz).date
+    val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.UTC).date
     val mm = date.month.number.toString().padStart(2, '0')
     val dd = date.day.toString().padStart(2, '0')
     return "${date.year}-$mm-$dd"
 }
 
 @OptIn(ExperimentalTime::class)
-fun ymdToMillis(ymd: String, tz: TimeZone = DEFAULT_ZONE): Long? {
+@Suppress("UNUSED_PARAMETER")
+fun ymdToMillis(ymd: String, tz: TimeZone = TimeZone.UTC): Long? {
     if (ymd.isBlank()) return null
     val date = runCatching { LocalDate.parse(ymd) }.getOrNull() ?: return null
     val dt = LocalDateTime(date, LocalTime(0, 0))
-    return dt.toInstant(tz).toEpochMilliseconds()
+    return dt.toInstant(TimeZone.UTC).toEpochMilliseconds()
 }
 
 fun formatYmdDisplay(millis: Long, tz: TimeZone = DEFAULT_ZONE): String = millisToYmd(millis, tz)

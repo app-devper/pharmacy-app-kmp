@@ -37,9 +37,10 @@ internal fun todayDate(tz: TimeZone): LocalDate =
     Clock.System.now().toLocalDateTime(tz).date
 
 @OptIn(ExperimentalTime::class)
+@Suppress("UNUSED_PARAMETER")
 internal fun LocalDate.toStartOfDayMillis(tz: TimeZone): Long =
     LocalDateTime(this, LocalTime(0, 0))
-        .toInstant(tz)
+        .toInstant(TimeZone.UTC)
         .toEpochMilliseconds()
 
 enum class ProfitQuickPeriod(val label: String) {
