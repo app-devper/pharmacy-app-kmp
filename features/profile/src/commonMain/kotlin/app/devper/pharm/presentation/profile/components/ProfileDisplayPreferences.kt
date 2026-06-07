@@ -9,6 +9,7 @@ import app.devper.pharm.presentation.profile.ProfileCallbacks
 import app.devper.pharm.presentation.profile.ProfileUiState
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -45,16 +46,24 @@ internal fun ProfileDisplayPreferences(
                 scrollable = false,
             )
         }
+        val strings = pharmStrings
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(text = "ภาษา", style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
+            Text(text = strings.settingsLocaleTitle, style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
             PharmSingleSelectChips(
-                chips = LocaleChips,
+                chips = listOf(
+                    PharmFilterChip(id = "system", label = strings.settingsLocaleSystem),
+                    PharmFilterChip(id = "th", label = strings.settingsLocaleTh),
+                    PharmFilterChip(id = "en", label = strings.settingsLocaleEn),
+                ),
                 activeId = state.locale,
                 onSelect = callbacks.onLocaleChange,
                 scrollable = false,
             )
-            state.localeChangeMessage?.let { msg ->
-                Text(text = msg, style = PharmText.meta.copy(color = pharmTokens.colors.accent))
+            state.localeChangeMessage?.let { _ ->
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(text = strings.settingsLocaleAppliedInline, style = PharmText.meta.copy(color = pharmTokens.colors.successFg))
+                    Text(text = strings.settingsLocaleRestartHint, style = PharmText.meta.copy(color = pharmTokens.colors.fg2))
+                }
             }
         }
     }
@@ -76,10 +85,4 @@ private val FontSizeChips = listOf(
 private val DensityChips = listOf(
     PharmFilterChip(id = "comfortable", label = "สบายตา"),
     PharmFilterChip(id = "compact", label = "กระชับ"),
-)
-
-private val LocaleChips = listOf(
-    PharmFilterChip(id = "system", label = "ตามระบบ"),
-    PharmFilterChip(id = "th", label = "ไทย"),
-    PharmFilterChip(id = "en", label = "English"),
 )
