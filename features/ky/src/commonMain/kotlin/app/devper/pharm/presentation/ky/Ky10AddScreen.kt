@@ -28,7 +28,7 @@ fun Ky10AddScreen(
             onBuyerAddress = viewModel::onBuyerAddress,
             onRxNo = viewModel::onRxNo,
             onDoctor = viewModel::onDoctor,
-            onSubmit = viewModel::submitAdd,
+            onSubmit = viewModel::submit,
             onDismissError = viewModel::dismissError,
         ),
     )

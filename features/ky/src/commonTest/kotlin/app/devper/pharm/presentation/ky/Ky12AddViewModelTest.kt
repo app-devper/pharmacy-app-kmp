@@ -32,7 +32,7 @@ class Ky12AddViewModelTest {
         val repo = FakeKyRepository()
         val vm = Ky12AddViewModel(AddKy12UseCase(repo, d))
         fill(vm)
-        vm.submitAdd()
+        vm.submit()
         advanceUntilIdle()
         assertTrue(vm.state.value.saved)
         assertEquals(1, repo.ky12Submissions.size)
@@ -43,7 +43,7 @@ class Ky12AddViewModelTest {
     fun submit_blank_draft_is_noop() = runVmTest { d ->
         val repo = FakeKyRepository()
         val vm = Ky12AddViewModel(AddKy12UseCase(repo, d))
-        vm.submitAdd()
+        vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)
         assertTrue(repo.ky12Submissions.isEmpty())

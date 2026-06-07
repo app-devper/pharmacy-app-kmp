@@ -1,15 +1,12 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.common.error.ErrorMessages
-
 import app.devper.pharm.domain.extension.buildKy12Draft
-import app.devper.pharm.domain.extension.isKy12DraftValid
 import app.devper.pharm.domain.usecase.AddKy12UseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseFormViewModel
 
 class Ky12AddViewModel(
     private val addKy12: AddKy12UseCase,
-) : BaseViewModel<Ky12AddUiState>(Ky12AddUiState()) {
+) : BaseFormViewModel<Ky12AddUiState>(Ky12AddUiState()) {
 
     fun onDate(v: String) = patch { copy(date = v) }
     fun onDrugName(v: String) = patch { copy(drugName = v) }
@@ -23,34 +20,23 @@ class Ky12AddViewModel(
     fun onTotalValue(v: String) = patch { copy(totalValue = v.numericMoneyKy12()) }
     fun onStatus(v: String) = patch { copy(status = v) }
 
-    fun submitAdd() {
-        val s = current
-        if (!s.canSubmitDraft) return
+    override suspend fun persist(): Result<Unit> {
+        val d = current.draft
         val form = buildKy12Draft(
-            date = s.draft.date,
-            drugName = s.draft.drugName,
-            regNo = s.draft.regNo,
-            qty = s.draft.qty,
-            unit = s.draft.unit,
-            rxNo = s.draft.rxNo,
-            patientName = s.draft.patientName,
-            doctor = s.draft.doctor,
-            hospital = s.draft.hospital,
-            totalValue = s.draft.totalValue,
-            status = s.draft.status,
-        ).getOrElse { e ->
-            setState { copy(error = e.message ?: "ตรวจสอบข้อมูลไม่ผ่าน") }
-            return
-        }
-        setState { copy(saving = true, error = null) }
-        launchResult(
-            block = { addKy12(form) },
-            onSuccess = { setState { copy(saving = false, saved = true) } },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
-        )
+            date = d.date,
+            drugName = d.drugName,
+            regNo = d.regNo,
+            qty = d.qty,
+            unit = d.unit,
+            rxNo = d.rxNo,
+            patientName = d.patientName,
+            doctor = d.doctor,
+            hospital = d.hospital,
+            totalValue = d.totalValue,
+            status = d.status,
+        ).getOrElse { return Result.failure(it) }
+        return addKy12(form)
     }
-
-    fun dismissError() = setState { copy(error = null) }
 
     private fun patch(transform: Ky12Draft.() -> Ky12Draft) {
         setState { copy(draft = draft.transform()) }

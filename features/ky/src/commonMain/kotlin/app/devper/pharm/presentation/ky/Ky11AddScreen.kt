@@ -26,7 +26,7 @@ fun Ky11AddScreen(
             onBuyerName = viewModel::onBuyerName,
             onPurpose = viewModel::onPurpose,
             onPharmacist = viewModel::onPharmacist,
-            onSubmit = viewModel::submitAdd,
+            onSubmit = viewModel::submit,
             onDismissError = viewModel::dismissError,
         ),
     )
