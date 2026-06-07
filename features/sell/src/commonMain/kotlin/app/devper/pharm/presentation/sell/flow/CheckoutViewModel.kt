@@ -23,6 +23,7 @@ import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
 import app.devper.pharm.presentation.sell.internal.todayYmd
 import kotlinx.coroutines.flow.launchIn
@@ -207,7 +208,7 @@ class CheckoutViewModel(
             customer = customer,
             settings = lastSettings,
             received = received,
-            soldAtFormatted = todayYmd(tz),
+            soldAtFormatted = todayBuddhistDisplay(tz),
         )
         setState { copy(checkingOut = false, lastReceiptTemplate = template) }
 
