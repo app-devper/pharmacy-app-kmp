@@ -149,7 +149,7 @@ private fun ReturnLineRow(
     val factor = if (item.unitFactor > 1) item.unitFactor else 1
     val draftDisplay = draftBaseQty / factor
     val maxDisplay = item.remainingDisplayQty
-    val refund = item.price * draftBaseQty
+    val refund = item.price.amount * draftBaseQty
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),

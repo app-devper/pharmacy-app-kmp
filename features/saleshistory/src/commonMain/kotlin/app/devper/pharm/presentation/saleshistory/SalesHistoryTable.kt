@@ -140,7 +140,7 @@ private fun TotalCell(sale: SaleSummary) {
         fontFeatureSettings = "tnum",
         textDecoration = if (sale.voided) TextDecoration.LineThrough else null,
     )
-    Text(text = fmtBaht(sale.total), style = style)
+    Text(text = fmtBaht(sale.total.amount), style = style)
 }
 
 @Composable

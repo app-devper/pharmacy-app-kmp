@@ -169,7 +169,7 @@ private class FakeCart(active: ActiveCart) : CartRepository {
 
 private class FakeSales(
     val sale: Sale = Sale(
-        id = "s1", billNo = "B1", total = 20.0, change = 80.0, discount = 0.0, stockUpdates = emptyList(),
+        id = "s1", billNo = "B1", total = Money(20.0), change = Money(80.0), discount = Money(0.0), stockUpdates = emptyList(),
     ),
     private val failWith: Throwable? = null,
 ) : SaleRepository {

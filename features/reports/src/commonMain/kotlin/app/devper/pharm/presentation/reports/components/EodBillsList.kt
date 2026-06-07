@@ -60,7 +60,7 @@ internal fun EodBillRow(bill: SaleSummary) {
             PharmBadge(text = "ยกเลิก", tone = PharmBadgeTone.Gray)
         }
         Text(
-            text = fmtBaht(bill.total),
+            text = fmtBaht(bill.total.amount),
             style = PharmText.price.copy(color = totalColor),
         )
     }

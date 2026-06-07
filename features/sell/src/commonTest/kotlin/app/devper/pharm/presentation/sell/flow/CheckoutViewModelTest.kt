@@ -466,7 +466,7 @@ class CheckoutViewModelTest {
     @Test
     fun dismissReceipt_invokes_dismissReceiptUseCase() = runVmTest { dispatchers ->
 
-        val cart = FakeCartRepository(initialReceipt = Sale("s1", "INV-001", 10.0, 0.0, 0.0, emptyList()))
+        val cart = FakeCartRepository(initialReceipt = Sale("s1", "INV-001", Money(10.0), Money(0.0), Money(0.0), emptyList()))
         val (vm) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
 

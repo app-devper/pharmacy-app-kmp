@@ -1,13 +1,14 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
 import kotlinx.datetime.LocalDateTime
 
 data class SaleSummary(
     val id: String,
     val billNo: String,
     val customerName: String,
-    val total: Double,
-    val discount: Double,
+    val total: Money,
+    val discount: Money,
     val soldAt: LocalDateTime?,
     val voided: Boolean,
 )
@@ -17,9 +18,9 @@ data class SaleItemSnapshot(
     val drugId: String,
     val drugName: String,
     val qty: Int,
-    val price: Double,
-    val originalPrice: Double,
-    val itemDiscount: Double,
+    val price: Money,
+    val originalPrice: Money,
+    val itemDiscount: Money,
     val unit: String,
     val unitFactor: Int,
     val priceTier: String,

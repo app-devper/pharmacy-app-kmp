@@ -89,7 +89,7 @@ private fun RecentSaleRow(sale: SaleSummary) {
                 PharmStatusBadge(status = PharmStatus.Voided)
             }
             Text(
-                text = formatBahtCurrency(sale.total),
+                text = formatBahtCurrency(sale.total.amount),
                 style = PharmText.bodySm.tabular().copy(
                     color = if (sale.voided) t.colors.fgMuted else t.colors.accent,
                     fontWeight = FontWeight.SemiBold,

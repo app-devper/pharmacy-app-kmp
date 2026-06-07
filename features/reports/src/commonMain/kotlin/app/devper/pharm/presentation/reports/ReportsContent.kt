@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -141,11 +144,11 @@ private val previewMonthly = listOf(
 )
 
 private val previewRecent = listOf(
-    SaleSummary("s1", "SC-260516-014", "คุณสมศรี ใจดี", 1742.0, 0.0, LocalDateTime.parse("2026-05-17T14:42:00"), false),
-    SaleSummary("s2", "SC-260516-013", "", 120.0, 0.0, LocalDateTime.parse("2026-05-17T14:18:00"), false),
-    SaleSummary("s3", "SC-260516-012", "นาย วรพล สุขสันต์", 892.0, 0.0, LocalDateTime.parse("2026-05-17T13:55:00"), false),
-    SaleSummary("s4", "SC-260516-011", "", 240.0, 0.0, LocalDateTime.parse("2026-05-17T13:30:00"), false),
-    SaleSummary("s5", "SC-260516-010", "นาง พรรณี สวยงาม", 520.0, 0.0, LocalDateTime.parse("2026-05-17T12:45:00"), true),
+    SaleSummary("s1", "SC-260516-014", "คุณสมศรี ใจดี", Money(1742.0), Money(0.0), LocalDateTime.parse("2026-05-17T14:42:00"), false),
+    SaleSummary("s2", "SC-260516-013", "", Money(120.0), Money(0.0), LocalDateTime.parse("2026-05-17T14:18:00"), false),
+    SaleSummary("s3", "SC-260516-012", "นาย วรพล สุขสันต์", Money(892.0), Money(0.0), LocalDateTime.parse("2026-05-17T13:55:00"), false),
+    SaleSummary("s4", "SC-260516-011", "", Money(240.0), Money(0.0), LocalDateTime.parse("2026-05-17T13:30:00"), false),
+    SaleSummary("s5", "SC-260516-010", "นาง พรรณี สวยงาม", Money(520.0), Money(0.0), LocalDateTime.parse("2026-05-17T12:45:00"), true),
 )
 
 private val previewTop = listOf(

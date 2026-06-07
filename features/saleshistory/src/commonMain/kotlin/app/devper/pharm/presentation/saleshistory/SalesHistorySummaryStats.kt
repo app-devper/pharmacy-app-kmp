@@ -20,7 +20,7 @@ internal fun SalesHistoryTotalStat(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
-    val subtotal = sales.filterNot { it.voided }.sumOf { it.total }
+    val subtotal = sales.filterNot { it.voided }.sumOf { it.total.amount }
     val voided = sales.count { it.voided }
 
     Row(

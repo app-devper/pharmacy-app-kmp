@@ -48,9 +48,9 @@ class CartRepositoryImplAtomicityTest {
         Sale(
             id = id,
             billNo = "BILL-001",
-            total = 10.0,
-            change = 0.0,
-            discount = 0.0,
+            total = Money(10.0),
+            change = Money(0.0),
+            discount = Money(0.0),
             stockUpdates = emptyList(),
         )
 

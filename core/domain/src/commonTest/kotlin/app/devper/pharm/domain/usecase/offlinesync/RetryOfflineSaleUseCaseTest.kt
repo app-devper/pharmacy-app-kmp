@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.common.value.Money
+
 import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.domain.model.PendingSale
@@ -40,7 +42,7 @@ class RetryOfflineSaleUseCaseTest {
     @Test
     fun successful_replay_marks_synced_and_returns_sale() = runTest {
         val queue = FakeOfflineQueue(listOf(pending("p1")))
-        val sales = FakeReplaySales(sale = Sale("s1", "B1", 10.0, 0.0, 0.0, emptyList()))
+        val sales = FakeReplaySales(sale = Sale("s1", "B1", Money(10.0), Money(0.0), Money(0.0), emptyList()))
         val result = RetryOfflineSaleUseCase(queue, sales, testDispatchers()).invoke("p1")
         assertEquals("s1", result.getOrThrow().id)
         assertEquals("payload-p1", sales.replayedPayload)
@@ -77,7 +79,7 @@ private class FakeOfflineQueue(initial: List<PendingSale> = emptyList()) : Offli
 }
 
 private class FakeReplaySales(
-    val sale: Sale = Sale("s1", "B1", 0.0, 0.0, 0.0, emptyList()),
+    val sale: Sale = Sale("s1", "B1", Money(0.0), Money(0.0), Money(0.0), emptyList()),
     private val failWith: Throwable? = null,
 ) : SaleRepository {
     var replayedPayload: String? = null

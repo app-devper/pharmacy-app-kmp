@@ -37,10 +37,10 @@ fun buildReceiptTemplate(
         },
         subtotal = grossSubtotal,
         itemDiscountTotal = itemDiscountTotal,
-        cartDiscount = sale.discount,
-        total = sale.total,
+        cartDiscount = sale.discount.amount,
+        total = sale.total.amount,
         received = received,
-        change = sale.change,
+        change = sale.change.amount,
         pharmacistName = settings.pharmacist.name,
         footer = "ขอบคุณที่ใช้บริการ",
     )
