@@ -1,8 +1,8 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.SupplierApi
-import app.devper.pharm.data.remote.dto.SupplierInputDto
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.param.AddSupplierParam
 import app.devper.pharm.domain.param.UpdateSupplierParam
@@ -21,22 +21,4 @@ class SupplierRepositoryImpl(private val api: SupplierApi) : SupplierRepository 
     override suspend fun delete(id: String) {
         api.delete(id)
     }
-
-    private fun AddSupplierParam.toDto() = SupplierInputDto(
-        name = name.trim(),
-        contactName = contactName.trim(),
-        phone = phone.trim(),
-        address = address.trim(),
-        taxId = taxId.trim(),
-        notes = notes.trim(),
-    )
-
-    private fun UpdateSupplierParam.toDto() = SupplierInputDto(
-        name = name.trim(),
-        contactName = contactName.trim(),
-        phone = phone.trim(),
-        address = address.trim(),
-        taxId = taxId.trim(),
-        notes = notes.trim(),
-    )
 }

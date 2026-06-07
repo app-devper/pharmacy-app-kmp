@@ -1,8 +1,10 @@
 package app.devper.pharm.data.repository.internal
 
 import app.devper.pharm.data.remote.dto.StockAdjustmentDto
+import app.devper.pharm.data.remote.dto.StockAdjustmentInputDto
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
+import app.devper.pharm.domain.param.AddStockAdjustmentParam
 
 internal fun StockAdjustmentDto.toDomain(): StockAdjustment = StockAdjustment(
     id = id,
@@ -14,4 +16,10 @@ internal fun StockAdjustmentDto.toDomain(): StockAdjustment = StockAdjustment(
     reason = AdjustmentReason.fromWire(reason),
     note = note,
     at = createdAt,
+)
+
+internal fun AddStockAdjustmentParam.toDto(): StockAdjustmentInputDto = StockAdjustmentInputDto(
+    delta = delta,
+    reason = reason.wire,
+    note = note.trim(),
 )

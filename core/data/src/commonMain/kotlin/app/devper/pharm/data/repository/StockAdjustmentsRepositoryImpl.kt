@@ -1,8 +1,8 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.StockAdjustmentApi
-import app.devper.pharm.data.remote.dto.StockAdjustmentInputDto
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.StockAdjustment
 import app.devper.pharm.domain.param.AddStockAdjustmentParam
@@ -21,10 +21,4 @@ class StockAdjustmentsRepositoryImpl(
         api.add(param.drugId, param.toDto())
         stockChangeBus.emit()
     }
-
-    private fun AddStockAdjustmentParam.toDto() = StockAdjustmentInputDto(
-        delta = delta,
-        reason = reason.wire,
-        note = note.trim(),
-    )
 }
