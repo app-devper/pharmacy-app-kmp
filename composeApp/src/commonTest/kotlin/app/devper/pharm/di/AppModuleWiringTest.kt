@@ -43,6 +43,7 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import com.russhwolf.settings.Settings
@@ -84,8 +85,16 @@ private class MemorySettings : Settings {
     override fun getBooleanOrNull(key: String): Boolean? = store[key] as? Boolean
 }
 
+private class InMemorySecureStorage : SecureStorage {
+    private val store = mutableMapOf<String, String>()
+    override fun put(key: String, value: String) { store[key] = value }
+    override fun get(key: String): String? = store[key]
+    override fun remove(key: String) { store.remove(key) }
+}
+
 private val testPlatformModule = module {
     single<Settings> { MemorySettings() }
+    single<SecureStorage> { InMemorySecureStorage() }
     single {
         HttpClient(MockEngine { respond(content = "{}", status = HttpStatusCode.OK) })
     }
