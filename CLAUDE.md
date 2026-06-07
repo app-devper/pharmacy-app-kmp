@@ -42,7 +42,7 @@ removed once the app shell moved to `:composeApp` — see Navigation below.)
 
 :core:domain                             pure domain — commonMain + commonTest only
   ├─ model/ param/ repository/ usecase/
-  ├─ parser/ util/ pricing/ event/ observer/
+  ├─ extension/ event/ observer/
   ├─ di/DomainModule.kt                  (Koin module — 76+ bindings via 10 sub-modules)
   deps: :core:common (+ kotlinx + koin-core)
   rule: ไม่มี androidMain / iosMain / jvmMain / wasmJsMain folder
