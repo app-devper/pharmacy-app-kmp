@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.devper.pharm.common.AppInfo
+import app.devper.pharm.common.AppVersion
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -125,7 +125,7 @@ fun LoginScreen(
                 }
             }
             Text(
-                text = "v${AppInfo.VERSION_NAME} · เชื่อมต่อกับ Um-Api",
+                text = "v${AppVersion.name} · เชื่อมต่อกับ Um-Api",
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
                 modifier = Modifier
                     .fillMaxWidth()
