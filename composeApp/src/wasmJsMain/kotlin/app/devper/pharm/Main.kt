@@ -25,8 +25,11 @@ import org.koin.dsl.module
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
+    val settings = StorageSettings()
+    applyPersistedLocale(settings.getStringOrNull("ui.locale"))
+
     val webPlatformModule = module {
-        single<Settings> { StorageSettings() }
+        single<Settings> { settings }
         single<SecureStorage> { WebSecureStorage() }
         single { buildHttpClient(Js, get<TokenStorage>()) }
 
@@ -42,3 +45,26 @@ fun main() {
         App()
     })
 }
+
+private fun applyPersistedLocale(wire: String?) {
+    val tag = when (wire?.lowercase()) {
+        "th" -> "th"
+        "en" -> "en"
+        else -> null
+    } ?: return
+    overrideNavigatorLanguage(tag)
+}
+
+private fun overrideNavigatorLanguage(tag: String): Unit = js(
+    """
+    {
+        try {
+            Object.defineProperty(window.navigator, 'language', { value: tag, configurable: true });
+            Object.defineProperty(window.navigator, 'languages', { value: [tag], configurable: true });
+            document.documentElement.lang = tag;
+        } catch (e) {
+            console.warn('Locale override failed; browser will use system language.', e);
+        }
+    }
+    """,
+)
