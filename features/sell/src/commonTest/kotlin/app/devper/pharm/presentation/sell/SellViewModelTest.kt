@@ -55,7 +55,7 @@ class SellViewModelTest {
         regNo = null,
     )
 
-    private fun line(drug: Drug = drug(), qty: Int = 1, discount: Double = 0.0) =
+    private fun line(drug: Drug = drug(), qty: Int = 1, discount: Money = Money.Zero) =
         CartLine(drug = drug, qty = qty, discount = discount)
 
     private fun customer(id: String = "c1", name: String = "John") =

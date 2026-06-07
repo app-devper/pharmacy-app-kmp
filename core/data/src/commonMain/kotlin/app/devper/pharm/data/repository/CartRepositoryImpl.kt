@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.data.storage.ParkedCartStorage
 import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
@@ -84,7 +85,7 @@ class CartRepositoryImpl(
             val newItems = if (idx < 0) current.items
             else {
                 val existing = current.items[idx]
-                val capped = param.discount.coerceIn(0.0, existing.basePrice)
+                val capped = Money(param.discount.coerceIn(0.0, existing.basePrice.amount))
                 current.items.toMutableList().apply {
                     this[idx] = existing.copy(discount = capped)
                 }

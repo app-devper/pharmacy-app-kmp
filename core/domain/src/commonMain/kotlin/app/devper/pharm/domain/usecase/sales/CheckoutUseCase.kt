@@ -2,6 +2,7 @@ package app.devper.pharm.domain.usecase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.ValidationException
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
@@ -44,7 +45,7 @@ class CheckoutUseCase(
         val customer = snapshot.customer
         val tier = snapshot.activeTier
         val cartDiscount = snapshot.cartDiscount
-        val subtotal = lines.sumOf { it.lineTotal }
+        val subtotal = lines.sumOf { it.lineTotal.amount }
         val discountAmount = cartDiscount.apply(subtotal)
 
         val oversoldDrugIds = if (param.allowOversell) {
@@ -56,9 +57,9 @@ class CheckoutUseCase(
                 CheckoutLineParam(
                     drugId = line.drug.id,
                     qty = line.qty,
-                    unitPrice = (line.basePrice - line.discount).coerceAtLeast(0.0),
-                    originalUnitPrice = line.basePrice,
-                    itemDiscount = line.discount,
+                    unitPrice = (line.basePrice - line.discount).coerceAtLeast(Money.Zero).amount,
+                    originalUnitPrice = line.basePrice.amount,
+                    itemDiscount = line.discount.amount,
                     priceTier = tier.takeIf { it.isNotBlank() } ?: "",
                     allowOversell = line.drug.id in oversoldDrugIds,
                     unit = line.selectedUnit?.name.orEmpty(),

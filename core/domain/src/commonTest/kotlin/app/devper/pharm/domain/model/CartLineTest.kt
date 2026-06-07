@@ -29,11 +29,11 @@ class CartLineTest {
         val line = CartLine(drug = drug(sellPrice = Money(10.0)), qty = 20, selectedUnit = box)
 
         assertEquals(2, line.displayQty)
-        assertEquals(10.0, line.basePrice)
-        assertEquals(100.0, line.unitPrice)
-        assertEquals(200.0, line.unitPrice * line.displayQty)
+        assertEquals(Money(10.0), line.basePrice)
+        assertEquals(Money(100.0), line.unitPrice)
+        assertEquals(Money(200.0), line.unitPrice * line.displayQty)
         assertEquals(line.basePrice * line.qty, line.unitPrice * line.displayQty)
-        assertEquals(200.0, line.lineTotal)
+        assertEquals(Money(200.0), line.lineTotal)
     }
 
     @Test
@@ -41,7 +41,7 @@ class CartLineTest {
         val line = CartLine(drug = drug(sellPrice = Money(5.0)), qty = 3)
 
         assertEquals(3, line.displayQty)
-        assertEquals(15.0, line.unitPrice * line.displayQty)
-        assertEquals(15.0, line.lineTotal)
+        assertEquals(Money(15.0), line.unitPrice * line.displayQty)
+        assertEquals(Money(15.0), line.lineTotal)
     }
 }

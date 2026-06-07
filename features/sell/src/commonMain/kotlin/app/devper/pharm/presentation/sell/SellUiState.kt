@@ -25,10 +25,10 @@ data class SellUiState(
     override val error: String? = null,
 ) : BaseUiState {
 
-    val subtotal: Double get() = cart.sumOf { it.lineTotal }
+    val subtotal: Double get() = cart.sumOf { it.lineTotal.amount }
     val cartDiscountAmount: Double get() = cartDiscount.apply(subtotal)
     val total: Double get() = (subtotal - cartDiscountAmount).coerceAtLeast(0.0)
-    val grossSubtotal: Double get() = cart.sumOf { it.unitPrice * it.qty }
+    val grossSubtotal: Double get() = cart.sumOf { it.unitPrice.amount * it.qty }
     val itemDiscountTotal: Double get() = grossSubtotal - subtotal
     val receivedNum: Double get() = received.toDoubleOrNull() ?: 0.0
     val change: Double get() = (receivedNum - total).coerceAtLeast(0.0)

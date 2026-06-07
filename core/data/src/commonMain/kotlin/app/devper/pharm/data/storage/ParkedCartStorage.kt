@@ -103,7 +103,7 @@ private fun CartLine.toDto() = ParkedCartLineDto(
     drug = drug.toDto(),
     qty = qty,
     tier = tier,
-    discount = discount,
+    discount = discount.amount,
     selectedUnit = selectedUnit?.toDto(),
 )
 
@@ -111,7 +111,7 @@ private fun ParkedCartLineDto.toDomain() = CartLine(
     drug = drug.toDomain(),
     qty = qty,
     tier = tier,
-    discount = discount,
+    discount = Money(discount),
     selectedUnit = selectedUnit?.toDomain(),
 )
 
