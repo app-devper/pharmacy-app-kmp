@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.param
 
-data class AddCustomerParam(
+data class CustomerInput(
     val name: String,
     val phone: String = "",
     val allergyNote: String = "",
@@ -9,8 +9,5 @@ data class AddCustomerParam(
 
 data class UpdateCustomerParam(
     val id: String,
-    val name: String,
-    val phone: String = "",
-    val allergyNote: String = "",
-    val priceTier: String = "",
+    val input: CustomerInput,
 )

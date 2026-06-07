@@ -65,9 +65,9 @@ class CustomerPickerViewModelTest {
                 listCalls++
                 return seed
             }
-            override suspend fun add(param: app.devper.pharm.domain.param.AddCustomerParam) =
+            override suspend fun add(input: app.devper.pharm.domain.param.CustomerInput) =
                 throw NotImplementedError("not under test")
-            override suspend fun update(param: app.devper.pharm.domain.param.UpdateCustomerParam) =
+            override suspend fun update(id: String, input: app.devper.pharm.domain.param.CustomerInput) =
                 throw NotImplementedError("not under test")
             override suspend fun getCustomerSales(customerId: String) =
                 throw NotImplementedError("not under test")
@@ -118,9 +118,9 @@ class CustomerPickerViewModelTest {
     fun open_failure_routes_to_error_and_clears_loading() = runVmTest { dispatchers ->
         val throwingRepo = object : app.devper.pharm.domain.repository.CustomerRepository {
             override suspend fun list(): List<Customer> = throw RuntimeException("offline")
-            override suspend fun add(param: app.devper.pharm.domain.param.AddCustomerParam) =
+            override suspend fun add(input: app.devper.pharm.domain.param.CustomerInput) =
                 throw NotImplementedError()
-            override suspend fun update(param: app.devper.pharm.domain.param.UpdateCustomerParam) =
+            override suspend fun update(id: String, input: app.devper.pharm.domain.param.CustomerInput) =
                 throw NotImplementedError()
             override suspend fun getCustomerSales(customerId: String) =
                 throw NotImplementedError()

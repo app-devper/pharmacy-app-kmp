@@ -1,8 +1,7 @@
 package app.devper.pharm.presentation.suppliers
 
 import app.devper.pharm.common.error.ErrorMessages
-
-import app.devper.pharm.domain.param.AddSupplierParam
+import app.devper.pharm.domain.param.SupplierInput
 import app.devper.pharm.domain.param.UpdateSupplierParam
 import app.devper.pharm.domain.usecase.AddSupplierUseCase
 import app.devper.pharm.domain.usecase.GetSuppliersUseCase
@@ -28,10 +27,10 @@ class SupplierFormViewModel(
     fun onNotes(v: String) = patch { copy(notes = v) }
 
     override suspend fun persist(): Result<Unit> {
-        val f = current.form
+        val input = current.form.toInput()
         return when (val mode = current.mode) {
-            is SupplierFormMode.Add  -> addSupplier(f.toAddParam()).map { Unit }
-            is SupplierFormMode.Edit -> updateSupplier(f.toUpdateParam(mode.supplierId))
+            is SupplierFormMode.Add  -> addSupplier(input).map { Unit }
+            is SupplierFormMode.Edit -> updateSupplier(UpdateSupplierParam(id = mode.supplierId, input = input))
         }
     }
 
@@ -67,17 +66,7 @@ class SupplierFormViewModel(
         setState { copy(form = form.transform()) }
     }
 
-    private fun SupplierFormFields.toAddParam() = AddSupplierParam(
-        name = name.trim(),
-        contactName = contactName.trim(),
-        phone = phone.trim(),
-        address = address.trim(),
-        taxId = taxId.trim(),
-        notes = notes.trim(),
-    )
-
-    private fun SupplierFormFields.toUpdateParam(id: String) = UpdateSupplierParam(
-        id = id,
+    private fun SupplierFormFields.toInput() = SupplierInput(
         name = name.trim(),
         contactName = contactName.trim(),
         phone = phone.trim(),

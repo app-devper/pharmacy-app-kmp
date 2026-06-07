@@ -1,8 +1,7 @@
 package app.devper.pharm.domain.repository
 
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.domain.param.AddSupplierParam
-import app.devper.pharm.domain.param.UpdateSupplierParam
+import app.devper.pharm.domain.param.SupplierInput
 
 class FakeSupplierRepository(
     private val seed: List<Supplier> = emptyList(),
@@ -11,9 +10,11 @@ class FakeSupplierRepository(
     private val updateThrowsOn: String? = null,
 ) : SupplierRepository {
 
-    var lastAdd: AddSupplierParam? = null
+    var lastAdd: SupplierInput? = null
         private set
-    var lastUpdate: UpdateSupplierParam? = null
+    var lastUpdateId: String? = null
+        private set
+    var lastUpdate: SupplierInput? = null
         private set
     var lastDelete: String? = null
         private set
@@ -26,25 +27,26 @@ class FakeSupplierRepository(
         return seed
     }
 
-    override suspend fun add(param: AddSupplierParam): Supplier {
-        if (addThrowsOn != null && param.name == addThrowsOn) {
+    override suspend fun add(input: SupplierInput): Supplier {
+        if (addThrowsOn != null && input.name == addThrowsOn) {
             throw RuntimeException("backend rejected: $addThrowsOn")
         }
-        lastAdd = param
+        lastAdd = input
         return Supplier(
-            id = "new-${param.name}",
-            name = param.name,
-            contactName = param.contactName,
-            phone = param.phone,
-            address = param.address,
-            taxId = param.taxId,
-            notes = param.notes,
+            id = "new-${input.name}",
+            name = input.name,
+            contactName = input.contactName,
+            phone = input.phone,
+            address = input.address,
+            taxId = input.taxId,
+            notes = input.notes,
         )
     }
 
-    override suspend fun update(param: UpdateSupplierParam) {
-        if (param.id == updateThrowsOn) throw RuntimeException("update failed: ${param.id}")
-        lastUpdate = param
+    override suspend fun update(id: String, input: SupplierInput) {
+        if (id == updateThrowsOn) throw RuntimeException("update failed: $id")
+        lastUpdateId = id
+        lastUpdate = input
     }
 
     override suspend fun delete(id: String) {

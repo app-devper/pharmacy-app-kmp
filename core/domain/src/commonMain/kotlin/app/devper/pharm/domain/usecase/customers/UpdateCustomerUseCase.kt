@@ -6,5 +6,5 @@ import app.devper.pharm.domain.repository.CustomerRepository
 
 class UpdateCustomerUseCase(private val customers: CustomerRepository, dispatchers: AppDispatchers) :
     BaseUseCase<UpdateCustomerParam, Unit>(dispatchers) {
-    override suspend fun execute(param: UpdateCustomerParam) = customers.update(param)
+    override suspend fun execute(param: UpdateCustomerParam) = customers.update(param.id, param.input)
 }
