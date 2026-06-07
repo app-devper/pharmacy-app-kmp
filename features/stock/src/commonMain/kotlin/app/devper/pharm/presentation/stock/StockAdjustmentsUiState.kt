@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class AdjustmentDraft(
     val sign: AdjustmentSign = AdjustmentSign.Decrease,
@@ -22,7 +22,10 @@ data class StockAdjustmentsUiState(
     val draft: AdjustmentDraft = AdjustmentDraft(),
     val saving: Boolean = false,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<StockAdjustmentsUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
 
     val canSubmitDraft: Boolean
         get() = !saving && (draft.absDelta.toIntOrNull() ?: 0) > 0

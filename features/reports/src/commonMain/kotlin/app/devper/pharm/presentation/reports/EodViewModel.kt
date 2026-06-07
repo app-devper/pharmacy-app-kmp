@@ -8,7 +8,7 @@ import app.devper.pharm.domain.param.EodReportParam
 import app.devper.pharm.domain.usecase.CloseEodUseCase
 import app.devper.pharm.domain.usecase.GetEodReportUseCase
 import app.devper.pharm.domain.usecase.PrintReceiptUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 import app.devper.pharm.ui.print.buildEodReceiptTemplate
 import kotlinx.coroutines.flow.launchIn
@@ -19,7 +19,7 @@ class EodViewModel(
     private val getEodReport: GetEodReportUseCase,
     private val closeEod: CloseEodUseCase,
     private val printReceiptUseCase: PrintReceiptUseCase,
-) : BaseViewModel<EodUiState>(EodUiState()) {
+) : BaseLoadableViewModel<EodUiState>(EodUiState()) {
 
     private var lastSettings: Settings = Settings()
 
@@ -35,7 +35,6 @@ class EodViewModel(
     }
 
     fun applyDate() = reload()
-    fun dismissError() = setState { copy(error = null) }
 
     fun requestCloseDay() = setState { copy(confirmClose = true) }
     fun cancelCloseDay() = setState { copy(confirmClose = false) }
@@ -84,11 +83,10 @@ class EodViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
-            onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดรายงานไม่สำเร็จ") } },
+            fallback = "โหลดรายงานไม่สำเร็จ",
+            onSuccess = { rep -> copy(report = rep) },
         )
     }
 }

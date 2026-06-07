@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.model.Ky9Entry
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class Ky9Draft(
     val date: String = "",
@@ -21,4 +21,8 @@ data class Ky9UiState(
     val exporting: Boolean = false,
     val message: String? = null,
     override val error: String? = null,
-) : BaseUiState
+) : LoadableUiState<Ky9UiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+}

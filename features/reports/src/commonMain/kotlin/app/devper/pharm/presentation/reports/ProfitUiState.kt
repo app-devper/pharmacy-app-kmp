@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.reports
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 
 enum class ProfitSort(val label: String) {
@@ -21,7 +21,11 @@ data class ProfitUiState(
     val exporting: Boolean = false,
     val message: String? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<ProfitUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+
     val sortedRows: List<DrugProfit>
         get() {
             val rows = report?.byDrug.orEmpty()

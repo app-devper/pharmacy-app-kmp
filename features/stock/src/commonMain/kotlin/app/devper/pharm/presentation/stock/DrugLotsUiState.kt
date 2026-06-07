@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.domain.model.DrugLot
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class LotDraft(
     val lotNumber: String = "",
@@ -21,7 +21,11 @@ data class DrugLotsUiState(
     val saving: Boolean = false,
     val pendingDelete: DrugLot? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<DrugLotsUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+
     val canSubmitDraft: Boolean
         get() = !saving &&
             draft.lotNumber.isNotBlank() &&

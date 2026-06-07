@@ -1,17 +1,18 @@
 package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.common.error.ErrorMessages
-
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.param.AddStockAdjustmentParam
 import app.devper.pharm.domain.usecase.AddStockAdjustmentUseCase
 import app.devper.pharm.domain.usecase.GetStockAdjustmentsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
+
+private const val LOAD_HISTORY_FAILED = "โหลดประวัติไม่สำเร็จ"
 
 class StockAdjustmentsViewModel(
     private val getAdjustments: GetStockAdjustmentsUseCase,
     private val addAdjustment: AddStockAdjustmentUseCase,
-) : BaseViewModel<StockAdjustmentsUiState>(StockAdjustmentsUiState()) {
+) : BaseLoadableViewModel<StockAdjustmentsUiState>(StockAdjustmentsUiState()) {
 
     fun open(drugId: String, drugName: String) {
         setState {
@@ -31,13 +32,12 @@ class StockAdjustmentsViewModel(
     }
 
     fun reload() {
+        if (current.drugId.isBlank()) return
         val id = current.drugId
-        if (id.isBlank()) return
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = { getAdjustments(id) },
-            onSuccess = { list -> setState { copy(loading = false, history = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดประวัติไม่สำเร็จ") } },
+            fallback = LOAD_HISTORY_FAILED,
+            onSuccess = { list -> copy(history = list) },
         )
     }
 
@@ -74,8 +74,6 @@ class StockAdjustmentsViewModel(
             onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
         )
     }
-
-    fun dismissError() = setState { copy(error = null) }
 
     private fun patch(transform: AdjustmentDraft.() -> AdjustmentDraft) {
         setState { copy(draft = draft.transform()) }

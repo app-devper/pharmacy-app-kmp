@@ -9,15 +9,17 @@ import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
+
+private const val LOAD_BILLS_FAILED = "โหลดรายการบิลไม่สำเร็จ"
 
 class SalesHistoryViewModel(
     private val getHistory: GetSaleHistoryUseCase,
     private val getItems: GetSaleItemsUseCase,
     private val submitReturn: SubmitSaleReturnUseCase,
     timeZoneProvider: TimeZoneProvider,
-) : BaseViewModel<SalesHistoryUiState>(
+) : BaseLoadableViewModel<SalesHistoryUiState>(
     SalesHistoryUiState(dateRange = DateRangeFilter(tz = timeZoneProvider.current)),
 ) {
 
@@ -34,8 +36,7 @@ class SalesHistoryViewModel(
 
     fun loadList() {
         val s = current
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = {
                 getHistory(
                     SaleHistoryFilterParam(
@@ -45,8 +46,8 @@ class SalesHistoryViewModel(
                     ),
                 )
             },
-            onSuccess = { list -> setState { copy(loading = false, sales = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดรายการบิลไม่สำเร็จ") } },
+            fallback = LOAD_BILLS_FAILED,
+            onSuccess = { list -> copy(sales = list) },
         )
     }
 
@@ -143,7 +144,5 @@ class SalesHistoryViewModel(
             onFailure = { e -> setState { copy(submittingReturn = false, error = e.message ?: "บันทึกการคืนสินค้าไม่สำเร็จ") } },
         )
     }
-
-    fun dismissError() = setState { copy(error = null) }
 }
 

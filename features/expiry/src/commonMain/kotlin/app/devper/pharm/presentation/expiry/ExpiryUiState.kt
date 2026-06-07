@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.expiry
 
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 enum class ExpiryWindow(val label: String, val daysAhead: Int?, val expiredOnly: Boolean) {
     Within30("30 วัน", 30, false),
@@ -21,7 +21,11 @@ data class ExpiryUiState(
     val writingOff: Boolean = false,
     val writeoffResult: WriteoffResult? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<ExpiryUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+
     val canWriteoff: Boolean get() = !writingOff && selected.isNotEmpty()
     val totalSelected: Int get() = selected.size
     val totalRemaining: Int get() = lots.sumOf { it.remaining }

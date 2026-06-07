@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.labels
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class LabelPrintUiState(
     val drugs: List<Drug> = emptyList(),
@@ -14,7 +14,10 @@ data class LabelPrintUiState(
     val printing: Boolean = false,
     val message: String? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<LabelPrintUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
 
     val filteredDrugs: List<Drug> = run {
         val q = query.trim().lowercase()

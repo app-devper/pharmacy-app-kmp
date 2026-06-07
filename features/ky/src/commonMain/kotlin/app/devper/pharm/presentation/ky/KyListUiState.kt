@@ -5,7 +5,7 @@ import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.domain.model.Ky9Entry
 import app.devper.pharm.domain.model.KyFormType
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 import kotlinx.datetime.LocalDate
 
 sealed interface KyRow {
@@ -46,4 +46,8 @@ data class KyListUiState(
     val exporting: Boolean = false,
     val message: String? = null,
     override val error: String? = null,
-) : BaseUiState
+) : LoadableUiState<KyListUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+}
