@@ -22,6 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -33,6 +34,7 @@ fun SuppliersListContent(
     callbacks: SuppliersListCallbacks = SuppliersListCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
@@ -51,7 +53,7 @@ fun SuppliersListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            PharmListResultLine(total = state.suppliers.size, noun = "ราย", visible = visible.size, searching = searching)
+            PharmListResultLine(total = state.suppliers.size, noun = s.customersCountNoun, visible = visible.size, searching = searching)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {
@@ -84,21 +86,22 @@ private fun DeleteSupplierModal(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = "ลบซัพพลายเออร์?",
+        title = s.suppliersDeleteConfirmTitle,
         subtitle = supplier.name,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Outline,
                 enabled = !deleting,
             )
             PharmButton(
-                label = "ลบ",
+                label = s.commonDelete,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Danger,
                 enabled = !deleting,
@@ -106,7 +109,7 @@ private fun DeleteSupplierModal(
         },
     ) {
         Text(
-            text = "ต้องการลบ \"${supplier.name}\" ออกจากระบบหรือไม่ — ใบรับสินค้าเดิมจะยังคงเก็บชื่อนี้ไว้",
+            text = s.suppliersDeleteConfirmMessage(supplier.name),
             style = PharmText.body,
         )
     }

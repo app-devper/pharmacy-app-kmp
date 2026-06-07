@@ -7,6 +7,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun SuppliersListToolbar(
@@ -14,16 +15,17 @@ internal fun SuppliersListToolbar(
     callbacks: SuppliersListCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     PharmListToolbar(
-        title = "ซัพพลายเออร์",
-        subtitle = "จัดการข้อมูลผู้ขายและบริษัทคู่ค้า",
+        title = s.navSuppliers,
+        subtitle = s.suppliersListSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
-        searchPlaceholder = "ค้นหาชื่อ / ผู้ติดต่อ / เบอร์โทร…",
+        searchPlaceholder = s.suppliersSearchPlaceholder,
         modifier = modifier,
         actions = {
             PharmButton(
-                label = "เพิ่มซัพพลายเออร์",
+                label = s.suppliersAddCta,
                 onClick = callbacks.onOpenAdd,
                 size = PharmButtonSize.Sm,
                 leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },

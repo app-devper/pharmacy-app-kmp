@@ -18,6 +18,7 @@ import app.devper.pharm.presentation.suppliers.SupplierFormFields
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -27,7 +28,8 @@ fun SupplierFormInfoSection(
     callbacks: SupplierFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    PharmFormCard(modifier = modifier, title = "ข้อมูลผู้จัดจำหน่าย") {
+    val s = pharmStrings
+    PharmFormCard(modifier = modifier, title = s.suppliersFormInfoSection) {
         SupplierInfoGrid(form = form, callbacks = callbacks)
         AddressField(value = form.address, onChange = callbacks.onAddress)
         NotesField(value = form.notes, onChange = callbacks.onNotes)
@@ -76,29 +78,32 @@ private fun GridRow(
 
 @Composable
 private fun NameField(form: SupplierFormFields, callbacks: SupplierFormCallbacks) {
-    FormField(label = "ชื่อบริษัท / ผู้จัดจำหน่าย", required = true) {
+    val s = pharmStrings
+    FormField(label = s.suppliersFormCompanyName, required = true) {
         PharmTextField(
             value = form.name,
             onValueChange = callbacks.onName,
-            placeholder = "เช่น บริษัท เอ บี ซี ฟาร์มา จำกัด",
+            placeholder = s.suppliersFormCompanyPlaceholder,
         )
     }
 }
 
 @Composable
 private fun ContactNameField(form: SupplierFormFields, callbacks: SupplierFormCallbacks) {
-    FormField(label = "ผู้ติดต่อ") {
+    val s = pharmStrings
+    FormField(label = s.suppliersHeaderContact) {
         PharmTextField(
             value = form.contactName,
             onValueChange = callbacks.onContactName,
-            placeholder = "ชื่อพนักงานขาย",
+            placeholder = s.suppliersFormContactName,
         )
     }
 }
 
 @Composable
 private fun PhoneField(form: SupplierFormFields, callbacks: SupplierFormCallbacks) {
-    FormField(label = "เบอร์โทร") {
+    val s = pharmStrings
+    FormField(label = s.commonPhone) {
         PharmTextField(
             value = form.phone,
             onValueChange = callbacks.onPhone,
@@ -110,7 +115,8 @@ private fun PhoneField(form: SupplierFormFields, callbacks: SupplierFormCallback
 
 @Composable
 private fun TaxIdField(form: SupplierFormFields, callbacks: SupplierFormCallbacks) {
-    FormField(label = "เลขประจำตัวผู้เสียภาษี") {
+    val s = pharmStrings
+    FormField(label = s.suppliersFormTaxId) {
         PharmTextField(
             value = form.taxId,
             onValueChange = callbacks.onTaxId,
@@ -122,12 +128,13 @@ private fun TaxIdField(form: SupplierFormFields, callbacks: SupplierFormCallback
 
 @Composable
 private fun AddressField(value: String, onChange: (String) -> Unit) {
-    FormField(label = "ที่อยู่") {
+    val s = pharmStrings
+    FormField(label = s.suppliersFormAddress) {
         Box(modifier = Modifier.heightIn(min = 56.dp, max = 120.dp)) {
             PharmTextField(
                 value = value,
                 onValueChange = onChange,
-                placeholder = "บ้านเลขที่ / ถนน / ตำบล / อำเภอ / จังหวัด",
+                placeholder = s.suppliersFormAddressPlaceholder,
                 singleLine = false,
             )
         }
@@ -136,12 +143,13 @@ private fun AddressField(value: String, onChange: (String) -> Unit) {
 
 @Composable
 private fun NotesField(value: String, onChange: (String) -> Unit) {
-    FormField(label = "หมายเหตุ") {
+    val s = pharmStrings
+    FormField(label = s.commonNote) {
         Box(modifier = Modifier.heightIn(min = 56.dp, max = 120.dp)) {
             PharmTextField(
                 value = value,
                 onValueChange = onChange,
-                placeholder = "เงื่อนไขการสั่งซื้อ / ส่วนลด / รายละเอียดเพิ่มเติม",
+                placeholder = s.suppliersFormNotesPlaceholder,
                 singleLine = false,
             )
         }
