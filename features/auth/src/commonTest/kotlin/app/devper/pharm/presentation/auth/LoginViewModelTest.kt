@@ -76,6 +76,17 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun submit_failure_clears_password_to_prevent_memory_leak() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeAuthRepository(loginThrowsOn = "baduser"))
+        vm.onUsernameChange("baduser")
+        vm.onPasswordChange("supersecret123")
+        vm.submit()
+        advanceUntilIdle()
+        assertEquals("", vm.state.value.password)
+        assertEquals("baduser", vm.state.value.username)
+    }
+
+    @Test
     fun onUsernameChange_clears_error_side_effect() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers)
         vm.submit()
