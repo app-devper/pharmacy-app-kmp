@@ -1,14 +1,19 @@
 package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.userMessageOr
 import app.devper.pharm.domain.extension.parseBulkImportJson
 import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
+
+private const val PICK_FILE_FAILED = "เลือกไฟล์ไม่สำเร็จ"
+private const val IMPORT_FAILED = "นำเข้าไม่สำเร็จ"
+private const val NO_ROWS = "ไม่มีรายการให้นำเข้า"
 
 class BulkImportViewModel(
     private val bulkImportDrugs: BulkImportDrugsUseCase,
     private val filePicker: FilePicker,
-) : BaseViewModel<BulkImportUiState>(BulkImportUiState()) {
+) : BaseLoadableViewModel<BulkImportUiState>(BulkImportUiState()) {
 
     fun onTextChange(value: String) = setState {
         copy(
@@ -30,7 +35,7 @@ class BulkImportViewModel(
                 }
             },
             onFailure = { e ->
-                setState { copy(error = e.message ?: "เลือกไฟล์ไม่สำเร็จ") }
+                setState { copy(error = e.userMessageOr(PICK_FILE_FAILED)) }
             },
         )
     }
@@ -54,23 +59,16 @@ class BulkImportViewModel(
             return
         }
         if (parsed.isEmpty()) {
-            setState { copy(parsed = emptyList(), parseError = "ไม่มีรายการให้นำเข้า") }
+            setState { copy(parsed = emptyList(), parseError = NO_ROWS) }
             return
         }
-        setState {
-            copy(parsed = parsed, previewCount = parsed.size, submitting = true, error = null, result = null)
-        }
-        launchResult(
+        setState { copy(parsed = parsed, previewCount = parsed.size, result = null) }
+        launchLoad(
             block = { bulkImportDrugs(parsed) },
-            onSuccess = { res ->
-                setState { copy(submitting = false, result = res) }
-            },
-            onFailure = { e ->
-                setState { copy(submitting = false, error = e.message ?: "นำเข้าไม่สำเร็จ") }
-            },
+            fallback = IMPORT_FAILED,
+            onSuccess = { res -> copy(result = res) },
         )
     }
 
-    fun dismissError() = setState { copy(error = null) }
     fun reset() = setState { BulkImportUiState() }
 }
