@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStickyTotalRow
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -29,12 +30,13 @@ internal fun KyTable(
     formType: KyFormType,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     val display = remember(rows) { rows.mapIndexed { index, row -> kyRowDisplay(row, index + 1) } }
     val totalQty = remember(rows) { display.sumOf { it.qty } }
     val totalValue = remember(rows) { display.sumOf { it.totalValue ?: 0.0 } }
-    val partyHeader = if (formType == KyFormType.Ky9) "ผู้ขาย/บริษัท" else "ผู้ซื้อ/ผู้ป่วย"
-    val refHeader = if (formType == KyFormType.Ky9) "เลขใบส่งของ" else "อ้างอิง"
-    val columns = kyColumns(partyHeader = partyHeader, refHeader = refHeader)
+    val partyHeader = if (formType == KyFormType.Ky9) s.kySupplierBusinessNo else s.kyBuyerPatient
+    val refHeader = if (formType == KyFormType.Ky9) s.kyDeliveryNoteNo else s.kyHeaderRef
+    val columns = kyColumns(s = s, partyHeader = partyHeader, refHeader = refHeader)
 
     PharmTable(
         rows = display,
@@ -45,20 +47,21 @@ internal fun KyTable(
         emptyContent = {
             PharmEmptyState(
                 icon = PharmIcons.KyForms,
-                title = "ไม่มีรายการในเดือนนี้",
+                title = s.kyEmptyMonth,
             )
         },
         bottomRow = {
             PharmStickyTotalRow(
-                label = "รวมทั้งหมด",
+                label = s.kyTotalAll,
                 totalText = fmtBaht(totalValue),
-                subtotalText = "$totalQty หน่วย",
+                subtotalText = "$totalQty ${s.commonUnit}",
             )
         },
     )
 }
 
 private fun kyColumns(
+    s: app.devper.pharm.ui.i18n.PharmStrings,
     partyHeader: String,
     refHeader: String,
 ): List<PharmTableColumn<KyRowDisplay>> = listOf(
@@ -68,39 +71,39 @@ private fun kyColumns(
         cell = { row -> IndexCell(row.index) },
     ),
     PharmTableColumn(
-        header = "วันที่",
+        header = s.kyHeaderDate,
         weight = 1.0f,
         cell = { row -> DateCell(row.date) },
     ),
     PharmTableColumn(
-        header = "ชื่อยา",
+        header = s.kyHeaderItem,
         weight = 2.2f,
         cell = { row -> DrugNameCell(row.drugName) },
     ),
     PharmTableColumn(
-        header = "ทะเบียนยา",
+        header = s.kyDrugRegistration,
         weight = 1.2f,
         cell = { row -> MonoCell(row.regNo) },
     ),
     PharmTableColumn(
-        header = "หน่วย",
+        header = s.commonUnit,
         weight = 0.7f,
         cell = { row -> MetaCell(row.unit) },
     ),
     PharmTableColumn(
-        header = "จำนวน",
+        header = s.kyHeaderQty,
         weight = 0.7f,
         align = PharmColumnAlign.End,
         cell = { row -> NumCell(row.qty.toString()) },
     ),
     PharmTableColumn(
-        header = "ราคา/หน่วย",
+        header = s.kyHeaderPricePerUnit,
         weight = 1.0f,
         align = PharmColumnAlign.End,
         cell = { row -> NumCell(row.pricePerUnit?.let { fmtBaht(it) } ?: "—") },
     ),
     PharmTableColumn(
-        header = "มูลค่า",
+        header = s.kyValueAmount,
         weight = 1.1f,
         align = PharmColumnAlign.End,
         cell = { row -> TotalCell(row.totalValue) },
@@ -266,8 +269,8 @@ internal fun kyRowDisplay(row: KyRow, index: Int): KyRowDisplay = when (row) {
         totalValue = null,
         party = row.entry.buyerName,
         reference = listOfNotNull(
-            row.entry.rxNo.takeIf { it.isNotBlank() }?.let { "ใบสั่ง $it" },
-            row.entry.doctor.takeIf { it.isNotBlank() }?.let { "นพ.$it" },
+            row.entry.rxNo.takeIf { it.isNotBlank() }?.let { "Rx $it" },
+            row.entry.doctor.takeIf { it.isNotBlank() }?.let { it },
         ).joinToString(" · "),
     )
 
@@ -297,7 +300,7 @@ internal fun kyRowDisplay(row: KyRow, index: Int): KyRowDisplay = when (row) {
         totalValue = row.entry.totalValue,
         party = row.entry.patientName,
         reference = listOfNotNull(
-            row.entry.rxNo.takeIf { it.isNotBlank() }?.let { "ใบสั่ง $it" },
+            row.entry.rxNo.takeIf { it.isNotBlank() }?.let { "Rx $it" },
             row.entry.hospital.takeIf { it.isNotBlank() },
         ).joinToString(" · "),
     )

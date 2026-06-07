@@ -20,6 +20,7 @@ import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 data class Ky9AddCallbacks(
@@ -44,7 +45,7 @@ fun Ky9AddContent(
     val t = pharmTokens
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = "เพิ่มรายการ ขย.9",
+            title = pharmStrings.kyAddCtaWithNumber(9),
             onBack = callbacks.onBack,
             actions = {
                 PharmSaveAction(
@@ -62,38 +63,38 @@ fun Ky9AddContent(
                 .padding(horizontal = 24.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            PharmFormCard(title = "ข้อมูลรายการ ขย.9") {
+            PharmFormCard(title = pharmStrings.kyFormInfoSection(9)) {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     KyTwoUp(
                         left = {
-                            FormField(label = "วันที่ (YYYY-MM-DD)", required = true) {
+                            FormField(label = pharmStrings.kyDateYmd, required = true) {
                                 PharmTextField(value = state.draft.date, onValueChange = callbacks.onDate)
                             }
                         },
                         right = {
-                            FormField(label = "เลขที่ใบกำกับภาษี") {
+                            FormField(label = pharmStrings.kyTaxInvoiceNo) {
                                 PharmTextField(value = state.draft.invoiceNo, onValueChange = callbacks.onInvoiceNo)
                             }
                         },
                     )
-                    FormField(label = "ชื่อยา", required = true) {
+                    FormField(label = pharmStrings.kyHeaderItem, required = true) {
                         PharmTextField(value = state.draft.drugName, onValueChange = callbacks.onDrugName)
                     }
                     KyTwoUp(
                         left = {
-                            FormField(label = "เลขทะเบียน") {
+                            FormField(label = pharmStrings.kyDrugRegistration) {
                                 PharmTextField(value = state.draft.regNo, onValueChange = callbacks.onRegNo)
                             }
                         },
                         right = {
-                            FormField(label = "หน่วย", required = true) {
+                            FormField(label = pharmStrings.commonUnit, required = true) {
                                 PharmTextField(value = state.draft.unit, onValueChange = callbacks.onUnit)
                             }
                         },
                     )
                     KyTwoUp(
                         left = {
-                            FormField(label = "จำนวน", required = true) {
+                            FormField(label = pharmStrings.commonQty, required = true) {
                                 PharmTextField(
                                     value = state.draft.qty,
                                     onValueChange = callbacks.onQty,
@@ -102,7 +103,7 @@ fun Ky9AddContent(
                             }
                         },
                         right = {
-                            FormField(label = "ราคาต่อหน่วย", required = true) {
+                            FormField(label = pharmStrings.kyHeaderPricePerUnit, required = true) {
                                 PharmTextField(
                                     value = state.draft.pricePerUnit,
                                     onValueChange = callbacks.onPricePerUnit,
@@ -111,7 +112,7 @@ fun Ky9AddContent(
                             }
                         },
                     )
-                    FormField(label = "ผู้ขาย") {
+                    FormField(label = pharmStrings.kySupplier) {
                         PharmTextField(value = state.draft.seller, onValueChange = callbacks.onSeller)
                     }
                 }

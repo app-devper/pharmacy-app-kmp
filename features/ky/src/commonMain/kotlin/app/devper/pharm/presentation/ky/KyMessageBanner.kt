@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -47,7 +48,7 @@ internal fun KyMessageBanner(message: String, onDismiss: () -> Unit) {
                 .padding(horizontal = 8.dp, vertical = 2.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Text("ปิด", style = PharmText.micro.copy(color = t.colors.successFg))
+            Text(pharmStrings.commonClose, style = PharmText.micro.copy(color = t.colors.successFg))
         }
     }
 }

@@ -21,6 +21,7 @@ import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -66,7 +67,7 @@ fun KyListContent(
             ) {
                 PharmListResultLine(
                     total = state.rows.size,
-                    noun = "รายการ",
+                    noun = pharmStrings.kyCountNoun,
                     trailing = {
                         KyValueStat(totalValue = state.rows.sumOf { row -> rowTotalValue(row) })
                     },
@@ -80,7 +81,7 @@ fun KyListContent(
                 }
             }
             Text(
-                text = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข",
+                text = pharmStrings.kyToolbarSubtitle,
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
         }
