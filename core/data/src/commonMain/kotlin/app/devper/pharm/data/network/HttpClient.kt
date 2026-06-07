@@ -37,7 +37,7 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
     engine: HttpClientEngineFactory<T>,
     tokenStorage: TokenStorage,
     json: Json = AppJson,
-    enableLogging: Boolean = true,
+    enableLogging: Boolean = false,
     installTimeout: Boolean = true,
 ): HttpClient = HttpClient(engine) {
     expectSuccess = false

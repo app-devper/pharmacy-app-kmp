@@ -30,3 +30,6 @@ replay_pid*.log
 xcuserdata/
 *.xcworkspace/xcuserdata/
 DerivedData/
+
+# Claude Code
+.claude/
