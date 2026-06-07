@@ -40,8 +40,8 @@ class DrugLotsViewModelTest {
         lotNumber = "L-$id",
         expiryDate = kotlinx.datetime.LocalDate.parse(expiry),
         importDate = kotlinx.datetime.LocalDate.parse("2026-01-01"),
-        quantity = qty,
-        remaining = qty,
+        quantity = Quantity(qty),
+        remaining = Quantity(qty),
     )
 
     @Test
@@ -142,9 +142,9 @@ class DrugLotsViewModelTest {
         assertEquals("d1", captured.drugId)
         assertEquals("L-001", captured.lotNumber)
         assertEquals(kotlinx.datetime.LocalDate.parse("2027-06-30"), captured.expiryDate)
-        assertEquals(200, captured.quantity)
-        assertEquals(12.50, captured.costPrice)
-        assertEquals(18.00, captured.sellPrice)
+        assertEquals(Quantity(200), captured.quantity)
+        assertEquals(Money(12.50), captured.costPrice)
+        assertEquals(Money(18.00), captured.sellPrice)
 
         val s = vm.state.value
         assertFalse(s.addFormOpen)

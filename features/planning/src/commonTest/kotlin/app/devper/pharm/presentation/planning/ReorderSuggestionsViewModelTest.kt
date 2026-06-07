@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.planning
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.usecase.GetReorderSuggestionsUseCase
@@ -15,8 +18,8 @@ class ReorderSuggestionsViewModelTest {
 
     private fun suggestion(id: String) = ReorderSuggestion(
         drugId = id, drugName = "Drug $id", unit = "เม็ด",
-        currentStock = 0, minStock = 50, qtySold = 100, avgDailySale = 3.3,
-        daysLeft = 0.0, suggestedQty = 100, costPrice = 1.0, sellPrice = 2.0,
+        currentStock = Quantity(0), minStock = Quantity(50), qtySold = Quantity(100), avgDailySale = 3.3,
+        daysLeft = 0.0, suggestedQty = Quantity(100), costPrice = Money(1.0), sellPrice = Money(2.0),
     )
 
     @Test

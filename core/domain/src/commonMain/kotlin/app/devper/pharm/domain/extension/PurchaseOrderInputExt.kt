@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.param.PurchaseOrderItemInput
 import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.domain.validation.Field
@@ -22,9 +24,9 @@ fun buildPurchaseOrderItemInput(
         drugName = drugName.trim(),
         lotNumber = parsedLotNumber,
         expiryDate = parsedExpiry,
-        qty = parsedQty,
-        costPrice = costPrice.toDoubleOrNull() ?: 0.0,
-        sellPrice = sellPrice.toDoubleOrNull(),
+        qty = Quantity(parsedQty),
+        costPrice = Money(costPrice.toDoubleOrNull() ?: 0.0),
+        sellPrice = sellPrice.toDoubleOrNull()?.let(::Money),
     )
 }
 

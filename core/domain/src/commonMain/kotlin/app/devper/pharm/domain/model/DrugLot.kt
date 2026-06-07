@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import kotlinx.datetime.LocalDate
 
 data class DrugLot(
@@ -9,8 +11,8 @@ data class DrugLot(
     val lotNumber: String,
     val expiryDate: LocalDate?,
     val importDate: LocalDate?,
-    val costPrice: Double? = null,
-    val sellPrice: Double? = null,
-    val quantity: Int,
-    val remaining: Int,
+    val costPrice: Money? = null,
+    val sellPrice: Money? = null,
+    val quantity: Quantity,
+    val remaining: Quantity,
 )

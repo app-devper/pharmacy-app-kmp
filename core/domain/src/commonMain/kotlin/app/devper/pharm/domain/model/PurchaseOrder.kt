@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
@@ -11,7 +13,7 @@ data class PurchaseOrder(
     val receiveDate: LocalDate?,
     val items: List<PurchaseOrderItem>,
     val itemCount: Int,
-    val totalCost: Double,
+    val totalCost: Money,
     val status: PurchaseOrderStatus,
     val notes: String,
     val createdAt: LocalDateTime?,
@@ -25,7 +27,7 @@ data class PurchaseOrderSummary(
     val invoiceNo: String,
     val receiveDate: LocalDate?,
     val itemCount: Int,
-    val totalCost: Double,
+    val totalCost: Money,
     val status: PurchaseOrderStatus,
     val notes: String,
     val createdAt: LocalDateTime?,
@@ -37,9 +39,9 @@ data class PurchaseOrderItem(
     val drugName: String,
     val lotNumber: String,
     val expiryDate: LocalDate?,
-    val qty: Int,
-    val costPrice: Double,
-    val sellPrice: Double?,
+    val qty: Quantity,
+    val costPrice: Money,
+    val sellPrice: Money?,
 )
 
 enum class PurchaseOrderStatus(val wire: String) {

@@ -70,9 +70,9 @@ class DrugLotsViewModel(
             drugId = s.drugId,
             lotNumber = s.draft.lotNumber.trim(),
             expiryDate = parsedExpiry,
-            costPrice = s.draft.costPrice.toDoubleOrNull(),
-            sellPrice = s.draft.sellPrice.toDoubleOrNull(),
-            quantity = s.draft.quantity.toIntOrNull() ?: 0,
+            costPrice = s.draft.costPrice.toDoubleOrNull()?.let(::Money),
+            sellPrice = s.draft.sellPrice.toDoubleOrNull()?.let(::Money),
+            quantity = Quantity(s.draft.quantity.toIntOrNull() ?: 0),
         )
         launchResult(
             block = { addLot(param) },

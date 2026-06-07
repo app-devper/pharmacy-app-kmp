@@ -137,9 +137,9 @@ class ImportFormViewModel(
                                     drugName = item.drugName,
                                     lotNumber = item.lotNumber,
                                     expiryDate = item.expiryDate?.toString() ?: "",
-                                    qty = item.qty.toString(),
-                                    costPrice = item.costPrice.cleanPrice(),
-                                    sellPrice = item.sellPrice?.cleanPrice() ?: "",
+                                    qty = item.qty.value.toString(),
+                                    costPrice = item.costPrice.amount.cleanPrice(),
+                                    sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
                                 )
                             },
                         ),

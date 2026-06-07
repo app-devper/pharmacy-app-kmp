@@ -1,5 +1,7 @@
 package app.devper.pharm.data.repository.internal
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.data.internal.parseLocalDateOrNull
 import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.dto.DrugLotDto
@@ -14,17 +16,17 @@ internal fun DrugLotDto.toDomain(): DrugLot = DrugLot(
     lotNumber = lotNumber,
     expiryDate = expiryDate.parseLocalDateOrNull(),
     importDate = importDate.parseLocalDateOrNull(),
-    costPrice = costPrice,
-    sellPrice = sellPrice,
-    quantity = quantity,
-    remaining = remaining,
+    costPrice = costPrice?.let(::Money),
+    sellPrice = sellPrice?.let(::Money),
+    quantity = Quantity(quantity),
+    remaining = Quantity(remaining),
 )
 
 internal fun AddLotParam.toRequest(): DrugLotInputDto = DrugLotInputDto(
     lotNumber = lotNumber,
     expiryDate = expiryDate.toIso(),
     importDate = importDate?.toIso(),
-    costPrice = costPrice,
-    sellPrice = sellPrice,
-    quantity = quantity,
+    costPrice = costPrice?.amount,
+    sellPrice = sellPrice?.amount,
+    quantity = quantity.value,
 )

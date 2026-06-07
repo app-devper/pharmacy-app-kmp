@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
@@ -19,7 +22,7 @@ class ImportDetailViewModelTest {
 
     private fun po(id: String) = PurchaseOrder(
         id = id, docNo = "GR-$id", supplier = "s", invoiceNo = "INV-$id", receiveDate = kotlinx.datetime.LocalDate.parse("2026-06-01"),
-        items = emptyList(), itemCount = 0, totalCost = 0.0, status = PurchaseOrderStatus.Draft,
+        items = emptyList(), itemCount = 0, totalCost = Money(0.0), status = PurchaseOrderStatus.Draft,
         notes = "", createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T09:00:00"), confirmedAt = null,
     )
 
