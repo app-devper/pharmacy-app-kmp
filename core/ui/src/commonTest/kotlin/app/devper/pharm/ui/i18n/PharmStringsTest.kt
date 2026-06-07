@@ -20,6 +20,13 @@ class PharmStringsTablesTest {
         check("commonUnitPiece", PharmStringsTh.commonUnitPiece, PharmStringsEn.commonUnitPiece, mismatches)
         check("commonUnitTablet", PharmStringsTh.commonUnitTablet, PharmStringsEn.commonUnitTablet, mismatches)
         check("settingsLocaleTitle", PharmStringsTh.settingsLocaleTitle, PharmStringsEn.settingsLocaleTitle, mismatches)
+        check("navSell", PharmStringsTh.navSell, PharmStringsEn.navSell, mismatches)
+        check("navSalesHistory", PharmStringsTh.navSalesHistory, PharmStringsEn.navSalesHistory, mismatches)
+        check("navStock", PharmStringsTh.navStock, PharmStringsEn.navStock, mismatches)
+        check("navCustomers", PharmStringsTh.navCustomers, PharmStringsEn.navCustomers, mismatches)
+        check("navReports", PharmStringsTh.navReports, PharmStringsEn.navReports, mismatches)
+        check("navSettings", PharmStringsTh.navSettings, PharmStringsEn.navSettings, mismatches)
+        check("titleSell", PharmStringsTh.titleSell, PharmStringsEn.titleSell, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
     }
 

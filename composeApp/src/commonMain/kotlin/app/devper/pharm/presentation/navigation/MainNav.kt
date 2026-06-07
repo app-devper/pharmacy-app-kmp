@@ -78,6 +78,8 @@ import app.devper.pharm.ui.components.AppShell
 import app.devper.pharm.ui.components.NavItem
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.TopbarUser
+import app.devper.pharm.ui.i18n.PharmStrings
+import app.devper.pharm.ui.i18n.pharmStrings
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -88,95 +90,103 @@ private fun k(route: KClass<*>): String = requireNotNull(route.qualifiedName)
 
 private data class MainNavEntry(
     val route: Any,
-    val label: String,
+    val label: (PharmStrings) -> String,
     val icon: ImageVector,
     val admin: Boolean = false,
 )
 
 private val MAIN_NAV_TABLE: List<MainNavEntry> = listOf(
-    MainNavEntry(Sell, "หน้าขายยา", PharmIcons.Sell),
-    MainNavEntry(SalesHistory, "ประวัติการขาย", PharmIcons.SalesHistory),
-    MainNavEntry(Stock, "สต็อกยา", PharmIcons.Stock),
-    MainNavEntry(StockCounts, "ตรวจนับสต็อก", PharmIcons.StockCount, admin = true),
-    MainNavEntry(Expiry, "จัดการวันหมดอายุ", PharmIcons.Expiry, admin = true),
-    MainNavEntry(LabelPrint, "พิมพ์ฉลาก", PharmIcons.Print, admin = true),
-    MainNavEntry(Movements, "ความเคลื่อนไหวสต็อก", PharmIcons.Movements),
-    MainNavEntry(OfflineSync, "รายการค้างซิงค์", PharmIcons.OfflineSync),
-    MainNavEntry(Imports, "นำเข้าสินค้า", PharmIcons.Imports, admin = true),
-    MainNavEntry(Suppliers, "ซัพพลายเออร์", PharmIcons.Suppliers, admin = true),
-    MainNavEntry(Customers, "ลูกค้า", PharmIcons.Customers),
-    MainNavEntry(Reports, "รายงาน", PharmIcons.Reports),
-    MainNavEntry(Profit, "กำไร", PharmIcons.Profit, admin = true),
-    MainNavEntry(Ky9, "แบบฟอร์ม ขย. 9–12", PharmIcons.KyForms, admin = true),
-    MainNavEntry(Users, "จัดการผู้ใช้งาน", PharmIcons.Users, admin = true),
-    MainNavEntry(SettingsRoute, "ตั้งค่าระบบ", PharmIcons.Settings, admin = true),
-    MainNavEntry(Help, "คู่มือการใช้งาน", PharmIcons.Help),
+    MainNavEntry(Sell, { it.navSell }, PharmIcons.Sell),
+    MainNavEntry(SalesHistory, { it.navSalesHistory }, PharmIcons.SalesHistory),
+    MainNavEntry(Stock, { it.navStock }, PharmIcons.Stock),
+    MainNavEntry(StockCounts, { it.navStockCounts }, PharmIcons.StockCount, admin = true),
+    MainNavEntry(Expiry, { it.navExpiry }, PharmIcons.Expiry, admin = true),
+    MainNavEntry(LabelPrint, { it.navLabelPrint }, PharmIcons.Print, admin = true),
+    MainNavEntry(Movements, { it.navMovements }, PharmIcons.Movements),
+    MainNavEntry(OfflineSync, { it.navOfflineSync }, PharmIcons.OfflineSync),
+    MainNavEntry(Imports, { it.navImports }, PharmIcons.Imports, admin = true),
+    MainNavEntry(Suppliers, { it.navSuppliers }, PharmIcons.Suppliers, admin = true),
+    MainNavEntry(Customers, { it.navCustomers }, PharmIcons.Customers),
+    MainNavEntry(Reports, { it.navReports }, PharmIcons.Reports),
+    MainNavEntry(Profit, { it.navProfit }, PharmIcons.Profit, admin = true),
+    MainNavEntry(Ky9, { it.navKyForms }, PharmIcons.KyForms, admin = true),
+    MainNavEntry(Users, { it.navUsers }, PharmIcons.Users, admin = true),
+    MainNavEntry(SettingsRoute, { it.navSettings }, PharmIcons.Settings, admin = true),
+    MainNavEntry(Help, { it.navHelp }, PharmIcons.Help),
 )
 
-private val mainNavItems: List<NavItem> = MAIN_NAV_TABLE.map { entry ->
-    NavItem(route = k(entry.route::class), label = entry.label, icon = entry.icon, admin = entry.admin)
+@Composable
+private fun rememberMainNavItems(): List<NavItem> {
+    val strings = pharmStrings
+    return MAIN_NAV_TABLE.map { entry ->
+        NavItem(route = k(entry.route::class), label = entry.label(strings), icon = entry.icon, admin = entry.admin)
+    }
 }
 
 private fun routeForKey(key: String): Any? =
     MAIN_NAV_TABLE.firstOrNull { k(it.route::class) == key }?.route
 
-private data class DestInfo(val title: String, val sectionKey: String?)
+private data class DestInfo(val title: (PharmStrings) -> String, val sectionKey: String?)
 
 private val DEST_INFO: Map<String, DestInfo> = buildMap {
-    fun add(route: KClass<*>, title: String, section: KClass<*>?) {
+    fun add(route: KClass<*>, title: (PharmStrings) -> String, section: KClass<*>?) {
         put(k(route), DestInfo(title, section?.let(::k)))
     }
-    add(Sell::class, "ขายยา", Sell::class)
-    add(Cart::class, "ขายยา", Sell::class)
-    add(SalesHistory::class, "ประวัติการขาย", SalesHistory::class)
-    add(Stock::class, "สต็อกยา", Stock::class)
-    add(DrugAdd::class, "สต็อกยา", Stock::class)
-    add(DrugEdit::class, "สต็อกยา", Stock::class)
-    add(DrugLots::class, "สต็อกยา", Stock::class)
-    add(DrugAdjust::class, "สต็อกยา", Stock::class)
-    add(DrugHistory::class, "สต็อกยา", Stock::class)
-    add(ReorderSuggestions::class, "สต็อกยา", Stock::class)
-    add(StockCounts::class, "ตรวจนับสต็อก", StockCounts::class)
-    add(StockCountNew::class, "ตรวจนับสต็อก", StockCounts::class)
-    add(Expiry::class, "จัดการวันหมดอายุ", Expiry::class)
-    add(LabelPrint::class, "พิมพ์ฉลาก", LabelPrint::class)
-    add(Movements::class, "ความเคลื่อนไหวสต็อก", Movements::class)
-    add(OfflineSync::class, "รายการค้างซิงค์", OfflineSync::class)
-    add(Imports::class, "นำเข้าสินค้า", Imports::class)
-    add(ImportNew::class, "นำเข้าสินค้า", Imports::class)
-    add(ImportEdit::class, "นำเข้าสินค้า", Imports::class)
-    add(ImportDetail::class, "นำเข้าสินค้า", Imports::class)
-    add(Suppliers::class, "ซัพพลายเออร์", Suppliers::class)
-    add(SupplierAdd::class, "ซัพพลายเออร์", Suppliers::class)
-    add(SupplierEdit::class, "ซัพพลายเออร์", Suppliers::class)
-    add(Customers::class, "ลูกค้า", Customers::class)
-    add(CustomerAdd::class, "ลูกค้า", Customers::class)
-    add(CustomerEdit::class, "ลูกค้า", Customers::class)
-    add(CustomerDetail::class, "ลูกค้า", Customers::class)
-    add(Reports::class, "รายงาน", Reports::class)
-    add(Eod::class, "รายงาน", Reports::class)
-    add(Profit::class, "กำไร", Profit::class)
-    add(Ky9::class, KyFormType.Ky9.label, Ky9::class)
-    add(Ky9Add::class, KyFormType.Ky9.label, Ky9::class)
-    add(Ky10::class, KyFormType.Ky10.label, Ky9::class)
-    add(Ky10Add::class, KyFormType.Ky10.label, Ky9::class)
-    add(Ky11::class, KyFormType.Ky11.label, Ky9::class)
-    add(Ky11Add::class, KyFormType.Ky11.label, Ky9::class)
-    add(Ky12::class, KyFormType.Ky12.label, Ky9::class)
-    add(Ky12Add::class, KyFormType.Ky12.label, Ky9::class)
-    add(Users::class, "จัดการผู้ใช้งาน", Users::class)
-    add(UserAdd::class, "จัดการผู้ใช้งาน", Users::class)
-    add(UserEdit::class, "จัดการผู้ใช้งาน", Users::class)
-    add(SettingsRoute::class, "ตั้งค่าระบบ", SettingsRoute::class)
-    add(Help::class, "คู่มือการใช้งาน", Help::class)
-    add(BulkImport::class, "นำเข้ายาด้วย JSON", null)
-    add(LowStock::class, "ยาใกล้หมด", null)
-    add(Profile::class, "ข้อมูลส่วนตัว", null)
+    add(Sell::class, { it.titleSell }, Sell::class)
+    add(Cart::class, { it.titleSell }, Sell::class)
+    add(SalesHistory::class, { it.navSalesHistory }, SalesHistory::class)
+    add(Stock::class, { it.navStock }, Stock::class)
+    add(DrugAdd::class, { it.navStock }, Stock::class)
+    add(DrugEdit::class, { it.navStock }, Stock::class)
+    add(DrugLots::class, { it.navStock }, Stock::class)
+    add(DrugAdjust::class, { it.navStock }, Stock::class)
+    add(DrugHistory::class, { it.navStock }, Stock::class)
+    add(ReorderSuggestions::class, { it.navStock }, Stock::class)
+    add(StockCounts::class, { it.navStockCounts }, StockCounts::class)
+    add(StockCountNew::class, { it.navStockCounts }, StockCounts::class)
+    add(Expiry::class, { it.navExpiry }, Expiry::class)
+    add(LabelPrint::class, { it.navLabelPrint }, LabelPrint::class)
+    add(Movements::class, { it.navMovements }, Movements::class)
+    add(OfflineSync::class, { it.navOfflineSync }, OfflineSync::class)
+    add(Imports::class, { it.navImports }, Imports::class)
+    add(ImportNew::class, { it.navImports }, Imports::class)
+    add(ImportEdit::class, { it.navImports }, Imports::class)
+    add(ImportDetail::class, { it.navImports }, Imports::class)
+    add(Suppliers::class, { it.navSuppliers }, Suppliers::class)
+    add(SupplierAdd::class, { it.navSuppliers }, Suppliers::class)
+    add(SupplierEdit::class, { it.navSuppliers }, Suppliers::class)
+    add(Customers::class, { it.navCustomers }, Customers::class)
+    add(CustomerAdd::class, { it.navCustomers }, Customers::class)
+    add(CustomerEdit::class, { it.navCustomers }, Customers::class)
+    add(CustomerDetail::class, { it.navCustomers }, Customers::class)
+    add(Reports::class, { it.navReports }, Reports::class)
+    add(Eod::class, { it.navReports }, Reports::class)
+    add(Profit::class, { it.navProfit }, Profit::class)
+    add(Ky9::class, { KyFormType.Ky9.label }, Ky9::class)
+    add(Ky9Add::class, { KyFormType.Ky9.label }, Ky9::class)
+    add(Ky10::class, { KyFormType.Ky10.label }, Ky9::class)
+    add(Ky10Add::class, { KyFormType.Ky10.label }, Ky9::class)
+    add(Ky11::class, { KyFormType.Ky11.label }, Ky9::class)
+    add(Ky11Add::class, { KyFormType.Ky11.label }, Ky9::class)
+    add(Ky12::class, { KyFormType.Ky12.label }, Ky9::class)
+    add(Ky12Add::class, { KyFormType.Ky12.label }, Ky9::class)
+    add(Users::class, { it.navUsers }, Users::class)
+    add(UserAdd::class, { it.navUsers }, Users::class)
+    add(UserEdit::class, { it.navUsers }, Users::class)
+    add(SettingsRoute::class, { it.navSettings }, SettingsRoute::class)
+    add(Help::class, { it.navHelp }, Help::class)
+    add(BulkImport::class, { "นำเข้ายาด้วย JSON" }, null)
+    add(LowStock::class, { "ยาใกล้หมด" }, null)
+    add(Profile::class, { "ข้อมูลส่วนตัว" }, null)
 }
 
-private fun destInfoFor(route: String?): DestInfo {
+@Composable
+private fun destInfoFor(route: String?): Pair<String, String?> {
+    val strings = pharmStrings
     val base = route?.substringBefore('/')?.substringBefore('?')
-    return base?.let { DEST_INFO[it] } ?: DestInfo("", null)
+    val info = base?.let { DEST_INFO[it] }
+    val title = info?.title?.invoke(strings).orEmpty()
+    return title to info?.sectionKey
 }
 
 @Composable
@@ -184,7 +194,8 @@ fun MainShell(appViewModel: AppViewModel) {
     val state by appViewModel.state.collectAsStateWithLifecycle()
     val nestedNav = rememberNavController()
     val backEntry by nestedNav.currentBackStackEntryAsState()
-    val info = destInfoFor(backEntry?.destination?.route)
+    val (title, sectionKey) = destInfoFor(backEntry?.destination?.route)
+    val navItems = rememberMainNavItems()
 
     val user: TopbarUser? = if (state.userDisplayName.isNotBlank()) {
         TopbarUser(
@@ -197,11 +208,11 @@ fun MainShell(appViewModel: AppViewModel) {
     }
 
     AppShell(
-        title = info.title,
-        items = mainNavItems,
-        currentRoute = info.sectionKey ?: "",
+        title = title,
+        items = navItems,
+        currentRoute = sectionKey ?: "",
         onNavigate = { key ->
-            if (key != info.sectionKey) {
+            if (key != sectionKey) {
                 routeForKey(key)?.let { route ->
                     nestedNav.navigate(route) {
                         launchSingleTop = true
