@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.common.value.Money
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.selectable
@@ -55,17 +56,17 @@ fun CartDiscountSheet(
     }
     var draft by remember(current) {
         mutableStateOf(when (current) {
-            is CartDiscount.Flat    -> if (current.amount == 0.0) "" else current.amount.toString().trimEnd('0').trimEnd('.')
+            is CartDiscount.Flat    -> if (current.amount.isZero) "" else current.amount.amount.toString().trimEnd('0').trimEnd('.')
             is CartDiscount.Percent -> if (current.percent == 0.0) "" else current.percent.toString().trimEnd('0').trimEnd('.')
             CartDiscount.None       -> ""
         })
     }
     val value = draft.toDoubleOrNull() ?: 0.0
     val proposed = when (kind) {
-        Kind.Flat -> CartDiscount.Flat(value)
+        Kind.Flat -> CartDiscount.Flat(Money(value))
         Kind.Percent -> CartDiscount.Percent(value)
     }
-    val applied = proposed.apply(subtotal)
+    val applied = proposed.apply(Money(subtotal)).amount
     val net = (subtotal - applied).coerceAtLeast(0.0)
     val invalid = when (kind) {
         Kind.Flat    -> value < 0 || value > subtotal

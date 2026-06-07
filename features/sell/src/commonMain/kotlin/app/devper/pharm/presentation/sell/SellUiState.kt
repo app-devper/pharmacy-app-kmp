@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell
 
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Customer
@@ -25,13 +26,13 @@ data class SellUiState(
     override val error: String? = null,
 ) : BaseUiState {
 
-    val subtotal: Double get() = cart.sumOf { it.lineTotal.amount }
-    val cartDiscountAmount: Double get() = cartDiscount.apply(subtotal)
-    val total: Double get() = (subtotal - cartDiscountAmount).coerceAtLeast(0.0)
-    val grossSubtotal: Double get() = cart.sumOf { it.unitPrice.amount * it.qty }
-    val itemDiscountTotal: Double get() = grossSubtotal - subtotal
+    val subtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
+    val cartDiscountAmount: Money get() = cartDiscount.apply(subtotal)
+    val total: Money get() = (subtotal - cartDiscountAmount).coerceAtLeast(Money.Zero)
+    val grossSubtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.unitPrice * line.qty }
+    val itemDiscountTotal: Money get() = grossSubtotal - subtotal
     val receivedNum: Double get() = received.toDoubleOrNull() ?: 0.0
-    val change: Double get() = (receivedNum - total).coerceAtLeast(0.0)
+    val change: Money get() = (Money(receivedNum) - total).coerceAtLeast(Money.Zero)
     val cartItemCount: Int get() = cart.sumOf { it.qty }
 
     val kyInitialFields: KyCaptureFields

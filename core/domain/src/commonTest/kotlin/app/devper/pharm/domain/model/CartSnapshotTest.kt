@@ -28,9 +28,9 @@ class CartSnapshotTest {
             items = listOf(CartLine(drug = drug(Money(10.0)), qty = 3)),
             discount = CartDiscount.Percent(percent = 10.0),
         )
-        assertEquals(30.0, snap.subtotal)
-        assertEquals(3.0, snap.cartDiscountAmount)
-        assertEquals(27.0, snap.total)
+        assertEquals(Money(30.0), snap.subtotal)
+        assertEquals(Money(3.0), snap.cartDiscountAmount)
+        assertEquals(Money(27.0), snap.total)
         assertFalse(snap.isEmpty)
     }
 
@@ -38,7 +38,7 @@ class CartSnapshotTest {
     fun empty_snapshot_is_empty_with_zero_total() {
         val snap = snapshot(items = emptyList())
         assertTrue(snap.isEmpty)
-        assertEquals(0.0, snap.subtotal)
-        assertEquals(0.0, snap.total)
+        assertEquals(Money.Zero, snap.subtotal)
+        assertEquals(Money.Zero, snap.total)
     }
 }

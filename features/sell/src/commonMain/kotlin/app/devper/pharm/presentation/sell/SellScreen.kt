@@ -253,7 +253,7 @@ fun SellScreen(
                     )
                     CartFooterBar(
                         itemCount = sellState.cartItemCount,
-                        total = sellState.total,
+                        total = sellState.total.amount,
                         onClick = onOpenCart,
                         parkedFilledCount = parkedState.filledCount,
                     )
@@ -331,7 +331,7 @@ fun SellScreen(
                 if (sellState.cartDiscountSheetOpen) {
                     CartDiscountSheet(
                         current = sellState.cartDiscount,
-                        subtotal = sellState.subtotal,
+                        subtotal = sellState.subtotal.amount,
                         onApply = sellVM::onApplyCartDiscount,
                         onDismiss = sellVM::onCloseCartDiscount,
                     )
@@ -401,11 +401,11 @@ private fun SellCartPanel(
         activeTier = sellState.activeTier,
         cartDiscount = sellState.cartDiscount,
         received = sellState.received,
-        grossSubtotal = sellState.grossSubtotal,
-        itemDiscountTotal = sellState.itemDiscountTotal,
-        cartDiscountAmount = sellState.cartDiscountAmount,
-        total = sellState.total,
-        change = sellState.change,
+        grossSubtotal = sellState.grossSubtotal.amount,
+        itemDiscountTotal = sellState.itemDiscountTotal.amount,
+        cartDiscountAmount = sellState.cartDiscountAmount.amount,
+        total = sellState.total.amount,
+        change = sellState.change.amount,
         canCheckout = canCheckout,
         checkingOut = checkingOut,
         onSetQty = onSetQty,

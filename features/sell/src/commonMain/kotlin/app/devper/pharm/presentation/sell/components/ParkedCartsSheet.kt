@@ -163,7 +163,7 @@ private fun FilledSlotRow(
                 ),
             )
             Text(
-                text = "${parked.itemCount} ชิ้น · ${fmtBaht(parked.total)}",
+                text = "${parked.itemCount} ชิ้น · ${fmtBaht(parked.total.amount)}",
                 style = PharmText.meta.tabular(),
             )
         }
