@@ -1,20 +1,21 @@
 package app.devper.pharm.presentation.movements
 
 import app.devper.pharm.common.error.ErrorMessages
-
+import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.MovementsFilterParam
-import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
+
+private const val LOAD_HISTORY_FAILED = "โหลดประวัติไม่สำเร็จ"
 
 class MovementsViewModel(
     private val getMovements: GetMovementsUseCase,
     private val exportMovementsCsv: ExportMovementsCsvUseCase,
     timeZoneProvider: TimeZoneProvider,
-) : BaseViewModel<MovementsUiState>(
+) : BaseLoadableViewModel<MovementsUiState>(
     MovementsUiState(dateRange = DateRangeFilter(tz = timeZoneProvider.current)),
 ) {
 
@@ -71,12 +72,10 @@ class MovementsViewModel(
     fun dismissMessage() = setState { copy(message = null) }
 
     fun applyFilter() = reload()
-    fun dismissError() = setState { copy(error = null) }
 
     private fun reload() {
         val s = current
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = {
                 getMovements(
                     MovementsFilterParam(
@@ -89,12 +88,8 @@ class MovementsViewModel(
                     ),
                 )
             },
-            onSuccess = { page ->
-                setState { copy(loading = false, items = page.items, total = page.total, page = 1) }
-            },
-            onFailure = { e ->
-                setState { copy(loading = false, error = e.message ?: "โหลดประวัติไม่สำเร็จ") }
-            },
+            fallback = LOAD_HISTORY_FAILED,
+            onSuccess = { page -> copy(items = page.items, total = page.total, page = 1) },
         )
     }
 }

@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.movements
 
 import app.devper.pharm.domain.model.StockMovement
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 
 data class MovementsUiState(
@@ -16,7 +16,10 @@ data class MovementsUiState(
     val exporting: Boolean = false,
     val message: String? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<MovementsUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
 
     val pageCount: Int = run {
         if (pageSize <= 0) 1

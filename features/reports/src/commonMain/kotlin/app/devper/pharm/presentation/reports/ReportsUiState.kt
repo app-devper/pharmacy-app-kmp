@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.reports
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 enum class DashboardWindow(val label: String, val days: Int) {
     Last7("7 วัน", 7),
@@ -18,4 +18,8 @@ data class ReportsUiState(
     val topDrugs: List<TopDrug> = emptyList(),
     val slowDrugs: List<SlowDrug> = emptyList(),
     override val error: String? = null,
-) : BaseUiState
+) : LoadableUiState<ReportsUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+}

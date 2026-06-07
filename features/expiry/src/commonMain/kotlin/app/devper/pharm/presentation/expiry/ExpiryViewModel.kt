@@ -1,17 +1,17 @@
 package app.devper.pharm.presentation.expiry
 
-import app.devper.pharm.common.error.ErrorMessages
-
 import app.devper.pharm.domain.param.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.WriteoffLotsParam
 import app.devper.pharm.domain.usecase.GetExpiringLotsUseCase
 import app.devper.pharm.domain.usecase.WriteoffLotsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
+
+private const val WRITEOFF_FAILED = "ตัดจำหน่ายไม่สำเร็จ"
 
 class ExpiryViewModel(
     private val getExpiringLots: GetExpiringLotsUseCase,
     private val writeoffLots: WriteoffLotsUseCase,
-) : BaseViewModel<ExpiryUiState>(ExpiryUiState()) {
+) : BaseLoadableViewModel<ExpiryUiState>(ExpiryUiState()) {
 
     init { reload() }
 
@@ -46,24 +46,21 @@ class ExpiryViewModel(
                 }
                 reload()
             },
-            onFailure = { e -> setState { copy(writingOff = false, error = e.message ?: "ตัดจำหน่ายไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(writingOff = false, error = e.message ?: WRITEOFF_FAILED) } },
         )
     }
 
     fun dismissResult() = setState { copy(writeoffResult = null) }
-    fun dismissError() = setState { copy(error = null) }
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = {
                 getExpiringLots(
                     ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
                 )
             },
-            onSuccess = { lots -> setState { copy(loading = false, lots = lots) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onSuccess = { lots -> copy(lots = lots) },
         )
     }
 }

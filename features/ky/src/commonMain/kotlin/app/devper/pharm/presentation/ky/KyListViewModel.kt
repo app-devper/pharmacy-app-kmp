@@ -1,7 +1,5 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.common.error.ErrorMessages
-
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.param.ExportKyFormParam
 import app.devper.pharm.domain.param.KyMonthFilterParam
@@ -9,14 +7,16 @@ import app.devper.pharm.domain.usecase.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.GetKy10EntriesUseCase
 import app.devper.pharm.domain.usecase.GetKy11EntriesUseCase
 import app.devper.pharm.domain.usecase.GetKy12EntriesUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
+
+private const val DOWNLOAD_PDF_FAILED = "ดาวน์โหลด PDF ไม่สำเร็จ"
 
 class KyListViewModel(
     private val getKy10: GetKy10EntriesUseCase,
     private val getKy11: GetKy11EntriesUseCase,
     private val getKy12: GetKy12EntriesUseCase,
     private val exportKyForm: ExportKyFormUseCase,
-) : BaseViewModel<KyListUiState>(KyListUiState()) {
+) : BaseLoadableViewModel<KyListUiState>(KyListUiState()) {
 
     fun init(formType: KyFormType) {
         setState { copy(formType = formType, rows = emptyList()) }
@@ -26,7 +26,6 @@ class KyListViewModel(
     fun onMonthChange(v: String) = setState { copy(month = v) }
     fun applyFilter() = reload()
     fun dismissMessage() = setState { copy(message = null) }
-    fun dismissError() = setState { copy(error = null) }
 
     fun exportPdf() {
         val s = current
@@ -34,15 +33,14 @@ class KyListViewModel(
         launchResult(
             block = { exportKyForm(ExportKyFormParam(form = s.formType.wire, month = s.month)) },
             onSuccess = { msg -> setState { copy(exporting = false, message = msg) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ดาวน์โหลด PDF ไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: DOWNLOAD_PDF_FAILED) } },
         )
     }
 
     fun reload() {
         val s = current
         val filter = KyMonthFilterParam(month = s.month)
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = {
                 when (s.formType) {
                     KyFormType.Ky10 -> getKy10(filter).map { list -> list.map(KyRow::Ky10) }
@@ -51,8 +49,7 @@ class KyListViewModel(
                     KyFormType.Ky9  -> Result.success(emptyList())
                 }
             },
-            onSuccess = { rows -> setState { copy(loading = false, rows = rows) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onSuccess = { rows -> copy(rows = rows) },
         )
     }
 }

@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.saleshistory
 
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 
 data class SalesHistoryUiState(
@@ -22,4 +22,8 @@ data class SalesHistoryUiState(
     val returnReason: String = "",
     val submittingReturn: Boolean = false,
     override val error: String? = null,
-) : BaseUiState
+) : LoadableUiState<SalesHistoryUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+}

@@ -6,12 +6,15 @@ import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.param.PrintLabelsParam
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.PrintLabelsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
+
+private const val LOAD_DRUGS_FAILED = "โหลดยาไม่สำเร็จ"
+private const val PRINT_FAILED = "พิมพ์ไม่สำเร็จ"
 
 class LabelPrintViewModel(
     private val getDrugs: GetDrugsUseCase,
     private val printLabels: PrintLabelsUseCase,
-) : BaseViewModel<LabelPrintUiState>(LabelPrintUiState()) {
+) : BaseLoadableViewModel<LabelPrintUiState>(LabelPrintUiState()) {
 
     init { reload() }
 
@@ -79,21 +82,17 @@ class LabelPrintViewModel(
                 )
             },
             onSuccess = { feedback -> setState { copy(printing = false, message = feedback) } },
-            onFailure = { e -> setState { copy(printing = false, error = e.message ?: "พิมพ์ไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(printing = false, error = e.message ?: PRINT_FAILED) } },
         )
     }
 
     fun dismissMessage() = setState { copy(message = null) }
-    fun dismissError() = setState { copy(error = null) }
 
-    fun reload() {
-        setState { copy(loading = true, error = null) }
-        launchResult(
-            block = { getDrugs() },
-            onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดยาไม่สำเร็จ") } },
-        )
-    }
+    fun reload() = launchLoad(
+        block = { getDrugs() },
+        fallback = LOAD_DRUGS_FAILED,
+        onSuccess = { list -> copy(drugs = list) },
+    )
 
     private fun Drug.toLine(): LabelLine = LabelLine(
         drugId = id,

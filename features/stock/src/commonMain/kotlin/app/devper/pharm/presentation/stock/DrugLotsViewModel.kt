@@ -6,14 +6,16 @@ import app.devper.pharm.domain.param.DeleteLotParam
 import app.devper.pharm.domain.usecase.AddLotUseCase
 import app.devper.pharm.domain.usecase.DeleteLotUseCase
 import app.devper.pharm.domain.usecase.ListLotsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
+
+private const val LOAD_LOTS_FAILED = "โหลดล็อตไม่สำเร็จ"
 
 class DrugLotsViewModel(
     private val listLots: ListLotsUseCase,
     private val addLot: AddLotUseCase,
     private val deleteLot: DeleteLotUseCase,
-) : BaseViewModel<DrugLotsUiState>(DrugLotsUiState()) {
+) : BaseLoadableViewModel<DrugLotsUiState>(DrugLotsUiState()) {
 
     fun open(drugId: String, drugName: String) {
         setState {
@@ -33,13 +35,12 @@ class DrugLotsViewModel(
     }
 
     fun reload() {
+        if (current.drugId.isBlank()) return
         val id = current.drugId
-        if (id.isBlank()) return
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = { listLots(id) },
-            onSuccess = { lots -> setState { copy(loading = false, lots = lots) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดล็อตไม่สำเร็จ") } },
+            fallback = LOAD_LOTS_FAILED,
+            onSuccess = { lots -> copy(lots = lots) },
         )
     }
 
@@ -95,8 +96,6 @@ class DrugLotsViewModel(
             onFailure = { e -> setState { copy(saving = false, error = e.message ?: "ลบล็อตไม่สำเร็จ") } },
         )
     }
-
-    fun dismissError() = setState { copy(error = null) }
 }
 
 private fun String.numericOnly(): String {

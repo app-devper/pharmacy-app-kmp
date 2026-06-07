@@ -1,17 +1,17 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.common.error.ErrorMessages
-
 import app.devper.pharm.domain.param.ExportKyFormParam
 import app.devper.pharm.domain.param.KyMonthFilterParam
 import app.devper.pharm.domain.usecase.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.GetKy9EntriesUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
+
+private const val DOWNLOAD_PDF_FAILED = "ดาวน์โหลด PDF ไม่สำเร็จ"
 
 class Ky9ViewModel(
     private val getKy9Entries: GetKy9EntriesUseCase,
     private val exportKyForm: ExportKyFormUseCase,
-) : BaseViewModel<Ky9UiState>(Ky9UiState()) {
+) : BaseLoadableViewModel<Ky9UiState>(Ky9UiState()) {
 
     init { reload() }
 
@@ -24,20 +24,17 @@ class Ky9ViewModel(
         launchResult(
             block = { exportKyForm(ExportKyFormParam(form = "ky9", month = s.month)) },
             onSuccess = { msg -> setState { copy(exporting = false, message = msg) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ดาวน์โหลด PDF ไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: DOWNLOAD_PDF_FAILED) } },
         )
     }
 
     fun dismissMessage() = setState { copy(message = null) }
-    fun dismissError() = setState { copy(error = null) }
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, error = null) }
-        launchResult(
+        launchLoad(
             block = { getKy9Entries(KyMonthFilterParam(month = s.month)) },
-            onSuccess = { list -> setState { copy(loading = false, entries = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onSuccess = { list -> copy(entries = list) },
         )
     }
 }

@@ -6,7 +6,7 @@ import app.devper.pharm.domain.param.DashboardRangeParam
 import app.devper.pharm.domain.usecase.GetDashboardUseCase
 import app.devper.pharm.domain.usecase.GetSlowDrugsUseCase
 import app.devper.pharm.domain.usecase.GetTopDrugsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -24,7 +24,7 @@ class ReportsViewModel(
     private val getTopDrugs: GetTopDrugsUseCase,
     private val getSlowDrugs: GetSlowDrugsUseCase,
     stockChangeBus: StockChangeBus,
-) : BaseViewModel<ReportsUiState>(ReportsUiState()) {
+) : BaseLoadableViewModel<ReportsUiState>(ReportsUiState()) {
 
     private var reloadJob: Job? = null
 
@@ -40,8 +40,6 @@ class ReportsViewModel(
         setState { copy(window = window) }
         reload()
     }
-
-    fun dismissError() = setState { copy(error = null) }
 
     fun reload() {
         val days = current.window.days
