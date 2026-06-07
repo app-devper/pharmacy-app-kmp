@@ -29,7 +29,7 @@ fun Ky9AddScreen(
             onPricePerUnit = viewModel::onPricePerUnit,
             onSeller = viewModel::onSeller,
             onInvoiceNo = viewModel::onInvoiceNo,
-            onSubmit = viewModel::submitAdd,
+            onSubmit = viewModel::submit,
             onDismissError = viewModel::dismissError,
         ),
     )

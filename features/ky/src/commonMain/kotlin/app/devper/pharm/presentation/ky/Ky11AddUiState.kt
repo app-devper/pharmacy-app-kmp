@@ -1,8 +1,7 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.domain.extension.buildKy11Draft
 import app.devper.pharm.domain.extension.isKy11DraftValid
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.BaseFormUiState
 
 data class Ky11Draft(
     val date: String = "",
@@ -17,11 +16,16 @@ data class Ky11Draft(
 
 data class Ky11AddUiState(
     val draft: Ky11Draft = Ky11Draft(),
-    val saving: Boolean = false,
-    val saved: Boolean = false,
+    override val saving: Boolean = false,
+    override val saved: Boolean = false,
     override val loading: Boolean = false,
     override val error: String? = null,
-) : BaseUiState {
-    val canSubmitDraft: Boolean
+) : BaseFormUiState<Ky11AddUiState> {
+
+    override val canSubmit: Boolean
         get() = !saving && isKy11DraftValid(draft.date, draft.drugName, draft.unit, draft.qty)
+
+    override fun withSaving(saving: Boolean) = copy(saving = saving)
+    override fun withSaved(saved: Boolean) = copy(saved = saved)
+    override fun withError(error: String?) = copy(error = error)
 }

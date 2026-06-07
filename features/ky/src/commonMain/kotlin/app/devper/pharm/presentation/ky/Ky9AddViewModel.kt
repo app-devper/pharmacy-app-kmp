@@ -1,15 +1,12 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.common.error.ErrorMessages
-
 import app.devper.pharm.domain.extension.buildKy9Draft
-import app.devper.pharm.domain.extension.isKy9DraftValid
 import app.devper.pharm.domain.usecase.AddKy9UseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseFormViewModel
 
 class Ky9AddViewModel(
     private val addKy9: AddKy9UseCase,
-) : BaseViewModel<Ky9AddUiState>(Ky9AddUiState()) {
+) : BaseFormViewModel<Ky9AddUiState>(Ky9AddUiState()) {
 
     fun onDate(v: String) = patch { copy(date = v) }
     fun onDrugName(v: String) = patch { copy(drugName = v) }
@@ -20,31 +17,20 @@ class Ky9AddViewModel(
     fun onSeller(v: String) = patch { copy(seller = v) }
     fun onInvoiceNo(v: String) = patch { copy(invoiceNo = v) }
 
-    fun submitAdd() {
-        val s = current
-        if (!s.canSubmitDraft) return
+    override suspend fun persist(): Result<Unit> {
+        val d = current.draft
         val param = buildKy9Draft(
-            date = s.draft.date,
-            drugName = s.draft.drugName,
-            regNo = s.draft.regNo,
-            unit = s.draft.unit,
-            qty = s.draft.qty,
-            pricePerUnit = s.draft.pricePerUnit,
-            seller = s.draft.seller,
-            invoiceNo = s.draft.invoiceNo,
-        ).getOrElse { e ->
-            setState { copy(error = e.message ?: "ตรวจสอบข้อมูลไม่ผ่าน") }
-            return
-        }
-        setState { copy(saving = true, error = null) }
-        launchResult(
-            block = { addKy9(param) },
-            onSuccess = { setState { copy(saving = false, saved = true) } },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
-        )
+            date = d.date,
+            drugName = d.drugName,
+            regNo = d.regNo,
+            unit = d.unit,
+            qty = d.qty,
+            pricePerUnit = d.pricePerUnit,
+            seller = d.seller,
+            invoiceNo = d.invoiceNo,
+        ).getOrElse { return Result.failure(it) }
+        return addKy9(param)
     }
-
-    fun dismissError() = setState { copy(error = null) }
 
     private fun patch(transform: Ky9Draft.() -> Ky9Draft) {
         setState { copy(draft = draft.transform()) }

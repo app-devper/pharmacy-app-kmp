@@ -51,7 +51,7 @@ fun Ky10AddContent(
             actions = {
                 PharmSaveAction(
                     saving = state.saving,
-                    canSubmit = state.canSubmitDraft,
+                    canSubmit = state.canSubmit,
                     onSubmit = callbacks.onSubmit,
                 )
             },

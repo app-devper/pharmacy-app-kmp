@@ -29,7 +29,7 @@ fun Ky12AddScreen(
             onDoctor = viewModel::onDoctor,
             onHospital = viewModel::onHospital,
             onStatus = viewModel::onStatus,
-            onSubmit = viewModel::submitAdd,
+            onSubmit = viewModel::submit,
             onDismissError = viewModel::dismissError,
         ),
     )
