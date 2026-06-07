@@ -25,6 +25,7 @@ import app.devper.pharm.domain.extension.resolvePrice
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,13 +51,13 @@ fun AltUnitPickerSheet(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             )
             Text(
-                text = "เลือกหน่วยที่ต้องการขาย",
+                text = pharmStrings.sellPickUnit,
                 style = PharmText.meta,
                 modifier = Modifier.padding(horizontal = 20.dp).padding(bottom = 8.dp),
             )
 
             UnitRow(
-                label = drug.unit ?: "หน่วย",
+                label = drug.unit ?: pharmStrings.commonUnit,
                 factorHint = null,
                 price = resolvePrice(drug.sellPrice, drug.prices, activeTier).amount,
                 onClick = { onPick(null) },

@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.print.PharmReceiptPreview
 import app.devper.pharm.ui.print.PharmReceiptStyle
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 fun ReceiptDialog(
@@ -30,13 +31,13 @@ fun ReceiptDialog(
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = "ออกใบเสร็จสำเร็จ",
+        title = pharmStrings.sellReceiptDone,
         subtitle = "เลขที่ ${template.billNo}",
         size = PharmModalSize.Md,
         footer = {
             if (onVoid != null) {
                 PharmButton(
-                    label = "ยกเลิกบิล",
+                    label = pharmStrings.sellCancelBillCta,
                     onClick = onVoid,
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
@@ -45,7 +46,7 @@ fun ReceiptDialog(
             }
             if (onPrint != null) {
                 PharmButton(
-                    label = "พิมพ์",
+                    label = pharmStrings.sellPrintCta,
                     onClick = onPrint,
                     variant = PharmButtonVariant.Secondary,
                     size = PharmButtonSize.Md,
@@ -59,7 +60,7 @@ fun ReceiptDialog(
                 )
             }
             PharmButton(
-                label = "บิลใหม่",
+                label = pharmStrings.sellNewBill,
                 onClick = onDismiss,
                 size = PharmButtonSize.Md,
             )

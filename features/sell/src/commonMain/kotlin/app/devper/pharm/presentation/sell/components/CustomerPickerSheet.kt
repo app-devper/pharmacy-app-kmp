@@ -38,6 +38,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +66,7 @@ fun CustomerPickerSheet(
     ) {
         Column(modifier = Modifier.fillMaxHeight(0.85f)) {
             Text(
-                text = "เลือกลูกค้า",
+                text = pharmStrings.sellCustomerSelect,
                 style = PharmText.h2,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
             )
@@ -76,7 +77,7 @@ fun CustomerPickerSheet(
                 PharmTextField(
                     value = query,
                     onValueChange = { query = it },
-                    placeholder = "ค้นหาชื่อ / เบอร์โทร",
+                    placeholder = pharmStrings.sellCustomerSearchPlaceholder,
                 )
             }
 
@@ -147,7 +148,7 @@ private fun EmptyCustomers(searching: Boolean) {
             modifier = Modifier.size(36.dp),
         )
         Text(
-            text = if (searching) "ไม่พบลูกค้าที่ค้นหา" else "ยังไม่มีรายชื่อลูกค้า",
+            text = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
             style = PharmText.body.copy(color = t.colors.fg3),
             modifier = Modifier.padding(top = 12.dp),
         )

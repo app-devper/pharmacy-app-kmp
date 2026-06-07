@@ -27,6 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,11 +59,11 @@ fun VoidReasonSheet(
                 style = PharmText.meta,
             )
 
-            FormField(label = "เหตุผล", required = true) {
+            FormField(label = pharmStrings.sellCancelBillReason, required = true) {
                 PharmTextField(
                     value = reason,
                     onValueChange = { reason = it },
-                    placeholder = "เช่น ลูกค้ายกเลิก, รับสินค้าผิด ฯลฯ",
+                    placeholder = pharmStrings.sellCancelBillReasonExample,
                     singleLine = false,
                 )
             }
@@ -73,7 +74,7 @@ fun VoidReasonSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = pharmStrings.commonCancel,
                     onClick = onDismiss,
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
@@ -93,7 +94,7 @@ fun VoidReasonSheet(
                         )
                     } else {
                         Text(
-                            "ยืนยันยกเลิกบิล",
+                            pharmStrings.sellCancelBillTitle,
                             style = PharmText.buttonMd.copy(color = t.colors.surface),
                         )
                     }

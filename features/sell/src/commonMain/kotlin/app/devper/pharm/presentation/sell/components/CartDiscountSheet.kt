@@ -35,6 +35,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 
 private enum class Kind { Flat, Percent }
 
@@ -85,7 +86,7 @@ fun CartDiscountSheet(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text("ส่วนลดทั้งบิล", style = PharmText.h1)
+            Text(pharmStrings.sellDiscountCart, style = PharmText.h1)
 
             Row(
                 modifier = Modifier
@@ -116,23 +117,23 @@ fun CartDiscountSheet(
                 )
             }
 
-            DiscountSummary("ยอดย่อย", fmtBaht(subtotal))
+            DiscountSummary(pharmStrings.sellSubtotal, fmtBaht(subtotal))
             DiscountSummary("หักส่วนลด", "−${fmtBaht(applied)}", emphasis = true, discount = true)
-            DiscountSummary("ยอดสุทธิ", fmtBaht(net), emphasis = true)
+            DiscountSummary(pharmStrings.sellNetTotal, fmtBaht(net), emphasis = true)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 PharmButton(
-                    label = "ล้างส่วนลด",
+                    label = pharmStrings.sellDiscountClear,
                     onClick = { onApply(CartDiscount.None) },
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
                     modifier = Modifier.weight(1f),
                 )
                 PharmButton(
-                    label = "บันทึก",
+                    label = pharmStrings.commonSave,
                     onClick = { onApply(proposed) },
                     enabled = !invalid,
                     size = PharmButtonSize.Md,

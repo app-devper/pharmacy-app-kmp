@@ -40,6 +40,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +67,7 @@ fun ParkedCartsSheet(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = "บิลที่พัก",
+                text = pharmStrings.sellParked,
                 style = PharmText.h1,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
@@ -122,7 +123,7 @@ private fun EmptySlotRow(
         SlotBadge(slotNumber, dimmed = !canPark)
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = if (canPark) "พักบิลที่ช่องนี้" else "ว่าง",
+                text = if (canPark) "พักบิลที่ช่องนี้" else pharmStrings.bulkImportEmptyDefault,
                 style = PharmText.body.copy(
                     fontWeight = FontWeight.Medium,
                     color = if (canPark) t.colors.fg1 else t.colors.fgMuted,
@@ -156,7 +157,7 @@ private fun FilledSlotRow(
         SlotBadge(slotNumber)
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = parked.customer?.name ?: "ลูกค้าทั่วไป",
+                text = parked.customer?.name ?: pharmStrings.sellCustomerWalkIn,
                 style = PharmText.body.copy(
                     fontWeight = FontWeight.SemiBold,
                     color = t.colors.fg1,
@@ -170,7 +171,7 @@ private fun FilledSlotRow(
 
         if (canOverwrite) {
             PharmButton(
-                label = "ทับ",
+                label = pharmStrings.commonConfirm,
                 onClick = onOverwrite,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
@@ -193,13 +194,13 @@ private fun FilledSlotRow(
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = pharmStrings.commonCancel,
                 onClick = { confirmingDiscard = false },
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = "ลบ",
+                label = pharmStrings.commonDelete,
                 onClick = {
                     confirmingDiscard = false
                     onDiscard()
@@ -249,13 +250,13 @@ fun ParkOverwriteDialog(
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = pharmStrings.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = "ทับ",
+                label = pharmStrings.commonConfirm,
                 onClick = onConfirm,
                 size = PharmButtonSize.Sm,
             )
@@ -278,13 +279,13 @@ fun SwapToParkedDialog(
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = pharmStrings.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = "เปลี่ยน",
+                label = pharmStrings.commonEdit,
                 onClick = onConfirm,
                 size = PharmButtonSize.Sm,
             )

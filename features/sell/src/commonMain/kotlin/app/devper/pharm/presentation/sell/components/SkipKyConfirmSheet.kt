@@ -8,6 +8,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 fun SkipKyConfirmSheet(
@@ -17,17 +18,17 @@ fun SkipKyConfirmSheet(
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = "ข้ามการบันทึก ขย.?",
+        title = pharmStrings.sellSkipKyTitle,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ย้อนกลับ",
+                label = pharmStrings.commonBack,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = "ยืนยันข้าม",
+                label = pharmStrings.sellSkipKyConfirmCta,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Sm,
@@ -35,7 +36,7 @@ fun SkipKyConfirmSheet(
         },
     ) {
         Text(
-            "การขายจะถูกบันทึกโดยไม่มีข้อมูลผู้สั่ง/ผู้ซื้อ และอาจถูกตรวจสอบเพื่อ compliance",
+            pharmStrings.sellSkipKyConfirm,
             style = PharmText.body,
         )
     }

@@ -41,6 +41,7 @@ import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +86,7 @@ fun OversellConfirmSheet(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "สต็อกไม่พอ",
+                        pharmStrings.sellShortfall,
                         style = PharmText.h2,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
                     )
@@ -125,14 +126,14 @@ fun OversellConfirmSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = pharmStrings.commonCancel,
                     onClick = onDismiss,
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
                     modifier = Modifier.weight(1f),
                 )
                 PharmButton(
-                    label = "ขายล่วงหน้า",
+                    label = pharmStrings.sellOversold,
                     onClick = onConfirm,
                     variant = PharmButtonVariant.Danger,
                     size = PharmButtonSize.Md,

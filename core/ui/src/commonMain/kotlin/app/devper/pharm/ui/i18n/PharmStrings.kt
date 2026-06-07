@@ -629,6 +629,73 @@ interface PharmStrings {
     val stockExampleReg: String
     val stockExampleBarcode: String
     val stockBarcodeScanHint: String
+    val sellCart: String
+    val sellSearchPlaceholder: String
+    val sellNoResults: String
+    val sellEmptyCart: String
+    val sellEmptyCartHint: String
+    val sellSubtotal: String
+    val sellTotal: String
+    val sellNetTotal: String
+    val sellDiscount: String
+    val sellDiscountLine: String
+    val sellDiscountCart: String
+    val sellDiscountPerUnit: String
+    val sellDiscountClear: String
+    val sellShowSubtotal: String
+    val sellHideSubtotal: String
+    val sellPayment: String
+    val sellReceived: String
+    val sellChange: String
+    val sellClearReceived: String
+    val sellCheckout: String
+    val sellCheckoutSave: String
+    val sellReceiptDone: String
+    val sellReceiptFailed: String
+    val sellCustomer: String
+    val sellCustomerWalkIn: String
+    val sellCustomerSelect: String
+    val sellCustomerClear: String
+    val sellCustomerSearchPlaceholder: String
+    val sellCustomerEmpty: String
+    val sellCustomerNotFound: String
+    val sellPharmacist: String
+    val sellPrescriber: String
+    val sellBuyerName: String
+    val sellBuyerAddress: String
+    val sellPrescriptionNo: String
+    val sellHospital: String
+    val sellPatient: String
+    val sellPurpose: String
+    val sellAllergies: String
+    val sellSaveKyBeforeBill: String
+    val sellControlledRx: (Int) -> String
+    val sellControlledNote: String
+    val sellSkipKyTitle: String
+    val sellSkipKyConfirmCta: String
+    val sellSkipKyConfirm: String
+    val sellPark: String
+    val sellParked: String
+    val sellNewBill: String
+    val sellCancelBillTitle: String
+    val sellCancelBillConfirm: (String) -> String
+    val sellCancelBillReason: String
+    val sellCancelBillReasonExample: String
+    val sellCancelBillCta: String
+    val sellShortcuts: String
+    val sellPriceOriginal: String
+    val sellPriceAfterDiscount: String
+    val sellPickUnit: String
+    val sellRemaining: String
+    val sellShortfall: String
+    val sellShortfallShort: (String) -> String
+    val sellOversold: String
+    val sellOversoldHint: String
+    val sellRemoveItemTitle: String
+    val sellRemoveCart: String
+    val sellPrintCta: String
+    val sellScannerOn: String
+    val sellOfflineQueueHint: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -1266,6 +1333,73 @@ object PharmStringsTh : PharmStrings {
     override val stockExampleReg = "เช่น 1A 123/45"
     override val stockExampleBarcode = "8851111222333"
     override val stockBarcodeScanHint = "สแกนหรือพิมพ์"
+    override val sellCart = "ตะกร้า"
+    override val sellSearchPlaceholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)"
+    override val sellNoResults = "ไม่พบยาที่ค้นหา"
+    override val sellEmptyCart = "ตะกร้าว่าง"
+    override val sellEmptyCartHint = "แตะรายการยาด้านบนเพื่อเริ่มขาย"
+    override val sellSubtotal = "ยอดย่อย"
+    override val sellTotal = "ยอดรวม"
+    override val sellNetTotal = "ยอดสุทธิ"
+    override val sellDiscount = "ส่วนลด"
+    override val sellDiscountLine = "ส่วนลดรายการ"
+    override val sellDiscountCart = "ส่วนลดทั้งบิล"
+    override val sellDiscountPerUnit = "ส่วนลดต่อหน่วย"
+    override val sellDiscountClear = "ล้างส่วนลด"
+    override val sellShowSubtotal = "ดูยอดย่อย"
+    override val sellHideSubtotal = "ซ่อนยอดย่อย"
+    override val sellPayment = "ชำระเงิน"
+    override val sellReceived = "รับเงิน"
+    override val sellChange = "ทอน"
+    override val sellClearReceived = "ล้างยอดรับเงิน"
+    override val sellCheckout = "ออกใบเสร็จ"
+    override val sellCheckoutSave = "บันทึกและออกบิล"
+    override val sellReceiptDone = "ออกใบเสร็จสำเร็จ"
+    override val sellReceiptFailed = "ออกใบเสร็จไม่สำเร็จ"
+    override val sellCustomer = "ลูกค้า"
+    override val sellCustomerWalkIn = "ลูกค้าทั่วไป"
+    override val sellCustomerSelect = "เลือกลูกค้า"
+    override val sellCustomerClear = "ล้างลูกค้า"
+    override val sellCustomerSearchPlaceholder = "ค้นหาชื่อ / เบอร์โทร"
+    override val sellCustomerEmpty = "ยังไม่มีรายชื่อลูกค้า"
+    override val sellCustomerNotFound = "ไม่พบลูกค้าที่ค้นหา"
+    override val sellPharmacist = "เภสัชกรผู้จ่าย"
+    override val sellPrescriber = "แพทย์ผู้สั่ง"
+    override val sellBuyerName = "ชื่อผู้ซื้อ"
+    override val sellBuyerAddress = "ที่อยู่ผู้ซื้อ"
+    override val sellPrescriptionNo = "เลขใบสั่ง"
+    override val sellHospital = "โรงพยาบาล"
+    override val sellPatient = "ผู้ป่วย"
+    override val sellPurpose = "วัตถุประสงค์"
+    override val sellAllergies = "แพ้ยา / โรคประจำตัว"
+    override val sellSaveKyBeforeBill = "บันทึก ขย. ก่อนออกบิล"
+    override val sellControlledRx: (Int) -> String = { forms -> "ยาควบคุม — ต้องบันทึก ขย.$forms" }
+    override val sellControlledNote = "ยาควบคุมพิเศษ (ขย.10–13) ต้องบันทึกชื่อเภสัชกร เลขที่ใบอนุญาต ผู้สั่งใช้ และข้อมูลผู้ซื้อ/ผู้ป่วย ก่อนออกบิลตามข้อกำหนด"
+    override val sellSkipKyTitle = "ข้ามการบันทึก ขย.?"
+    override val sellSkipKyConfirmCta = "ยืนยันข้าม"
+    override val sellSkipKyConfirm = "การขายจะถูกบันทึกโดยไม่มีข้อมูลผู้สั่ง/ผู้ซื้อ และอาจถูกตรวจสอบเพื่อ compliance"
+    override val sellPark = "พักบิล"
+    override val sellParked = "บิลที่พัก"
+    override val sellNewBill = "บิลใหม่"
+    override val sellCancelBillTitle = "ยืนยันยกเลิกบิล"
+    override val sellCancelBillConfirm: (String) -> String = { billNo -> "ยกเลิกบิล $billNo" }
+    override val sellCancelBillReason = "เหตุผล"
+    override val sellCancelBillReasonExample = "เช่น ลูกค้ายกเลิก, รับสินค้าผิด ฯลฯ"
+    override val sellCancelBillCta = "ยกเลิกบิล"
+    override val sellShortcuts = "คีย์ลัด"
+    override val sellPriceOriginal = "ราคาเดิม"
+    override val sellPriceAfterDiscount = "ราคาหลังหัก"
+    override val sellPickUnit = "เลือกหน่วยที่ต้องการขาย"
+    override val sellRemaining = "คงเหลือ"
+    override val sellShortfall = "สต็อกไม่พอ"
+    override val sellShortfallShort: (String) -> String = { amt -> "ขาด $amt" }
+    override val sellOversold = "ขายล่วงหน้า"
+    override val sellOversoldHint = "ขายล่วงหน้า: ยอมขายเกินสต็อกที่มีได้ ระบบบันทึกจำนวนที่เกินไว้และจะกระทบยอดเมื่อรับเข้า/ปรับสต็อกครั้งถัดไป"
+    override val sellRemoveItemTitle = "ลบรายการในตะกร้า?"
+    override val sellRemoveCart = "ลบรายการในตะกร้า?"
+    override val sellPrintCta = "พิมพ์"
+    override val sellScannerOn = "สแกนเนอร์เปิดอยู่"
+    override val sellOfflineQueueHint = "เครือข่ายไม่ได้เชื่อมต่อ — บิลถูกเก็บไว้เพื่อซิงค์ภายหลัง"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -1903,6 +2037,73 @@ object PharmStringsEn : PharmStrings {
     override val stockExampleReg = "e.g. 1A 123/45"
     override val stockExampleBarcode = "8851111222333"
     override val stockBarcodeScanHint = "Scan or type"
+    override val sellCart = "Cart"
+    override val sellSearchPlaceholder = "Search by brand, generic, or barcode (F2)"
+    override val sellNoResults = "No drugs match the search"
+    override val sellEmptyCart = "Cart is empty"
+    override val sellEmptyCartHint = "Tap a drug above to start selling"
+    override val sellSubtotal = "Subtotal"
+    override val sellTotal = "Total"
+    override val sellNetTotal = "Net"
+    override val sellDiscount = "Discount"
+    override val sellDiscountLine = "Line discount"
+    override val sellDiscountCart = "Bill discount"
+    override val sellDiscountPerUnit = "Per-unit discount"
+    override val sellDiscountClear = "Clear discount"
+    override val sellShowSubtotal = "Show subtotal"
+    override val sellHideSubtotal = "Hide subtotal"
+    override val sellPayment = "Payment"
+    override val sellReceived = "Received"
+    override val sellChange = "Change"
+    override val sellClearReceived = "Clear received"
+    override val sellCheckout = "Checkout"
+    override val sellCheckoutSave = "Save & checkout"
+    override val sellReceiptDone = "Receipt issued"
+    override val sellReceiptFailed = "Receipt failed"
+    override val sellCustomer = "Customer"
+    override val sellCustomerWalkIn = "Walk-in"
+    override val sellCustomerSelect = "Pick customer"
+    override val sellCustomerClear = "Clear customer"
+    override val sellCustomerSearchPlaceholder = "Search name / phone"
+    override val sellCustomerEmpty = "No customers yet"
+    override val sellCustomerNotFound = "No customers match the search"
+    override val sellPharmacist = "Pharmacist"
+    override val sellPrescriber = "Prescribing doctor"
+    override val sellBuyerName = "Buyer name"
+    override val sellBuyerAddress = "Buyer address"
+    override val sellPrescriptionNo = "Prescription no."
+    override val sellHospital = "Hospital"
+    override val sellPatient = "Patient"
+    override val sellPurpose = "Purpose"
+    override val sellAllergies = "Allergies / chronic conditions"
+    override val sellSaveKyBeforeBill = "Save KY before checkout"
+    override val sellControlledRx: (Int) -> String = { forms -> "Controlled drug — must log KY-$forms" }
+    override val sellControlledNote = "Controlled drugs (KY-10–13) require pharmacist info, license no., prescriber and buyer/patient before bill issuance per regulations"
+    override val sellSkipKyTitle = "Skip KY logging?"
+    override val sellSkipKyConfirmCta = "Confirm skip"
+    override val sellSkipKyConfirm = "The sale will be recorded without prescriber/buyer info and may be flagged for compliance"
+    override val sellPark = "Park bill"
+    override val sellParked = "Parked bills"
+    override val sellNewBill = "New bill"
+    override val sellCancelBillTitle = "Confirm cancel bill"
+    override val sellCancelBillConfirm: (String) -> String = { billNo -> "Cancel bill $billNo" }
+    override val sellCancelBillReason = "Reason"
+    override val sellCancelBillReasonExample = "e.g. customer cancelled, wrong product etc."
+    override val sellCancelBillCta = "Cancel bill"
+    override val sellShortcuts = "Shortcuts"
+    override val sellPriceOriginal = "Original price"
+    override val sellPriceAfterDiscount = "After discount"
+    override val sellPickUnit = "Pick the sales unit"
+    override val sellRemaining = "Remaining"
+    override val sellShortfall = "Not enough stock"
+    override val sellShortfallShort: (String) -> String = { amt -> "Short $amt" }
+    override val sellOversold = "Oversell"
+    override val sellOversoldHint = "Oversell: allow selling beyond available stock; the system records the excess and reconciles on next receipt/adjustment"
+    override val sellRemoveItemTitle = "Remove this item from cart?"
+    override val sellRemoveCart = "Remove all cart items?"
+    override val sellPrintCta = "Print"
+    override val sellScannerOn = "Scanner is on"
+    override val sellOfflineQueueHint = "Network disconnected — bill saved for later sync"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }
