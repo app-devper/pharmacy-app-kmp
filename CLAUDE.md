@@ -181,6 +181,26 @@ license headers required by upstream libraries.
   `pharmacy-kmp-screen-split` (Screen↔Content + responsive),
   `pharmacy-kmp-review` (audit a diff against the build-enforced rules).
 
+- **Localization** (`compose.resources` strings.xml; default ภาษาไทย, English fallback).
+  Source files live at `:core:ui/src/commonMain/composeResources/values{,-en}/strings.xml`
+  and generate `Res.string.<key>` accessors in `app.devper.pharm.ui.resources`. Use
+  `stringResource(Res.string.common_save)` from `org.jetbrains.compose.resources` inside
+  Composables; for non-Composable code use `getString(Res.string.x)` (suspend).
+  - **Key convention**: `<scope>_<token>` snake_case — `common_*` for shared, `<feature>_*`
+    for feature-local. Common keys live in `:core:ui`; add feature-specific keys to a
+    `composeResources/values/strings.xml` in the feature module (each `pharmacy.kmp.compose.library`
+    module already enables the plugin).
+  - **Locale storage**: `UiPreferences.locale: LocalePreference = System` (System/Th/En),
+    persisted via `UiPreferencesRepository.setLocale(...)` →
+    `SetLocalePreferenceUseCase`. Live in-app switching needs a `LocalAppLocale`
+    CompositionLocal wrapper around `App {}` (not yet wired — current behavior follows
+    `Locale.getDefault()` until a future PR adds the wrapper + a Settings UI).
+  - **Migration playbook** (incremental): for each Thai literal, grep
+    `"<thai-text>"` → add a `<string name="..."/>` entry to both `values/` and
+    `values-en/` → replace the literal with `stringResource(Res.string.<key>)`.
+    No need to migrate everything at once — the auto-locale-fallback means any
+    un-migrated literal still shows in Thai for Thai users.
+
 ## Cross-cutting reminders
 
 See repo-root `CLAUDE.md` at `/Users/admin/ProjectPos/CLAUDE.md` for
