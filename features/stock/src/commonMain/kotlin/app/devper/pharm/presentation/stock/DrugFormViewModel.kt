@@ -110,6 +110,11 @@ class DrugFormViewModel(
     private fun buildAddParam(f: DrugFormFields): AddDrugParam {
         val stock = f.initialStock.toIntOrNull() ?: 0
         val parsedLotExpiry = f.lotExpiry.trim().toLocalDateOrNull()
+        if (stock > 0 && parsedLotExpiry == null) {
+            throw app.devper.pharm.common.ValidationException(
+                message = "วันหมดอายุของล็อตเริ่มต้นไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)",
+            )
+        }
         val createLot = if (stock > 0 && parsedLotExpiry != null) {
             CreateLotPayload(
                 lotNumber = f.lotNumber.trim(),
