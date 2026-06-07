@@ -152,7 +152,7 @@ bound via Koin in each Main*.kt's platform module.
 | `param/<feature>/` | All `*Param` inputs grouped per feature |
 | `repository/<feature>/` | Repo interfaces grouped per feature (impls live in `:core:data`) |
 | `usecase/<feature>/` | 70+ use cases grouped per feature: auth, customers, suppliers, inventory, ky, offlinesync, purchasing, reports, sales, settings, labels. Each extends `BaseUseCase` / `BaseSyncUseCase`. |
-| `parser/`, `util/`, `pricing/`, `event/`, `observer/` | Cross-cutting domain helpers + 5 Provider classes |
+| `extension/`, `event/`, `observer/` | Cross-cutting domain helpers (extension fns + builders + parsers in `extension/XxxExt.kt`) + 5 Provider classes |
 | `di/<Feature>DomainModule.kt` × 10 | Per-feature Koin modules. Composer `DomainModule.kt` includes all. |
 
 ### `:core:ui` — shared compose infra (commonMain + commonTest only)
