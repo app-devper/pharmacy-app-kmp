@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -31,33 +32,34 @@ internal fun ReorderSuggestionsTable(
     callbacks: ReorderSuggestionsCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    val columns = remember(callbacks) {
+    val s = pharmStrings
+    val columns = remember(callbacks, s) {
         listOf(
         PharmTableColumn<ReorderSuggestion>(
-            header = "ชื่อยา",
+            header = s.expiryHeaderDrugName,
             weight = 2.4f,
             cell = { row -> SuggestionNameCell(row) },
         ),
         PharmTableColumn(
-            header = "คงเหลือ",
+            header = s.expiryHeaderRemaining,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { row -> SuggestionStockCell(row) },
         ),
         PharmTableColumn(
-            header = "แนะนำสั่ง",
+            header = s.planningHeaderRecommend,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { row -> SuggestionSuggestedQtyCell(row) },
         ),
         PharmTableColumn(
-            header = "ต้นทุนรวม",
+            header = s.planningHeaderTotalCost,
             weight = 1.1f,
             align = PharmColumnAlign.End,
             cell = { row -> SuggestionCostCell(row) },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { row -> SuggestionRowActions(row = row, callbacks = callbacks) },
@@ -73,7 +75,7 @@ internal fun ReorderSuggestionsTable(
         onRowClick = { callbacks.onRowClick(it) },
         rowHeight = 60.dp,
         emptyContent = {
-            Text(text = "สต็อกเพียงพอกับยอดขาย", style = PharmText.meta)
+            Text(text = s.planningReorderEmptyTitle, style = PharmText.meta)
         },
     )
 }
@@ -81,7 +83,8 @@ internal fun ReorderSuggestionsTable(
 @Composable
 private fun SuggestionNameCell(row: ReorderSuggestion) {
     val t = pharmTokens
-    val daysLeftText = if (row.isInfiniteDaysLeft) "—" else "${row.daysLeft.roundToInt()} วัน"
+    val s = pharmStrings
+    val daysLeftText = if (row.isInfiniteDaysLeft) "—" else s.planningDaysLeftLabel(row.daysLeft.roundToInt())
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
             text = row.drugName,
@@ -90,7 +93,7 @@ private fun SuggestionNameCell(row: ReorderSuggestion) {
             overflow = TextOverflow.Ellipsis,
         )
         Text(
-            text = "ขายเฉลี่ย ${formatRate(row.avgDailySale)}/วัน · เหลือ $daysLeftText",
+            text = s.planningMetaLine(formatRate(row.avgDailySale), daysLeftText),
             style = PharmText.micro.copy(color = t.colors.fg3).tabular(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -148,16 +151,17 @@ private fun SuggestionCostCell(row: ReorderSuggestion) {
 
 @Composable
 private fun SuggestionRowActions(row: ReorderSuggestion, callbacks: ReorderSuggestionsCallbacks) {
+    val s = pharmStrings
     PharmActionMenu(
         actions = listOf(
             PharmAction(
-                label = "เพิ่มใบสั่งซื้อ",
+                label = s.planningAddPoCta,
                 icon = PharmIcons.Plus,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onAddToPurchaseOrder(row) },
             ),
             PharmAction(
-                label = "ปิด",
+                label = s.commonClose,
                 icon = PharmIcons.Close,
                 onClick = { callbacks.onDismiss(row) },
             ),

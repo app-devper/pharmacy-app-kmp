@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,15 +38,16 @@ fun ReorderSuggestionsContent(
     callbacks: ReorderSuggestionsCallbacks = ReorderSuggestionsCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = "คำแนะนำสั่งซื้อ",
-            subtitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม",
+            title = s.planningTitle,
+            subtitle = s.planningReorderTitle,
             onBack = onBack,
             actions = {
                 PharmButton(
-                    label = "รีเฟรช",
+                    label = s.planningRefreshCta,
                     onClick = callbacks.onReload,
                     size = PharmButtonSize.Sm,
                     variant = PharmButtonVariant.Outline,
@@ -62,15 +64,15 @@ fun ReorderSuggestionsContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            PharmListResultLine(total = state.suggestions.size, noun = "รายการ")
+            PharmListResultLine(total = state.suggestions.size, noun = s.planningCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {
                 state.loading && state.suggestions.isEmpty() -> PharmListSkeleton()
                 state.suggestions.isEmpty() ->
                     PharmEmptyState(
                         icon = PharmIcons.Reports,
-                        title = "ไม่มีรายการที่ต้องสั่งซื้อ",
-                        subtitle = "ยังไม่มียาที่ถึงเกณฑ์แนะนำให้สั่งซื้อเพิ่ม",
+                        title = s.planningReorderEmptyTitle,
+                        subtitle = s.planningReorderEmpty,
                     )
                 else -> ReorderSuggestionsTable(suggestions = state.suggestions, callbacks = callbacks)
             }

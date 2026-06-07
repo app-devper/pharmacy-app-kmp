@@ -27,6 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +38,7 @@ fun LowStockContent(
     callbacks: LowStockCallbacks = LowStockCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Column(
         modifier = Modifier
@@ -53,15 +55,15 @@ fun LowStockContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            PharmListResultLine(total = state.drugs.size, noun = "รายการ")
+            PharmListResultLine(total = state.drugs.size, noun = s.planningCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {
                 state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
                 state.drugs.isEmpty() ->
                     PharmEmptyState(
                         icon = PharmIcons.Stock,
-                        title = "ไม่มียาใกล้หมด",
-                        subtitle = "สต็อกยาทุกรายการสูงกว่าระดับขั้นต่ำ",
+                        title = s.planningLowStockEmpty,
+                        subtitle = s.planningBelowMinEmpty,
                     )
                 else -> LowStockTable(drugs = state.drugs, callbacks = callbacks)
             }
@@ -73,12 +75,13 @@ fun LowStockContent(
 
 @Composable
 private fun LowStockToolbar(onReload: () -> Unit) {
+    val s = pharmStrings
     PharmListToolbar(
-        title = "ยาใกล้หมด",
-        subtitle = "ยาที่ต่ำกว่าระดับสต็อกขั้นต่ำ",
+        title = s.planningLowStockTitle,
+        subtitle = s.planningBelowMinTitle,
         actions = {
             PharmButton(
-                label = "รีเฟรช",
+                label = s.planningRefreshCta,
                 onClick = onReload,
                 size = PharmButtonSize.Sm,
                 variant = PharmButtonVariant.Outline,

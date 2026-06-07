@@ -20,6 +20,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -30,8 +31,9 @@ internal fun BulkImportResultTable(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
-    val columns = remember(t) {
+    val columns = remember(t, s) {
         listOf(
         PharmTableColumn<BulkImportRow>(
             header = "#",
@@ -48,7 +50,7 @@ internal fun BulkImportResultTable(
             },
         ),
         PharmTableColumn(
-            header = "ชื่อยา",
+            header = s.expiryHeaderDrugName,
             weight = 3f,
             cell = { row ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -70,7 +72,7 @@ internal fun BulkImportResultTable(
             },
         ),
         PharmTableColumn(
-            header = "จำนวน",
+            header = s.commonQty,
             weight = 0.9f,
             align = PharmColumnAlign.End,
             cell = { row ->
@@ -84,7 +86,7 @@ internal fun BulkImportResultTable(
             },
         ),
         PharmTableColumn(
-            header = "สถานะ",
+            header = s.commonStatus,
             weight = 1.1f,
             cell = { row -> BulkImportStatusBadge(row.status) },
         ),
@@ -100,8 +102,8 @@ internal fun BulkImportResultTable(
             emptyContent = {
                 PharmEmptyState(
                     icon = PharmIcons.Imports,
-                    title = "ยังไม่มีรายการ",
-                    subtitle = "ตรวจสอบ JSON ก่อน",
+                    title = s.bulkImportEmptyDefault,
+                    subtitle = s.bulkImportValidatePromptHint,
                 )
             },
         )

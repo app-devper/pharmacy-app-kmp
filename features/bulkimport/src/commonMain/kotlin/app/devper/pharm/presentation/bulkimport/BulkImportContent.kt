@@ -34,6 +34,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -47,6 +48,7 @@ fun BulkImportContent(
     callbacks: BulkImportCallbacks = BulkImportCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val scroll = rememberScrollState()
 
     Column(
@@ -55,11 +57,11 @@ fun BulkImportContent(
             .background(t.colors.bgPage),
     ) {
         PharmListToolbar(
-            title = "นำเข้ายาด้วย JSON",
-            subtitle = "อัปโหลดไฟล์ JSON หรือวางข้อความเพื่อสร้างยาทีเดียวหลายรายการ",
+            title = s.bulkImportTitle,
+            subtitle = s.bulkImportSubtitle,
             actions = {
                 PharmButton(
-                    label = "ดาวน์โหลด Template",
+                    label = s.bulkImportDownloadTemplate,
                     onClick = callbacks.onDownloadTemplate,
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
@@ -95,7 +97,7 @@ fun BulkImportContent(
             state.previewCount?.let { count ->
                 if (state.parseError == null && state.result == null) {
                     BulkImportInfoBanner(
-                        text = "ตรวจสอบแล้ว — พบ $count รายการ พร้อมนำเข้า",
+                        text = s.bulkImportValidatedReady(count),
                     )
                 }
             }
@@ -133,13 +135,14 @@ private fun BulkImportActionRow(
     state: BulkImportUiState,
     callbacks: BulkImportCallbacks,
 ) {
+    val s = pharmStrings
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         PharmButton(
-            label = "ตรวจสอบ",
+            label = s.bulkImportValidateCta,
             onClick = callbacks.onPreview,
             variant = PharmButtonVariant.Outline,
             size = PharmButtonSize.Md,
@@ -158,11 +161,11 @@ private fun BulkImportActionRow(
                     modifier = Modifier.size(18.dp),
                 )
             } else {
-                Text(text = "นำเข้าทั้งหมด", style = PharmText.buttonMd)
+                Text(text = s.bulkImportImportAllCta, style = PharmText.buttonMd)
             }
         }
         PharmButton(
-            label = "ล้าง",
+            label = s.bulkImportClearCta,
             onClick = callbacks.onClear,
             variant = PharmButtonVariant.Ghost,
             size = PharmButtonSize.Md,
@@ -196,9 +199,10 @@ private fun BulkImportInfoBanner(text: String) {
 @Composable
 private fun BulkImportResultSummary(result: BulkImportResult) {
     val t = pharmTokens
+    val s = pharmStrings
     val bg = if (result.hasErrors) t.colors.warningBg else t.colors.successBg
     val fg = if (result.hasErrors) t.colors.warningFg else t.colors.successFg
-    val title = if (result.hasErrors) "นำเข้าบางส่วน" else "นำเข้าสำเร็จทั้งหมด"
+    val title = if (result.hasErrors) s.bulkImportResultPartial else s.bulkImportResultAllSuccess
     val icon = if (result.hasErrors) PharmIcons.Warning else PharmIcons.Check
 
     Row(
@@ -217,7 +221,7 @@ private fun BulkImportResultSummary(result: BulkImportResult) {
                 style = PharmText.h3.copy(color = fg, fontWeight = FontWeight.SemiBold),
             )
             Text(
-                text = "บันทึก ${result.imported}/${result.totalAttempted} รายการ",
+                text = s.bulkImportResultSummary(result.imported, result.totalAttempted),
                 style = PharmText.bodySm.copy(color = fg).tabular(),
             )
         }
@@ -227,6 +231,7 @@ private fun BulkImportResultSummary(result: BulkImportResult) {
 @Composable
 private fun BulkImportResultHeader(rows: List<BulkImportRow>) {
     val t = pharmTokens
+    val s = pharmStrings
     val done = rows.count { it.status == BulkImportRowStatus.Done }
     val failed = rows.count { it.status == BulkImportRowStatus.Failed }
     val pending = rows.count { it.status == BulkImportRowStatus.Pending }
@@ -238,18 +243,18 @@ private fun BulkImportResultHeader(rows: List<BulkImportRow>) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "ผลการนำเข้า · ${rows.size} รายการ",
+            text = s.bulkImportResultTitle(rows.size),
             style = PharmText.h3,
             modifier = Modifier.weight(1f),
         )
         if (pending > 0) {
-            BulkImportCountChip(label = "พร้อมนำเข้า", value = pending, color = t.colors.warningFg)
+            BulkImportCountChip(label = s.bulkImportStatusReady, value = pending, color = t.colors.warningFg)
         }
         if (done > 0) {
-            BulkImportCountChip(label = "สำเร็จ", value = done, color = t.colors.successFg)
+            BulkImportCountChip(label = s.bulkImportResultSuccessLabel, value = done, color = t.colors.successFg)
         }
         if (failed > 0) {
-            BulkImportCountChip(label = "ผิดพลาด", value = failed, color = t.colors.dangerFg)
+            BulkImportCountChip(label = s.bulkImportStatusError, value = failed, color = t.colors.dangerFg)
         }
     }
 }
