@@ -93,7 +93,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.security.crypto)
             implementation(libs.koin.android)
             implementation(libs.ktor.client.okhttp)
         }
