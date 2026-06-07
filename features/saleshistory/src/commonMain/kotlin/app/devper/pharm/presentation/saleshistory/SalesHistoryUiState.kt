@@ -3,14 +3,12 @@ package app.devper.pharm.presentation.saleshistory
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.common.BaseUiState
-import kotlinx.datetime.TimeZone
+import app.devper.pharm.ui.format.DateRangeFilter
 
 data class SalesHistoryUiState(
-    val tz: TimeZone = TimeZone.of("Asia/Bangkok"),
+    val dateRange: DateRangeFilter = DateRangeFilter(),
     val sales: List<SaleSummary> = emptyList(),
     override val loading: Boolean = false,
-    val from: String = "",
-    val to: String = "",
     val query: String = "",
 
     val selected: SaleSummary? = null,

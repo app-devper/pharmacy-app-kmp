@@ -27,7 +27,7 @@ fun SalesHistoryContent(
     callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
 ) {
     val t = pharmTokens
-    val searching = state.from.isNotBlank() || state.to.isNotBlank() || state.query.isNotBlank()
+    val searching = state.dateRange.from.isNotBlank() || state.dateRange.to.isNotBlank() || state.query.isNotBlank()
 
     Column(
         modifier = Modifier
@@ -108,8 +108,7 @@ private fun SalesHistoryContent_Loaded_Preview() {
         SalesHistoryContent(
             state = SalesHistoryUiState(
                 sales = sampleSales,
-                from = "2026-05-17",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-05-17", to = "2026-05-17"),
             ),
         )
     }
@@ -122,8 +121,7 @@ private fun SalesHistoryContent_Empty_Preview() {
         SalesHistoryContent(
             state = SalesHistoryUiState(
                 sales = emptyList(),
-                from = "2026-05-17",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-05-17", to = "2026-05-17"),
             ),
         )
     }
@@ -136,8 +134,7 @@ private fun SalesHistoryContent_Searching_Preview() {
         SalesHistoryContent(
             state = SalesHistoryUiState(
                 sales = sampleSales.filter { it.customerName.contains("สมศรี") },
-                from = "2026-05-17",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-05-17", to = "2026-05-17"),
                 query = "สมศรี",
             ),
         )

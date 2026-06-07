@@ -148,8 +148,7 @@ private fun ProfitContent_Loaded_Preview() {
     PharmacyTheme {
         ProfitContent(
             state = ProfitUiState(
-                from = "2026-05-01",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-05-01", to = "2026-05-17"),
                 report = ProfitReport(summary = sampleSummary, byDrug = sampleRows),
             ),
         )
@@ -162,8 +161,7 @@ private fun ProfitContent_Empty_Preview() {
     PharmacyTheme {
         ProfitContent(
             state = ProfitUiState(
-                from = "2026-05-01",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-05-01", to = "2026-05-17"),
                 report = ProfitReport(
                     summary = ProfitSummary(0.0, 0.0, 0.0, 0.0, 0),
                     byDrug = emptyList(),

@@ -2,15 +2,13 @@ package app.devper.pharm.presentation.movements
 
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.ui.common.BaseUiState
-import kotlinx.datetime.TimeZone
+import app.devper.pharm.ui.format.DateRangeFilter
 
 data class MovementsUiState(
-    val tz: TimeZone = TimeZone.of("Asia/Bangkok"),
+    val dateRange: DateRangeFilter = DateRangeFilter(),
     val items: List<StockMovement> = emptyList(),
     val total: Int = 0,
     override val loading: Boolean = false,
-    val from: String = "",
-    val to: String = "",
     val drugName: String = "",
     val activeTypeIds: Set<String> = MovementsTypeCatalog.allIds,
     val page: Int = 1,

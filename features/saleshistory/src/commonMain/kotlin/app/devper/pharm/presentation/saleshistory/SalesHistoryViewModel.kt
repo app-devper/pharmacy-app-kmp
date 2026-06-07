@@ -9,25 +9,26 @@ import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
-import app.devper.pharm.presentation.saleshistory.internal.millisToYmd
-import app.devper.pharm.ui.format.toLocalDateOrNull
 import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.format.DateRangeFilter
 
 class SalesHistoryViewModel(
     private val getHistory: GetSaleHistoryUseCase,
     private val getItems: GetSaleItemsUseCase,
     private val submitReturn: SubmitSaleReturnUseCase,
     timeZoneProvider: TimeZoneProvider,
-) : BaseViewModel<SalesHistoryUiState>(SalesHistoryUiState(tz = timeZoneProvider.current)) {
+) : BaseViewModel<SalesHistoryUiState>(
+    SalesHistoryUiState(dateRange = DateRangeFilter(tz = timeZoneProvider.current)),
+) {
 
     init { loadList() }
 
-    fun onFromChange(value: String) = setState { copy(from = value) }
-    fun onToChange(value: String) = setState { copy(to = value) }
+    fun onFromChange(value: String) = setState { copy(dateRange = dateRange.withFrom(value)) }
+    fun onToChange(value: String) = setState { copy(dateRange = dateRange.withTo(value)) }
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
-    fun onFromMillisChange(millis: Long?) = onFromChange(millisToYmd(millis, current.tz))
-    fun onToMillisChange(millis: Long?) = onToChange(millisToYmd(millis, current.tz))
+    fun onFromMillisChange(millis: Long?) = setState { copy(dateRange = dateRange.withFromMillis(millis)) }
+    fun onToMillisChange(millis: Long?) = setState { copy(dateRange = dateRange.withToMillis(millis)) }
 
     fun applyFilter() = loadList()
 
@@ -38,8 +39,8 @@ class SalesHistoryViewModel(
             block = {
                 getHistory(
                     SaleHistoryFilterParam(
-                        from = s.from.toLocalDateOrNull(),
-                        to = s.to.toLocalDateOrNull(),
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
                         query = s.query.takeIf { it.isNotBlank() },
                     ),
                 )

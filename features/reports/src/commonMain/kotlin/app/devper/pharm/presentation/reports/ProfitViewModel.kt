@@ -5,12 +5,11 @@ import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.param.ReportRangeParam
 import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
 import app.devper.pharm.domain.usecase.GetProfitReportUseCase
-import app.devper.pharm.presentation.reports.internal.millisToYmd
 import app.devper.pharm.presentation.reports.internal.startOfMonth
 import app.devper.pharm.presentation.reports.internal.todayDate
 import app.devper.pharm.presentation.reports.internal.toYmd
 import app.devper.pharm.ui.common.BaseViewModel
-import app.devper.pharm.ui.format.toLocalDateOrNull
+import app.devper.pharm.ui.format.DateRangeFilter
 
 class ProfitViewModel(
     private val getProfitReport: GetProfitReportUseCase,
@@ -18,21 +17,23 @@ class ProfitViewModel(
     timeZoneProvider: TimeZoneProvider,
 ) : BaseViewModel<ProfitUiState>(
     ProfitUiState(
-        tz = timeZoneProvider.current,
-        from = todayDate(timeZoneProvider.current).startOfMonth().toYmd(),
-        to = todayDate(timeZoneProvider.current).toYmd(),
+        dateRange = DateRangeFilter(
+            tz = timeZoneProvider.current,
+            from = todayDate(timeZoneProvider.current).startOfMonth().toYmd(),
+            to = todayDate(timeZoneProvider.current).toYmd(),
+        ),
     ),
 ) {
 
     init { reload() }
 
     fun onFromMillisChange(millis: Long?) {
-        setState { copy(from = millisToYmd(millis, tz)) }
+        setState { copy(dateRange = dateRange.withFromMillis(millis)) }
         reload()
     }
 
     fun onToMillisChange(millis: Long?) {
-        setState { copy(to = millisToYmd(millis, tz)) }
+        setState { copy(dateRange = dateRange.withToMillis(millis)) }
         reload()
     }
 
@@ -49,7 +50,7 @@ class ProfitViewModel(
         }
         setState { copy(exporting = true) }
         launchResult(
-            block = { exportProfitCsv(ExportProfitCsvParam(s.from.toLocalDateOrNull(), s.to.toLocalDateOrNull(), rows)) },
+            block = { exportProfitCsv(ExportProfitCsvParam(s.dateRange.fromDate, s.dateRange.toDate, rows)) },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
             onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ส่งออกไม่สำเร็จ") } },
         )
@@ -59,7 +60,7 @@ class ProfitViewModel(
         val s = current
         setState { copy(loading = true, error = null) }
         launchResult(
-            block = { getProfitReport(ReportRangeParam(from = s.from.toLocalDateOrNull(), to = s.to.toLocalDateOrNull())) },
+            block = { getProfitReport(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
             onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
             onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดรายงานไม่สำเร็จ") } },
         )

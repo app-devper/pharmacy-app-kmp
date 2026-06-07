@@ -5,22 +5,27 @@ import app.devper.pharm.domain.param.MovementsFilterParam
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
-import app.devper.pharm.presentation.movements.internal.millisToYmd
 import app.devper.pharm.ui.common.BaseViewModel
-import app.devper.pharm.ui.format.toLocalDateOrNull
+import app.devper.pharm.ui.format.DateRangeFilter
 
 class MovementsViewModel(
     private val getMovements: GetMovementsUseCase,
     private val exportMovementsCsv: ExportMovementsCsvUseCase,
     timeZoneProvider: TimeZoneProvider,
-) : BaseViewModel<MovementsUiState>(MovementsUiState(tz = timeZoneProvider.current)) {
+) : BaseViewModel<MovementsUiState>(
+    MovementsUiState(dateRange = DateRangeFilter(tz = timeZoneProvider.current)),
+) {
 
     init { reload() }
 
-    fun onFromChange(value: String) = setState { copy(from = value, page = 1) }
-    fun onToChange(value: String) = setState { copy(to = value, page = 1) }
-    fun onFromMillisChange(millis: Long?) = onFromChange(millisToYmd(millis, current.tz))
-    fun onToMillisChange(millis: Long?) = onToChange(millisToYmd(millis, current.tz))
+    fun onFromChange(value: String) = setState { copy(dateRange = dateRange.withFrom(value), page = 1) }
+    fun onToChange(value: String) = setState { copy(dateRange = dateRange.withTo(value), page = 1) }
+    fun onFromMillisChange(millis: Long?) = setState {
+        copy(dateRange = dateRange.withFromMillis(millis), page = 1)
+    }
+    fun onToMillisChange(millis: Long?) = setState {
+        copy(dateRange = dateRange.withToMillis(millis), page = 1)
+    }
 
     fun onSearchChange(value: String) = setState { copy(drugName = value, page = 1) }
 
@@ -49,8 +54,8 @@ class MovementsViewModel(
             block = {
                 exportMovementsCsv(
                     ExportMovementsCsvParam(
-                        from = s.from.toLocalDateOrNull(),
-                        to = s.to.toLocalDateOrNull(),
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
                         drugName = s.drugName,
                         rows = s.items,
                     ),
@@ -73,8 +78,8 @@ class MovementsViewModel(
             block = {
                 getMovements(
                     MovementsFilterParam(
-                        from = s.from.toLocalDateOrNull(),
-                        to = s.to.toLocalDateOrNull(),
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
                         drugName = s.drugName.takeIf { it.isNotBlank() },
                         types = MovementsTypeCatalog.toEnumSet(s.activeTypeIds),
                         limit = 200,
