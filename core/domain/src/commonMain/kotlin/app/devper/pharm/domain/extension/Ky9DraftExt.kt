@@ -1,7 +1,8 @@
 package app.devper.pharm.domain.extension
 
 import app.devper.pharm.domain.param.AddKy9Param
-import kotlinx.datetime.LocalDate
+import app.devper.pharm.domain.validation.Check
+import app.devper.pharm.domain.validation.Field
 
 fun buildKy9Draft(
     date: String,
@@ -13,20 +14,16 @@ fun buildKy9Draft(
     seller: String,
     invoiceNo: String,
 ): Result<AddKy9Param> = runCatching {
-    require(date.isNotBlank()) { "ต้องระบุวันที่" }
-    require(drugName.isNotBlank()) { "ต้องระบุชื่อยา" }
-    require(unit.isNotBlank()) { "ต้องระบุหน่วย" }
-    val parsedDate = runCatching { LocalDate.parse(date.trim()) }.getOrNull()
-        ?: error("วันที่ไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)")
-    val parsedQty = qty.toIntOrNull() ?: error("จำนวนต้องเป็นตัวเลข")
-    require(parsedQty > 0) { "จำนวนต้องมากกว่า 0" }
-    val parsedPrice = pricePerUnit.toDoubleOrNull() ?: error("ราคาต่อหน่วยต้องเป็นตัวเลข")
-    require(parsedPrice >= 0.0) { "ราคาต่อหน่วยต้องไม่ติดลบ" }
+    val parsedDate = Field.localDate(date)
+    val parsedDrugName = Field.notBlank(drugName, "ชื่อยา")
+    val parsedUnit = Field.notBlank(unit, "หน่วย")
+    val parsedQty = Field.positiveInt(qty)
+    val parsedPrice = Field.nonNegativeDouble(pricePerUnit, label = "ราคาต่อหน่วย")
     AddKy9Param(
         date = parsedDate,
-        drugName = drugName.trim(),
+        drugName = parsedDrugName,
         regNo = regNo.trim(),
-        unit = unit.trim(),
+        unit = parsedUnit,
         qty = parsedQty,
         pricePerUnit = parsedPrice,
         seller = seller.trim(),
@@ -41,8 +38,8 @@ fun isKy9DraftValid(
     qty: String,
     pricePerUnit: String,
 ): Boolean =
-    date.isNotBlank() &&
-        drugName.isNotBlank() &&
-        unit.isNotBlank() &&
-        (qty.toIntOrNull() ?: 0) > 0 &&
-        (pricePerUnit.toDoubleOrNull() ?: -1.0) >= 0.0
+    Check.localDate(date) &&
+        Check.notBlank(drugName) &&
+        Check.notBlank(unit) &&
+        Check.positiveInt(qty) &&
+        Check.nonNegativeDouble(pricePerUnit)
