@@ -7,22 +7,15 @@ import kotlin.test.assertTrue
 class ApiConfigTest {
 
     @Test
-    fun default_um_base_url_points_at_cloud_run() {
-        val config = ApiConfig()
-        assertTrue(config.umBaseUrl.startsWith("https://"))
-        assertTrue(config.umBaseUrl.contains("um"))
-    }
-
-    @Test
-    fun default_pharmacy_url_points_at_cloud_run() {
+    fun default_base_url_points_at_unified_devper_host() {
         val config = ApiConfig()
         assertTrue(config.apiBaseUrl.startsWith("https://"))
-        assertTrue(config.apiBaseUrl.contains("pharmacy"))
+        assertEquals("https://api.devper.app", config.apiBaseUrl)
     }
 
     @Test
     fun um_endpoint_helpers_build_correct_paths() {
-        val config = ApiConfig(umBaseUrl = "http://localhost:8585")
+        val config = ApiConfig(apiBaseUrl = "http://localhost:8585")
         assertEquals("http://localhost:8585/api/um/v1/auth/login", config.umAuthLogin)
         assertEquals("http://localhost:8585/api/um/v1/auth/logout", config.umAuthLogout)
         assertEquals("http://localhost:8585/api/um/v1/user/info", config.umAuthInfo)
@@ -41,9 +34,17 @@ class ApiConfigTest {
     }
 
     @Test
+    fun um_user_path_helper_resolves_against_unified_base() {
+        val config = ApiConfig(apiBaseUrl = "http://localhost:8585")
+        assertEquals("http://localhost:8585/api/um/v1/user", config.umUser())
+        assertEquals("http://localhost:8585/api/um/v1/user/42", config.umUser("/42"))
+        assertEquals("http://localhost:8585/api/um/v1/user/42", config.umUser("42"))
+    }
+
+    @Test
     fun config_is_a_data_class_with_equality() {
-        val a = ApiConfig(umBaseUrl = "x", apiBaseUrl = "y")
-        val b = ApiConfig(umBaseUrl = "x", apiBaseUrl = "y")
+        val a = ApiConfig(apiBaseUrl = "y")
+        val b = ApiConfig(apiBaseUrl = "y")
         assertEquals(a, b)
     }
 }
