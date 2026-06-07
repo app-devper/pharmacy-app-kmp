@@ -507,6 +507,53 @@ interface PharmStrings {
     val reportsEodClosedDate: (String) -> String
     val reportsBillsOfDay: (Int) -> String
     val reportsWalkInCustomer: String
+    val kyToolbarSubtitle: String
+    val kyEmptyMonth: String
+    val kyCountNoun: String
+    val kySearchPlaceholder: String
+    val kyAddCta: String
+    val kyAddCtaWithNumber: (Int) -> String
+    val kyHeaderDate: String
+    val kyHeaderRef: String
+    val kyHeaderItem: String
+    val kyHeaderMonth: String
+    val kyHeaderQty: String
+    val kyHeaderValue: String
+    val kyHeaderPricePerUnit: String
+    val kyHeaderStatusPlaceholder: String
+    val kyExportingPdf: String
+    val kyExportPdfSuccess: String
+    val kyExportPdfFailed: String
+    val kyForm9Title: String
+    val kyForm10Title: String
+    val kyForm11Title: String
+    val kyForm12Title: String
+    val kyFormFullName9: String
+    val kyFormFullName10: String
+    val kyFormFullName11: String
+    val kyFormFullName12: String
+    val kyFormInfoSection: (Int) -> String
+    val kyDrugRegistration: String
+    val kyTaxInvoiceNo: String
+    val kyDeliveryNoteNo: String
+    val kySupplier: String
+    val kySupplierBusinessNo: String
+    val kyDoctorPrescriber: String
+    val kyPrescriptionNo: String
+    val kyHospitalClinic: String
+    val kyPharmacistName: String
+    val kyBuyerName: String
+    val kyBuyerAddress: String
+    val kyPatientName: String
+    val kyBuyerPatient: String
+    val kyPurposeOfUse: String
+    val kyValueAmount: String
+    val kyTotalValue: String
+    val kyRemainingBalance: String
+    val kyDispensed: String
+    val kyTotalAll: String
+    val kyDateYmd: String
+    val kyMonthLabel: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -1022,6 +1069,53 @@ object PharmStringsTh : PharmStrings {
     override val reportsEodClosedDate: (String) -> String = { date -> "ปิดรอบ EOD เรียบร้อย — วันที่ $date" }
     override val reportsBillsOfDay: (Int) -> String = { count -> "บิลในวัน · $count รายการ" }
     override val reportsWalkInCustomer = "ลูกค้าทั่วไป"
+    override val kyToolbarSubtitle = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข"
+    override val kyEmptyMonth = "ไม่มีรายการในเดือนนี้"
+    override val kyCountNoun = "รายการ"
+    override val kySearchPlaceholder = "ค้นหา"
+    override val kyAddCta = "เพิ่มรายการ"
+    override val kyAddCtaWithNumber: (Int) -> String = { n -> "เพิ่มรายการ ขย.$n" }
+    override val kyHeaderDate = "วันที่"
+    override val kyHeaderRef = "อ้างอิง"
+    override val kyHeaderItem = "ชื่อยา"
+    override val kyHeaderMonth = "เดือน"
+    override val kyHeaderQty = "จำนวน"
+    override val kyHeaderValue = "มูลค่า"
+    override val kyHeaderPricePerUnit = "ราคา/หน่วย"
+    override val kyHeaderStatusPlaceholder = "เช่น จ่ายแล้ว / รอจ่าย"
+    override val kyExportingPdf = "กำลังส่งออก…"
+    override val kyExportPdfSuccess = "ส่งออก PDF สำเร็จ"
+    override val kyExportPdfFailed = "ดาวน์โหลด PDF ไม่สำเร็จ"
+    override val kyForm9Title = "ขย.9 — บัญชีการซื้อยา"
+    override val kyForm10Title = "ขย.10 — บัญชียาควบคุมพิเศษ"
+    override val kyForm11Title = "ขย.11 — บัญชียาอันตราย"
+    override val kyForm12Title = "ขย.12 — บัญชียาที่ต้องใช้ใบสั่งแพทย์"
+    override val kyFormFullName9 = "บัญชีแสดงรายการซื้อยาและผลิตภัณฑ์สุขภาพ"
+    override val kyFormFullName10 = "บัญชีแสดงการขายยาควบคุมพิเศษ"
+    override val kyFormFullName11 = "บัญชีแสดงการขายยาอันตราย"
+    override val kyFormFullName12 = "บัญชีแสดงการขายยาที่ต้องใช้ใบสั่งแพทย์"
+    override val kyFormInfoSection: (Int) -> String = { n -> "ข้อมูลรายการ ขย.$n" }
+    override val kyDrugRegistration = "เลขทะเบียน"
+    override val kyTaxInvoiceNo = "เลขที่ใบกำกับภาษี"
+    override val kyDeliveryNoteNo = "เลขใบส่งของ"
+    override val kySupplier = "ผู้ขาย"
+    override val kySupplierBusinessNo = "ผู้ขาย/บริษัท"
+    override val kyDoctorPrescriber = "แพทย์ผู้สั่ง"
+    override val kyPrescriptionNo = "เลขที่ใบสั่งยา (Rx)"
+    override val kyHospitalClinic = "โรงพยาบาล/คลินิก"
+    override val kyPharmacistName = "ชื่อเภสัชกร"
+    override val kyBuyerName = "ชื่อผู้ซื้อ"
+    override val kyBuyerAddress = "ที่อยู่ผู้ซื้อ"
+    override val kyPatientName = "ชื่อคนไข้"
+    override val kyBuyerPatient = "ผู้ซื้อ/ผู้ป่วย"
+    override val kyPurposeOfUse = "วัตถุประสงค์การใช้"
+    override val kyValueAmount = "มูลค่า"
+    override val kyTotalValue = "มูลค่ารวม"
+    override val kyRemainingBalance = "ยอดคงเหลือ"
+    override val kyDispensed = "จ่ายแล้ว"
+    override val kyTotalAll = "รวมทั้งหมด"
+    override val kyDateYmd = "วันที่ (YYYY-MM-DD)"
+    override val kyMonthLabel = "เดือน"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -1537,6 +1631,53 @@ object PharmStringsEn : PharmStrings {
     override val reportsEodClosedDate: (String) -> String = { date -> "EOD closed — $date" }
     override val reportsBillsOfDay: (Int) -> String = { count -> "Bills for the day · $count items" }
     override val reportsWalkInCustomer = "Walk-in"
+    override val kyToolbarSubtitle = "Export Excel/PDF for FDA submission following the Ministry of Health template"
+    override val kyEmptyMonth = "No entries in this month"
+    override val kyCountNoun = "entries"
+    override val kySearchPlaceholder = "Search"
+    override val kyAddCta = "Add entry"
+    override val kyAddCtaWithNumber: (Int) -> String = { n -> "Add KY-$n entry" }
+    override val kyHeaderDate = "Date"
+    override val kyHeaderRef = "Reference"
+    override val kyHeaderItem = "Item"
+    override val kyHeaderMonth = "Month"
+    override val kyHeaderQty = "Qty"
+    override val kyHeaderValue = "Value"
+    override val kyHeaderPricePerUnit = "Price/unit"
+    override val kyHeaderStatusPlaceholder = "e.g. dispensed / pending"
+    override val kyExportingPdf = "Exporting…"
+    override val kyExportPdfSuccess = "PDF exported"
+    override val kyExportPdfFailed = "PDF download failed"
+    override val kyForm9Title = "KY-9 — drug purchase log"
+    override val kyForm10Title = "KY-10 — special-control drug log"
+    override val kyForm11Title = "KY-11 — dangerous-drug log"
+    override val kyForm12Title = "KY-12 — prescription-required drug log"
+    override val kyFormFullName9 = "Drug + health product purchase log"
+    override val kyFormFullName10 = "Special-control drug sales log"
+    override val kyFormFullName11 = "Dangerous-drug sales log"
+    override val kyFormFullName12 = "Prescription-required drug sales log"
+    override val kyFormInfoSection: (Int) -> String = { n -> "KY-$n entry info" }
+    override val kyDrugRegistration = "Drug registration no."
+    override val kyTaxInvoiceNo = "Tax invoice no."
+    override val kyDeliveryNoteNo = "Delivery note no."
+    override val kySupplier = "Supplier"
+    override val kySupplierBusinessNo = "Supplier / business"
+    override val kyDoctorPrescriber = "Prescribing doctor"
+    override val kyPrescriptionNo = "Prescription no. (Rx)"
+    override val kyHospitalClinic = "Hospital / clinic"
+    override val kyPharmacistName = "Pharmacist name"
+    override val kyBuyerName = "Buyer name"
+    override val kyBuyerAddress = "Buyer address"
+    override val kyPatientName = "Patient name"
+    override val kyBuyerPatient = "Buyer / patient"
+    override val kyPurposeOfUse = "Purpose of use"
+    override val kyValueAmount = "Value"
+    override val kyTotalValue = "Total value"
+    override val kyRemainingBalance = "Remaining balance"
+    override val kyDispensed = "Dispensed"
+    override val kyTotalAll = "Total"
+    override val kyDateYmd = "Date (YYYY-MM-DD)"
+    override val kyMonthLabel = "Month"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }

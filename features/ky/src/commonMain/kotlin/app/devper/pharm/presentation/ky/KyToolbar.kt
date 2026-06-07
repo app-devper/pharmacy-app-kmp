@@ -20,6 +20,7 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -39,7 +40,7 @@ internal fun KyToolbar(
     onAddEntry: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val meta = kyFormMeta(currentForm)
+    val meta = kyFormMeta(currentForm, pharmStrings)
     PharmListToolbar(
         title = meta.title,
         modifier = modifier,
@@ -61,7 +62,7 @@ internal fun KyToolbar(
                     leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
                 )
                 PharmButton(
-                    label = if (exporting) "กำลังส่งออก…" else "PDF",
+                    label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
                     onClick = onExport,
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
@@ -69,7 +70,7 @@ internal fun KyToolbar(
                     leadingIcon = { Icon(PharmIcons.FilePdf, contentDescription = null) },
                 )
                 PharmButton(
-                    label = "เพิ่มรายการ",
+                    label = pharmStrings.kyAddCta,
                     onClick = onAddEntry,
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
@@ -90,7 +91,7 @@ private fun KyMonthField(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text("เดือน", style = PharmText.micro.copy(color = t.colors.fg3))
+        Text(pharmStrings.kyMonthLabel, style = PharmText.micro.copy(color = t.colors.fg3))
         Box(modifier = Modifier.widthIn(min = 120.dp, max = 160.dp)) {
             PharmTextField(
                 value = month,
@@ -99,7 +100,7 @@ private fun KyMonthField(
             )
         }
         PharmButton(
-            label = "ค้นหา",
+            label = pharmStrings.commonSearch,
             onClick = onApply,
             variant = PharmButtonVariant.Outline,
             size = PharmButtonSize.Sm,
@@ -115,7 +116,7 @@ internal fun KyValueStat(totalValue: Double, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(text = "มูลค่ารวม", style = PharmText.micro.copy(color = t.colors.fg3))
+        Text(text = pharmStrings.kyTotalValue, style = PharmText.micro.copy(color = t.colors.fg3))
         Text(
             text = fmtBaht(totalValue),
             style = PharmText.bodySm.copy(
