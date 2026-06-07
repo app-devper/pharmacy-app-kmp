@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
-data class PharmStrings(
+class PharmStrings(
     val commonCancel: String,
     val commonSave: String,
     val commonDelete: String,
@@ -238,6 +238,25 @@ data class PharmStrings(
     val offlineSyncRetryRowCta: String,
     val offlineSyncDeleteConfirmTitle: String,
     val offlineSyncDeleteConfirmMessage: String,
+    val expirySubtitle: String,
+    val expirySelectAll: String,
+    val expirySelectPartial: String,
+    val expiryWriteoffCta: String,
+    val expiryWriteoffSelectedLabel: (Int) -> String,
+    val expiryCountNoun: String,
+    val expiryTotalRemaining: String,
+    val expiryHeaderDrugName: String,
+    val expiryHeaderLotNumber: String,
+    val expiryHeaderExpiry: String,
+    val expiryHeaderRemaining: String,
+    val expiryStatusExpired: String,
+    val expiryStatusDaysLeft: (Int) -> String,
+    val expiryEmpty: String,
+    val expiryConfirmTitle: String,
+    val expiryConfirmMessage: (Int) -> String,
+    val expiryResultSuccessTitle: String,
+    val expiryResultPartialTitle: String,
+    val expiryResultSummary: (Int, Int) -> String,
 )
 
 val PharmStringsTh: PharmStrings = PharmStrings(
@@ -480,6 +499,28 @@ val PharmStringsTh: PharmStrings = PharmStrings(
     offlineSyncDeleteConfirmMessage =
         "บิลนี้จะถูกลบออกจากคิวภายในเครื่อง — ใช้เมื่อแน่ใจว่า " +
         "backend รับบิลนี้ไปแล้วหรือไม่ต้องการให้ส่งซ้ำอีก",
+    expirySubtitle = "ตรวจล็อตใกล้หมดอายุ และตัดจำหน่าย",
+    expirySelectAll = "เลือกทั้งหมด",
+    expirySelectPartial = "เลือกบางส่วน · กดเพื่อล้าง",
+    expiryWriteoffCta = "ตัดจำหน่าย",
+    expiryWriteoffSelectedLabel = { count -> "เขียนทิ้ง $count รายการ" },
+    expiryCountNoun = "ล็อต",
+    expiryTotalRemaining = "คงเหลือรวม",
+    expiryHeaderDrugName = "ชื่อยา",
+    expiryHeaderLotNumber = "เลขล็อต",
+    expiryHeaderExpiry = "วันหมดอายุ",
+    expiryHeaderRemaining = "คงเหลือ",
+    expiryStatusExpired = "หมดอายุแล้ว",
+    expiryStatusDaysLeft = { days -> "อีก $days วัน" },
+    expiryEmpty = "ไม่มีล็อตในช่วงเวลานี้",
+    expiryConfirmTitle = "ตัดจำหน่ายล็อต?",
+    expiryConfirmMessage = { count ->
+        "ระบบจะลบ $count ล็อต และลด stock ตาม remaining ของแต่ละล็อต — " +
+        "บันทึกการตัดจำหน่ายไว้สำหรับตรวจสอบ"
+    },
+    expiryResultSuccessTitle = "ตัดจำหน่ายสำเร็จ",
+    expiryResultPartialTitle = "ตัดจำหน่ายบางส่วน",
+    expiryResultSummary = { writtenOff, total -> "บันทึก $writtenOff/$total ล็อต" },
 )
 
 val PharmStringsEn: PharmStrings = PharmStrings(
@@ -722,6 +763,28 @@ val PharmStringsEn: PharmStrings = PharmStrings(
     offlineSyncDeleteConfirmMessage =
         "This bill will be removed from the device queue — only do this if " +
         "the backend has already received it or you don't want to retry.",
+    expirySubtitle = "Check near-expiry lots and write off",
+    expirySelectAll = "Select all",
+    expirySelectPartial = "Partial selection · tap to clear",
+    expiryWriteoffCta = "Write off",
+    expiryWriteoffSelectedLabel = { count -> "Write off $count item(s)" },
+    expiryCountNoun = "lots",
+    expiryTotalRemaining = "Total remaining",
+    expiryHeaderDrugName = "Drug name",
+    expiryHeaderLotNumber = "Lot number",
+    expiryHeaderExpiry = "Expiry date",
+    expiryHeaderRemaining = "Remaining",
+    expiryStatusExpired = "Expired",
+    expiryStatusDaysLeft = { days -> "$days day(s) left" },
+    expiryEmpty = "No lots in this window",
+    expiryConfirmTitle = "Write off lots?",
+    expiryConfirmMessage = { count ->
+        "The system will remove $count lots and reduce stock by each lot's remaining — " +
+        "the write-off is logged for audit."
+    },
+    expiryResultSuccessTitle = "Write-off complete",
+    expiryResultPartialTitle = "Partially written off",
+    expiryResultSummary = { writtenOff, total -> "Recorded $writtenOff/$total lots" },
 )
 
 val LocalPharmStrings = staticCompositionLocalOf { PharmStringsTh }

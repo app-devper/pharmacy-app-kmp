@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -62,7 +63,7 @@ fun ExpiryContent(
         ) {
             PharmListResultLine(
                 total = state.lots.size,
-                noun = "ล็อต",
+                noun = pharmStrings.expiryCountNoun,
                 trailing = { ExpiryRemainingStat(totalRemaining = state.totalRemaining) },
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
@@ -103,21 +104,22 @@ private fun WriteoffConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = open,
         onDismiss = onDismiss,
-        title = "ตัดจำหน่ายล็อต?",
+        title = s.expiryConfirmTitle,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
                 enabled = !writingOff,
             )
             PharmButton(
-                label = "ตัดจำหน่าย",
+                label = s.expiryWriteoffCta,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Sm,
@@ -126,8 +128,7 @@ private fun WriteoffConfirmDialog(
         },
     ) {
         Text(
-            text = "ระบบจะลบ $count ล็อต และลด stock ตาม remaining ของแต่ละล็อต — " +
-                "บันทึกการตัดจำหน่ายไว้สำหรับตรวจสอบ",
+            text = s.expiryConfirmMessage(count),
             style = PharmText.body,
         )
     }
@@ -136,14 +137,15 @@ private fun WriteoffConfirmDialog(
 @Composable
 private fun WriteoffResultDialog(result: WriteoffResult, onDismiss: () -> Unit) {
     val t = pharmTokens
+    val s = pharmStrings
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = if (result.hasFailures) "ตัดจำหน่ายบางส่วน" else "ตัดจำหน่ายสำเร็จ",
+        title = if (result.hasFailures) s.expiryResultPartialTitle else s.expiryResultSuccessTitle,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ปิด",
+                label = s.commonClose,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
@@ -152,7 +154,7 @@ private fun WriteoffResultDialog(result: WriteoffResult, onDismiss: () -> Unit) 
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                text = "บันทึก ${result.writtenOff}/${result.totalAttempted} ล็อต",
+                text = s.expiryResultSummary(result.writtenOff, result.totalAttempted),
                 style = PharmText.body,
             )
             if (result.hasFailures) {
