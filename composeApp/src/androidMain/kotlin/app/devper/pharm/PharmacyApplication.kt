@@ -1,6 +1,9 @@
 package app.devper.pharm
 
 import android.app.Application
+import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
@@ -21,15 +24,14 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
+private const val SECURE_PREFS_NAME = "pharmacy.secure.prefs"
+
 class PharmacyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
         val androidPlatformModule = module {
-            single<Settings> {
-                val prefs = applicationContext.getSharedPreferences("pharmacy.prefs", MODE_PRIVATE)
-                SharedPreferencesSettings(prefs)
-            }
+            single<Settings> { SharedPreferencesSettings(buildSecurePrefs()) }
             single { buildHttpClient(OkHttp, get<TokenStorage>()) }
 
             single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
@@ -43,5 +45,18 @@ class PharmacyApplication : Application() {
             androidContext(this@PharmacyApplication)
             modules(androidPlatformModule, appModule)
         }
+    }
+
+    private fun buildSecurePrefs(): SharedPreferences {
+        val masterKey = MasterKey.Builder(applicationContext)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        return EncryptedSharedPreferences.create(
+            applicationContext,
+            SECURE_PREFS_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+        )
     }
 }

@@ -28,7 +28,7 @@ private fun mockClientReturning(status: HttpStatusCode, body: String = "") = run
             return MockEngine(config)
         }
     }
-    buildHttpClient(engineFactory, tokenStorage, enableLogging = false) to tokenStorage
+    buildHttpClient(engineFactory, tokenStorage, enableLogging = false, installTimeout = false) to tokenStorage
 }
 
 class HttpResponseValidatorTest {
