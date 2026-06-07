@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.observer
 
+import app.devper.pharm.common.value.Money
+
 import app.devper.pharm.common.PrintlnLogger
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.domain.model.PendingSale
@@ -89,5 +91,5 @@ private class Sales : SaleRepository {
         return sale()
     }
 
-    private fun sale() = Sale("s", "B", 0.0, 0.0, 0.0, emptyList())
+    private fun sale() = Sale("s", "B", Money.Zero, Money.Zero, Money.Zero, emptyList())
 }

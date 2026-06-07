@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.param.CheckoutParam
 import app.devper.pharm.domain.param.VoidSaleParam
@@ -8,9 +11,9 @@ class FakeSaleRepository(
     private val successResult: Sale = Sale(
         id = "sale-1",
         billNo = "INV-260510-001",
-        total = 0.0,
-        change = 0.0,
-        discount = 0.0,
+        total = Money(0.0),
+        change = Money(0.0),
+        discount = Money(0.0),
         stockUpdates = emptyList(),
     ),
     private val checkoutThrows: Throwable? = null,
@@ -31,7 +34,7 @@ class FakeSaleRepository(
         lastCheckout = param
         checkoutThrows?.let { throw it }
         return successResult.copy(
-            total = param.items.sumOf { it.unitPrice * it.qty } - param.discount,
+            total = Money(param.items.sumOf { it.unitPrice * it.qty } - param.discount),
         )
     }
 

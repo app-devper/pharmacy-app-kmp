@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -8,7 +11,7 @@ class SaleItemExtTest {
 
     private fun snap(qty: Int, returned: Int = 0, factor: Int = 1) = SaleItemSnapshot(
         id = "s1", drugId = "d1", drugName = "x", qty = qty,
-        price = 1.0, originalPrice = 1.0, itemDiscount = 0.0,
+        price = Money(1.0), originalPrice = Money(1.0), itemDiscount = Money(0.0),
         unit = "ชิ้น", unitFactor = factor, priceTier = "retail",
         returnedQty = returned,
     )

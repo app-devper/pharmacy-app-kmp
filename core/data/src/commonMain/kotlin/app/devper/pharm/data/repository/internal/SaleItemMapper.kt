@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository.internal
 
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.data.remote.dto.SaleItemDto
 import app.devper.pharm.domain.model.SaleItemSnapshot
 
@@ -8,9 +9,9 @@ internal fun SaleItemDto.toDomain(returnedQty: Int): SaleItemSnapshot = SaleItem
     drugId = drugId,
     drugName = drugName,
     qty = qty,
-    price = price,
-    originalPrice = originalPrice,
-    itemDiscount = itemDiscount,
+    price = Money(price),
+    originalPrice = Money(originalPrice),
+    itemDiscount = Money(itemDiscount),
     unit = unit,
     unitFactor = unitFactor,
     priceTier = priceTier,

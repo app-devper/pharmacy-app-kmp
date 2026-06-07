@@ -117,7 +117,7 @@ private fun BillItemRow(item: SaleItemSnapshot) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = item.drugName, style = PharmText.body.copy(color = t.colors.fg1))
             Text(
-                text = "${item.qty} ${item.displayUnit} × ${fmtBaht(item.price)}",
+                text = "${item.qty} ${item.displayUnit} × ${fmtBaht(item.price.amount)}",
                 style = PharmText.micro.tabular().copy(color = t.colors.fg3),
             )
             if (item.returnedQty > 0) {
@@ -128,7 +128,7 @@ private fun BillItemRow(item: SaleItemSnapshot) {
             }
         }
         Text(
-            text = fmtBaht(item.price * item.qty),
+            text = fmtBaht(item.price.amount * item.qty),
             style = PharmText.body.tabular().copy(color = t.colors.fg1),
         )
     }
@@ -136,12 +136,12 @@ private fun BillItemRow(item: SaleItemSnapshot) {
 
 @Composable
 private fun BillTotals(sale: SaleSummary, items: List<SaleItemSnapshot>) {
-    val subtotal = items.sumOf { it.price * it.qty }
+    val subtotal = items.sumOf { it.price.amount * it.qty }
     TotalRow(label = "รวม", value = subtotal)
-    if (sale.discount > 0) {
-        TotalRow(label = "ส่วนลด", value = -sale.discount)
+    if (sale.discount.amount > 0) {
+        TotalRow(label = "ส่วนลด", value = -sale.discount.amount)
     }
-    TotalRow(label = "สุทธิ", value = sale.total, emphasize = true)
+    TotalRow(label = "สุทธิ", value = sale.total.amount, emphasize = true)
 }
 
 @Composable

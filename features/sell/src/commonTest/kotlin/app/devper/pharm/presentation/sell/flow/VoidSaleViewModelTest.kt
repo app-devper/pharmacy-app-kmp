@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.common.value.Money
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Sale
@@ -32,7 +34,7 @@ class VoidSaleViewModelTest {
         dispatchers: AppDispatchers,
         cart: FakeCartRepository = FakeCartRepository(
 
-            initialReceipt = Sale("s1", "INV-001", 10.0, 0.0, 0.0, emptyList()),
+            initialReceipt = Sale("s1", "INV-001", Money(10.0), Money(0.0), Money(0.0), emptyList()),
         ),
         sales: FakeSaleRepository = FakeSaleRepository(),
         bus: StockChangeBus = StockChangeBus(),

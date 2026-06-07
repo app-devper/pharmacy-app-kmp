@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.common.value.Money
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
@@ -31,8 +33,8 @@ class CustomerDetailViewModelTest {
         id = id,
         billNo = "INV-$id",
         customerName = "John",
-        total = 100.0,
-        discount = 0.0,
+        total = Money(100.0),
+        discount = Money(0.0),
         soldAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T10:00:00"),
         voided = false,
     )

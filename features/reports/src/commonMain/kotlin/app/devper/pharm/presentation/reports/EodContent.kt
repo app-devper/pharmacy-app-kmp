@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -101,10 +104,10 @@ fun EodContent(
 }
 
 private val sampleBills = listOf(
-    SaleSummary("s1", "B260517-001", "นาย ก", 420.0, 0.0, LocalDateTime.parse("2026-05-17T09:15:00"), false),
-    SaleSummary("s2", "B260517-002", "", 180.0, 20.0, LocalDateTime.parse("2026-05-17T10:45:00"), false),
-    SaleSummary("s3", "B260517-003", "นาง ข", 950.0, 0.0, LocalDateTime.parse("2026-05-17T12:02:00"), true),
-    SaleSummary("s4", "B260517-004", "ร้านยาฝั่งตรงข้าม", 2350.0, 50.0, LocalDateTime.parse("2026-05-17T13:24:00"), false),
+    SaleSummary("s1", "B260517-001", "นาย ก", Money(420.0), Money(0.0), LocalDateTime.parse("2026-05-17T09:15:00"), false),
+    SaleSummary("s2", "B260517-002", "", Money(180.0), Money(20.0), LocalDateTime.parse("2026-05-17T10:45:00"), false),
+    SaleSummary("s3", "B260517-003", "นาง ข", Money(950.0), Money(0.0), LocalDateTime.parse("2026-05-17T12:02:00"), true),
+    SaleSummary("s4", "B260517-004", "ร้านยาฝั่งตรงข้าม", Money(2350.0), Money(50.0), LocalDateTime.parse("2026-05-17T13:24:00"), false),
 )
 
 private val sampleReport = EodReport(

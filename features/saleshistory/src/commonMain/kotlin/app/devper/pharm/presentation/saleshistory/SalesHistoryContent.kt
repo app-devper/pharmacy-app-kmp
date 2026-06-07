@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -69,35 +72,35 @@ fun SalesHistoryContent(
 private val sampleSales = listOf(
     SaleSummary(
         id = "1", billNo = "SC-260516-014", customerName = "คุณสมศรี ใจดี (VIP)",
-        total = 1742.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T14:42:00"), voided = false,
+        total = Money(1742.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T14:42:00"), voided = false,
     ),
     SaleSummary(
         id = "2", billNo = "SC-260516-013", customerName = "ลูกค้าทั่วไป",
-        total = 120.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T14:18:00"), voided = false,
+        total = Money(120.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T14:18:00"), voided = false,
     ),
     SaleSummary(
         id = "3", billNo = "SC-260516-012", customerName = "นาย วรพล สุขสันต์",
-        total = 892.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T13:55:00"), voided = false,
+        total = Money(892.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T13:55:00"), voided = false,
     ),
     SaleSummary(
         id = "4", billNo = "SC-260516-011", customerName = "ลูกค้าทั่วไป",
-        total = 240.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T13:30:00"), voided = false,
+        total = Money(240.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T13:30:00"), voided = false,
     ),
     SaleSummary(
         id = "5", billNo = "SC-260516-010", customerName = "นาง พรรณี สวยงาม",
-        total = 520.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T12:45:00"), voided = true,
+        total = Money(520.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T12:45:00"), voided = true,
     ),
     SaleSummary(
         id = "6", billNo = "SC-260516-009", customerName = "นาย เอกชัย สุภาพ",
-        total = 95.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T12:18:00"), voided = false,
+        total = Money(95.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T12:18:00"), voided = false,
     ),
     SaleSummary(
         id = "7", billNo = "SC-260516-008", customerName = "ลูกค้าทั่วไป",
-        total = 1318.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T11:50:00"), voided = false,
+        total = Money(1318.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T11:50:00"), voided = false,
     ),
     SaleSummary(
         id = "8", billNo = "SC-260516-007", customerName = "คุณสมศรี ใจดี (VIP)",
-        total = 160.0, discount = 0.0, soldAt = LocalDateTime.parse("2026-05-17T11:24:00"), voided = false,
+        total = Money(160.0), discount = Money(0.0), soldAt = LocalDateTime.parse("2026-05-17T11:24:00"), voided = false,
     ),
 )
 

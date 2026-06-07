@@ -49,7 +49,7 @@ class CartRepositoryActivePersistenceTest {
         val settings = MemorySettings()
         val first = repo(settings)
         first.add(AddCartItemParam(drug = drug(), altUnit = null))
-        first.commitReceipt(Sale("s1", "B1", 10.0, 0.0, 0.0, emptyList()))
+        first.commitReceipt(Sale("s1", "B1", Money(10.0), Money.Zero, Money.Zero, emptyList()))
 
         assertTrue(repo(settings).state.value.active.items.isEmpty())
     }

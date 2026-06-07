@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -219,7 +222,7 @@ private fun SaleRow(sale: SaleSummary) {
             )
         }
         Text(
-            text = formatBahtCurrency(sale.total),
+            text = formatBahtCurrency(sale.total.amount),
             style = PharmText.h2.tabular().copy(color = t.colors.accent),
         )
     }
@@ -238,8 +241,8 @@ private val sampleSales = listOf(
         id = "s1",
         billNo = "INV-260601-001",
         customerName = "สมศรี ใจดี",
-        total = 480.0,
-        discount = 0.0,
+        total = Money(480.0),
+        discount = Money(0.0),
         soldAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T10:30:00"),
         voided = false,
     ),
@@ -247,8 +250,8 @@ private val sampleSales = listOf(
         id = "s2",
         billNo = "INV-260528-014",
         customerName = "สมศรี ใจดี",
-        total = 120.0,
-        discount = 20.0,
+        total = Money(120.0),
+        discount = Money(20.0),
         soldAt = kotlinx.datetime.LocalDateTime.parse("2026-05-28T16:05:00"),
         voided = true,
     ),

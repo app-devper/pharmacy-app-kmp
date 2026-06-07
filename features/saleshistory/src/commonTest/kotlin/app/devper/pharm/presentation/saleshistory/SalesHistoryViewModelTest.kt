@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
@@ -24,8 +27,8 @@ class SalesHistoryViewModelTest {
         id = id,
         billNo = billNo,
         customerName = "Walk-in",
-        total = 100.0,
-        discount = 0.0,
+        total = Money(100.0),
+        discount = Money(0.0),
         soldAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T10:00:00"),
         voided = false,
     )
@@ -35,9 +38,9 @@ class SalesHistoryViewModelTest {
         drugId = "d-$id",
         drugName = "Drug $id",
         qty = qty,
-        price = 25.0,
-        originalPrice = 25.0,
-        itemDiscount = 0.0,
+        price = Money(25.0),
+        originalPrice = Money(25.0),
+        itemDiscount = Money(0.0),
         unit = "เม็ด",
         unitFactor = unitFactor,
         priceTier = "",
