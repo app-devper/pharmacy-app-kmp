@@ -20,7 +20,7 @@ class CheckoutUseCase(
 ) : BaseUseCase<RunCheckoutParam, CheckoutOutcome>(dispatchers) {
 
     suspend operator fun invoke(
-        received: Double,
+        received: Money,
         allowOversell: Boolean = false,
         clientRequestId: String? = null,
         kySkippedByCashier: Boolean = false,
@@ -57,9 +57,9 @@ class CheckoutUseCase(
                 CheckoutLineParam(
                     drugId = line.drug.id,
                     qty = line.qty,
-                    unitPrice = (line.basePrice - line.discount).coerceAtLeast(Money.Zero).amount,
-                    originalUnitPrice = line.basePrice.amount,
-                    itemDiscount = line.discount.amount,
+                    unitPrice = (line.basePrice - line.discount).coerceAtLeast(Money.Zero),
+                    originalUnitPrice = line.basePrice,
+                    itemDiscount = line.discount,
                     priceTier = tier.takeIf { it.isNotBlank() } ?: "",
                     allowOversell = line.drug.id in oversoldDrugIds,
                     unit = line.selectedUnit?.name.orEmpty(),
@@ -68,7 +68,7 @@ class CheckoutUseCase(
             },
             received = param.received,
             customerId = customer?.id,
-            discount = discountAmount.amount,
+            discount = discountAmount,
             priceTier = tier,
             clientRequestId = param.clientRequestId,
             kySkippedByCashier = param.kySkippedByCashier,

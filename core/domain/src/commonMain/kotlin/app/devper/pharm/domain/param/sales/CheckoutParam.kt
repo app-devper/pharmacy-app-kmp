@@ -1,10 +1,12 @@
 package app.devper.pharm.domain.param
 
+import app.devper.pharm.common.value.Money
+
 data class CheckoutParam(
     val items: List<CheckoutLineParam>,
-    val received: Double,
+    val received: Money,
     val customerId: String? = null,
-    val discount: Double = 0.0,
+    val discount: Money = Money.Zero,
     val priceTier: String = "",
 
     val clientRequestId: String? = null,
@@ -16,11 +18,11 @@ data class CheckoutLineParam(
 
     val qty: Int,
 
-    val unitPrice: Double,
+    val unitPrice: Money,
 
-    val originalUnitPrice: Double,
+    val originalUnitPrice: Money,
 
-    val itemDiscount: Double = 0.0,
+    val itemDiscount: Money = Money.Zero,
     val priceTier: String = "",
 
     val allowOversell: Boolean = false,

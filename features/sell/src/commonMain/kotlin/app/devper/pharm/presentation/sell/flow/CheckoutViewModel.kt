@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
 import androidx.lifecycle.viewModelScope
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
@@ -172,7 +173,7 @@ class CheckoutViewModel(
 
         setState { copy(checkingOut = true, error = null) }
         launchResult(
-            block = { checkout(receivedSnapshot, allowOversell, requestId, kySkippedAtSubmit) },
+            block = { checkout(Money(receivedSnapshot), allowOversell, requestId, kySkippedAtSubmit) },
             onSuccess = { outcome ->
                 when (outcome) {
                     is CheckoutOutcome.Success -> handleSuccess(
