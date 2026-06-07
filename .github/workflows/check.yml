@@ -41,14 +41,13 @@ jobs:
       - name: Architecture audit
         run: ./gradlew :composeApp:auditArchitecture --stacktrace
 
-      - name: JVM tests (4 core + 20 per-feature + shared/test-fixtures compile)
+      - name: JVM tests (4 core + 20 per-feature + test-fixtures compile)
         run: |
           ./gradlew --parallel \
             :core:common:jvmTest \
             :core:domain:jvmTest \
             :core:ui:jvmTest \
             :core:data:jvmTest \
-            :features:shared:compileKotlinJvm \
             :features:test-fixtures:compileKotlinJvm \
             :features:auth:jvmTest \
             :features:bulkimport:jvmTest \
