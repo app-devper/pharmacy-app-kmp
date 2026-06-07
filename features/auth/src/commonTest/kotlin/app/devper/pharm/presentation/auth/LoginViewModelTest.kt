@@ -1,8 +1,11 @@
 package app.devper.pharm.presentation.auth
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.repository.FakeAuthRepository
+import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
 import app.devper.pharm.domain.usecase.LoginUseCase
+import app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -18,14 +21,19 @@ class LoginViewModelTest {
     private fun newVm(
         dispatchers: AppDispatchers,
         repo: FakeAuthRepository = FakeAuthRepository(),
-    ): Pair<LoginViewModel, FakeAuthRepository> {
-        val vm = LoginViewModel(login = LoginUseCase(repo, dispatchers))
-        return vm to repo
+        uiPrefs: FakeUiPreferencesRepository = FakeUiPreferencesRepository(),
+    ): Triple<LoginViewModel, FakeAuthRepository, FakeUiPreferencesRepository> {
+        val vm = LoginViewModel(
+            login = LoginUseCase(repo, dispatchers),
+            uiPreferences = UiPreferencesProvider(uiPrefs),
+            setLocale = SetLocalePreferenceUseCase(uiPrefs),
+        )
+        return Triple(vm, repo, uiPrefs)
     }
 
     @Test
     fun submit_with_blank_username_short_circuits() = runVmTest { dispatchers ->
-        val (vm, repo) = newVm(dispatchers)
+        val (vm, repo, _) = newVm(dispatchers)
         vm.onPasswordChange("secret")
         vm.submit()
         advanceUntilIdle()
@@ -36,7 +44,7 @@ class LoginViewModelTest {
 
     @Test
     fun submit_with_blank_password_short_circuits() = runVmTest { dispatchers ->
-        val (vm, repo) = newVm(dispatchers)
+        val (vm, repo, _) = newVm(dispatchers)
         vm.onUsernameChange("admin")
         vm.submit()
         advanceUntilIdle()
@@ -46,7 +54,7 @@ class LoginViewModelTest {
 
     @Test
     fun submit_happy_path_calls_login_with_trimmed_username_and_pharmacy_system() = runVmTest { dispatchers ->
-        val (vm, repo) = newVm(dispatchers)
+        val (vm, repo, _) = newVm(dispatchers)
         vm.onUsernameChange("  admin  ")
         vm.onPasswordChange("secret")
         vm.submit()
@@ -64,7 +72,7 @@ class LoginViewModelTest {
 
     @Test
     fun submit_failure_routes_to_error_not_loggedIn() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers, FakeAuthRepository(loginThrowsOn = "baduser"))
+        val (vm, _, _) = newVm(dispatchers, FakeAuthRepository(loginThrowsOn = "baduser"))
         vm.onUsernameChange("baduser")
         vm.onPasswordChange("badpwd")
         vm.submit()
@@ -77,7 +85,7 @@ class LoginViewModelTest {
 
     @Test
     fun submit_failure_clears_password_to_prevent_memory_leak() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers, FakeAuthRepository(loginThrowsOn = "baduser"))
+        val (vm, _, _) = newVm(dispatchers, FakeAuthRepository(loginThrowsOn = "baduser"))
         vm.onUsernameChange("baduser")
         vm.onPasswordChange("supersecret123")
         vm.submit()
@@ -88,7 +96,7 @@ class LoginViewModelTest {
 
     @Test
     fun onUsernameChange_clears_error_side_effect() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers)
+        val (vm, _, _) = newVm(dispatchers)
         vm.submit()
         advanceUntilIdle()
         assertNotNull(vm.state.value.error)
@@ -98,11 +106,37 @@ class LoginViewModelTest {
 
     @Test
     fun dismissError_clears_error() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers)
+        val (vm, _, _) = newVm(dispatchers)
         vm.submit()
         advanceUntilIdle()
         assertNotNull(vm.state.value.error)
         vm.dismissError()
         assertNull(vm.state.value.error)
+    }
+
+    @Test
+    fun initial_locale_mirrors_persisted_preference() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(dispatchers)
+        advanceUntilIdle()
+        assertEquals("system", vm.state.value.locale)
+    }
+
+    @Test
+    fun onLocaleChange_persists_and_updates_state() = runVmTest { dispatchers ->
+        val (vm, _, uiPrefs) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.onLocaleChange("en")
+        advanceUntilIdle()
+        assertEquals("en", vm.state.value.locale)
+        assertEquals(app.devper.pharm.domain.model.LocalePreference.En, uiPrefs.lastLocale)
+    }
+
+    @Test
+    fun onLocaleChange_to_same_value_does_not_call_persist() = runVmTest { dispatchers ->
+        val (vm, _, uiPrefs) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.onLocaleChange("system")
+        advanceUntilIdle()
+        assertNull(uiPrefs.lastLocale)
     }
 }

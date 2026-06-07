@@ -28,7 +28,10 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmFilterChip
+import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.Black
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.White
@@ -65,6 +68,7 @@ fun LoginScreen(
             .padding(16.dp),
         contentAlignment = Alignment.Center,
     ) {
+        val strings = pharmStrings
         Column(
             modifier = Modifier
                 .widthIn(max = 384.dp)
@@ -74,22 +78,27 @@ fun LoginScreen(
                 .padding(32.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            BrandHeader()
+            LocaleSwitcherRow(
+                strings = strings,
+                activeLocale = state.locale,
+                onLocaleChange = viewModel::onLocaleChange,
+            )
+            BrandHeader(strings = strings)
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                FormField(label = "ชื่อผู้ใช้") {
+                FormField(label = strings.loginUsernameLabel) {
                     PharmTextField(
                         value = state.username,
                         onValueChange = viewModel::onUsernameChange,
-                        placeholder = "กรอกชื่อผู้ใช้",
+                        placeholder = strings.loginUsernamePlaceholder,
                         enabled = !state.loading,
                         keyboardType = KeyboardType.Email,
                     )
                 }
-                FormField(label = "รหัสผ่าน") {
+                FormField(label = strings.loginPasswordLabel) {
                     PharmTextField(
                         value = state.password,
                         onValueChange = viewModel::onPasswordChange,
-                        placeholder = "กรอกรหัสผ่าน",
+                        placeholder = strings.loginPasswordPlaceholder,
                         enabled = !state.loading,
                         keyboardType = KeyboardType.Password,
                         visualTransformation = PasswordVisualTransformation(),
@@ -114,18 +123,18 @@ fun LoginScreen(
                         )
                     }
                     Text(
-                        text = "กำลังเข้าสู่ระบบ…",
+                        text = strings.loginSubmitting,
                         style = PharmText.buttonMd.copy(color = t.colors.surface),
                     )
                 } else {
                     Text(
-                        text = "เข้าสู่ระบบ",
+                        text = strings.loginSubmit,
                         style = PharmText.buttonMd.copy(color = t.colors.surface),
                     )
                 }
             }
             Text(
-                text = "v${AppVersion.name} · เชื่อมต่อกับ Um-Api",
+                text = "v${AppVersion.name} · ${strings.loginVersionPrefix}",
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,7 +150,7 @@ fun LoginScreen(
 }
 
 @Composable
-private fun BrandHeader() {
+private fun BrandHeader(strings: app.devper.pharm.ui.i18n.PharmStrings) {
     val t = pharmTokens
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -167,7 +176,7 @@ private fun BrandHeader() {
             )
         }
         Text(
-            text = "ร้านยา เฮลท์ตี้ฟาร์ม",
+            text = strings.loginBrandName,
             style = PharmText.body.copy(
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -175,8 +184,31 @@ private fun BrandHeader() {
             ),
         )
         Text(
-            text = "ระบบ POS ร้านขายยา",
+            text = strings.loginBrandTagline,
             style = PharmText.meta,
+        )
+    }
+}
+
+@Composable
+private fun LocaleSwitcherRow(
+    strings: app.devper.pharm.ui.i18n.PharmStrings,
+    activeLocale: String,
+    onLocaleChange: (String) -> Unit,
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        PharmSingleSelectChips(
+            chips = listOf(
+                PharmFilterChip(id = "system", label = strings.settingsLocaleSystem),
+                PharmFilterChip(id = "th", label = strings.settingsLocaleTh),
+                PharmFilterChip(id = "en", label = strings.settingsLocaleEn),
+            ),
+            activeId = activeLocale,
+            onSelect = onLocaleChange,
+            scrollable = false,
         )
     }
 }
