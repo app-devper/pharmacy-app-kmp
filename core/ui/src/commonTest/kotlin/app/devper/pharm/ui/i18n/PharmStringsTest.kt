@@ -104,7 +104,32 @@ class PharmStringsTablesTest {
         check("offlineSyncStatusFailed", PharmStringsTh.offlineSyncStatusFailed, PharmStringsEn.offlineSyncStatusFailed, mismatches)
         check("offlineSyncRetryRowCta", PharmStringsTh.offlineSyncRetryRowCta, PharmStringsEn.offlineSyncRetryRowCta, mismatches)
         check("offlineSyncDeleteConfirmTitle", PharmStringsTh.offlineSyncDeleteConfirmTitle, PharmStringsEn.offlineSyncDeleteConfirmTitle, mismatches)
+        check("expirySubtitle", PharmStringsTh.expirySubtitle, PharmStringsEn.expirySubtitle, mismatches)
+        check("expirySelectAll", PharmStringsTh.expirySelectAll, PharmStringsEn.expirySelectAll, mismatches)
+        check("expiryWriteoffCta", PharmStringsTh.expiryWriteoffCta, PharmStringsEn.expiryWriteoffCta, mismatches)
+        check("expiryHeaderDrugName", PharmStringsTh.expiryHeaderDrugName, PharmStringsEn.expiryHeaderDrugName, mismatches)
+        check("expiryHeaderLotNumber", PharmStringsTh.expiryHeaderLotNumber, PharmStringsEn.expiryHeaderLotNumber, mismatches)
+        check("expiryStatusExpired", PharmStringsTh.expiryStatusExpired, PharmStringsEn.expiryStatusExpired, mismatches)
+        check("expiryEmpty", PharmStringsTh.expiryEmpty, PharmStringsEn.expiryEmpty, mismatches)
+        check("expiryConfirmTitle", PharmStringsTh.expiryConfirmTitle, PharmStringsEn.expiryConfirmTitle, mismatches)
+        check("expiryResultSuccessTitle", PharmStringsTh.expiryResultSuccessTitle, PharmStringsEn.expiryResultSuccessTitle, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun expiry_lambda_keys_interpolate_values_per_locale() {
+        assertTrue(PharmStringsTh.expiryStatusDaysLeft(7).contains("7"))
+        assertTrue(PharmStringsEn.expiryStatusDaysLeft(7).contains("7"))
+        assertNotEquals(PharmStringsTh.expiryStatusDaysLeft(7), PharmStringsEn.expiryStatusDaysLeft(7))
+        assertTrue(PharmStringsTh.expiryWriteoffSelectedLabel(5).contains("5"))
+        assertTrue(PharmStringsEn.expiryWriteoffSelectedLabel(5).contains("5"))
+        assertTrue(PharmStringsTh.expiryConfirmMessage(3).contains("3"))
+        assertTrue(PharmStringsEn.expiryConfirmMessage(3).contains("3"))
+        val thSummary = PharmStringsTh.expiryResultSummary(2, 5)
+        val enSummary = PharmStringsEn.expiryResultSummary(2, 5)
+        assertTrue(thSummary.contains("2") && thSummary.contains("5"))
+        assertTrue(enSummary.contains("2") && enSummary.contains("5"))
+        assertNotEquals(thSummary, enSummary)
     }
 
     @Test

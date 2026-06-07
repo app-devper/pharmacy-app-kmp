@@ -17,6 +17,7 @@ import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -29,9 +30,10 @@ internal fun ExpiryToolbar(
     callbacks: ExpiryCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     PharmListToolbar(
-        title = "ยาใกล้หมดอายุ",
-        subtitle = "ตรวจล็อตใกล้หมดอายุ และตัดจำหน่าย",
+        title = s.navExpiry,
+        subtitle = s.expirySubtitle,
         modifier = modifier,
         filters = {
             PharmSingleSelectChips(
@@ -55,7 +57,7 @@ internal fun ExpiryToolbar(
                 )
                 if (selectedCount > 0) {
                     PharmButton(
-                        label = "เขียนทิ้ง $selectedCount รายการ",
+                        label = s.expiryWriteoffSelectedLabel(selectedCount),
                         onClick = callbacks.onAskWriteoff,
                         variant = PharmButtonVariant.Danger,
                         size = PharmButtonSize.Sm,
@@ -71,16 +73,17 @@ internal fun ExpiryToolbar(
 @Composable
 internal fun ExpiryRemainingStat(totalRemaining: Int, modifier: Modifier = Modifier) {
     val t = pharmTokens
+    val s = pharmStrings
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = "คงเหลือรวม", style = PharmText.micro.copy(color = t.colors.fg3))
+        Text(text = s.expiryTotalRemaining, style = PharmText.micro.copy(color = t.colors.fg3))
         Text(
             text = "$totalRemaining",
             style = PharmText.micro.copy(color = t.colors.fg1, fontWeight = FontWeight.SemiBold).tabular(),
         )
-        Text(text = "หน่วย", style = PharmText.micro.copy(color = t.colors.fg3))
+        Text(text = s.commonUnit, style = PharmText.micro.copy(color = t.colors.fg3))
     }
 }

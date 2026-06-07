@@ -27,6 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.designsystem.PharmTriStateCheckbox
 import app.devper.pharm.ui.format.localDateToBuddhist
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -39,13 +40,14 @@ internal fun ExpiryTable(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val headerState = when {
         selected.isEmpty() -> ToggleableState.Off
         allSelected -> ToggleableState.On
         else -> ToggleableState.Indeterminate
     }
 
-    val columns = remember(callbacks, selected, t) {
+    val columns = remember(callbacks, selected, t, s) {
         listOf(
         PharmTableColumn<ExpiringLot>(
             header = "",
@@ -59,7 +61,7 @@ internal fun ExpiryTable(
             },
         ),
         PharmTableColumn(
-            header = "ชื่อยา",
+            header = s.expiryHeaderDrugName,
             weight = 2.4f,
             cell = { lot ->
                 Text(
@@ -71,7 +73,7 @@ internal fun ExpiryTable(
             },
         ),
         PharmTableColumn(
-            header = "เลขล็อต",
+            header = s.expiryHeaderLotNumber,
             weight = 1.2f,
             cell = { lot ->
                 Text(
@@ -86,18 +88,18 @@ internal fun ExpiryTable(
             },
         ),
         PharmTableColumn(
-            header = "วันหมดอายุ",
+            header = s.expiryHeaderExpiry,
             weight = 1.2f,
             cell = { lot -> ExpiryDateCell(lot) },
         ),
         PharmTableColumn(
-            header = "คงเหลือ",
+            header = s.expiryHeaderRemaining,
             weight = 0.8f,
             align = PharmColumnAlign.End,
             cell = { lot -> RemainingCell(lot) },
         ),
         PharmTableColumn(
-            header = "สถานะ",
+            header = s.commonStatus,
             weight = 1.2f,
             cell = { lot -> ExpiryStatusBadge(lot.daysLeft) },
         ),
@@ -114,7 +116,7 @@ internal fun ExpiryTable(
             emptyContent = {
                 PharmEmptyState(
                     icon = PharmIcons.Expiry,
-                    title = "ไม่มีล็อตในช่วงเวลานี้",
+                    title = s.expiryEmpty,
                 )
             },
             bottomRow = if (lots.isNotEmpty()) ({ SelectAllRow(headerState, callbacks) }) else null,
@@ -125,6 +127,7 @@ internal fun ExpiryTable(
 @Composable
 private fun SelectAllRow(state: ToggleableState, callbacks: ExpiryCallbacks) {
     val t = pharmTokens
+    val s = pharmStrings
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,13 +139,13 @@ private fun SelectAllRow(state: ToggleableState, callbacks: ExpiryCallbacks) {
         PharmTriStateCheckbox(
             state = state,
             onClick = callbacks.onToggleAll,
-            contentDescription = "เลือกทั้งหมด",
+            contentDescription = s.expirySelectAll,
         )
         Text(
             text = when (state) {
-                ToggleableState.On -> "เลือกทั้งหมด"
-                ToggleableState.Indeterminate -> "เลือกบางส่วน · กดเพื่อล้าง"
-                ToggleableState.Off -> "เลือกทั้งหมด"
+                ToggleableState.On -> s.expirySelectAll
+                ToggleableState.Indeterminate -> s.expirySelectPartial
+                ToggleableState.Off -> s.expirySelectAll
             },
             style = PharmText.micro.copy(color = t.colors.fg3),
         )
@@ -176,14 +179,16 @@ private fun RemainingCell(lot: ExpiringLot) {
 
 @Composable
 private fun ExpiryStatusBadge(daysLeft: Int) {
-    val (tone, label) = expiryBadge(daysLeft)
+    val s = pharmStrings
+    val tone = expiryBadgeTone(daysLeft)
+    val label = if (daysLeft < 0) s.expiryStatusExpired else s.expiryStatusDaysLeft(daysLeft)
     PharmBadge(text = label, tone = tone, size = PharmBadgeSize.Sm)
 }
 
-internal fun expiryBadge(daysLeft: Int): Pair<PharmBadgeTone, String> = when {
-    daysLeft < 0    -> PharmBadgeTone.Red    to "หมดอายุแล้ว"
-    daysLeft <= 30  -> PharmBadgeTone.Red    to "อีก $daysLeft วัน"
-    daysLeft <= 60  -> PharmBadgeTone.Orange to "อีก $daysLeft วัน"
-    daysLeft <= 90  -> PharmBadgeTone.Amber  to "อีก $daysLeft วัน"
-    else            -> PharmBadgeTone.Blue   to "อีก $daysLeft วัน"
+internal fun expiryBadgeTone(daysLeft: Int): PharmBadgeTone = when {
+    daysLeft < 0    -> PharmBadgeTone.Red
+    daysLeft <= 30  -> PharmBadgeTone.Red
+    daysLeft <= 60  -> PharmBadgeTone.Orange
+    daysLeft <= 90  -> PharmBadgeTone.Amber
+    else            -> PharmBadgeTone.Blue
 }
