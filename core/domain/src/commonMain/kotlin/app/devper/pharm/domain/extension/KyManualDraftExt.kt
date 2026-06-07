@@ -1,6 +1,7 @@
 package app.devper.pharm.domain.extension
 
 import app.devper.pharm.domain.model.KyForm
+import kotlinx.datetime.LocalDate
 
 fun buildKy10Draft(
     date: String,
@@ -14,13 +15,13 @@ fun buildKy10Draft(
     doctor: String,
     balance: String,
 ): Result<KyForm.Ky10> = runCatching {
-    validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
+    val parsedDate = validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
     val parsedQty = qty.toInt()
     val parsedBalance = balance.toIntOrNull() ?: 0
     require(parsedBalance >= 0) { "ยอดคงเหลือต้องไม่ติดลบ" }
     KyForm.Ky10(
         saleId = "",
-        date = date.trim(),
+        date = parsedDate,
         drugName = drugName.trim(),
         regNo = regNo.trim(),
         qty = parsedQty,
@@ -46,10 +47,10 @@ fun buildKy11Draft(
     purpose: String,
     pharmacist: String,
 ): Result<KyForm.Ky11> = runCatching {
-    validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
+    val parsedDate = validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
     KyForm.Ky11(
         saleId = "",
-        date = date.trim(),
+        date = parsedDate,
         drugName = drugName.trim(),
         regNo = regNo.trim(),
         qty = qty.toInt(),
@@ -76,12 +77,12 @@ fun buildKy12Draft(
     totalValue: String,
     status: String,
 ): Result<KyForm.Ky12> = runCatching {
-    validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
+    val parsedDate = validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
     val parsedValue = totalValue.toDoubleOrNull() ?: 0.0
     require(parsedValue >= 0.0) { "มูลค่ารวมต้องไม่ติดลบ" }
     KyForm.Ky12(
         saleId = "",
-        date = date.trim(),
+        date = parsedDate,
         drugName = drugName.trim(),
         regNo = regNo.trim(),
         qty = qty.toInt(),
@@ -98,12 +99,15 @@ fun buildKy12Draft(
 fun isKy12DraftValid(date: String, drugName: String, unit: String, qty: String): Boolean =
     isKyManualCommonValid(date, drugName, unit, qty)
 
-private fun validateKyManualCommon(date: String, drugName: String, unit: String, qty: String) {
+private fun validateKyManualCommon(date: String, drugName: String, unit: String, qty: String): LocalDate {
     require(date.isNotBlank()) { "ต้องระบุวันที่" }
     require(drugName.isNotBlank()) { "ต้องระบุชื่อยา" }
     require(unit.isNotBlank()) { "ต้องระบุหน่วย" }
+    val parsedDate = runCatching { LocalDate.parse(date.trim()) }.getOrNull()
+        ?: error("วันที่ไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)")
     val parsedQty = qty.toIntOrNull() ?: error("จำนวนต้องเป็นตัวเลข")
     require(parsedQty > 0) { "จำนวนต้องมากกว่า 0" }
+    return parsedDate
 }
 
 private fun isKyManualCommonValid(date: String, drugName: String, unit: String, qty: String): Boolean =

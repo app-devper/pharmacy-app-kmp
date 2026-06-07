@@ -130,10 +130,10 @@ private fun IndexCell(index: Int) {
 }
 
 @Composable
-private fun DateCell(date: String) {
+private fun DateCell(date: kotlinx.datetime.LocalDate?) {
     val t = pharmTokens
     Text(
-        text = date,
+        text = app.devper.pharm.ui.format.localDateToBuddhist(date),
         style = PharmText.bodySm.copy(
             color = t.colors.fg2,
             fontFeatureSettings = "tnum",
@@ -228,7 +228,7 @@ private fun PartyCell(text: String) {
 internal data class KyRowDisplay(
     val id: String,
     val index: Int,
-    val date: String,
+    val date: kotlinx.datetime.LocalDate?,
     val drugName: String,
     val regNo: String,
     val unit: String,

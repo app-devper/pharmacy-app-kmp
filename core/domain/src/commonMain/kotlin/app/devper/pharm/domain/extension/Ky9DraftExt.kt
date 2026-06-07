@@ -1,6 +1,7 @@
 package app.devper.pharm.domain.extension
 
 import app.devper.pharm.domain.param.AddKy9Param
+import kotlinx.datetime.LocalDate
 
 fun buildKy9Draft(
     date: String,
@@ -15,12 +16,14 @@ fun buildKy9Draft(
     require(date.isNotBlank()) { "ต้องระบุวันที่" }
     require(drugName.isNotBlank()) { "ต้องระบุชื่อยา" }
     require(unit.isNotBlank()) { "ต้องระบุหน่วย" }
+    val parsedDate = runCatching { LocalDate.parse(date.trim()) }.getOrNull()
+        ?: error("วันที่ไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)")
     val parsedQty = qty.toIntOrNull() ?: error("จำนวนต้องเป็นตัวเลข")
     require(parsedQty > 0) { "จำนวนต้องมากกว่า 0" }
     val parsedPrice = pricePerUnit.toDoubleOrNull() ?: error("ราคาต่อหน่วยต้องเป็นตัวเลข")
     require(parsedPrice >= 0.0) { "ราคาต่อหน่วยต้องไม่ติดลบ" }
     AddKy9Param(
-        date = date.trim(),
+        date = parsedDate,
         drugName = drugName.trim(),
         regNo = regNo.trim(),
         unit = unit.trim(),

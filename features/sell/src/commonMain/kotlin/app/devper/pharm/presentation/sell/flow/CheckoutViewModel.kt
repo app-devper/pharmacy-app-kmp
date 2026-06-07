@@ -24,6 +24,7 @@ import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.common.BaseViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
+import kotlinx.datetime.toLocalDateTime
 import app.devper.pharm.ui.print.buildReceiptTemplate
 import app.devper.pharm.presentation.sell.internal.todayYmd
 import kotlinx.coroutines.flow.launchIn
@@ -217,7 +218,7 @@ class CheckoutViewModel(
                 sale = sale,
                 required = kyRequired,
                 captured = kyFields,
-                dateYmd = todayYmd(tz),
+                date = @OptIn(kotlin.time.ExperimentalTime::class) kotlin.time.Clock.System.now().toLocalDateTime(tz).date,
             ).fold(
                 onSuccess = { result ->
                     if (result.anyFailed) {

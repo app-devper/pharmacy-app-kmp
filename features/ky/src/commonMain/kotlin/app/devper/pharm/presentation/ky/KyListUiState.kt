@@ -6,33 +6,34 @@ import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.domain.model.Ky9Entry
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.ui.common.BaseUiState
+import kotlinx.datetime.LocalDate
 
 sealed interface KyRow {
     val id: String
-    val date: String
+    val date: LocalDate?
     val drugName: String
 
     data class Ky9(val entry: Ky9Entry) : KyRow {
         override val id: String get() = entry.id
-        override val date: String get() = entry.date
+        override val date: LocalDate? get() = entry.date
         override val drugName: String get() = entry.drugName
     }
 
     data class Ky10(val entry: Ky10Entry) : KyRow {
         override val id: String get() = entry.id
-        override val date: String get() = entry.date
+        override val date: LocalDate? get() = entry.date
         override val drugName: String get() = entry.drugName
     }
 
     data class Ky11(val entry: Ky11Entry) : KyRow {
         override val id: String get() = entry.id
-        override val date: String get() = entry.date
+        override val date: LocalDate? get() = entry.date
         override val drugName: String get() = entry.drugName
     }
 
     data class Ky12(val entry: Ky12Entry) : KyRow {
         override val id: String get() = entry.id
-        override val date: String get() = entry.date
+        override val date: LocalDate? get() = entry.date
         override val drugName: String get() = entry.drugName
     }
 }

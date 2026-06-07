@@ -1,7 +1,9 @@
 package app.devper.pharm.domain.param
 
+import kotlinx.datetime.LocalDate
+
 data class AddKy9Param(
-    val date: String,
+    val date: LocalDate,
     val drugName: String,
     val regNo: String = "",
     val unit: String,
