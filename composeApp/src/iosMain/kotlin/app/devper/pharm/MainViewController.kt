@@ -29,8 +29,10 @@ private var koinStarted = false
 
 private fun ensureKoinStarted() {
     if (koinStarted) return
+    val defaults = NSUserDefaults.standardUserDefaults
+    applyPersistedLocale(defaults, defaults.stringForKey("ui.locale"))
     val iosPlatformModule = module {
-        single<Settings> { NSUserDefaultsSettings(NSUserDefaults.standardUserDefaults) }
+        single<Settings> { NSUserDefaultsSettings(defaults) }
         single<SecureStorage> { KeychainSecureStorage() }
         single { buildHttpClient(Darwin, get<TokenStorage>()) }
 
@@ -42,6 +44,16 @@ private fun ensureKoinStarted() {
     }
     startKoin { modules(iosPlatformModule, appModule) }
     koinStarted = true
+}
+
+private fun applyPersistedLocale(defaults: NSUserDefaults, wire: String?) {
+    val tag = when (wire?.lowercase()) {
+        "th" -> "th"
+        "en" -> "en"
+        else -> null
+    } ?: return
+    defaults.setObject(listOf(tag), forKey = "AppleLanguages")
+    defaults.synchronize()
 }
 
 @Suppress("FunctionName", "unused")

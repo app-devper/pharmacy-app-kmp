@@ -191,10 +191,20 @@ license headers required by upstream libraries.
     `composeResources/values/strings.xml` in the feature module (each `pharmacy.kmp.compose.library`
     module already enables the plugin).
   - **Locale storage**: `UiPreferences.locale: LocalePreference = System` (System/Th/En),
-    persisted via `UiPreferencesRepository.setLocale(...)` →
-    `SetLocalePreferenceUseCase`. Live in-app switching needs a `LocalAppLocale`
-    CompositionLocal wrapper around `App {}` (not yet wired — current behavior follows
-    `Locale.getDefault()` until a future PR adds the wrapper + a Settings UI).
+    persisted via `UiPreferencesRepository.setLocale(...)` → `SetLocalePreferenceUseCase`.
+    Picker UI: `ProfileScreen` → 'ภาษา' chip group.
+  - **Cold-start bootstrap** — each platform's entry point reads `ui.locale` before
+    `startKoin` + before Compose initialises and applies the override:
+    - **JVM Desktop** (`composeApp/jvmMain/Main.kt`) → `java.util.Locale.setDefault(...)`
+    - **Android** (`composeApp/androidMain/PharmacyApplication.onCreate`) → `Locale.setDefault(...)`
+    - **iOS** (`composeApp/iosMain/MainViewController.kt`) → `NSUserDefaults["AppleLanguages"] = [tag]`
+      (effective on next app launch — iOS standard for app-level locale override)
+    - **wasmJs** (`composeApp/wasmJsMain/Main.kt`) → JS-defined `Object.defineProperty(navigator, 'language', ...)`
+      shim before `ComposeViewport` (effective on page reload — `getLanguage()` reads
+      `navigator.language`, so the shim sticks for the session)
+  - **Live in-app switching** is not wired — CMP 1.11's `LocalComposeEnvironment` is
+    `@InternalResourceApi`. Restart-required is the current contract; the inline
+    'ภาษาจะเปลี่ยนหลังจากเปิดแอปใหม่' hint surfaces below the chip on selection.
   - **Migration playbook** (incremental): for each Thai literal, grep
     `"<thai-text>"` → add a `<string name="..."/>` entry to both `values/` and
     `values-en/` → replace the literal with `stringResource(Res.string.<key>)`.
