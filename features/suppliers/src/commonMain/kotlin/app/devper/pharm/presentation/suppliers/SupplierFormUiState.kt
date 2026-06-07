@@ -27,8 +27,8 @@ data class SupplierFormUiState(
     override val canSubmit: Boolean
         get() = !saving && !loading && form.name.isNotBlank()
 
-    val titleLabel: String
-        get() = if (mode is SupplierFormMode.Edit) "แก้ไขผู้จัดจำหน่าย" else "เพิ่มผู้จัดจำหน่าย"
+    val isEdit: Boolean
+        get() = mode is SupplierFormMode.Edit
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)

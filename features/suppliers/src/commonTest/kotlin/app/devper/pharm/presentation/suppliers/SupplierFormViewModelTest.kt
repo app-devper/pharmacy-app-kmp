@@ -57,7 +57,7 @@ class SupplierFormViewModelTest {
         val s = vm.state.value
         assertTrue(s.mode is SupplierFormMode.Add)
         assertEquals("", s.form.name)
-        assertEquals("เพิ่มผู้จัดจำหน่าย", s.titleLabel)
+        assertFalse(s.isEdit)
         assertFalse(s.canSubmit)
     }
 
@@ -72,7 +72,7 @@ class SupplierFormViewModelTest {
         assertEquals("0812345678", f.phone)
         assertEquals("0105550000001", f.taxId)
         assertEquals("preferred", f.notes)
-        assertEquals("แก้ไขผู้จัดจำหน่าย", vm.state.value.titleLabel)
+        assertTrue(vm.state.value.isEdit)
     }
 
     @Test

@@ -16,6 +16,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -27,10 +28,11 @@ internal fun SuppliersListTable(
     emptySearching: Boolean = false,
 ) {
     val t = pharmTokens
-    val columns = remember(callbacks, t) {
+    val s = pharmStrings
+    val columns = remember(callbacks, t, s) {
         listOf(
         PharmTableColumn<Supplier>(
-            header = "ชื่อบริษัท / ร้านค้า",
+            header = s.suppliersHeaderName,
             weight = 2.2f,
             cell = { supplier ->
                 Text(
@@ -42,7 +44,7 @@ internal fun SuppliersListTable(
             },
         ),
         PharmTableColumn(
-            header = "ผู้ติดต่อ",
+            header = s.suppliersHeaderContact,
             weight = 1.4f,
             cell = { supplier ->
                 Text(
@@ -56,7 +58,7 @@ internal fun SuppliersListTable(
             },
         ),
         PharmTableColumn(
-            header = "เบอร์โทร",
+            header = s.commonPhone,
             weight = 1.2f,
             cell = { supplier ->
                 Text(
@@ -70,7 +72,7 @@ internal fun SuppliersListTable(
             },
         ),
         PharmTableColumn(
-            header = "เลขผู้เสียภาษี",
+            header = s.suppliersHeaderTaxId,
             weight = 1.3f,
             hideInCompact = true,
             cell = { supplier ->
@@ -86,7 +88,7 @@ internal fun SuppliersListTable(
             },
         ),
         PharmTableColumn(
-            header = "หมายเหตุ",
+            header = s.commonNote,
             weight = 1.6f,
             hideInCompact = true,
             cell = { supplier ->
@@ -101,7 +103,7 @@ internal fun SuppliersListTable(
             },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             cell = { supplier -> SupplierRowActions(supplier = supplier, callbacks = callbacks) },
         ),
@@ -119,12 +121,12 @@ internal fun SuppliersListTable(
             if (emptySearching) {
                 PharmEmptyState(
                     icon = PharmIcons.Search,
-                    title = "ไม่พบซัพพลายเออร์ตามที่ค้นหา",
+                    title = s.suppliersListNotFound,
                 )
             } else {
                 PharmEmptyState(
                     icon = PharmIcons.Suppliers,
-                    title = "ยังไม่มีซัพพลายเออร์",
+                    title = s.suppliersListEmpty,
                 )
             }
         },
@@ -133,21 +135,22 @@ internal fun SuppliersListTable(
 
 @Composable
 private fun SupplierRowActions(supplier: Supplier, callbacks: SuppliersListCallbacks) {
-    val actions = remember(supplier.id, callbacks) {
+    val s = pharmStrings
+    val actions = remember(supplier.id, callbacks, s) {
         listOf(
             PharmAction(
-                label = "รายละเอียด",
+                label = s.suppliersHeaderDetails,
                 icon = PharmIcons.Suppliers,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onOpenDetail(supplier) },
             ),
             PharmAction(
-                label = "แก้ไข",
+                label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 onClick = { callbacks.onOpenEdit(supplier) },
             ),
             PharmAction(
-                label = "ลบ",
+                label = s.commonDelete,
                 icon = PharmIcons.Trash,
                 tone = PharmActionTone.Danger,
                 onClick = { callbacks.onRequestDelete(supplier) },

@@ -3,6 +3,7 @@ package app.devper.pharm.ui.i18n
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class PharmStringsTablesTest {
 
@@ -64,7 +65,27 @@ class PharmStringsTablesTest {
         check("customersFormFullName", PharmStringsTh.customersFormFullName, PharmStringsEn.customersFormFullName, mismatches)
         check("customersTierLabel", PharmStringsTh.customersTierLabel, PharmStringsEn.customersTierLabel, mismatches)
         check("customersTierWholesale", PharmStringsTh.customersTierWholesale, PharmStringsEn.customersTierWholesale, mismatches)
+        check("suppliersListSubtitle", PharmStringsTh.suppliersListSubtitle, PharmStringsEn.suppliersListSubtitle, mismatches)
+        check("suppliersAddCta", PharmStringsTh.suppliersAddCta, PharmStringsEn.suppliersAddCta, mismatches)
+        check("suppliersListEmpty", PharmStringsTh.suppliersListEmpty, PharmStringsEn.suppliersListEmpty, mismatches)
+        check("suppliersHeaderName", PharmStringsTh.suppliersHeaderName, PharmStringsEn.suppliersHeaderName, mismatches)
+        check("suppliersHeaderContact", PharmStringsTh.suppliersHeaderContact, PharmStringsEn.suppliersHeaderContact, mismatches)
+        check("suppliersHeaderDetails", PharmStringsTh.suppliersHeaderDetails, PharmStringsEn.suppliersHeaderDetails, mismatches)
+        check("suppliersDeleteConfirmTitle", PharmStringsTh.suppliersDeleteConfirmTitle, PharmStringsEn.suppliersDeleteConfirmTitle, mismatches)
+        check("suppliersFormAddTitle", PharmStringsTh.suppliersFormAddTitle, PharmStringsEn.suppliersFormAddTitle, mismatches)
+        check("suppliersFormEditTitle", PharmStringsTh.suppliersFormEditTitle, PharmStringsEn.suppliersFormEditTitle, mismatches)
+        check("suppliersFormCompanyName", PharmStringsTh.suppliersFormCompanyName, PharmStringsEn.suppliersFormCompanyName, mismatches)
+        check("suppliersFormTaxId", PharmStringsTh.suppliersFormTaxId, PharmStringsEn.suppliersFormTaxId, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun delete_confirm_message_lambda_interpolates_supplier_name_in_both_locales() {
+        val th = PharmStringsTh.suppliersDeleteConfirmMessage("ACME Pharma")
+        val en = PharmStringsEn.suppliersDeleteConfirmMessage("ACME Pharma")
+        assertTrue(th.contains("ACME Pharma"), "Thai message should embed the supplier name: $th")
+        assertTrue(en.contains("ACME Pharma"), "English message should embed the supplier name: $en")
+        assertNotEquals(th, en, "Thai/English delete-confirm messages should differ")
     }
 
     @Test
