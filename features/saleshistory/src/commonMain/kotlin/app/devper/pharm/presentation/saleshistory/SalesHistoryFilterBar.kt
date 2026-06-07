@@ -10,6 +10,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -18,18 +19,19 @@ internal fun SalesHistoryListToolbar(
     callbacks: SalesHistoryCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     val range = PharmDateRange(
         fromMillis = state.dateRange.fromMillis,
         toMillis = state.dateRange.toMillis,
     )
 
     PharmListToolbar(
-        title = "ประวัติการขาย",
-        subtitle = "บิลขายย้อนหลังและการคืน/ยกเลิก",
+        title = s.navSalesHistory,
+        subtitle = s.salesHistorySubtitle,
         modifier = modifier,
         searchValue = state.query,
         onSearchChange = callbacks.onQueryChange,
-        searchPlaceholder = "เลขบิล หรือ ชื่อลูกค้า…",
+        searchPlaceholder = s.salesHistorySearchPlaceholder,
         filters = {
             PharmDateRangeField(
                 range = range,
@@ -43,7 +45,7 @@ internal fun SalesHistoryListToolbar(
         },
         actions = {
             PharmButton(
-                label = "ค้นหา",
+                label = s.commonSearch,
                 onClick = callbacks.onApplyFilter,
                 size = PharmButtonSize.Sm,
             )

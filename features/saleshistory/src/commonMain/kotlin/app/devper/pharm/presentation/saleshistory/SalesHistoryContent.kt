@@ -20,6 +20,7 @@ import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,7 @@ fun SalesHistoryContent(
     callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val searching = state.dateRange.from.isNotBlank() || state.dateRange.to.isNotBlank() || state.query.isNotBlank()
 
     Column(
@@ -49,7 +51,7 @@ fun SalesHistoryContent(
         ) {
             PharmListResultLine(
                 total = state.sales.size,
-                noun = "บิล",
+                noun = s.salesHistoryCountNoun,
                 searching = searching,
                 trailing = { SalesHistoryTotalStat(sales = state.sales) },
             )

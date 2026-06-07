@@ -209,6 +209,19 @@ data class PharmStrings(
     val usersFormPasswordCreate: String,
     val usersFormPasswordNew: String,
     val usersFormPasswordHint: String,
+    val salesHistorySubtitle: String,
+    val salesHistorySearchPlaceholder: String,
+    val salesHistoryCountNoun: String,
+    val salesHistoryEmptySearching: String,
+    val salesHistoryEmptyDateRange: String,
+    val salesHistoryHeaderTime: String,
+    val salesHistoryHeaderBillNo: String,
+    val salesHistoryHeaderNet: String,
+    val salesHistoryStatsTotal: String,
+    val salesHistoryWalkInCustomer: String,
+    val salesHistoryStatusOk: String,
+    val salesHistoryActionViewBill: String,
+    val salesHistoryActionReturn: String,
 )
 
 val PharmStringsTh: PharmStrings = PharmStrings(
@@ -420,6 +433,19 @@ val PharmStringsTh: PharmStrings = PharmStrings(
     usersFormPasswordCreate = "รหัสผ่าน (≥8 ตัว)",
     usersFormPasswordNew = "รหัสผ่านใหม่ (≥8 ตัว)",
     usersFormPasswordHint = "รหัสผ่านต้องไม่น้อยกว่า 8 ตัวอักษร",
+    salesHistorySubtitle = "บิลขายย้อนหลังและการคืน/ยกเลิก",
+    salesHistorySearchPlaceholder = "เลขบิล หรือ ชื่อลูกค้า…",
+    salesHistoryCountNoun = "บิล",
+    salesHistoryEmptySearching = "ไม่พบบิลที่ค้นหา",
+    salesHistoryEmptyDateRange = "ไม่พบบิลในช่วงเวลาที่เลือก",
+    salesHistoryHeaderTime = "เวลา",
+    salesHistoryHeaderBillNo = "เลขที่บิล",
+    salesHistoryHeaderNet = "ยอดสุทธิ",
+    salesHistoryStatsTotal = "ยอดรวม",
+    salesHistoryWalkInCustomer = "ลูกค้าทั่วไป",
+    salesHistoryStatusOk = "สำเร็จ",
+    salesHistoryActionViewBill = "ดูบิล",
+    salesHistoryActionReturn = "คืนยา",
 )
 
 val PharmStringsEn: PharmStrings = PharmStrings(
@@ -631,6 +657,19 @@ val PharmStringsEn: PharmStrings = PharmStrings(
     usersFormPasswordCreate = "Password (≥8 chars)",
     usersFormPasswordNew = "New password (≥8 chars)",
     usersFormPasswordHint = "Password must be at least 8 characters",
+    salesHistorySubtitle = "Past sales, returns, and voids",
+    salesHistorySearchPlaceholder = "Bill number or customer name…",
+    salesHistoryCountNoun = "bills",
+    salesHistoryEmptySearching = "No bills match the search",
+    salesHistoryEmptyDateRange = "No bills in the selected period",
+    salesHistoryHeaderTime = "Time",
+    salesHistoryHeaderBillNo = "Bill no.",
+    salesHistoryHeaderNet = "Net total",
+    salesHistoryStatsTotal = "Gross total",
+    salesHistoryWalkInCustomer = "Walk-in",
+    salesHistoryStatusOk = "Completed",
+    salesHistoryActionViewBill = "View bill",
+    salesHistoryActionReturn = "Return",
 )
 
 val LocalPharmStrings = staticCompositionLocalOf { PharmStringsTh }
