@@ -1,6 +1,5 @@
 package app.devper.pharm.data.repository
 
-import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.SaleHistoryApi
 import app.devper.pharm.data.remote.dto.DrugReturnItemRequest
@@ -20,13 +19,6 @@ class SaleHistoryRepositoryImpl(
 
     override suspend fun list(filter: SaleHistoryFilterParam): List<SaleSummary> =
         api.list(filter.from?.toIso(), filter.to?.toIso(), filter.query, filter.limit).map { it.toDomain() }
-
-    override suspend fun get(saleId: String): SaleSummary {
-
-        val matched = api.list(null, null, null, 200).firstOrNull { it.id == saleId }
-            ?: throw NotFoundException("ไม่พบบิล")
-        return matched.toDomain()
-    }
 
     override suspend fun getItems(saleId: String): List<SaleItemSnapshot> =
         api.items(saleId).map { it.toDomain(returnedQty = 0) }

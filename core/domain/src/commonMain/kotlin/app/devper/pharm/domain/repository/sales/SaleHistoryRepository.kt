@@ -7,7 +7,6 @@ import app.devper.pharm.domain.param.SubmitReturnParam
 
 interface SaleHistoryRepository {
     suspend fun list(filter: SaleHistoryFilterParam): List<SaleSummary>
-    suspend fun get(saleId: String): SaleSummary
     suspend fun getItems(saleId: String): List<SaleItemSnapshot>
     suspend fun getReturnedQuantities(saleId: String): Map<String, Int>
 

@@ -33,9 +33,6 @@ class FakeSaleHistoryRepository(
         }
     }
 
-    override suspend fun get(saleId: String): SaleSummary =
-        seed.firstOrNull { it.id == saleId } ?: throw IllegalStateException("ไม่พบบิล")
-
     override suspend fun getItems(saleId: String): List<SaleItemSnapshot> {
         itemsCallCount++
         if (itemsThrows) throw RuntimeException("items failed")

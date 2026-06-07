@@ -11,7 +11,6 @@ import app.devper.pharm.domain.usecase.DiscardParkedCartUseCase
 import app.devper.pharm.domain.usecase.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
-import app.devper.pharm.domain.usecase.GetSaleSummaryUseCase
 import app.devper.pharm.domain.usecase.ParkCartUseCase
 import app.devper.pharm.domain.usecase.RemoveCartItemUseCase
 import app.devper.pharm.domain.usecase.RestoreCartUseCase
@@ -49,6 +48,5 @@ val salesDomainModule = module {
     factoryOf(::VoidSaleUseCase)
     factoryOf(::GetSaleHistoryUseCase)
     factoryOf(::GetSaleItemsUseCase)
-    factoryOf(::GetSaleSummaryUseCase)
     factoryOf(::SubmitSaleReturnUseCase)
 }
