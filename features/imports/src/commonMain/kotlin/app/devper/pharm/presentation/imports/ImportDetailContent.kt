@@ -28,6 +28,7 @@ import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.format.isoDateToBuddhist
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -240,7 +241,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
                 style = PharmText.body,
             )
             Text(
-                text = "ล็อต ${item.lotNumber} · หมดอายุ ${item.expiryDate}",
+                text = "ล็อต ${item.lotNumber} · หมดอายุ ${isoDateToBuddhist(item.expiryDate)}",
                 style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
             )
         }

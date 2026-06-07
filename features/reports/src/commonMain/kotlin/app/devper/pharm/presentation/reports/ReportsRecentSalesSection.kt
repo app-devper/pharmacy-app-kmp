@@ -22,6 +22,7 @@ import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.format.isoDateTimeToBuddhist
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -78,7 +79,7 @@ private fun RecentSaleRow(sale: SaleSummary) {
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = sale.soldAt.take(19).replace('T', ' '),
+                text = isoDateTimeToBuddhist(sale.soldAt),
                 style = PharmText.micro.tabular().copy(color = t.colors.fg3),
                 modifier = Modifier.weight(1.2f),
                 maxLines = 1,
