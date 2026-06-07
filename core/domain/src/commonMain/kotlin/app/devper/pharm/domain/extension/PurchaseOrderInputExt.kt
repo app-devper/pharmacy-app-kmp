@@ -1,7 +1,8 @@
 package app.devper.pharm.domain.extension
 
 import app.devper.pharm.domain.param.PurchaseOrderItemInput
-import kotlinx.datetime.LocalDate
+import app.devper.pharm.domain.validation.Check
+import app.devper.pharm.domain.validation.Field
 
 fun buildPurchaseOrderItemInput(
     drugId: String,
@@ -12,17 +13,14 @@ fun buildPurchaseOrderItemInput(
     costPrice: String,
     sellPrice: String,
 ): Result<PurchaseOrderItemInput> = runCatching {
-    require(drugId.isNotBlank()) { "ต้องเลือกยา" }
-    require(lotNumber.isNotBlank()) { "ต้องระบุ lot number" }
-    require(expiryDate.isNotBlank()) { "ต้องระบุวันหมดอายุ" }
-    val parsedExpiry = runCatching { LocalDate.parse(expiryDate.trim()) }.getOrNull()
-        ?: error("วันหมดอายุไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)")
-    val parsedQty = qty.toIntOrNull() ?: error("จำนวนต้องเป็นตัวเลข")
-    require(parsedQty > 0) { "จำนวนต้องมากกว่า 0" }
+    val parsedDrugId = Field.notBlank(drugId, "ยา")
+    val parsedLotNumber = Field.notBlank(lotNumber, "lot number")
+    val parsedExpiry = Field.localDate(expiryDate, label = "วันหมดอายุ")
+    val parsedQty = Field.positiveInt(qty)
     PurchaseOrderItemInput(
-        drugId = drugId,
+        drugId = parsedDrugId,
         drugName = drugName.trim(),
-        lotNumber = lotNumber.trim(),
+        lotNumber = parsedLotNumber,
         expiryDate = parsedExpiry,
         qty = parsedQty,
         costPrice = costPrice.toDoubleOrNull() ?: 0.0,
@@ -36,8 +34,7 @@ fun isPurchaseOrderLineValid(
     expiryDate: String,
     qty: String,
 ): Boolean =
-    drugId.isNotBlank() &&
-        lotNumber.isNotBlank() &&
-        expiryDate.isNotBlank() &&
-        runCatching { LocalDate.parse(expiryDate.trim()) }.isSuccess &&
-        (qty.toIntOrNull() ?: 0) > 0
+    Check.notBlank(drugId) &&
+        Check.notBlank(lotNumber) &&
+        Check.localDate(expiryDate) &&
+        Check.positiveInt(qty)
