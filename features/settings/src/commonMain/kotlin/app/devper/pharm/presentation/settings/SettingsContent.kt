@@ -25,26 +25,32 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
+import app.devper.pharm.ui.i18n.PharmStrings
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
-private val SETTINGS_TABS: List<PharmTab> =
-    SettingsTab.entries.map { PharmTab(id = it.name, label = it.label) }
-
-private const val DEFAULT_SUBTITLE = "จัดการข้อมูลร้าน ใบเสร็จ สต็อก เภสัชกร และ ขย."
-private const val DIRTY_SUBTITLE = "มีการเปลี่ยนแปลง — แตะ \"บันทึก\" เพื่อยืนยัน"
+private fun labelFor(tab: SettingsTab, s: PharmStrings): String = when (tab) {
+    SettingsTab.Store      -> s.settingsTabStore
+    SettingsTab.Receipt    -> s.settingsTabReceipt
+    SettingsTab.Stock      -> s.settingsTabStock
+    SettingsTab.Pharmacist -> s.settingsTabPharmacist
+    SettingsTab.Ky         -> s.settingsTabKy
+}
 
 @Composable
 fun SettingsContent(
     state: SettingsEditorUiState,
     editor: SettingsEditorCallbacks = SettingsEditorCallbacks(),
 ) {
+    val strings = pharmStrings
+    val tabs = SettingsTab.entries.map { PharmTab(id = it.name, label = labelFor(it, strings)) }
     Column(modifier = Modifier.fillMaxSize()) {
         PharmListToolbar(
-            title = "ตั้งค่าระบบ",
-            subtitle = if (state.dirty) DIRTY_SUBTITLE else DEFAULT_SUBTITLE,
+            title = strings.navSettings,
+            subtitle = if (state.dirty) strings.settingsDirtySubtitle else strings.settingsToolbarSubtitle,
             actions = {
                 PharmSaveAction(
                     saving = state.saving,
@@ -59,7 +65,7 @@ fun SettingsContent(
         }
 
         PharmTabBar(
-            tabs = SETTINGS_TABS,
+            tabs = tabs,
             activeId = state.tab.name,
             onSelect = { id -> editor.onSelectTab(SettingsTab.valueOf(id)) },
         )
@@ -70,7 +76,7 @@ fun SettingsContent(
                     PharmCircularProgress()
                 }
             } else {
-                SettingsTabBody(state = state, editor = editor)
+                SettingsTabBody(state = state, editor = editor, strings = strings)
             }
         }
     }
@@ -81,6 +87,7 @@ fun SettingsContent(
 @Composable
 private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
     val t = pharmTokens
+    val strings = pharmStrings
     Box(modifier = Modifier.fillMaxWidth().background(t.colors.successBg)) {
         Row(
             modifier = Modifier
@@ -94,7 +101,7 @@ private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
                 modifier = Modifier.weight(1f),
             )
             PharmButton(
-                label = "ปิด",
+                label = strings.commonClose,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
@@ -104,7 +111,11 @@ private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun SettingsTabBody(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
+private fun SettingsTabBody(
+    state: SettingsEditorUiState,
+    editor: SettingsEditorCallbacks,
+    strings: PharmStrings,
+) {
     val scroll = rememberScrollState()
     Column(
         modifier = Modifier
@@ -114,7 +125,7 @@ private fun SettingsTabBody(state: SettingsEditorUiState, editor: SettingsEditor
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        PharmFormCard(title = state.tab.label) {
+        PharmFormCard(title = labelFor(state.tab, strings)) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 when (state.tab) {
                     SettingsTab.Store      -> SettingsStoreTab(state, editor)
