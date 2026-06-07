@@ -29,7 +29,7 @@ data class BulkImportUiState(
             BulkImportRow(
                 row = rowNo,
                 name = p.name,
-                qty = p.stock,
+                qty = p.stock.value,
                 unit = p.unit,
                 status = when {
                     err != null    -> BulkImportRowStatus.Failed

@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.planning
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -93,10 +96,10 @@ private val sampleLowStock = listOf(
         type = "tablet",
         strength = "500 mg",
         barcode = null,
-        sellPrice = 2.0,
-        costPrice = 1.0,
-        stock = 0,
-        minStock = 50,
+        sellPrice = Money(2.0),
+        costPrice = Money(1.0),
+        stock = Quantity(0),
+        minStock = Quantity(50),
         unit = "เม็ด",
         regNo = null,
     ),
@@ -107,10 +110,10 @@ private val sampleLowStock = listOf(
         type = "capsule",
         strength = "250 mg",
         barcode = null,
-        sellPrice = 5.0,
-        costPrice = 2.5,
-        stock = 12,
-        minStock = 40,
+        sellPrice = Money(5.0),
+        costPrice = Money(2.5),
+        stock = Quantity(12),
+        minStock = Quantity(40),
         unit = "แคปซูล",
         regNo = null,
     ),
@@ -121,10 +124,10 @@ private val sampleLowStock = listOf(
         type = "tablet",
         strength = "400 mg",
         barcode = null,
-        sellPrice = 4.0,
-        costPrice = 2.0,
-        stock = 25,
-        minStock = 30,
+        sellPrice = Money(4.0),
+        costPrice = Money(2.0),
+        stock = Quantity(25),
+        minStock = Quantity(30),
         unit = "เม็ด",
         regNo = null,
     ),

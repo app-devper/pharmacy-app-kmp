@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -354,10 +357,10 @@ private fun previewDrug(): Drug = Drug(
     type = null,
     strength = "125 mg",
     barcode = null,
-    sellPrice = 25.0,
-    costPrice = 12.0,
-    stock = 240,
-    minStock = 20,
+    sellPrice = Money(25.0),
+    costPrice = Money(12.0),
+    stock = Quantity(240),
+    minStock = Quantity(20),
     unit = "ชิ้น",
     regNo = null,
 )

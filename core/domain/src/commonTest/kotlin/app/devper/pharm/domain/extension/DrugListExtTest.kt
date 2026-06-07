@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.Drug
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,7 +16,7 @@ class DrugListExtTest {
         barcode: String? = null,
     ) = Drug(
         id = id, name = name, genericName = genericName, type = null, strength = null,
-        barcode = barcode, sellPrice = 1.0, costPrice = 0.0, stock = 0, minStock = 0,
+        barcode = barcode, sellPrice = Money(1.0), costPrice = Money(0.0), stock = Quantity(0), minStock = Quantity(0),
         unit = "ชิ้น", regNo = null,
     )
 

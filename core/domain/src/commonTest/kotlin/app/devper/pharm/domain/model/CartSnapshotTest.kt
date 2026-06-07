@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -7,9 +10,9 @@ import kotlin.test.assertTrue
 
 class CartSnapshotTest {
 
-    private fun drug(price: Double) = Drug(
+    private fun drug(price: Money) = Drug(
         id = "d", name = "D", genericName = null, type = null, strength = null,
-        barcode = null, sellPrice = price, costPrice = 0.0, stock = 100, minStock = 0,
+        barcode = null, sellPrice = price, costPrice = Money(0.0), stock = Quantity(100), minStock = Quantity(0),
         unit = "เม็ด", regNo = null,
     )
 
@@ -22,7 +25,7 @@ class CartSnapshotTest {
     @Test
     fun total_subtracts_cart_discount_from_subtotal() {
         val snap = snapshot(
-            items = listOf(CartLine(drug = drug(10.0), qty = 3)),
+            items = listOf(CartLine(drug = drug(Money(10.0)), qty = 3)),
             discount = CartDiscount.Percent(percent = 10.0),
         )
         assertEquals(30.0, snap.subtotal)

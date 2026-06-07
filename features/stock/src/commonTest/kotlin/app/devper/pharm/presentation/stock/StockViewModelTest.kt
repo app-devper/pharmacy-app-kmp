@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
@@ -16,7 +19,7 @@ class StockViewModelTest {
 
     private fun drug(id: String) = Drug(
         id = id, name = "Drug $id", genericName = null, type = null, strength = null,
-        barcode = null, sellPrice = 2.0, costPrice = 1.0, stock = 10, minStock = 5,
+        barcode = null, sellPrice = Money(2.0), costPrice = Money(1.0), stock = Quantity(10), minStock = Quantity(5),
         unit = "เม็ด", regNo = null,
     )
 

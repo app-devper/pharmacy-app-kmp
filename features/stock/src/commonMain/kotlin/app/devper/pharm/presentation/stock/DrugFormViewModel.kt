@@ -1,6 +1,8 @@
 package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
@@ -91,17 +93,17 @@ class DrugFormViewModel(
         barcode = barcode.orEmpty(),
         regNo = regNo.orEmpty(),
         unit = unit ?: "ชิ้น",
-        sellPrice = if (sellPrice == 0.0) "" else sellPrice.toPlain(),
-        costPrice = if (costPrice == 0.0) "" else costPrice.toPlain(),
-        minStock = if (minStock == 0) "" else minStock.toString(),
-        tierRetail = prices["retail"]?.toPlain().orEmpty(),
-        tierRegular = prices["regular"]?.toPlain().orEmpty(),
-        tierWholesale = prices["wholesale"]?.toPlain().orEmpty(),
+        sellPrice = if (sellPrice.isZero) "" else sellPrice.amount.toPlain(),
+        costPrice = if (costPrice.isZero) "" else costPrice.amount.toPlain(),
+        minStock = if (minStock.isZero) "" else minStock.value.toString(),
+        tierRetail = prices["retail"]?.amount?.toPlain().orEmpty(),
+        tierRegular = prices["regular"]?.amount?.toPlain().orEmpty(),
+        tierWholesale = prices["wholesale"]?.amount?.toPlain().orEmpty(),
         altUnits = altUnits.map {
             AltUnitDraft(
                 name = it.name,
                 factor = it.factor.toString(),
-                sellPrice = if (it.sellPrice == 0.0) "" else it.sellPrice.toPlain(),
+                sellPrice = if (it.sellPrice.isZero) "" else it.sellPrice.amount.toPlain(),
                 barcode = it.barcode.orEmpty(),
                 hidden = it.hidden,
             )
@@ -122,9 +124,9 @@ class DrugFormViewModel(
                 lotNumber = f.lotNumber.trim(),
                 expiryDate = parsedLotExpiry,
                 importDate = null,
-                costPrice = f.lotCostPrice.toDoubleOrNull(),
-                sellPrice = f.lotSellPrice.toDoubleOrNull(),
-                quantity = f.lotQty.toIntOrNull() ?: stock,
+                costPrice = f.lotCostPrice.toDoubleOrNull()?.let(::Money),
+                sellPrice = f.lotSellPrice.toDoubleOrNull()?.let(::Money),
+                quantity = Quantity(f.lotQty.toIntOrNull() ?: stock),
             )
         } else null
 
@@ -134,10 +136,10 @@ class DrugFormViewModel(
             type = f.type.trim(),
             strength = f.strength.trim(),
             barcode = f.barcode.trim(),
-            sellPrice = f.sellPrice.toDoubleOrNull() ?: 0.0,
-            costPrice = f.costPrice.toDoubleOrNull() ?: 0.0,
-            stock = stock,
-            minStock = f.minStock.toIntOrNull() ?: 0,
+            sellPrice = Money(f.sellPrice.toDoubleOrNull() ?: 0.0),
+            costPrice = Money(f.costPrice.toDoubleOrNull() ?: 0.0),
+            stock = Quantity(stock),
+            minStock = Quantity(f.minStock.toIntOrNull() ?: 0),
             regNo = f.regNo.trim(),
             unit = f.unit.trim().ifBlank { "ชิ้น" },
             reportTypes = f.reportTypes.toList(),
@@ -155,9 +157,9 @@ class DrugFormViewModel(
             type = f.type.trim(),
             strength = f.strength.trim(),
             barcode = f.barcode.trim(),
-            sellPrice = f.sellPrice.toDoubleOrNull() ?: 0.0,
-            costPrice = f.costPrice.toDoubleOrNull() ?: 0.0,
-            minStock = f.minStock.toIntOrNull() ?: 0,
+            sellPrice = Money(f.sellPrice.toDoubleOrNull() ?: 0.0),
+            costPrice = Money(f.costPrice.toDoubleOrNull() ?: 0.0),
+            minStock = Quantity(f.minStock.toIntOrNull() ?: 0),
             regNo = f.regNo.trim(),
             unit = f.unit.trim().ifBlank { "ชิ้น" },
             reportTypes = f.reportTypes.toList(),
@@ -165,16 +167,16 @@ class DrugFormViewModel(
             prices = buildPriceMap(f),
         )
 
-    private fun buildPriceMap(f: DrugFormFields): Map<String, Double> = buildMap {
-        f.tierRetail.toDoubleOrNull()?.takeIf { it > 0 }?.let { put("retail", it) }
-        f.tierRegular.toDoubleOrNull()?.takeIf { it > 0 }?.let { put("regular", it) }
-        f.tierWholesale.toDoubleOrNull()?.takeIf { it > 0 }?.let { put("wholesale", it) }
+    private fun buildPriceMap(f: DrugFormFields): Map<String, Money> = buildMap {
+        f.tierRetail.toDoubleOrNull()?.takeIf { it > 0 }?.let { put("retail", Money(it)) }
+        f.tierRegular.toDoubleOrNull()?.takeIf { it > 0 }?.let { put("regular", Money(it)) }
+        f.tierWholesale.toDoubleOrNull()?.takeIf { it > 0 }?.let { put("wholesale", Money(it)) }
     }
 
     private fun AltUnitDraft.toDomain(): AltUnit = AltUnit(
         name = name.trim(),
         factor = factor.toIntOrNull() ?: 0,
-        sellPrice = sellPrice.toDoubleOrNull() ?: 0.0,
+        sellPrice = Money(sellPrice.toDoubleOrNull() ?: 0.0),
         prices = emptyMap(),
         barcode = barcode.takeIf { it.isNotBlank() }?.trim(),
         hidden = hidden,

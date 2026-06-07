@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Drug
@@ -26,7 +29,7 @@ class ParkedCartViewModelTest {
 
     private fun drug(id: String = "d1", name: String = "Paracetamol") = Drug(
         id = id, name = name, genericName = null, type = null, strength = null,
-        barcode = null, sellPrice = 5.0, costPrice = 0.0, stock = 100, minStock = 0,
+        barcode = null, sellPrice = Money(5.0), costPrice = Money(0.0), stock = Quantity(100), minStock = Quantity(0),
         unit = "เม็ด", regNo = null,
     )
 

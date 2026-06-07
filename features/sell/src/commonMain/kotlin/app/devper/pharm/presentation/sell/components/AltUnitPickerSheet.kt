@@ -58,7 +58,7 @@ fun AltUnitPickerSheet(
             UnitRow(
                 label = drug.unit ?: "หน่วย",
                 factorHint = null,
-                price = resolvePrice(drug.sellPrice, drug.prices, activeTier),
+                price = resolvePrice(drug.sellPrice, drug.prices, activeTier).amount,
                 onClick = { onPick(null) },
             )
             Divider()
@@ -66,7 +66,7 @@ fun AltUnitPickerSheet(
                 UnitRow(
                     label = alt.name,
                     factorHint = "× ${alt.factor} ${drug.unit ?: ""}".trim(),
-                    price = resolvePrice(alt.sellPrice, alt.prices, activeTier),
+                    price = resolvePrice(alt.sellPrice, alt.prices, activeTier).amount,
                     onClick = { onPick(alt) },
                 )
                 Divider()

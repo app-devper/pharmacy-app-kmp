@@ -25,26 +25,28 @@ data class StockCountFormUiState(
 
     val changedLines: List<Pair<String, Int>> = pendingLines.filter { (id, counted) ->
         val drug = drugById[id] ?: return@filter false
-        counted != drug.stock
+        counted != drug.stock.value
     }
 
     val changedCount: Int = changedLines.size
 
     val totalAbsDelta: Int = pendingLines.sumOf { (id, counted) ->
         val drug = drugById[id] ?: return@sumOf 0
-        if (counted == drug.stock) 0 else kotlin.math.abs(counted - drug.stock)
+        val systemStock = drug.stock.value
+        if (counted == systemStock) 0 else kotlin.math.abs(counted - systemStock)
     }
 
     val topDiscrepancies: List<StockCountDiscrepancy> = changedLines
         .mapNotNull { (id, counted) ->
             val drug = drugById[id] ?: return@mapNotNull null
+            val systemStock = drug.stock.value
             StockCountDiscrepancy(
                 drugId = id,
                 drugName = drug.name,
                 unit = drug.unit.orEmpty(),
-                systemStock = drug.stock,
+                systemStock = systemStock,
                 counted = counted,
-                delta = counted - drug.stock,
+                delta = counted - systemStock,
             )
         }
         .sortedByDescending { kotlin.math.abs(it.delta) }

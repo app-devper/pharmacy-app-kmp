@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
@@ -23,8 +26,8 @@ class DrugFormViewModelTest {
     private fun drug(
         id: String = "d1",
         name: String = "Paracetamol",
-        sellPrice: Double = 5.0,
-        prices: Map<String, Double> = emptyMap(),
+        sellPrice: Money = Money(5.0),
+        prices: Map<String, Money> = emptyMap(),
         altUnits: List<AltUnit> = emptyList(),
         reportTypes: List<String> = emptyList(),
     ) = Drug(
@@ -35,9 +38,9 @@ class DrugFormViewModelTest {
         strength = "500mg",
         barcode = "8851234567001",
         sellPrice = sellPrice,
-        costPrice = 2.0,
-        stock = 100,
-        minStock = 20,
+        costPrice = Money(2.0),
+        stock = Quantity(100),
+        minStock = Quantity(20),
         unit = "เม็ด",
         regNo = "1A 123/45",
         prices = prices,
@@ -76,7 +79,7 @@ class DrugFormViewModelTest {
 
     @Test
     fun edit_mode_hydrates_form_from_drug() = runVmTest { dispatchers ->
-        val seeded = drug(prices = mapOf("retail" to 5.0, "wholesale" to 4.0))
+        val seeded = drug(prices = mapOf("retail" to Money(5.0), "wholesale" to Money(4.0)))
         val (vm, _) = newVm(dispatchers, FakeDrugRepository(seed = listOf(seeded)))
         vm.init(DrugFormMode.Edit("d1"))
         advanceUntilIdle()
@@ -205,12 +208,12 @@ class DrugFormViewModelTest {
         val p = repo.lastAdd
         assertNotNull(p)
         assertEquals("New Drug", p.name)
-        assertEquals(12.50, p.sellPrice)
-        assertEquals(8.0, p.costPrice)
-        assertEquals(5, p.minStock)
+        assertEquals(Money(12.50), p.sellPrice)
+        assertEquals(Money(8.0), p.costPrice)
+        assertEquals(Quantity(5), p.minStock)
         assertEquals("เม็ด", p.unit)
-        assertEquals(12.50, p.prices["retail"])
-        assertEquals(10.0, p.prices["wholesale"])
+        assertEquals(Money(12.50), p.prices["retail"])
+        assertEquals(Money(10.0), p.prices["wholesale"])
         assertNull(p.createLot)
         assertTrue(vm.state.value.saved)
         assertFalse(vm.state.value.saving)
@@ -234,8 +237,8 @@ class DrugFormViewModelTest {
         assertNotNull(lot)
         assertEquals("L-1", lot.lotNumber)
         assertEquals(kotlinx.datetime.LocalDate.parse("2027-12-31"), lot.expiryDate)
-        assertEquals(50, lot.quantity)
-        assertEquals(3.0, lot.costPrice)
+        assertEquals(Quantity(50), lot.quantity)
+        assertEquals(Money(3.0), lot.costPrice)
     }
 
     @Test

@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.error.ErrorMessages
 
 import app.devper.pharm.common.ValidationException
@@ -46,8 +49,8 @@ class ImportFormViewModel(
         copy(
             drugId = drug.id,
             drugName = drug.name,
-            sellPrice = if (sellPrice.isBlank()) drug.sellPrice.cleanPrice() else sellPrice,
-            costPrice = if (costPrice.isBlank()) drug.costPrice.cleanPrice() else costPrice,
+            sellPrice = if (sellPrice.isBlank()) drug.sellPrice.amount.cleanPrice() else sellPrice,
+            costPrice = if (costPrice.isBlank()) drug.costPrice.amount.cleanPrice() else costPrice,
         )
     }
 

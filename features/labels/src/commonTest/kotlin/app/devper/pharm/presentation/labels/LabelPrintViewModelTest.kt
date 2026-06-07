@@ -2,6 +2,9 @@
 
 package app.devper.pharm.presentation.labels
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelSize
@@ -28,10 +31,10 @@ class LabelPrintViewModelTest {
             type = null,
             strength = null,
             barcode = barcode,
-            sellPrice = price,
-            costPrice = 0.0,
-            stock = 100,
-            minStock = 0,
+            sellPrice = Money(price),
+            costPrice = Money(0.0),
+            stock = Quantity(100),
+            minStock = Quantity(0),
             unit = "เม็ด",
             regNo = null,
         )

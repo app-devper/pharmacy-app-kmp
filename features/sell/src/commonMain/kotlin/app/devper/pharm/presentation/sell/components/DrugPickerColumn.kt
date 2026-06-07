@@ -114,13 +114,13 @@ fun DrugPickerColumn(
                             modifier = Modifier.height(DRUG_CARD_HEIGHT),
                             name = drug.name,
                             generic = drug.genericName,
-                            price = resolvePrice(drug.sellPrice, drug.prices, activeTier),
-                            stock = drug.stock,
+                            price = resolvePrice(drug.sellPrice, drug.prices, activeTier).amount,
+                            stock = drug.stock.value,
                             unit = drug.unit ?: "หน่วย",
                             type = inferType(drug),
                             altUnitCount = drug.altUnits.count { !it.hidden },
                             kyForm = inferKyForm(drug),
-                            lowStockThreshold = drug.minStock.coerceAtLeast(20),
+                            lowStockThreshold = drug.minStock.value.coerceAtLeast(20),
                             onClick = { onAdd(drug) },
                         )
                     }

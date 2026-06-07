@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.param
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.AltUnit
 
 data class AddDrugParam(
@@ -8,17 +10,17 @@ data class AddDrugParam(
     val type: String = "",
     val strength: String = "",
     val barcode: String = "",
-    val sellPrice: Double,
-    val costPrice: Double = 0.0,
+    val sellPrice: Money,
+    val costPrice: Money = Money.Zero,
 
-    val stock: Int = 0,
-    val minStock: Int = 0,
+    val stock: Quantity = Quantity.Zero,
+    val minStock: Quantity = Quantity.Zero,
     val regNo: String = "",
     val unit: String = "ชิ้น",
     val reportTypes: List<String> = emptyList(),
     val altUnits: List<AltUnit> = emptyList(),
 
-    val prices: Map<String, Double> = emptyMap(),
+    val prices: Map<String, Money> = emptyMap(),
     val createLot: CreateLotPayload? = null,
 )
 
@@ -29,21 +31,21 @@ data class UpdateDrugParam(
     val type: String = "",
     val strength: String = "",
     val barcode: String = "",
-    val sellPrice: Double,
-    val costPrice: Double = 0.0,
-    val minStock: Int = 0,
+    val sellPrice: Money,
+    val costPrice: Money = Money.Zero,
+    val minStock: Quantity = Quantity.Zero,
     val regNo: String = "",
     val unit: String = "ชิ้น",
     val reportTypes: List<String> = emptyList(),
     val altUnits: List<AltUnit> = emptyList(),
-    val prices: Map<String, Double> = emptyMap(),
+    val prices: Map<String, Money> = emptyMap(),
 )
 
 data class CreateLotPayload(
     val lotNumber: String,
     val expiryDate: kotlinx.datetime.LocalDate,
     val importDate: kotlinx.datetime.LocalDate? = null,
-    val costPrice: Double? = null,
-    val sellPrice: Double? = null,
-    val quantity: Int,
+    val costPrice: Money? = null,
+    val sellPrice: Money? = null,
+    val quantity: Quantity,
 )

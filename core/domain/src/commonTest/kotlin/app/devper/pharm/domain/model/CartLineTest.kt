@@ -1,11 +1,14 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CartLineTest {
 
-    private fun drug(sellPrice: Double = 10.0) = Drug(
+    private fun drug(sellPrice: Money = Money(10.0)) = Drug(
         id = "d1",
         name = "Amoxicillin",
         genericName = null,
@@ -13,17 +16,17 @@ class CartLineTest {
         strength = null,
         barcode = null,
         sellPrice = sellPrice,
-        costPrice = 0.0,
-        stock = 100,
-        minStock = 0,
+        costPrice = Money(0.0),
+        stock = Quantity(100),
+        minStock = Quantity(0),
         unit = "เม็ด",
         regNo = null,
     )
 
     @Test
     fun multiUnitLine_grossValue_usesDisplayQty_notBaseQty() {
-        val box = AltUnit(name = "กล่อง", factor = 10, sellPrice = 100.0)
-        val line = CartLine(drug = drug(sellPrice = 10.0), qty = 20, selectedUnit = box)
+        val box = AltUnit(name = "กล่อง", factor = 10, sellPrice = Money(100.0))
+        val line = CartLine(drug = drug(sellPrice = Money(10.0)), qty = 20, selectedUnit = box)
 
         assertEquals(2, line.displayQty)
         assertEquals(10.0, line.basePrice)
@@ -35,7 +38,7 @@ class CartLineTest {
 
     @Test
     fun singleUnitLine_grossValue_matchesLineTotal() {
-        val line = CartLine(drug = drug(sellPrice = 5.0), qty = 3)
+        val line = CartLine(drug = drug(sellPrice = Money(5.0)), qty = 3)
 
         assertEquals(3, line.displayQty)
         assertEquals(15.0, line.unitPrice * line.displayQty)

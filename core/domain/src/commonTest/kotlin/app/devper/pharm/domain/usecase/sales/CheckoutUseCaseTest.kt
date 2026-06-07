@@ -2,6 +2,9 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.ActiveCart
@@ -35,7 +38,7 @@ class CheckoutUseCaseTest {
 
     private fun drug(id: String, stock: Int) = Drug(
         id = id, name = "Drug $id", genericName = null, type = null, strength = null,
-        barcode = null, sellPrice = 10.0, costPrice = 0.0, stock = stock, minStock = 0,
+        barcode = null, sellPrice = Money(10.0), costPrice = Money(0.0), stock = Quantity(stock), minStock = Quantity(0),
         unit = "เม็ด", regNo = null,
     )
 
@@ -104,7 +107,7 @@ class CheckoutUseCaseTest {
     fun line_with_alt_unit_sends_alt_unit_name_and_factor() = runTest {
         val sales = FakeSales()
         val alt = app.devper.pharm.domain.model.AltUnit(
-            name = "กล่อง", factor = 10, sellPrice = 100.0,
+            name = "กล่อง", factor = 10, sellPrice = Money(100.0),
         )
         val line = CartLine(drug = drug("a", stock = 100), qty = 10, selectedUnit = alt)
         useCase(cart(line), sales).invoke(received = 200.0).getOrThrow()

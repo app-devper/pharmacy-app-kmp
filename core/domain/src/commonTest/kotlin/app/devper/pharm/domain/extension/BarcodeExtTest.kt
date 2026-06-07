@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import kotlin.test.Test
@@ -16,7 +19,7 @@ class BarcodeExtTest {
         altUnits: List<AltUnit> = emptyList(),
     ) = Drug(
         id = id, name = name, genericName = null, type = null, strength = null,
-        barcode = barcode, sellPrice = 1.0, costPrice = 0.0, stock = 0, minStock = 0,
+        barcode = barcode, sellPrice = Money(1.0), costPrice = Money(0.0), stock = Quantity(0), minStock = Quantity(0),
         unit = "ชิ้น", regNo = regNo, altUnits = altUnits,
     )
 
@@ -27,7 +30,7 @@ class BarcodeExtTest {
 
     @Test
     fun matches_visible_alt_unit_barcode_first() {
-        val alt = AltUnit(name = "กล่อง", factor = 10, sellPrice = 0.0, barcode = "ALT-1", hidden = false)
+        val alt = AltUnit(name = "กล่อง", factor = 10, sellPrice = Money(0.0), barcode = "ALT-1", hidden = false)
         val d = drug("d1", barcode = "PRIMARY-1", altUnits = listOf(alt))
         val match = listOf(d).matchBarcode("ALT-1")
         assertEquals("d1", match?.drug?.id)
@@ -36,7 +39,7 @@ class BarcodeExtTest {
 
     @Test
     fun skips_hidden_alt_unit_barcode() {
-        val hidden = AltUnit(name = "กล่อง", factor = 10, sellPrice = 0.0, barcode = "ALT-1", hidden = true)
+        val hidden = AltUnit(name = "กล่อง", factor = 10, sellPrice = Money(0.0), barcode = "ALT-1", hidden = true)
         val d = drug("d1", barcode = "PRIMARY-1", altUnits = listOf(hidden))
 
         val match = listOf(d).matchBarcode("ALT-1")

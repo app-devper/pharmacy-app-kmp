@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 data class Drug(
     val id: String,
     val name: String,
@@ -7,22 +10,22 @@ data class Drug(
     val type: String?,
     val strength: String?,
     val barcode: String?,
-    val sellPrice: Double,
-    val costPrice: Double,
-    val stock: Int,
-    val minStock: Int,
+    val sellPrice: Money,
+    val costPrice: Money,
+    val stock: Quantity,
+    val minStock: Quantity,
     val unit: String?,
     val regNo: String?,
 
-    val prices: Map<String, Double> = emptyMap(),
+    val prices: Map<String, Money> = emptyMap(),
 
     val altUnits: List<AltUnit> = emptyList(),
 
     val reportTypes: List<String> = emptyList(),
 ) {
     val stockStatus: StockStatus = when {
-        stock <= 0 -> StockStatus.OutOrOversold
-        minStock > 0 && stock <= minStock -> StockStatus.Low
+        !stock.isPositive -> StockStatus.OutOrOversold
+        minStock.isPositive && stock <= minStock -> StockStatus.Low
         else -> StockStatus.Healthy
     }
 }

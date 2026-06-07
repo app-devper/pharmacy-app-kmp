@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.value.Money
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -14,7 +15,7 @@ class BulkImportJsonExtTest {
         val list = r.getOrThrow()
         assertEquals(1, list.size)
         assertEquals("A", list[0].name)
-        assertEquals(2.0, list[0].sellPrice)
+        assertEquals(Money(2.0), list[0].sellPrice)
     }
 
     @Test
@@ -32,8 +33,8 @@ class BulkImportJsonExtTest {
     @Test
     fun reads_string_price_as_number() {
         val r = parseBulkImportJson("""[{"name":"A","sell_price":"3.5","cost_price":"2"}]""").getOrThrow()
-        assertEquals(3.5, r[0].sellPrice)
-        assertEquals(2.0, r[0].costPrice)
+        assertEquals(Money(3.5), r[0].sellPrice)
+        assertEquals(Money(2.0), r[0].costPrice)
     }
 
     @Test

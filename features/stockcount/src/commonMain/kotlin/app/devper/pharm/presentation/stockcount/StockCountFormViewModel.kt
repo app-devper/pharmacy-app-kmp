@@ -68,7 +68,7 @@ class StockCountFormViewModel(
     }
 
     fun onFillFromSystem() = setState {
-        copy(counts = drugs.associate { it.id to it.stock.coerceAtLeast(0).toString() })
+        copy(counts = drugs.associate { it.id to it.stock.value.coerceAtLeast(0).toString() })
     }
 
     fun onClear() = setState { copy(counts = emptyMap()) }
