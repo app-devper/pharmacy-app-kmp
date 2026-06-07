@@ -7,7 +7,6 @@ import app.devper.pharm.domain.repository.UsersRepository
 class GetUsersUseCase(
     private val users: UsersRepository,
     dispatchers: AppDispatchers,
-) : BaseUseCase<Unit, List<UmUser>>(dispatchers) {
+) : BaseQueryUseCase<List<UmUser>>(dispatchers) {
     override suspend fun execute(param: Unit): List<UmUser> = users.list()
-    suspend operator fun invoke(): Result<List<UmUser>> = invoke(Unit)
 }
