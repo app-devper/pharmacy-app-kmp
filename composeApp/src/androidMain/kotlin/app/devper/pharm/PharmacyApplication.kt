@@ -29,9 +29,11 @@ class PharmacyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        val prefs = applicationContext.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        applyPersistedLocale(prefs.getString("ui.locale", null))
+
         val androidPlatformModule = module {
             single<Settings> {
-                val prefs = applicationContext.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 SharedPreferencesSettings(prefs)
             }
             single<SecureStorage> { AndroidKeystoreSecureStorage(applicationContext) }
@@ -49,4 +51,13 @@ class PharmacyApplication : Application() {
             modules(androidPlatformModule, appModule)
         }
     }
+}
+
+private fun applyPersistedLocale(wire: String?) {
+    val tag = when (wire?.lowercase()) {
+        "th" -> "th"
+        "en" -> "en"
+        else -> null
+    } ?: return
+    java.util.Locale.setDefault(java.util.Locale.forLanguageTag(tag))
 }
