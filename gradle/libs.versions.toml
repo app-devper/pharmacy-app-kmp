@@ -1,6 +1,11 @@
 [versions]
 agp = "8.13.2"
 
+app-version = "3.2.1"
+app-versionCode = "1"
+
+buildkonfig = "0.17.0"
+
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -96,6 +101,7 @@ ktor-common = [
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

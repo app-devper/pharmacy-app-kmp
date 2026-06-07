@@ -131,8 +131,8 @@ android {
         applicationId = "app.devper.pharm"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "3.2.1"
+        versionCode = libs.versions.app.versionCode.get().toInt()
+        versionName = libs.versions.app.version.get()
     }
 
     compileOptions {
