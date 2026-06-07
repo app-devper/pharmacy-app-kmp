@@ -10,6 +10,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun ImportsListToolbar(
@@ -18,17 +19,18 @@ internal fun ImportsListToolbar(
     callbacks: ImportsListCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     PharmListToolbar(
-        title = "นำเข้าสินค้า",
-        subtitle = "จัดการใบนำเข้า / รับสินค้าเข้าสต็อก",
+        title = s.importsTitle,
+        subtitle = s.importsSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
-        searchPlaceholder = "ค้นหาเลขที่ / ผู้ขาย…",
+        searchPlaceholder = s.importsSearchPlaceholder,
         modifier = modifier,
         badge = {
             if (draftCount > 0) {
                 PharmBadge(
-                    text = "$draftCount แบบร่าง",
+                    text = "$draftCount ${s.importsStatusDraft}",
                     tone = PharmBadgeTone.Amber,
                     size = PharmBadgeSize.Sm,
                 )
@@ -36,7 +38,7 @@ internal fun ImportsListToolbar(
         },
         actions = {
             PharmButton(
-                label = "สร้างใบนำเข้า",
+                label = s.importsAddCta,
                 onClick = callbacks.onCreateImport,
                 size = PharmButtonSize.Sm,
                 leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },

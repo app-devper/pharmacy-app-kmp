@@ -29,6 +29,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -41,12 +42,13 @@ fun ImportFormContent(
     callbacks: ImportFormCallbacks = ImportFormCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     var pickerForLine by remember { mutableStateOf<Int?>(null) }
     var supplierPickerOpen by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.titleLabel,
+            title = if (state.isEdit) s.importsFormEditTitle else s.importsNewTitle,
             onBack = callbacks.onBack,
             actions = {
                 if (state.saving) {
@@ -57,7 +59,7 @@ fun ImportFormContent(
                     )
                 } else if (!state.readOnly) {
                     PharmButton(
-                        label = "บันทึก",
+                        label = s.commonSave,
                         onClick = callbacks.onSubmit,
                         enabled = state.canSubmit,
                         size = PharmButtonSize.Sm,
@@ -81,7 +83,7 @@ fun ImportFormContent(
                     PharmCircularProgress(color = t.colors.accent)
                 }
             } else {
-                PharmFormCard(title = "ข้อมูลใบรับสินค้า") {
+                PharmFormCard(title = s.importsFormInfoSection) {
                     ImportFormHeader(
                         state = state,
                         callbacks = callbacks,
@@ -89,8 +91,8 @@ fun ImportFormContent(
                     )
                 }
                 PharmFormCard(
-                    title = "รายการสินค้า",
-                    subtitle = if (state.form.items.isEmpty()) "ยังไม่มีรายการ" else "${state.form.items.size} รายการ",
+                    title = s.importsItemListLabel,
+                    subtitle = if (state.form.items.isEmpty()) s.bulkImportEmptyDefault else "${state.form.items.size} ${s.movementsCountNoun}",
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         state.form.items.forEachIndexed { index, fields ->
@@ -114,7 +116,7 @@ fun ImportFormContent(
                                 leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
-                                Text(text = "เพิ่มรายการ", style = PharmText.buttonMd)
+                                Text(text = s.importsActionAddLine, style = PharmText.buttonMd)
                             }
                         }
                         if (state.readOnly) {
@@ -163,7 +165,7 @@ private fun ReadOnlyNote() {
             .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
         Text(
-            text = "ใบนี้ยืนยันแล้ว — แก้ไขไม่ได้",
+            text = pharmStrings.importsFormReceivedConfirmedHint,
             style = PharmText.bodySm.copy(color = t.colors.warningFg),
         )
     }

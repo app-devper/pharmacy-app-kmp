@@ -41,6 +41,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.format.formatBaht
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -53,10 +54,11 @@ fun ImportDetailContent(
     callbacks: ImportDetailCallbacks,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.po?.docNo ?: "ใบรับสินค้า",
+            title = state.po?.docNo ?: s.importsTitle,
             onBack = callbacks.onBack,
             actions = {
                 state.po?.let { po ->
@@ -67,7 +69,7 @@ fun ImportDetailContent(
                             .clickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(PharmIcons.Pencil, contentDescription = "แก้ไข", tint = t.colors.fg2, modifier = Modifier.size(20.dp))
+                        Icon(PharmIcons.Pencil, contentDescription = s.commonEdit, tint = t.colors.fg2, modifier = Modifier.size(20.dp))
                     }
                 }
             },
@@ -78,7 +80,7 @@ fun ImportDetailContent(
                     PharmCircularProgress()
                 }
                 state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("ไม่พบใบรับสินค้า", style = PharmText.body.copy(color = t.colors.fg2))
+                    Text(s.importsListEmpty, style = PharmText.body.copy(color = t.colors.fg2))
                 }
                 else -> Body(po = state.po)
             }
@@ -91,16 +93,16 @@ fun ImportDetailContent(
         PharmModal(
             open = true,
             onDismiss = callbacks.onCancelConfirm,
-            title = "ยืนยันรับสินค้า?",
+            title = s.importsConfirmReceiveTitle,
             footer = {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = s.commonCancel,
                     onClick = callbacks.onCancelConfirm,
                     variant = PharmButtonVariant.Ghost,
                     enabled = !state.confirming,
                 )
                 PharmButton(
-                    label = "ยืนยัน",
+                    label = s.commonConfirm,
                     onClick = callbacks.onConfirmNow,
                     enabled = !state.confirming,
                     loading = state.confirming,
@@ -108,7 +110,7 @@ fun ImportDetailContent(
             },
         ) {
             Text(
-                "เมื่อยืนยันแล้วระบบจะเพิ่มล็อต + อัปเดตสต็อก + บันทึก ขย.9 — ไม่สามารถยกเลิกได้",
+                s.importsConfirmReceiveMessage,
                 style = PharmText.body,
             )
         }
@@ -117,16 +119,16 @@ fun ImportDetailContent(
         PharmModal(
             open = true,
             onDismiss = callbacks.onCancelDelete,
-            title = "ลบใบรับสินค้า?",
+            title = s.importsConfirmDeleteReceivedTitle,
             footer = {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = s.commonCancel,
                     onClick = callbacks.onCancelDelete,
                     variant = PharmButtonVariant.Ghost,
                     enabled = !state.deleting,
                 )
                 PharmButton(
-                    label = "ลบ",
+                    label = s.commonDelete,
                     onClick = callbacks.onDeleteNow,
                     variant = PharmButtonVariant.Danger,
                     enabled = !state.deleting,
@@ -135,8 +137,7 @@ fun ImportDetailContent(
             },
         ) {
             Text(
-                "ใบนี้ยังไม่ได้ยืนยัน — ลบแล้วจะไม่สามารถกู้คืนได้ " +
-                    "(สต็อกและล็อตยังไม่ถูกแตะต้อง)",
+                s.importsConfirmDeleteDraftMessage,
                 style = PharmText.body,
             )
         }
@@ -154,7 +155,7 @@ private fun Body(po: PurchaseOrder) {
         item("header") { HeaderBlock(po) }
         item("section") {
             Text(
-                text = "รายการสินค้า · ${po.itemCount} รายการ",
+                text = pharmStrings.importsFormItemListTitle(po.itemCount),
                 style = PharmText.h3,
                 modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
             )
@@ -183,19 +184,21 @@ private fun HeaderBlock(po: PurchaseOrder) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StatusChip(po.status)
+            val s = pharmStrings
             Text(
-                text = "รวม ${formatBahtCurrency(po.totalCost.amount)}",
+                text = s.importsFormItemTotal(formatBahtCurrency(po.totalCost.amount)),
                 style = PharmText.h2.tabular(),
             )
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-        DetailRow("ผู้จัดจำหน่าย", po.supplier.ifBlank { "-" })
-        DetailRow("เลขที่ Invoice", po.invoiceNo.ifBlank { "-" })
-        DetailRow("วันที่รับ", localDateToBuddhist(po.receiveDate).ifBlank { "-" })
-        if (po.notes.isNotBlank()) DetailRow("หมายเหตุ", po.notes)
-        DetailRow("สร้างเมื่อ", localDateTimeToBuddhist(po.createdAt))
+        val s = pharmStrings
+        DetailRow(s.importsFormSupplier, po.supplier.ifBlank { "-" })
+        DetailRow(s.importsHeaderInvoiceNo, po.invoiceNo.ifBlank { "-" })
+        DetailRow(s.importsFormReceiveDate, localDateToBuddhist(po.receiveDate).ifBlank { "-" })
+        if (po.notes.isNotBlank()) DetailRow(s.commonNote, po.notes)
+        DetailRow(s.importsFormCreatedAt, localDateTimeToBuddhist(po.createdAt))
         po.confirmedAt?.let {
-            DetailRow("ยืนยันเมื่อ", localDateTimeToBuddhist(it))
+            DetailRow(s.importsFormConfirmedAt, localDateTimeToBuddhist(it))
         }
     }
 }
@@ -245,7 +248,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
                 style = PharmText.body,
             )
             Text(
-                text = "ล็อต ${item.lotNumber} · หมดอายุ ${localDateToBuddhist(item.expiryDate)}",
+                text = pharmStrings.importsFormItemLotLine(item.lotNumber, localDateToBuddhist(item.expiryDate)),
                 style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
             )
         }
@@ -269,6 +272,7 @@ private fun ActionBar(
     callbacks: ImportDetailCallbacks,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     Box(modifier = Modifier.fillMaxWidth().background(t.colors.surface)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -277,7 +281,7 @@ private fun ActionBar(
         ) {
             if (po.status == PurchaseOrderStatus.Draft) {
                 PharmButton(
-                    label = "ลบ",
+                    label = s.commonDelete,
                     onClick = callbacks.onAskDelete,
                     variant = PharmButtonVariant.Outline,
                     enabled = !state.confirming && !state.deleting,
@@ -286,7 +290,7 @@ private fun ActionBar(
                     },
                 )
                 PharmButton(
-                    label = "ยืนยันรับสินค้า",
+                    label = s.importsConfirmReceiveCta,
                     onClick = callbacks.onAskConfirm,
                     modifier = Modifier.weight(1f),
                     enabled = !state.confirming && !state.deleting && po.itemCount > 0,
@@ -297,7 +301,7 @@ private fun ActionBar(
                 )
             } else {
                 Text(
-                    text = "ยืนยันแล้ว — ใบนี้ถูกบันทึกในสต็อกเรียบร้อย",
+                    text = s.importsStatusReceivedDetail,
                     style = PharmText.h3.copy(color = t.colors.successFg),
                     modifier = Modifier
                         .fillMaxWidth()

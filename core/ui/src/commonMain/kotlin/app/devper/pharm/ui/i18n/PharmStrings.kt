@@ -370,6 +370,66 @@ interface PharmStrings {
     val stockCountFormConfirmTitle: String
     val stockCountFormConfirmMessage: String
     val stockCountFormConfirmCta: String
+    val importsTitle: String
+    val importsSubtitle: String
+    val importsSearchPlaceholder: String
+    val importsCountNoun: String
+    val importsAddCta: String
+    val importsListEmpty: String
+    val importsListNotFound: String
+    val importsHeaderDocNo: String
+    val importsHeaderSupplier: String
+    val importsHeaderTotal: String
+    val importsHeaderCreatedAt: String
+    val importsStatusDraft: String
+    val importsStatusReceived: String
+    val importsStatusReceivedDetail: String
+    val importsActionView: String
+    val importsActionConfirmReceive: String
+    val importsActionAddLine: String
+    val importsActionRemoveLine: String
+    val importsFormInfoSection: String
+    val importsFormDocNo: String
+    val importsFormDocNoPlaceholder: String
+    val importsFormSupplier: String
+    val importsFormSupplierPlaceholder: String
+    val importsFormSupplierPickerTitle: String
+    val importsFormSupplierSearchPlaceholder: String
+    val importsFormReceiveDate: String
+    val importsFormCreatedAt: String
+    val importsFormConfirmedAt: String
+    val importsItemListLabel: String
+    val importsFormItemListTitle: (Int) -> String
+    val importsFormItemTotalLabel: String
+    val importsFormItemTotal: (String) -> String
+    val importsFormItemLotLine: (String, String) -> String
+    val importsFormPickDrug: String
+    val commonPick: String
+    val importsFormPickDrugPlaceholder: String
+    val importsFormPickDrugTitle: String
+    val importsFormPickDrugSearchPlaceholder: String
+    val importsFormHeaderLotNumber: String
+    val importsFormHeaderLotNumberPlaceholder: String
+    val importsFormHeaderExpiry: String
+    val importsExpiryDateLabel: String
+    val importsFormHeaderCostPrice: String
+    val importsFormHeaderSellPrice: String
+    val importsFormHeaderOptions: String
+    val importsFormReceivedAll: String
+    val importsFormEditTitle: String
+    val importsNewTitle: String
+    val importsFormReceivedBadge: String
+    val importsFormReceivedConfirmedHint: String
+    val importsConfirmReceiveTitle: String
+    val importsConfirmReceiveSubtitle: String
+    val importsConfirmReceiveMessage: String
+    val importsConfirmReceiveCta: String
+    val importsConfirmDeleteDraftTitle: String
+    val importsConfirmDeleteDraftMessage: String
+    val importsConfirmDeleteReceivedTitle: String
+    val importsConfirmDeleteReceivedMessage: String
+    val importsHeaderInvoiceNo: String
+    val importsHeaderInvoicePlaceholder: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -748,6 +808,66 @@ object PharmStringsTh : PharmStrings {
     override val stockCountFormConfirmTitle = "ยืนยันการปรับสต็อก"
     override val stockCountFormConfirmMessage = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้"
     override val stockCountFormConfirmCta = "ยืนยัน"
+    override val importsTitle = "นำเข้าสินค้า"
+    override val importsSubtitle = "จัดการใบนำเข้า / รับสินค้าเข้าสต็อก"
+    override val importsSearchPlaceholder = "ค้นหาเลขที่ / ผู้ขาย…"
+    override val importsCountNoun = "ใบ"
+    override val importsAddCta = "สร้างใบนำเข้า"
+    override val importsListEmpty = "ยังไม่มีใบนำเข้า"
+    override val importsListNotFound = "ไม่พบใบนำเข้าตามที่ค้นหา"
+    override val importsHeaderDocNo = "เลขที่เอกสาร"
+    override val importsHeaderSupplier = "ผู้ขาย"
+    override val importsHeaderTotal = "มูลค่ารวม"
+    override val importsHeaderCreatedAt = "สร้างเมื่อ"
+    override val importsStatusDraft = "แบบร่าง"
+    override val importsStatusReceived = "รับเข้าแล้ว"
+    override val importsStatusReceivedDetail = "ยืนยันแล้ว — ใบนี้ถูกบันทึกในสต็อกเรียบร้อย"
+    override val importsActionView = "ดู"
+    override val importsActionConfirmReceive = "ยืนยันรับ"
+    override val importsActionAddLine = "เพิ่มรายการ"
+    override val importsActionRemoveLine = "ลบรายการ"
+    override val importsFormInfoSection = "ข้อมูลใบรับสินค้า"
+    override val importsFormDocNo = "เลขที่เอกสาร"
+    override val importsFormDocNoPlaceholder = "เช่น A12345"
+    override val importsFormSupplier = "ผู้จัดจำหน่าย"
+    override val importsFormSupplierPlaceholder = "เช่น บริษัท เอ บี ซี ฟาร์มา"
+    override val importsFormSupplierPickerTitle = "เลือกผู้จัดจำหน่าย"
+    override val importsFormSupplierSearchPlaceholder = "ค้นหาชื่อ / ผู้ติดต่อ / เบอร์โทร"
+    override val importsFormReceiveDate = "วันที่รับ"
+    override val importsFormCreatedAt = "สร้างเมื่อ"
+    override val importsFormConfirmedAt = "ยืนยันเมื่อ"
+    override val importsItemListLabel = "รายการสินค้า"
+    override val importsFormItemListTitle: (Int) -> String = { count -> "รายการสินค้า · $count รายการ" }
+    override val importsFormItemTotalLabel = "รวม"
+    override val importsFormItemTotal: (String) -> String = { amt -> "รวม $amt" }
+    override val importsFormItemLotLine: (String, String) -> String = { lotNo, expiry -> "ล็อต $lotNo · หมดอายุ $expiry" }
+    override val importsFormPickDrug = "เลือกยา"
+    override val commonPick = "เลือก"
+    override val importsFormPickDrugPlaceholder = "เลือกยา…"
+    override val importsFormPickDrugTitle = "เลือกยา"
+    override val importsFormPickDrugSearchPlaceholder = "ค้นหาชื่อ / barcode"
+    override val importsFormHeaderLotNumber = "ล็อตหมายเลข"
+    override val importsFormHeaderLotNumberPlaceholder = "เช่น A12345"
+    override val importsFormHeaderExpiry = "วันหมดอายุ"
+    override val importsExpiryDateLabel = "วันหมดอายุ"
+    override val importsFormHeaderCostPrice = "ราคาทุน"
+    override val importsFormHeaderSellPrice = "ราคาขาย"
+    override val importsFormHeaderOptions = "ออปชัน"
+    override val importsFormReceivedAll = "รับของครบ"
+    override val importsFormEditTitle = "แก้ไขใบรับสินค้า"
+    override val importsNewTitle = "ใบรับสินค้าใหม่"
+    override val importsFormReceivedBadge = "รับเข้าแล้ว"
+    override val importsFormReceivedConfirmedHint = "ใบนี้ยืนยันแล้ว — แก้ไขไม่ได้"
+    override val importsConfirmReceiveTitle = "ยืนยันรับสินค้า?"
+    override val importsConfirmReceiveSubtitle = "ยืนยันรับสินค้าเข้าสต็อกตามใบนำเข้านี้หรือไม่ — รายการล็อตจะถูกบันทึกและไม่สามารถย้อนกลับได้"
+    override val importsConfirmReceiveMessage = "เมื่อยืนยันแล้วระบบจะเพิ่มล็อต + อัปเดตสต็อก + บันทึก ขย.9 — ไม่สามารถยกเลิกได้"
+    override val importsConfirmReceiveCta = "ยืนยันรับสินค้า"
+    override val importsConfirmDeleteDraftTitle = "ลบใบนำเข้า?"
+    override val importsConfirmDeleteDraftMessage = "ใบนี้ยังไม่ได้ยืนยัน — ลบแล้วจะไม่สามารถกู้คืนได้ "
+    override val importsConfirmDeleteReceivedTitle = "ลบใบรับสินค้า?"
+    override val importsConfirmDeleteReceivedMessage = "ต้องการลบใบนำเข้านี้ใช่หรือไม่ — ใบที่ยังไม่ได้ยืนยันเท่านั้นที่ลบได้"
+    override val importsHeaderInvoiceNo = "เลขที่ Invoice"
+    override val importsHeaderInvoicePlaceholder = "ใบส่งของ"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -1126,6 +1246,66 @@ object PharmStringsEn : PharmStrings {
     override val stockCountFormConfirmTitle = "Confirm stock adjustment"
     override val stockCountFormConfirmMessage = "The system will adjust stock to the counted quantity — once confirmed this cannot be undone"
     override val stockCountFormConfirmCta = "Confirm"
+    override val importsTitle = "Imports"
+    override val importsSubtitle = "Manage import documents / receive into stock"
+    override val importsSearchPlaceholder = "Search doc no. / supplier…"
+    override val importsCountNoun = "docs"
+    override val importsAddCta = "New import"
+    override val importsListEmpty = "No imports yet"
+    override val importsListNotFound = "No imports match the search"
+    override val importsHeaderDocNo = "Doc no."
+    override val importsHeaderSupplier = "Supplier"
+    override val importsHeaderTotal = "Total"
+    override val importsHeaderCreatedAt = "Created"
+    override val importsStatusDraft = "Draft"
+    override val importsStatusReceived = "Received"
+    override val importsStatusReceivedDetail = "Confirmed — this doc is recorded into stock"
+    override val importsActionView = "View"
+    override val importsActionConfirmReceive = "Confirm receipt"
+    override val importsActionAddLine = "Add line"
+    override val importsActionRemoveLine = "Remove line"
+    override val importsFormInfoSection = "Receipt info"
+    override val importsFormDocNo = "Document no."
+    override val importsFormDocNoPlaceholder = "e.g. A12345"
+    override val importsFormSupplier = "Supplier"
+    override val importsFormSupplierPlaceholder = "e.g. ABC Pharma Co."
+    override val importsFormSupplierPickerTitle = "Pick a supplier"
+    override val importsFormSupplierSearchPlaceholder = "Search name / contact / phone"
+    override val importsFormReceiveDate = "Receive date"
+    override val importsFormCreatedAt = "Created"
+    override val importsFormConfirmedAt = "Confirmed"
+    override val importsItemListLabel = "Items"
+    override val importsFormItemListTitle: (Int) -> String = { count -> "Items · $count line(s)" }
+    override val importsFormItemTotalLabel = "Total"
+    override val importsFormItemTotal: (String) -> String = { amt -> "Total $amt" }
+    override val importsFormItemLotLine: (String, String) -> String = { lotNo, expiry -> "Lot $lotNo · expires $expiry" }
+    override val importsFormPickDrug = "Pick drug"
+    override val commonPick = "Pick"
+    override val importsFormPickDrugPlaceholder = "Pick drug…"
+    override val importsFormPickDrugTitle = "Pick drug"
+    override val importsFormPickDrugSearchPlaceholder = "Search name / barcode"
+    override val importsFormHeaderLotNumber = "Lot number"
+    override val importsFormHeaderLotNumberPlaceholder = "e.g. A12345"
+    override val importsFormHeaderExpiry = "Expiry date"
+    override val importsExpiryDateLabel = "Expiry date"
+    override val importsFormHeaderCostPrice = "Cost price"
+    override val importsFormHeaderSellPrice = "Sell price"
+    override val importsFormHeaderOptions = "Options"
+    override val importsFormReceivedAll = "Received all"
+    override val importsFormEditTitle = "Edit goods receipt"
+    override val importsNewTitle = "New goods receipt"
+    override val importsFormReceivedBadge = "Received"
+    override val importsFormReceivedConfirmedHint = "This doc is confirmed — cannot be edited"
+    override val importsConfirmReceiveTitle = "Confirm receipt?"
+    override val importsConfirmReceiveSubtitle = "Confirm receiving the items in this import into stock — lot records will be saved and cannot be reverted"
+    override val importsConfirmReceiveMessage = "Once confirmed, the system will add lots + update stock + log KY-9 — cannot be undone"
+    override val importsConfirmReceiveCta = "Confirm receipt"
+    override val importsConfirmDeleteDraftTitle = "Delete import?"
+    override val importsConfirmDeleteDraftMessage = "This doc is not yet confirmed — deleting it cannot be undone"
+    override val importsConfirmDeleteReceivedTitle = "Delete goods receipt?"
+    override val importsConfirmDeleteReceivedMessage = "Delete this import? — only unconfirmed docs can be deleted"
+    override val importsHeaderInvoiceNo = "Invoice no."
+    override val importsHeaderInvoicePlaceholder = "Invoice / packing slip"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }

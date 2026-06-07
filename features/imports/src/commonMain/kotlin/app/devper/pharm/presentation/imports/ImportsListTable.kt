@@ -21,6 +21,7 @@ import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.format.localDateToBuddhist
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -32,48 +33,49 @@ internal fun ImportsListTable(
     modifier: Modifier = Modifier,
     emptySearching: Boolean = false,
 ) {
-    val columns = remember(callbacks) {
+    val s = pharmStrings
+    val columns = remember(callbacks, s) {
         listOf(
         PharmTableColumn<PurchaseOrderSummary>(
-            header = "วันที่",
+            header = s.commonDate,
             weight = 1.0f,
             cell = { row -> DateCell(row) },
         ),
         PharmTableColumn(
-            header = "เลขที่เอกสาร",
+            header = s.importsHeaderDocNo,
             weight = 1.6f,
             compactTitle = true,
             cell = { row -> DocNoCell(row) },
         ),
         PharmTableColumn(
-            header = "ผู้ขาย",
+            header = s.importsHeaderSupplier,
             weight = 2.0f,
             cell = { row -> SupplierCell(row) },
         ),
         PharmTableColumn(
-            header = "ใบส่งของ",
+            header = s.importsHeaderInvoicePlaceholder,
             weight = 1.4f,
             cell = { row -> InvoiceCell(row) },
         ),
         PharmTableColumn(
-            header = "รายการ",
+            header = s.movementsCountNoun,
             weight = 0.7f,
             align = PharmColumnAlign.End,
             cell = { row -> ItemCountCell(row) },
         ),
         PharmTableColumn(
-            header = "มูลค่ารวม",
+            header = s.importsHeaderTotal,
             weight = 1.1f,
             align = PharmColumnAlign.End,
             cell = { row -> TotalCell(row) },
         ),
         PharmTableColumn(
-            header = "สถานะ",
+            header = s.commonStatus,
             weight = 0.9f,
             cell = { row -> StatusCell(row) },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { row -> ImportRowActions(row = row, callbacks = callbacks) },
@@ -92,12 +94,12 @@ internal fun ImportsListTable(
             if (emptySearching) {
                 PharmEmptyState(
                     icon = PharmIcons.Search,
-                    title = "ไม่พบใบนำเข้าตามที่ค้นหา",
+                    title = s.importsListNotFound,
                 )
             } else {
                 PharmEmptyState(
                     icon = PharmIcons.Imports,
-                    title = "ยังไม่มีใบนำเข้า",
+                    title = s.importsListEmpty,
                 )
             }
         },
@@ -185,34 +187,36 @@ private fun TotalCell(row: PurchaseOrderSummary) {
 
 @Composable
 private fun StatusCell(row: PurchaseOrderSummary) {
+    val s = pharmStrings
     val status = when (row.status) {
         PurchaseOrderStatus.Draft     -> PharmStatus.Draft
         PurchaseOrderStatus.Confirmed -> PharmStatus.Confirmed
     }
     val label = when (row.status) {
-        PurchaseOrderStatus.Draft     -> "แบบร่าง"
-        PurchaseOrderStatus.Confirmed -> "รับเข้าแล้ว"
+        PurchaseOrderStatus.Draft     -> s.importsStatusDraft
+        PurchaseOrderStatus.Confirmed -> s.importsStatusReceived
     }
     PharmStatusBadge(status = status, label = label)
 }
 
 @Composable
 private fun ImportRowActions(row: PurchaseOrderSummary, callbacks: ImportsListCallbacks) {
+    val s = pharmStrings
     val actions = when (row.status) {
         PurchaseOrderStatus.Draft -> listOf(
             PharmAction(
-                label = "ยืนยันรับ",
+                label = s.importsActionConfirmReceive,
                 icon = PharmIcons.Check,
                 tone = PharmActionTone.Success,
                 onClick = { callbacks.onRequestConfirm(row) },
             ),
             PharmAction(
-                label = "แก้ไข",
+                label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 onClick = { callbacks.onEdit(row) },
             ),
             PharmAction(
-                label = "ลบ",
+                label = s.commonDelete,
                 icon = PharmIcons.Trash,
                 tone = PharmActionTone.Danger,
                 onClick = { callbacks.onRequestDelete(row) },
@@ -220,7 +224,7 @@ private fun ImportRowActions(row: PurchaseOrderSummary, callbacks: ImportsListCa
         )
         PurchaseOrderStatus.Confirmed -> listOf(
             PharmAction(
-                label = "ดู",
+                label = s.importsActionView,
                 icon = PharmIcons.Imports,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onOpenImport(row) },

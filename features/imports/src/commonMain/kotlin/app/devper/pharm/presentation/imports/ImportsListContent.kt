@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -59,7 +60,7 @@ fun ImportsListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            PharmListResultLine(total = state.orders.size, noun = "ใบ", visible = visible.size, searching = searching)
+            PharmListResultLine(total = state.orders.size, noun = pharmStrings.importsCountNoun, visible = visible.size, searching = searching)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {
@@ -101,21 +102,22 @@ private fun ConfirmImportModal(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = "ยืนยันรับเข้า?",
+        title = s.importsConfirmReceiveTitle,
         subtitle = order.docNo,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Outline,
                 enabled = !busy,
             )
             PharmButton(
-                label = "ยืนยันรับ",
+                label = s.importsActionConfirmReceive,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Primary,
                 enabled = !busy,
@@ -123,7 +125,7 @@ private fun ConfirmImportModal(
         },
     ) {
         Text(
-            text = "ยืนยันรับสินค้าเข้าสต็อกตามใบนำเข้านี้หรือไม่ — รายการล็อตจะถูกบันทึกและไม่สามารถย้อนกลับได้",
+            text = s.importsConfirmReceiveSubtitle,
             style = PharmText.body,
         )
     }
@@ -136,21 +138,22 @@ private fun DeleteImportModal(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = "ลบใบนำเข้า?",
+        title = s.importsConfirmDeleteDraftTitle,
         subtitle = order.docNo,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Outline,
                 enabled = !busy,
             )
             PharmButton(
-                label = "ลบ",
+                label = s.commonDelete,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Danger,
                 enabled = !busy,
@@ -158,7 +161,7 @@ private fun DeleteImportModal(
         },
     ) {
         Text(
-            text = "ต้องการลบใบนำเข้านี้ใช่หรือไม่ — ใบที่ยังไม่ได้ยืนยันเท่านั้นที่ลบได้",
+            text = s.importsConfirmDeleteReceivedMessage,
             style = PharmText.body,
         )
     }

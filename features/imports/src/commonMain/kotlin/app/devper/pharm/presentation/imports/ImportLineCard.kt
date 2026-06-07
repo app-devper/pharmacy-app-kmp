@@ -23,6 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -68,7 +69,7 @@ internal fun ImportLineCard(
                     .padding(horizontal = 12.dp, vertical = 10.dp),
             ) {
                 Text(
-                    text = fields.drugName.ifBlank { "เลือกยา…" },
+                    text = fields.drugName.ifBlank { pharmStrings.importsFormPickDrugPlaceholder },
                     style = PharmText.body.copy(
                         color = if (fields.drugName.isBlank()) t.colors.fgMuted else t.colors.fg1,
                     ),
@@ -82,22 +83,23 @@ internal fun ImportLineCard(
                 ) {
                     Icon(
                         imageVector = PharmIcons.Trash,
-                        contentDescription = "ลบรายการ",
+                        contentDescription = pharmStrings.importsActionRemoveLine,
                         tint = t.colors.dangerFg,
                     )
                 }
             }
         }
+        val s = pharmStrings
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ImportLabeledField(label = "ล็อตหมายเลข", required = true, modifier = Modifier.weight(1f)) {
+            ImportLabeledField(label = s.importsFormHeaderLotNumber, required = true, modifier = Modifier.weight(1f)) {
                 ImportFormField(
                     value = fields.lotNumber,
                     onValueChange = onLot,
-                    placeholder = "เช่น A12345",
+                    placeholder = s.importsFormHeaderLotNumberPlaceholder,
                     enabled = !readOnly,
                 )
             }
-            ImportLabeledField(label = "วันหมดอายุ", required = true, modifier = Modifier.weight(1f)) {
+            ImportLabeledField(label = s.importsExpiryDateLabel, required = true, modifier = Modifier.weight(1f)) {
                 ImportFormField(
                     value = fields.expiryDate,
                     onValueChange = onExpiry,
@@ -110,25 +112,25 @@ internal fun ImportLineCard(
             val threeCol = maxWidth >= 600.dp
             if (threeCol) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ImportLabeledField(label = "จำนวน", required = true, modifier = Modifier.weight(1f)) {
+                    ImportLabeledField(label = s.commonQty, required = true, modifier = Modifier.weight(1f)) {
                         QtyField(fields, onQty, readOnly)
                     }
-                    ImportLabeledField(label = "ราคาทุน", modifier = Modifier.weight(1f)) {
+                    ImportLabeledField(label = s.importsFormHeaderCostPrice, modifier = Modifier.weight(1f)) {
                         CostField(fields, onCost, readOnly)
                     }
-                    ImportLabeledField(label = "ราคาขาย", modifier = Modifier.weight(1f)) {
+                    ImportLabeledField(label = s.importsFormHeaderSellPrice, modifier = Modifier.weight(1f)) {
                         SellField(fields, onSell, readOnly)
                     }
                 }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ImportLabeledField(label = "จำนวน", required = true) {
+                    ImportLabeledField(label = s.commonQty, required = true) {
                         QtyField(fields, onQty, readOnly)
                     }
-                    ImportLabeledField(label = "ราคาทุน") {
+                    ImportLabeledField(label = s.importsFormHeaderCostPrice) {
                         CostField(fields, onCost, readOnly)
                     }
-                    ImportLabeledField(label = "ราคาขาย") {
+                    ImportLabeledField(label = s.importsFormHeaderSellPrice) {
                         SellField(fields, onSell, readOnly)
                     }
                 }

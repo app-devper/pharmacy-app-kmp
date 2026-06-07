@@ -109,7 +109,7 @@ class ImportFormViewModelTest {
         advanceUntilIdle()
         val s = vm.state.value
         assertTrue(s.mode is ImportFormMode.Add)
-        assertEquals("ใบรับสินค้าใหม่", s.titleLabel)
+        assertFalse(s.isEdit)
         assertEquals("", s.form.supplier)
         assertTrue(s.form.items.isEmpty())
         assertEquals(1, s.drugs.size)
@@ -131,7 +131,7 @@ class ImportFormViewModelTest {
         assertEquals("L-1", s.form.items[0].lotNumber)
         assertEquals("100", s.form.items[0].qty)
         assertFalse(s.readOnly)
-        assertEquals("แก้ไขใบรับสินค้า", s.titleLabel)
+        assertTrue(s.isEdit)
     }
 
     @Test
