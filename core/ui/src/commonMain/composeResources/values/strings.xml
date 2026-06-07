@@ -40,7 +40,6 @@
     <string name="settings_locale_title">ภาษา</string>
     <string name="settings_locale_th">ไทย</string>
     <string name="settings_locale_en">English</string>
-    <string name="settings_locale_system">ตามระบบ</string>
     <string name="settings_locale_restart_required">ภาษาจะเปลี่ยนหลังจากเปิดแอปใหม่</string>
 
 </resources>

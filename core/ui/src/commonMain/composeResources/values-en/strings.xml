@@ -40,7 +40,6 @@
     <string name="settings_locale_title">Language</string>
     <string name="settings_locale_th">ไทย</string>
     <string name="settings_locale_en">English</string>
-    <string name="settings_locale_system">System default</string>
     <string name="settings_locale_restart_required">Language will change after restarting the app</string>
 
 </resources>

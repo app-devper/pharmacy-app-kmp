@@ -118,7 +118,7 @@ class LoginViewModelTest {
     fun initial_locale_mirrors_persisted_preference() = runVmTest { dispatchers ->
         val (vm, _, _) = newVm(dispatchers)
         advanceUntilIdle()
-        assertEquals("system", vm.state.value.locale)
+        assertEquals("th", vm.state.value.locale)
     }
 
     @Test
@@ -135,7 +135,7 @@ class LoginViewModelTest {
     fun onLocaleChange_to_same_value_does_not_call_persist() = runVmTest { dispatchers ->
         val (vm, _, uiPrefs) = newVm(dispatchers)
         advanceUntilIdle()
-        vm.onLocaleChange("system")
+        vm.onLocaleChange("th")
         advanceUntilIdle()
         assertNull(uiPrefs.lastLocale)
     }

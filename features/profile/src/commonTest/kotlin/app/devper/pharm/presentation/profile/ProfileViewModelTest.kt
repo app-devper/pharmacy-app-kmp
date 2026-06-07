@@ -163,7 +163,7 @@ class ProfileViewModelTest {
         val fake = FakeProfileRepository()
         val vm = bundle(fake, dispatchers)
         advanceUntilIdle()
-        assertEquals("system", vm.state.value.locale)
+        assertEquals("th", vm.state.value.locale)
         assertNull(vm.state.value.localeChangeMessage)
 
         vm.onLocaleChange("en")
@@ -178,7 +178,7 @@ class ProfileViewModelTest {
         val fake = FakeProfileRepository()
         val vm = bundle(fake, dispatchers)
         advanceUntilIdle()
-        vm.onLocaleChange("system")
+        vm.onLocaleChange("th")
         advanceUntilIdle()
         assertNull(vm.state.value.localeChangeMessage)
     }
@@ -188,7 +188,7 @@ class ProfileViewModelTest {
         val fake = FakeProfileRepository()
         val vm = bundle(fake, dispatchers)
         advanceUntilIdle()
-        vm.onLocaleChange("th")
+        vm.onLocaleChange("en")
         advanceUntilIdle()
         assertNotNull(vm.state.value.localeChangeMessage)
         vm.dismissLocaleChangeMessage()

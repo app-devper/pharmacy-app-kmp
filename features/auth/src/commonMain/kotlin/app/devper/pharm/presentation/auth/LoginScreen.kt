@@ -202,7 +202,6 @@ private fun LocaleSwitcherRow(
     ) {
         PharmSingleSelectChips(
             chips = listOf(
-                PharmFilterChip(id = "system", label = strings.settingsLocaleSystem),
                 PharmFilterChip(id = "th", label = strings.settingsLocaleTh),
                 PharmFilterChip(id = "en", label = strings.settingsLocaleEn),
             ),

@@ -51,7 +51,6 @@ internal fun ProfileDisplayPreferences(
             Text(text = strings.settingsLocaleTitle, style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
             PharmSingleSelectChips(
                 chips = listOf(
-                    PharmFilterChip(id = "system", label = strings.settingsLocaleSystem),
                     PharmFilterChip(id = "th", label = strings.settingsLocaleTh),
                     PharmFilterChip(id = "en", label = strings.settingsLocaleEn),
                 ),

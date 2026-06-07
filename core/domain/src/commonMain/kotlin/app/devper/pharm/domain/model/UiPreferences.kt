@@ -36,24 +36,21 @@ data class UiPreferences(
     val theme: ThemePreference = ThemePreference.Auto,
     val fontSize: FontSizePreference = FontSizePreference.Md,
     val density: DensityPreference = DensityPreference.Comfortable,
-    val locale: LocalePreference = LocalePreference.System,
+    val locale: LocalePreference = LocalePreference.Th,
 ) {
     companion object {
         val Default: UiPreferences = UiPreferences()
     }
 }
 
-enum class LocalePreference(val wire: String, val tag: String?) {
-    System("system", null),
+enum class LocalePreference(val wire: String, val tag: String) {
     Th("th", "th"),
     En("en", "en");
 
     companion object {
         fun parse(raw: String?): LocalePreference = when (raw?.lowercase()) {
-            "th"     -> Th
-            "en"     -> En
-            "system" -> System
-            else     -> System
+            "en" -> En
+            else -> Th
         }
     }
 }
