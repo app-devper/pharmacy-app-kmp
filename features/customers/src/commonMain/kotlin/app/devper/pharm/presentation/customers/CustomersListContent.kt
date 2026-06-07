@@ -20,6 +20,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -28,6 +29,7 @@ fun CustomersListContent(
     callbacks: CustomersListCallbacks = CustomersListCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
@@ -48,7 +50,7 @@ fun CustomersListContent(
         ) {
             PharmListResultLine(
                 total = state.customers.size,
-                noun = "ราย",
+                noun = s.customersCountNoun,
                 visible = visible.size,
                 searching = searching,
             )

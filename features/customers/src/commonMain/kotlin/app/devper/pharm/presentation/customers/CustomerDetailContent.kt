@@ -38,6 +38,7 @@ import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -50,9 +51,10 @@ fun CustomerDetailContent(
     callbacks: CustomerDetailCallbacks = CustomerDetailCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.customer?.name ?: "ลูกค้า",
+            title = state.customer?.name ?: s.navCustomers,
             onBack = callbacks.onBack,
             actions = {
                 Box(
@@ -64,7 +66,7 @@ fun CustomerDetailContent(
                 ) {
                     Icon(
                         PharmIcons.Pencil,
-                        contentDescription = "แก้ไข",
+                        contentDescription = s.commonEdit,
                         tint = t.colors.fg2,
                         modifier = Modifier.size(20.dp),
                     )
@@ -84,6 +86,7 @@ fun CustomerDetailContent(
 @Composable
 private fun CustomerHeader(customer: Customer?, loading: Boolean) {
     val t = pharmTokens
+    val s = pharmStrings
     if (loading && customer == null) {
         Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
             PharmCircularProgress()
@@ -117,7 +120,7 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = customer.name, style = PharmText.h1)
                 Text(
-                    text = customer.phone?.takeIf { it.isNotBlank() } ?: "ไม่ระบุเบอร์โทร",
+                    text = customer.phone?.takeIf { it.isNotBlank() } ?: s.customersDetailNoPhone,
                     style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
@@ -147,7 +150,7 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
                     )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "แพ้ยา / โรคประจำตัว",
+                            text = s.customersAllergyLabel,
                             style = PharmText.h3.copy(color = t.colors.warningFg),
                         )
                         Text(text = note, style = PharmText.bodySm.copy(color = t.colors.warningFg))
@@ -161,9 +164,10 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
 @Composable
 private fun SalesSection(state: CustomerDetailUiState) {
     val t = pharmTokens
+    val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "ประวัติการขาย",
+            text = s.navSalesHistory,
             style = PharmText.h2,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         )
@@ -175,7 +179,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
             }
             state.sales.isEmpty() -> {
                 Text(
-                    text = "ลูกค้ารายนี้ยังไม่มีบิล",
+                    text = s.customersDetailNoSales,
                     style = PharmText.body.copy(color = t.colors.fg2),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
@@ -195,6 +199,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
 @Composable
 private fun SaleRow(sale: SaleSummary) {
     val t = pharmTokens
+    val s = pharmStrings
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,7 +218,7 @@ private fun SaleRow(sale: SaleSummary) {
                     style = PharmText.h3.tabular(),
                 )
                 if (sale.voided) {
-                    PharmBadge(text = "ยกเลิกแล้ว", tone = PharmBadgeTone.Red)
+                    PharmBadge(text = s.customersBadgeVoided, tone = PharmBadgeTone.Red)
                 }
             }
             Text(

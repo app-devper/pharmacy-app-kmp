@@ -25,6 +25,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -35,37 +36,38 @@ internal fun CustomersListTable(
     modifier: Modifier = Modifier,
     emptySearching: Boolean = false,
 ) {
-    val columns = remember(callbacks) {
+    val s = pharmStrings
+    val columns = remember(callbacks, s) {
         listOf(
         PharmTableColumn<Customer>(
-            header = "ชื่อ",
+            header = s.commonName,
             weight = 1.8f,
             cell = { customer -> CustomerNameCell(customer) },
         ),
         PharmTableColumn(
-            header = "เบอร์โทร",
+            header = s.commonPhone,
             weight = 1.2f,
             cell = { customer -> CustomerPhoneCell(customer) },
         ),
         PharmTableColumn(
-            header = "โรคประจำตัว / แพ้ยา",
+            header = s.customersHeaderAllergyShort,
             weight = 1.8f,
             hideInCardWhenEmpty = { customer -> customer.allergyNote.isNullOrBlank() },
             cell = { customer -> CustomerAllergyCell(customer) },
         ),
         PharmTableColumn(
-            header = "ยอดซื้อรวม",
+            header = s.customersHeaderTotalSpent,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { CustomerPlaceholderCell() },
         ),
         PharmTableColumn(
-            header = "มาล่าสุด",
+            header = s.customersHeaderLastVisit,
             weight = 1.0f,
             cell = { CustomerPlaceholderCell() },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { customer -> CustomerRowActions(customer = customer, callbacks = callbacks) },
@@ -84,12 +86,12 @@ internal fun CustomersListTable(
             if (emptySearching) {
                 PharmEmptyState(
                     icon = PharmIcons.Search,
-                    title = "ไม่พบลูกค้าตามที่ค้นหา",
+                    title = s.customersListNotFound,
                 )
             } else {
                 PharmEmptyState(
                     icon = PharmIcons.Customers,
-                    title = "ยังไม่มีรายชื่อลูกค้า",
+                    title = s.customersListEmpty,
                 )
             }
         },
@@ -165,21 +167,22 @@ private fun CustomerPlaceholderCell() {
 
 @Composable
 private fun CustomerRowActions(customer: Customer, callbacks: CustomersListCallbacks) {
-    val actions = remember(customer.id, callbacks) {
+    val s = pharmStrings
+    val actions = remember(customer.id, callbacks, s) {
         listOf(
             PharmAction(
-                label = "ประวัติ",
+                label = s.customersActionHistory,
                 icon = PharmIcons.SalesHistory,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onOpenDetail(customer) },
             ),
             PharmAction(
-                label = "แก้ไข",
+                label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 onClick = { callbacks.onOpenEdit(customer) },
             ),
             PharmAction(
-                label = "ลบ",
+                label = s.commonDelete,
                 icon = PharmIcons.Trash,
                 tone = PharmActionTone.Danger,
                 onClick = { callbacks.onDelete(customer) },

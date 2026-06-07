@@ -7,6 +7,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 
 @Composable
@@ -15,17 +16,18 @@ internal fun CustomersListToolbar(
     callbacks: CustomersListCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     PharmListToolbar(
-        title = "ลูกค้า",
-        subtitle = "จัดการข้อมูลลูกค้าและประวัติการซื้อ",
+        title = s.navCustomers,
+        subtitle = s.customersListSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
-        searchPlaceholder = "ค้นหาชื่อ / เบอร์โทร…",
+        searchPlaceholder = s.customersSearchPlaceholder,
         titleStyle = PharmText.h2,
         modifier = modifier,
         actions = {
             PharmButton(
-                label = "เพิ่มลูกค้า",
+                label = s.customersAddCta,
                 onClick = callbacks.onOpenAdd,
                 size = PharmButtonSize.Sm,
                 leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
