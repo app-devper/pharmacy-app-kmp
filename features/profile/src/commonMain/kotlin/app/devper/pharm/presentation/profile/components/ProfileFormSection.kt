@@ -16,6 +16,7 @@ import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -25,21 +26,22 @@ internal fun ProfileFormSection(
     callbacks: ProfileCallbacks,
 ) {
     val t = pharmTokens
+    val strings = pharmStrings
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FormField(label = "ชื่อ", required = true) {
+        FormField(label = strings.profileFirstName, required = true) {
             PharmTextField(value = state.form.firstName, onValueChange = callbacks.onFirstName)
         }
-        FormField(label = "นามสกุล") {
+        FormField(label = strings.profileLastName) {
             PharmTextField(value = state.form.lastName, onValueChange = callbacks.onLastName)
         }
-        FormField(label = "เบอร์โทร") {
+        FormField(label = strings.commonPhone) {
             PharmTextField(
                 value = state.form.phone,
                 onValueChange = callbacks.onPhone,
                 keyboardType = KeyboardType.Phone,
             )
         }
-        FormField(label = "อีเมล") {
+        FormField(label = strings.profileEmail) {
             PharmTextField(
                 value = state.form.email,
                 onValueChange = callbacks.onEmail,
@@ -48,14 +50,14 @@ internal fun ProfileFormSection(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PharmButton(
-                label = if (state.saving) "กำลังบันทึก…" else "บันทึก",
+                label = if (state.saving) strings.profileSaving else strings.commonSave,
                 onClick = callbacks.onSubmit,
                 enabled = state.canSubmit,
                 variant = PharmButtonVariant.Primary,
             )
             if (state.saved) {
                 Text(
-                    text = "บันทึกแล้ว",
+                    text = strings.profileSavedInline,
                     style = PharmText.body.copy(color = t.colors.successFg),
                     modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically),
                 )

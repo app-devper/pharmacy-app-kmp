@@ -15,6 +15,7 @@ import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -23,29 +24,30 @@ internal fun ProfilePasswordSection(
     state: ProfileUiState,
     callbacks: ProfileCallbacks,
 ) {
+    val strings = pharmStrings
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (!state.showPasswordPanel) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "ตั้งรหัสผ่านใหม่เพื่อความปลอดภัย",
+                    text = strings.profilePasswordIntro,
                     style = PharmText.body.copy(color = pharmTokens.colors.fg2),
                     modifier = Modifier.weight(1f),
                 )
                 PharmButton(
-                    label = "เปลี่ยน",
+                    label = strings.profilePasswordChange,
                     onClick = callbacks.onOpenPasswordPanel,
                     variant = PharmButtonVariant.Secondary,
                 )
             }
         } else {
-            FormField(label = "รหัสผ่านเดิม", required = true) {
+            FormField(label = strings.profilePasswordOld, required = true) {
                 PharmTextField(
                     value = state.password.oldPassword,
                     onValueChange = callbacks.onOldPassword,
                     visualTransformation = PasswordVisualTransformation(),
                 )
             }
-            FormField(label = "รหัสผ่านใหม่", required = true) {
+            FormField(label = strings.profilePasswordNew, required = true) {
                 PharmTextField(
                     value = state.password.newPassword,
                     onValueChange = callbacks.onNewPassword,
@@ -54,9 +56,9 @@ internal fun ProfilePasswordSection(
             }
             val confirmError = state.password.confirmPassword.isNotBlank() && !state.password.matches
             FormField(
-                label = "ยืนยันรหัสผ่านใหม่",
+                label = strings.profilePasswordConfirm,
                 required = true,
-                error = if (confirmError) "ไม่ตรงกับรหัสผ่านใหม่" else null,
+                error = if (confirmError) strings.profilePasswordMismatch else null,
             ) {
                 PharmTextField(
                     value = state.password.confirmPassword,
@@ -67,13 +69,13 @@ internal fun ProfilePasswordSection(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PharmButton(
-                    label = if (state.passwordSaving) "กำลังเปลี่ยน…" else "บันทึก",
+                    label = if (state.passwordSaving) strings.profilePasswordChanging else strings.commonSave,
                     onClick = callbacks.onSubmitPasswordChange,
                     enabled = state.password.canSubmit && !state.passwordSaving,
                     variant = PharmButtonVariant.Primary,
                 )
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = strings.commonCancel,
                     onClick = callbacks.onClosePasswordPanel,
                     variant = PharmButtonVariant.Ghost,
                 )
@@ -81,7 +83,7 @@ internal fun ProfilePasswordSection(
         }
         if (state.passwordSaved) {
             Text(
-                text = "เปลี่ยนรหัสผ่านสำเร็จแล้ว",
+                text = strings.profilePasswordChanged,
                 style = PharmText.body.copy(color = pharmTokens.colors.successFg),
             )
         }

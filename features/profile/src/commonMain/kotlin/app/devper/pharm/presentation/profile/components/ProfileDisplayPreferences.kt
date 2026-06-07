@@ -18,29 +18,45 @@ internal fun ProfileDisplayPreferences(
     state: ProfileUiState,
     callbacks: ProfileCallbacks,
 ) {
+    val strings = pharmStrings
+    val themeChips = listOf(
+        PharmFilterChip(id = "light", label = strings.profileThemeLight),
+        PharmFilterChip(id = "dark", label = strings.profileThemeDark),
+        PharmFilterChip(id = "auto", label = strings.profileThemeAuto),
+    )
+    val fontSizeChips = listOf(
+        PharmFilterChip(id = "sm", label = strings.profileFontSm),
+        PharmFilterChip(id = "md", label = strings.profileFontMd),
+        PharmFilterChip(id = "lg", label = strings.profileFontLg),
+        PharmFilterChip(id = "xl", label = strings.profileFontXl),
+    )
+    val densityChips = listOf(
+        PharmFilterChip(id = "comfortable", label = strings.profileDensityComfortable),
+        PharmFilterChip(id = "compact", label = strings.profileDensityCompact),
+    )
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(text = "ธีม", style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
+            Text(text = strings.profileDisplayTheme, style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
             PharmSingleSelectChips(
-                chips = ThemeChips,
+                chips = themeChips,
                 activeId = state.theme,
                 onSelect = callbacks.onThemeChange,
                 scrollable = false,
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(text = "ขนาดตัวอักษร", style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
+            Text(text = strings.profileDisplayFontSize, style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
             PharmSingleSelectChips(
-                chips = FontSizeChips,
+                chips = fontSizeChips,
                 activeId = state.fontSize,
                 onSelect = callbacks.onFontSizeChange,
                 scrollable = false,
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(text = "ความหนาแน่นตาราง", style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
+            Text(text = strings.profileDisplayDensity, style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
             PharmSingleSelectChips(
-                chips = DensityChips,
+                chips = densityChips,
                 activeId = state.density,
                 onSelect = callbacks.onDensityChange,
                 scrollable = false,
@@ -68,20 +84,3 @@ internal fun ProfileDisplayPreferences(
     }
 }
 
-private val ThemeChips = listOf(
-    PharmFilterChip(id = "light", label = "สว่าง"),
-    PharmFilterChip(id = "dark", label = "มืด"),
-    PharmFilterChip(id = "auto", label = "อัตโนมัติ"),
-)
-
-private val FontSizeChips = listOf(
-    PharmFilterChip(id = "sm", label = "เล็ก"),
-    PharmFilterChip(id = "md", label = "ปกติ"),
-    PharmFilterChip(id = "lg", label = "ใหญ่"),
-    PharmFilterChip(id = "xl", label = "ใหญ่มาก"),
-)
-
-private val DensityChips = listOf(
-    PharmFilterChip(id = "comfortable", label = "สบายตา"),
-    PharmFilterChip(id = "compact", label = "กระชับ"),
-)
