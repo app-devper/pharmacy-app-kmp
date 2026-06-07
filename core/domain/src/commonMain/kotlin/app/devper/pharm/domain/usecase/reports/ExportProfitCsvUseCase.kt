@@ -6,6 +6,7 @@ import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.repository.ExportRepository
 import app.devper.pharm.domain.extension.buildCsv
 import app.devper.pharm.domain.extension.buildCsvBytes
+import kotlinx.datetime.LocalDate
 
 class ExportProfitCsvUseCase(
     private val export: ExportRepository,
@@ -13,7 +14,7 @@ class ExportProfitCsvUseCase(
 ) : BaseUseCase<ExportProfitCsvParam, String>(dispatchers) {
 
     override suspend fun execute(param: ExportProfitCsvParam): String {
-        val filename = buildFilename(param.from?.toString().orEmpty(), param.to?.toString().orEmpty())
+        val filename = buildFilename(param.from, param.to)
         val bytes = buildCsvBytes(
             headers = listOf("ชื่อยา", "จำนวนขาย", "รายได้", "ต้นทุน", "กำไร", "Margin %"),
             rows = param.rows.map { it.toCsvRow() },
@@ -44,11 +45,13 @@ class ExportProfitCsvUseCase(
         return "$whole.$frac%"
     }
 
-    private fun buildFilename(from: String, to: String): String {
+    private fun buildFilename(from: LocalDate?, to: LocalDate?): String {
+        val fromTag = from?.toString().orEmpty()
+        val toTag = to?.toString().orEmpty()
         val tag = when {
-            from.isBlank() && to.isBlank() -> "all"
-            from == to                     -> from.ifBlank { "all" }
-            else                           -> "${from.ifBlank { "any" }}_${to.ifBlank { "any" }}"
+            from == null && to == null -> "all"
+            from == to                 -> fromTag.ifBlank { "all" }
+            else                       -> "${fromTag.ifBlank { "any" }}_${toTag.ifBlank { "any" }}"
         }
         return "profit_$tag.csv"
     }

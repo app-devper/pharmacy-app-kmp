@@ -65,7 +65,7 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
     if (enableLogging) {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.INFO
+            level = LogLevel.BODY
         }
     }
 

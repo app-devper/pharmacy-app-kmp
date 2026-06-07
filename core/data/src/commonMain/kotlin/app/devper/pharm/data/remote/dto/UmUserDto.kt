@@ -1,9 +1,5 @@
 package app.devper.pharm.data.remote.dto
 
-import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
-import app.devper.pharm.domain.model.Role
-import app.devper.pharm.domain.model.UmStatus
-import app.devper.pharm.domain.model.UmUser
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,18 +16,4 @@ data class UmUserDto(
     @SerialName("email") val email: String = "",
     @SerialName("createdDate") val createdDate: String = "",
     @SerialName("updatedDate") val updatedDate: String = "",
-) {
-    fun toDomain(): UmUser = UmUser(
-        id = id,
-        firstName = firstName,
-        lastName = lastName,
-        username = username,
-        clientId = clientId,
-        role = Role.parse(role),
-        status = UmStatus.parse(status),
-        phone = phone,
-        email = email,
-        createdDate = createdDate.parseLocalDateTimeOrNull(),
-        updatedDate = updatedDate.parseLocalDateTimeOrNull(),
-    )
-}
+)

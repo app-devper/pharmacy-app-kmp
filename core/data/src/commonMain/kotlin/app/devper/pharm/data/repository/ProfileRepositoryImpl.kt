@@ -3,6 +3,7 @@ package app.devper.pharm.data.repository
 import app.devper.pharm.data.remote.api.ProfileApi
 import app.devper.pharm.data.remote.dto.ChangePasswordRequest
 import app.devper.pharm.data.remote.dto.UpdateProfileRequest
+import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.ChangePasswordParam
 import app.devper.pharm.domain.param.UpdateProfileParam
