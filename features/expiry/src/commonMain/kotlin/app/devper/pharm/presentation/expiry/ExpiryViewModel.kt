@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.expiry
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.param.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.WriteoffLotsParam
 import app.devper.pharm.domain.usecase.GetExpiringLotsUseCase
@@ -61,7 +63,7 @@ class ExpiryViewModel(
                 )
             },
             onSuccess = { lots -> setState { copy(loading = false, lots = lots) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 }

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.extension.buildKy9Draft
 import app.devper.pharm.domain.extension.isKy9DraftValid
 import app.devper.pharm.domain.usecase.AddKy9UseCase
@@ -38,7 +40,7 @@ class Ky9AddViewModel(
         launchResult(
             block = { addKy9(param) },
             onSuccess = { setState { copy(saving = false, saved = true) } },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: "บันทึกไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
         )
     }
 

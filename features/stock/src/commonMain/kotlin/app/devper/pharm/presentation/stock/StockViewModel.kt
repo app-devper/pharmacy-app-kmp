@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 
@@ -18,7 +20,7 @@ class StockViewModel(
         launchResult(
             block = { getDrugs() },
             onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 }

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.domain.usecase.ConfirmPurchaseOrderUseCase
@@ -74,7 +76,7 @@ class ImportsListViewModel(
                     copy(
                         busy = false,
                         pendingDelete = null,
-                        error = e.message ?: "ลบไม่สำเร็จ",
+                        error = e.message ?: ErrorMessages.DELETE_FAILED,
                     )
                 }
             },

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.usecase.ConfirmPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.DeletePurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
@@ -24,7 +26,7 @@ class ImportDetailViewModel(
         launchResult(
             block = { getPurchaseOrder(id) },
             onSuccess = { po -> setState { copy(loading = false, po = po) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 
@@ -50,7 +52,7 @@ class ImportDetailViewModel(
         launchResult(
             block = { deletePurchaseOrder(id) },
             onSuccess = { setState { copy(deleting = false, closed = true) } },
-            onFailure = { e -> setState { copy(deleting = false, error = e.message ?: "ลบไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(deleting = false, error = e.message ?: ErrorMessages.DELETE_FAILED) } },
         )
     }
 }

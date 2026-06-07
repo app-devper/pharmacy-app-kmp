@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.suppliers
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.usecase.DeleteSupplierUseCase
 import app.devper.pharm.domain.usecase.GetSuppliersUseCase
@@ -41,7 +43,7 @@ class SuppliersListViewModel(
                     copy(
                         deleting = false,
                         pendingDelete = null,
-                        error = e.message ?: "ลบไม่สำเร็จ",
+                        error = e.message ?: ErrorMessages.DELETE_FAILED,
                     )
                 }
             },

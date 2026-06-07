@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.param.ExportKyFormParam
 import app.devper.pharm.domain.param.KyMonthFilterParam
@@ -50,7 +52,7 @@ class KyListViewModel(
                 }
             },
             onSuccess = { rows -> setState { copy(loading = false, rows = rows) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 }

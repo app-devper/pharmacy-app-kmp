@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.extension.buildKy12Draft
 import app.devper.pharm.domain.extension.isKy12DraftValid
 import app.devper.pharm.domain.usecase.AddKy12UseCase
@@ -44,7 +46,7 @@ class Ky12AddViewModel(
         launchResult(
             block = { addKy12(form) },
             onSuccess = { setState { copy(saving = false, saved = true) } },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: "บันทึกไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
         )
     }
 

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.movements
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.MovementsFilterParam
 import app.devper.pharm.domain.observer.TimeZoneProvider
@@ -46,7 +48,7 @@ class MovementsViewModel(
     fun onExportExcel() {
         val s = current
         if (s.items.isEmpty()) {
-            setState { copy(message = "ยังไม่มีข้อมูลให้ส่งออก") }
+            setState { copy(message = ErrorMessages.EXPORT_EMPTY) }
             return
         }
         setState { copy(exporting = true) }
@@ -62,7 +64,7 @@ class MovementsViewModel(
                 )
             },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ส่งออกไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: ErrorMessages.EXPORT_FAILED) } },
         )
     }
 
