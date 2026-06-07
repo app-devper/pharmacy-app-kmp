@@ -23,6 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -32,7 +33,8 @@ fun CustomerFormInfoSection(
     callbacks: CustomerFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    PharmFormCard(modifier = modifier, title = "ข้อมูลลูกค้า") {
+    val s = pharmStrings
+    PharmFormCard(modifier = modifier, title = s.customersFormInfoSection) {
         CustomerInfoGrid(form = form, callbacks = callbacks)
         AllergyNoteField(value = form.allergyNote, onChange = callbacks.onAllergyNote)
         PriceTierPicker(current = form.priceTier, onPick = callbacks.onPriceTier)
@@ -62,18 +64,20 @@ private fun CustomerInfoGrid(
 
 @Composable
 private fun NameField(form: CustomerFormFields, callbacks: CustomerFormCallbacks) {
-    FormField(label = "ชื่อ-นามสกุล", required = true) {
+    val s = pharmStrings
+    FormField(label = s.customersFormFullName, required = true) {
         PharmTextField(
             value = form.name,
             onValueChange = callbacks.onName,
-            placeholder = "เช่น สมศรี ใจดี",
+            placeholder = s.customersFormNamePlaceholder,
         )
     }
 }
 
 @Composable
 private fun PhoneField(form: CustomerFormFields, callbacks: CustomerFormCallbacks) {
-    FormField(label = "เบอร์โทร") {
+    val s = pharmStrings
+    FormField(label = s.commonPhone) {
         PharmTextField(
             value = form.phone,
             onValueChange = callbacks.onPhone,
@@ -85,12 +89,13 @@ private fun PhoneField(form: CustomerFormFields, callbacks: CustomerFormCallback
 
 @Composable
 private fun AllergyNoteField(value: String, onChange: (String) -> Unit) {
-    FormField(label = "แพ้ยา / โรคประจำตัว") {
+    val s = pharmStrings
+    FormField(label = s.customersAllergyLabel) {
         Box(modifier = Modifier.heightIn(min = 56.dp, max = 120.dp)) {
             PharmTextField(
                 value = value,
                 onValueChange = onChange,
-                placeholder = "จะถูกแสดงเป็นแถบเตือนสีแดงในตะกร้า",
+                placeholder = s.customersFormAllergyHint,
                 singleLine = false,
             )
         }
@@ -99,18 +104,18 @@ private fun AllergyNoteField(value: String, onChange: (String) -> Unit) {
 
 private const val TIER_RETAIL_ID = "retail"
 
-private val priceTierChips = listOf(
-    PharmFilterChip(id = TIER_RETAIL_ID, label = "หน้าร้าน"),
-    PharmFilterChip(id = Tier.Regular, label = "ทั่วไป"),
-    PharmFilterChip(id = Tier.Wholesale, label = "ส่ง"),
-)
-
 @Composable
 private fun PriceTierPicker(
     current: String,
     onPick: (String) -> Unit,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
+    val chips = listOf(
+        PharmFilterChip(id = TIER_RETAIL_ID, label = s.customersTierRetail),
+        PharmFilterChip(id = Tier.Regular, label = s.customersTierRegular),
+        PharmFilterChip(id = Tier.Wholesale, label = s.customersTierWholesale),
+    )
     val activeId = when {
         current.isEmpty() || current.equals(Tier.Retail, ignoreCase = true) -> TIER_RETAIL_ID
         current.equals(Tier.Regular, ignoreCase = true) -> Tier.Regular
@@ -122,13 +127,13 @@ private fun PriceTierPicker(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Text(text = "กลุ่มราคา", style = PharmText.h3.copy(color = t.colors.fg2))
+            Text(text = s.customersTierLabel, style = PharmText.h3.copy(color = t.colors.fg2))
             PharmHelpHint(
-                text = "กลุ่มราคาเริ่มต้นของลูกค้า เวลาขายระบบจะใช้ราคาตามกลุ่มนี้ ถ้ายาไม่มีราคากลุ่มนั้นจะใช้ราคาหน้าร้านแทน",
+                text = s.customersTierHint,
             )
         }
         PharmSingleSelectChips(
-            chips = priceTierChips,
+            chips = chips,
             activeId = activeId,
             onSelect = { id -> onPick(if (id == TIER_RETAIL_ID) "" else id) },
             scrollable = false,

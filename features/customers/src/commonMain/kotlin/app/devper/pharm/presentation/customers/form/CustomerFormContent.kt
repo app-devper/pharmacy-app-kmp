@@ -20,6 +20,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,9 +31,10 @@ fun CustomerFormContent(
     callbacks: CustomerFormCallbacks,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.titleLabel,
+            title = if (state.isEdit) s.customersFormEditTitle else s.customersAddCta,
             onBack = callbacks.onBack,
             actions = {
                 PharmSaveAction(

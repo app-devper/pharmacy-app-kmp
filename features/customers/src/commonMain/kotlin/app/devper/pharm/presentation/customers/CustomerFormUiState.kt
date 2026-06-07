@@ -25,8 +25,8 @@ data class CustomerFormUiState(
     override val canSubmit: Boolean
         get() = !saving && !loading && form.name.isNotBlank()
 
-    val titleLabel: String
-        get() = if (mode is CustomerFormMode.Edit) "แก้ไขลูกค้า" else "เพิ่มลูกค้า"
+    val isEdit: Boolean
+        get() = mode is CustomerFormMode.Edit
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)

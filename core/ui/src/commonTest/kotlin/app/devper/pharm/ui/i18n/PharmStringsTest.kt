@@ -52,6 +52,18 @@ class PharmStringsTablesTest {
         check("settingsPharmacistName", PharmStringsTh.settingsPharmacistName, PharmStringsEn.settingsPharmacistName, mismatches)
         check("settingsKySkipAuto", PharmStringsTh.settingsKySkipAuto, PharmStringsEn.settingsKySkipAuto, mismatches)
         check("settingsKyDefaultBuyerAddress", PharmStringsTh.settingsKyDefaultBuyerAddress, PharmStringsEn.settingsKyDefaultBuyerAddress, mismatches)
+        check("customersListSubtitle", PharmStringsTh.customersListSubtitle, PharmStringsEn.customersListSubtitle, mismatches)
+        check("customersSearchPlaceholder", PharmStringsTh.customersSearchPlaceholder, PharmStringsEn.customersSearchPlaceholder, mismatches)
+        check("customersAddCta", PharmStringsTh.customersAddCta, PharmStringsEn.customersAddCta, mismatches)
+        check("customersHeaderTotalSpent", PharmStringsTh.customersHeaderTotalSpent, PharmStringsEn.customersHeaderTotalSpent, mismatches)
+        check("customersListEmpty", PharmStringsTh.customersListEmpty, PharmStringsEn.customersListEmpty, mismatches)
+        check("customersDetailNoPhone", PharmStringsTh.customersDetailNoPhone, PharmStringsEn.customersDetailNoPhone, mismatches)
+        check("customersAllergyLabel", PharmStringsTh.customersAllergyLabel, PharmStringsEn.customersAllergyLabel, mismatches)
+        check("customersBadgeVoided", PharmStringsTh.customersBadgeVoided, PharmStringsEn.customersBadgeVoided, mismatches)
+        check("customersFormEditTitle", PharmStringsTh.customersFormEditTitle, PharmStringsEn.customersFormEditTitle, mismatches)
+        check("customersFormFullName", PharmStringsTh.customersFormFullName, PharmStringsEn.customersFormFullName, mismatches)
+        check("customersTierLabel", PharmStringsTh.customersTierLabel, PharmStringsEn.customersTierLabel, mismatches)
+        check("customersTierWholesale", PharmStringsTh.customersTierWholesale, PharmStringsEn.customersTierWholesale, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
     }
 
