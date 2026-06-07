@@ -440,7 +440,7 @@ class CheckoutViewModelTest {
         assertEquals(0, offline.pending.value.size)
         assertFalse(cart.clearCalled)
         assertNotNull(vm.state.value.error)
-        assertEquals("validation: missing field", vm.state.value.error)
+        assertEquals("ออกใบเสร็จไม่สำเร็จ", vm.state.value.error)
         assertFalse(vm.state.value.checkingOut)
     }
 

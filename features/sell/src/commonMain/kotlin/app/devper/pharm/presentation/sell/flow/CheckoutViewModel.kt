@@ -22,12 +22,15 @@ import app.devper.pharm.domain.extension.looksLikeNetworkError
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.common.userMessageOr
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
 import app.devper.pharm.presentation.sell.internal.todayLocalDate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+
+private const val CHECKOUT_FAILED = "ออกใบเสร็จไม่สำเร็จ"
 
 class CheckoutViewModel(
     cartState: CartStateProvider,
@@ -39,7 +42,7 @@ class CheckoutViewModel(
     private val submitKyForms: SubmitKyFormsUseCase,
     private val enqueueOfflineSale: EnqueueOfflineSaleUseCase,
     private val receiptPrinter: ReceiptPrinter,
-) : BaseViewModel<CheckoutUiState>(CheckoutUiState()) {
+) : BaseLoadableViewModel<CheckoutUiState>(CheckoutUiState()) {
 
     private data class ReceiptSnapshot(
         val cart: List<CartLine>,
@@ -136,8 +139,6 @@ class CheckoutViewModel(
     fun dismissOversell() {
         setState { copy(oversellPending = null) }
     }
-
-    fun dismissError() = setState { copy(error = null) }
 
     fun dismissReceipt() {
         dismissReceiptUseCase()
@@ -262,7 +263,7 @@ class CheckoutViewModel(
             setState {
                 copy(
                     checkingOut = false,
-                    error = cause.message ?: "ออกใบเสร็จไม่สำเร็จ",
+                    error = cause.userMessageOr(CHECKOUT_FAILED),
                 )
             }
         }
