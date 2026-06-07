@@ -6,7 +6,7 @@ import app.devper.pharm.common.ForbiddenException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.ServerException
 import app.devper.pharm.data.storage.TokenStorage
-import app.devper.pharm.data.storage.memorySettings
+import app.devper.pharm.data.storage.InMemorySecureStorage
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.get
@@ -19,7 +19,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 
 private fun mockClientReturning(status: HttpStatusCode, body: String = "") = run {
-    val tokenStorage = TokenStorage(memorySettings()).apply { save("preset-token") }
+    val tokenStorage = TokenStorage(InMemorySecureStorage()).apply { save("preset-token") }
     val engineFactory = object : io.ktor.client.engine.HttpClientEngineFactory<io.ktor.client.engine.mock.MockEngineConfig> {
         override fun create(block: io.ktor.client.engine.mock.MockEngineConfig.() -> Unit): io.ktor.client.engine.HttpClientEngine {
             val config = io.ktor.client.engine.mock.MockEngineConfig().apply {

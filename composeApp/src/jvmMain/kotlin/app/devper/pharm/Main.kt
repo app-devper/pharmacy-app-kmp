@@ -10,6 +10,7 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
@@ -17,6 +18,7 @@ import app.devper.pharm.di.appModule
 import app.devper.pharm.platform.ConnectivityObserverImpl
 import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.FilePickerImpl
+import app.devper.pharm.platform.JvmSecureStorage
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
@@ -29,6 +31,7 @@ import java.util.prefs.Preferences
 fun main() {
     val jvmPlatformModule = module {
         single<Settings> { PreferencesSettings(Preferences.userRoot().node("pharmacy.app")) }
+        single<SecureStorage> { JvmSecureStorage() }
         single { buildHttpClient(Java, get<TokenStorage>()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
