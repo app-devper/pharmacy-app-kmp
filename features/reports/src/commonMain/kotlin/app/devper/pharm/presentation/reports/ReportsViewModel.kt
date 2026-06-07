@@ -31,7 +31,7 @@ class ReportsViewModel(
     init {
         reload()
         stockChangeBus.events
-            .debounce(500.milliseconds)
+            .debounce(2_000.milliseconds)
             .onEach { reload() }
             .launchIn(viewModelScope)
     }
