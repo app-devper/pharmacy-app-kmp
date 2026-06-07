@@ -2,6 +2,8 @@
 
 package app.devper.pharm.ui.common
 
+import app.devper.pharm.common.AuthException
+import app.devper.pharm.common.error.ErrorMessages
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -53,8 +55,19 @@ class BaseFormViewModelTest {
     }
 
     @Test
-    fun submit_sets_error_on_failure_and_clears_saving() = runVmTest { _ ->
+    fun submit_with_untyped_throwable_falls_back_to_default_save_failed_message() = runVmTest { _ ->
         val vm = DummyFormViewModel(persistResult = { Result.failure(IllegalStateException("server down")) })
+        vm.setName("น้ำเกลือ")
+        vm.submit()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.saving)
+        assertFalse(vm.state.value.saved)
+        assertEquals(ErrorMessages.SAVE_FAILED, vm.state.value.error)
+    }
+
+    @Test
+    fun submit_with_typed_AppException_surfaces_its_localised_message() = runVmTest { _ ->
+        val vm = DummyFormViewModel(persistResult = { Result.failure(AuthException()) })
         vm.setName("น้ำเกลือ")
         vm.submit()
         advanceUntilIdle()
@@ -62,7 +75,7 @@ class BaseFormViewModelTest {
         assertFalse(vm.state.value.saved)
         val err = vm.state.value.error
         assertNotNull(err)
-        assertEquals("server down", err)
+        assertEquals("กรุณาเข้าสู่ระบบใหม่", err)
     }
 
     @Test

@@ -3,6 +3,7 @@
 package app.devper.pharm.presentation.profile
 
 import app.devper.pharm.common.AuthException
+import app.devper.pharm.common.error.ErrorMessages
 import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.usecase.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.GetProfileUseCase
@@ -71,7 +72,7 @@ class ProfileViewModelTest {
         val state = vm.state.value
         assertFalse(state.saving)
         assertFalse(state.saved)
-        assertEquals("server boom", state.error)
+        assertEquals(ErrorMessages.SAVE_FAILED, state.error)
     }
 
     @Test
