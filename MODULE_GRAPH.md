@@ -139,6 +139,7 @@ bound via Koin in each Main*.kt's platform module.
 | `common/AppDispatchers.kt` | `app.devper.pharm.common` | `data class AppDispatchers(main, io, default)` — constructed per-platform |
 | `common/Logger.kt` | `app.devper.pharm.common` | `Logger` interface + `PrintlnLogger` impl |
 | `common/AppException.kt` | `app.devper.pharm.common` | Sealed `AppException` + 9 typed subclasses (Auth, Forbidden, NotFound, Conflict, Network, Server, Validation, Storage, UnsupportedPlatform) — domain error language; enforced by A28 |
+| `common/value/{Money,Quantity}.kt` | `app.devper.pharm.common.value` | `@JvmInline value class Money(val amount: Double)` + `Quantity(val value: Int)` — every monetary / counted-stock field on a domain model is one of these (DTOs stay raw, mappers wrap at boundary). Operators `+ - * /`, `coerceAtLeast/AtMost`, `isPositive` / `isZero`, `Money.Zero` / `Quantity.Zero`. |
 | `domain/usecase/BaseUseCase.kt` | `app.devper.pharm.domain.usecase` | `BaseUseCase<P,R>` + `BaseSyncUseCase<P,R>` framework |
 | `common/print/{ReceiptTemplate,ReceiptPrinter}.kt` | `app.devper.pharm.common.print` | `ReceiptTemplate` data + `ReceiptPrinter` interface |
 | `common/platform/FileDownloader.kt` | `app.devper.pharm.common.platform` | **interface** `FileDownloader { suspend fun save(filename, mimeType, bytes): Result<String> }` + `MimeType` constants |
@@ -163,7 +164,7 @@ bound via Koin in each Main*.kt's platform module.
 | `ui/designsystem/` | `PharmButton`, `PharmBadge`, `PharmTextField`, `PharmModal`, `PharmTopbar`, `PharmSidebar`, `MetricCard`, `DrugCard`, `FormField`, `KyBadge`, `PharmTable`, `PharmFilterChips`, `PharmActionMenu`, `PharmIcons` (32 SVG vectors) |
 | `ui/common/` | `BaseUiState`, `BaseViewModel`, `BaseFormViewModel`, `BaseFormUiState`, `RunVmTest` |
 | `ui/components/` | `AppShell`, `ErrorBottomSheet`, `WindowSize` |
-| `ui/format/` | `Money.kt` (formatBaht / formatBahtCurrency / fmtBaht) |
+| `ui/format/` | `Money.kt` (`formatBaht` / `formatBahtCurrency` / `fmtBaht`), `DateFormat.kt` (Buddhist-era formatters: `localDateTimeToBuddhist`, `isoDateTimeToBuddhist`, `isoDateToBuddhist`, `localDateToBuddhist`, `todayBuddhistDisplay`; `ymdToMillis` / `millisToYmd` use UTC midnight for M3 `DatePicker` roundtrip), `DateRangeFilter.kt` (typed range filter — Bangkok TZ default) |
 | `ui/scanner/` | `BarcodeScannerModifier` (HID listener) |
 | `ui/print/` | `ReceiptBuilder` (pure — `ReceiptTemplate` lives in `:core:common`) |
 | `ui/help/MarkdownText.kt` | Markdown renderer (used by `:features:help`) |
@@ -179,6 +180,7 @@ The ktor engines (`ktor-client-okhttp`/`darwin`/`java`/`js`) live in
 | Path | Contents |
 |---|---|
 | `data/network/` | `HttpClient` builder, `AppJson`, `ApiConfig`, `HttpResponseValidator` |
+| `data/internal/DateConv.kt` | `parseLocalDateOrNull` / `parseLocalDateTimeOrNull` / `parseLocalDateOrEpoch` / `parseLocalDateTimeOrEpoch` / `LocalDate.toIso` / `LocalDateTime.toIso` — RFC3339 → Bangkok TZ datetime conversion; YYYY-MM-DD ↔ `LocalDate` (also accepts full datetime strings, takes first 10 chars) |
 | `data/storage/` | `TokenStorage`, `ParkedCartStorage`, `OfflineSaleQueueImpl` (multiplatform-settings adapters) |
 | `data/repository/` | All `*RepositoryImpl` (Phase Q — no `runCatching` here) + `UiPreferencesRepositoryImpl` + `LabelRepositoryImpl` + `ExportRepositoryImpl` |
 | `data/remote/api/` | All `*Api` interfaces + endpoint paths |
@@ -283,15 +285,15 @@ to check them.
 
 | Module                       | Test source set | Tests in suite |
 |------------------------------|-----------------|----:|
-| `:core:common`               | `commonTest`    | 16 |
-| `:core:domain`               | `commonTest`    | 88 |
-| `:core:ui`                   | `commonTest`    | 62 (incl. MoneyFormatTest) |
-| `:core:data`                 | `commonTest`    | 41 (incl. UiPreferencesRepositoryImpl + CartRepositoryImpl atomicity) |
+| `:core:common`               | `commonTest`    | 51 (incl. `MoneyTest` + `QuantityTest`) |
+| `:core:domain`               | `commonTest`    | 164 (incl. `CartUseCasesTest` covering the 13 cart wrappers, `DateConvTest` for Bangkok TZ rules) |
+| `:core:ui`                   | `commonTest`    | 110 (incl. `MoneyFormatTest`, `DateFormatTest` + `BuddhistEraTest` for UTC → Bangkok display) |
+| `:core:data`                 | `commonTest`    | 71 (incl. `UiPreferencesRepositoryImplTest` + `CartRepositoryImplAtomicityTest`) |
 | `:features:test-fixtures`    | none (fakes are commonMain) | 0 |
-| 20× `:features:<x>`          | `commonTest`    | 305 across 29 module test suites |
+| 20× `:features:<x>`          | `commonTest`    | 362 across 29 module test suites (`:features:sell` alone ships 83) |
 | `:composeApp`                | `commonTest`    | 1 (`AppModuleWiringTest` — resolves every VM via Koin) |
 
-**Project-wide**: 513 `@Test` functions on JVM. The Android
+**Project-wide**: 759 `@Test` functions on JVM. The Android
 `testDebugUnitTest` target runs the same `commonTest` sources separately,
 so the doubled count is higher on a full `:composeApp:check`.
 
@@ -341,6 +343,11 @@ Quick smoke (no per-feature breakdown — runs the dependent tree):
 | A test double used by ≥2 features | `:features:test-fixtures/commonMain/.../repository/` |
 | Wiring a new feature into nav | `composeApp/.../navigation/MainNav.kt` (call `<x>Nav(nestedNav)` in `MainShell`) |
 | Wiring a new feature into DI | `composeApp/.../di/AppModule.kt` (`includes(…)`) |
+| A new monetary field on a domain model / param | Type it `Money` (not `Double`). Mapper wraps inbound `Money(dto.x)`, unwraps outbound `model.x.amount`. Default `Money.Zero`, not `0.0`. |
+| A new counted-stock field on a domain model / param | Type it `Quantity` (not `Int`). Same mapper pattern via `Quantity(...)` / `.value`. |
+| A new datetime field from backend | DTO stays `String`; mapper calls `.parseLocalDateTimeOrNull()` (UTC → Bangkok). Display via `localDateTimeToBuddhist(...)`. |
+| A new date-only field from backend | DTO stays `String`; mapper calls `.parseLocalDateOrNull()` (accepts both `YYYY-MM-DD` and full datetime). Display via `localDateToBuddhist(...)`. |
+| A new date-range filter w/ M3 `DatePicker` | Use `DateRangeFilter` (`:core:ui/format/`) or `PharmDateRangeField`. `ymdToMillis` / `millisToYmd` already use UTC midnight to round-trip correctly through M3. |
 
 ## Per-feature recipe
 
@@ -414,6 +421,23 @@ etc.) are 18-22 lines.
   - `b643954`: `:features:sell` (39 prod, the heaviest)
   - `2a9f822`: `:features:settings` (the planned finale)
   - `9a76123`: extract `:features:test-fixtures` for 14 shared fakes, co-locate 18 cross-cutting tests, **delete `:features` module entirely**. Audit rule grows the `/features/test-fixtures/` A28 exclusion.
+- **Value-class chain (Phase C, #180 → #192)** — introduce `Money` + `Quantity` and route them through the domain:
+  - **#180** seed: `Money(Double)` + `Quantity(Int)` `@JvmInline value class` in `:core:common/value/` with full operator API + 24 tests.
+  - **#181 (C-1) Drug + AltUnit**: `sellPrice` / `costPrice` → `Money`; `stock` / `minStock` → `Quantity`; `prices: Map<String, Money>`. `DrugMapper` + `ParkedCartStorage` wrap at boundary. ~150 call sites updated.
+  - **#182 (C-2) Sale + SaleSummary + SaleItemSnapshot**: monetary fields → `Money`. `SaleMapper` / `SaleItemMapper` / `SaleSummaryMapper` wrap at boundary.
+  - **#183 (C-3) `CartLine` math chain**: `discount` / `basePrice` / `unitPrice` / `effectiveUnitPrice` / `lineTotal` → `Money`. `Money` gains `div(Int)` + `coerceAtLeast` / `coerceAtMost` + 5 tests.
+  - **#184 (C-4) `CartDiscount`** + `CartSnapshot` / `ParkedCart` / `SellUiState` totals → `Money`. `CartDiscount.Flat.amount` + `apply()` go through `Money` space.
+  - **#185 (C-5) `CheckoutParam` / `CheckoutLineParam` / `RunCheckoutParam`** — closes the param-level symmetry from domain → wire boundary (mapper unwraps at the SaleRequest line).
+  - **#192 (C-2 gap closure)**: `DrugLot` / `AddLotParam` / `PurchaseOrder*` / `PurchaseOrderItem*` / `ReorderSuggestion` — the inventory-side surface that C-1 missed.
+  - Still `Double` (intentional, deferred): `ReportSummary` / `DailySales` / `MonthlySales`; receipt template wire fields (printer protocol).
+- **Datetime / Bangkok TZ fixes (#187 → #189)** — UTC-stored Mongo `time.Time` was being parsed naïvely → wall-clock displayed 7h behind. Fix in 3 layers:
+  - **#187** `parseLocalDateTimeOrNull` + `isoDateTimeToBuddhist`: try `Instant.parse(s).toLocalDateTime(BANGKOK)` first, fall back to bare `LocalDateTime.parse` only when there's no offset marker.
+  - **#188** `parseLocalDateOrNull` + `isoDateToBuddhist` + `toLocalDateOrNull`: fall back to `take(10)` when strict ISO_DATE rejects a datetime-shaped string (`2027-06-30T00:00:00Z` from backend lot expiry).
+  - **#189** `ymdToMillis` / `millisToYmd` / `LocalDate.toStartOfDayMillis`: use `TimeZone.UTC` internally so the YMD ↔ millis bridge round-trips through Material 3 `DatePicker` without an off-by-one day shift.
+- **Coverage + dead-code (#186, #190, #191)**:
+  - **#186**: +27 tests covering 13 thin `CartRepository` UseCase wrappers (`AddToCart` / `SetCartQty` / `SetLineDiscount` / `SetCartDiscount` / `ClearCart` / `RemoveCartItem` / `SetCashReceived` / `SelectCustomer` / `ClearCustomer` / `ParkCart` / `RestoreCart` / `DiscardParkedCart` / `DismissReceipt`). `:core:domain` commonTest gains a dep on `:features:test-fixtures` for `FakeCartRepository`.
+  - **#190**: `OfflineAutoSync.syncPending()` aborts loop on network errors instead of inflating `attempts++` on every queued sale.
+  - **#191**: delete unused `GetSaleSummaryUseCase` (called a broken `SaleHistoryRepo.get` that filtered the latest-200 list) + `MarkOfflineSaleFailedUseCase` (pass-through, queue method called directly).
 
 ## Out of scope (deferred)
 
