@@ -86,6 +86,16 @@ class PharmStringsTablesTest {
         check("usersFormUsername", PharmStringsTh.usersFormUsername, PharmStringsEn.usersFormUsername, mismatches)
         check("usersFormPasswordHint", PharmStringsTh.usersFormPasswordHint, PharmStringsEn.usersFormPasswordHint, mismatches)
         check("usersConfirmDeleteTitle", PharmStringsTh.usersConfirmDeleteTitle, PharmStringsEn.usersConfirmDeleteTitle, mismatches)
+        check("salesHistorySubtitle", PharmStringsTh.salesHistorySubtitle, PharmStringsEn.salesHistorySubtitle, mismatches)
+        check("salesHistorySearchPlaceholder", PharmStringsTh.salesHistorySearchPlaceholder, PharmStringsEn.salesHistorySearchPlaceholder, mismatches)
+        check("salesHistoryEmptySearching", PharmStringsTh.salesHistoryEmptySearching, PharmStringsEn.salesHistoryEmptySearching, mismatches)
+        check("salesHistoryHeaderTime", PharmStringsTh.salesHistoryHeaderTime, PharmStringsEn.salesHistoryHeaderTime, mismatches)
+        check("salesHistoryHeaderBillNo", PharmStringsTh.salesHistoryHeaderBillNo, PharmStringsEn.salesHistoryHeaderBillNo, mismatches)
+        check("salesHistoryHeaderNet", PharmStringsTh.salesHistoryHeaderNet, PharmStringsEn.salesHistoryHeaderNet, mismatches)
+        check("salesHistoryStatusOk", PharmStringsTh.salesHistoryStatusOk, PharmStringsEn.salesHistoryStatusOk, mismatches)
+        check("salesHistoryWalkInCustomer", PharmStringsTh.salesHistoryWalkInCustomer, PharmStringsEn.salesHistoryWalkInCustomer, mismatches)
+        check("salesHistoryActionViewBill", PharmStringsTh.salesHistoryActionViewBill, PharmStringsEn.salesHistoryActionViewBill, mismatches)
+        check("salesHistoryActionReturn", PharmStringsTh.salesHistoryActionReturn, PharmStringsEn.salesHistoryActionReturn, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
     }
 

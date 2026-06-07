@@ -24,6 +24,7 @@ import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -35,25 +36,26 @@ internal fun SalesHistoryTable(
     modifier: Modifier = Modifier,
     emptySearching: Boolean = false,
 ) {
-    val columns = remember(callbacks) {
+    val s = pharmStrings
+    val columns = remember(callbacks, s) {
         listOf(
         PharmTableColumn<SaleSummary>(
-            header = "เวลา",
+            header = s.salesHistoryHeaderTime,
             weight = 1.2f,
             cell = { sale -> TimeCell(sale) },
         ),
         PharmTableColumn(
-            header = "เลขที่บิล",
+            header = s.salesHistoryHeaderBillNo,
             weight = 1.4f,
             compactTitle = true,
             cell = { sale -> BillNoCell(sale) },
         ),
         PharmTableColumn(
-            header = "ลูกค้า",
+            header = s.navCustomers,
             weight = 1.8f,
             cell = { sale ->
                 Text(
-                    text = sale.customerName.ifBlank { "ลูกค้าทั่วไป" },
+                    text = sale.customerName.ifBlank { s.salesHistoryWalkInCustomer },
                     style = PharmText.bodySm,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -61,18 +63,18 @@ internal fun SalesHistoryTable(
             },
         ),
         PharmTableColumn(
-            header = "ยอดสุทธิ",
+            header = s.salesHistoryHeaderNet,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { sale -> TotalCell(sale) },
         ),
         PharmTableColumn(
-            header = "สถานะ",
+            header = s.commonStatus,
             weight = 1.0f,
             cell = { sale -> StatusCell(sale) },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { sale -> SalesRowActions(sale = sale, callbacks = callbacks) },
@@ -91,12 +93,12 @@ internal fun SalesHistoryTable(
             if (emptySearching) {
                 PharmEmptyState(
                     icon = PharmIcons.Search,
-                    title = "ไม่พบบิลที่ค้นหา",
+                    title = s.salesHistoryEmptySearching,
                 )
             } else {
                 PharmEmptyState(
                     icon = PharmIcons.SalesHistory,
-                    title = "ไม่พบบิลในช่วงเวลาที่เลือก",
+                    title = s.salesHistoryEmptyDateRange,
                 )
             }
         },
@@ -145,6 +147,7 @@ private fun TotalCell(sale: SaleSummary) {
 
 @Composable
 private fun StatusCell(sale: SaleSummary) {
+    val s = pharmStrings
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -152,18 +155,19 @@ private fun StatusCell(sale: SaleSummary) {
         if (sale.voided) {
             PharmStatusBadge(status = PharmStatus.Voided)
         } else {
-            PharmStatusBadge(status = PharmStatus.Done, label = "สำเร็จ")
+            PharmStatusBadge(status = PharmStatus.Done, label = s.salesHistoryStatusOk)
         }
     }
 }
 
 @Composable
 private fun SalesRowActions(sale: SaleSummary, callbacks: SalesHistoryCallbacks) {
-    val actions = remember(sale.id, sale.voided, callbacks) {
+    val s = pharmStrings
+    val actions = remember(sale.id, sale.voided, callbacks, s) {
         buildList {
             add(
                 PharmAction(
-                    label = "ดูบิล",
+                    label = s.salesHistoryActionViewBill,
                     icon = PharmIcons.SalesHistory,
                     tone = PharmActionTone.Primary,
                     onClick = { callbacks.onOpenReceipt(sale) },
@@ -172,7 +176,7 @@ private fun SalesRowActions(sale: SaleSummary, callbacks: SalesHistoryCallbacks)
             if (!sale.voided) {
                 add(
                     PharmAction(
-                        label = "คืนยา",
+                        label = s.salesHistoryActionReturn,
                         icon = PharmIcons.ReturnArrow,
                         tone = PharmActionTone.Danger,
                         onClick = { callbacks.onStartReturn(sale) },
