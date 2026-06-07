@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +44,7 @@ fun MovementsContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            PharmListResultLine(total = state.items.size, noun = "รายการ")
+            PharmListResultLine(total = state.items.size, noun = pharmStrings.movementsCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {

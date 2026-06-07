@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.help.MarkdownText
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -70,7 +71,7 @@ fun HelpContent(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "ไม่พบคู่มือ",
+                    text = pharmStrings.helpNotFound,
                     style = PharmText.body.copy(color = t.colors.fg3),
                 )
             }
@@ -161,7 +162,7 @@ private fun HelpToc(
     val t = pharmTokens
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
-            text = "สารบัญ",
+            text = pharmStrings.helpToc,
             style = PharmText.thead.copy(color = t.colors.fg3),
             modifier = Modifier.padding(bottom = 8.dp),
         )
@@ -225,9 +226,9 @@ private fun ArticleHeader() {
         modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(text = "คู่มือการใช้งาน", style = PharmText.h1)
+        Text(text = pharmStrings.navHelp, style = PharmText.h1)
         Text(
-            text = "ระบบ POS ร้านขายยา · เลือกหัวข้อจากสารบัญทางซ้าย",
+            text = pharmStrings.helpSubtitle,
             style = PharmText.meta.copy(color = t.colors.fgMuted),
         )
     }
@@ -247,7 +248,7 @@ private fun KeyboardTipBanner() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "เคล็ดลับ",
+            text = pharmStrings.helpTipsLabel,
             style = PharmText.bodySm.copy(
                 color = t.colors.infoFg,
                 fontWeight = FontWeight.SemiBold,
@@ -255,17 +256,17 @@ private fun KeyboardTipBanner() {
         )
         KeyboardKey("F1")
         Text(
-            text = "โฟกัสช่องค้นหา",
+            text = pharmStrings.helpTipFocusSearch,
             style = PharmText.bodySm.copy(color = t.colors.infoFg),
         )
         KeyboardKey("F2")
         Text(
-            text = "ช่องรับเงิน",
+            text = pharmStrings.helpTipPaymentField,
             style = PharmText.bodySm.copy(color = t.colors.infoFg),
         )
         KeyboardKey("F4")
         Text(
-            text = "พักบิล",
+            text = pharmStrings.helpTipParkBill,
             style = PharmText.bodySm.copy(color = t.colors.infoFg),
         )
     }

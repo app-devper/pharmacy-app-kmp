@@ -113,7 +113,38 @@ class PharmStringsTablesTest {
         check("expiryEmpty", PharmStringsTh.expiryEmpty, PharmStringsEn.expiryEmpty, mismatches)
         check("expiryConfirmTitle", PharmStringsTh.expiryConfirmTitle, PharmStringsEn.expiryConfirmTitle, mismatches)
         check("expiryResultSuccessTitle", PharmStringsTh.expiryResultSuccessTitle, PharmStringsEn.expiryResultSuccessTitle, mismatches)
+        check("movementsSubtitle", PharmStringsTh.movementsSubtitle, PharmStringsEn.movementsSubtitle, mismatches)
+        check("movementsEmpty", PharmStringsTh.movementsEmpty, PharmStringsEn.movementsEmpty, mismatches)
+        check("movementsHeaderType", PharmStringsTh.movementsHeaderType, PharmStringsEn.movementsHeaderType, mismatches)
+        check("movementsHeaderRef", PharmStringsTh.movementsHeaderRef, PharmStringsEn.movementsHeaderRef, mismatches)
+        check("movementsNextPage", PharmStringsTh.movementsNextPage, PharmStringsEn.movementsNextPage, mismatches)
+        check("labelsSubtitle", PharmStringsTh.labelsSubtitle, PharmStringsEn.labelsSubtitle, mismatches)
+        check("labelsEmpty", PharmStringsTh.labelsEmpty, PharmStringsEn.labelsEmpty, mismatches)
+        check("labelsClear", PharmStringsTh.labelsClear, PharmStringsEn.labelsClear, mismatches)
+        check("labelsPrinting", PharmStringsTh.labelsPrinting, PharmStringsEn.labelsPrinting, mismatches)
+        check("labelsPrintSuccess", PharmStringsTh.labelsPrintSuccess, PharmStringsEn.labelsPrintSuccess, mismatches)
+        check("helpSubtitle", PharmStringsTh.helpSubtitle, PharmStringsEn.helpSubtitle, mismatches)
+        check("helpToc", PharmStringsTh.helpToc, PharmStringsEn.helpToc, mismatches)
+        check("helpNotFound", PharmStringsTh.helpNotFound, PharmStringsEn.helpNotFound, mismatches)
+        check("helpTipFocusSearch", PharmStringsTh.helpTipFocusSearch, PharmStringsEn.helpTipFocusSearch, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun batch11_lambda_keys_interpolate_values_per_locale() {
+        val thPag = PharmStringsTh.movementsPagination(2, 5)
+        val enPag = PharmStringsEn.movementsPagination(2, 5)
+        assertTrue(thPag.contains("2") && thPag.contains("5"))
+        assertTrue(enPag.contains("2") && enPag.contains("5"))
+        assertNotEquals(thPag, enPag)
+        assertTrue(PharmStringsTh.movementsShownOf(10, 25).contains("10"))
+        assertTrue(PharmStringsEn.movementsShownOf(10, 25).contains("25"))
+        assertTrue(PharmStringsTh.labelsListTitle(3).contains("3"))
+        assertTrue(PharmStringsEn.labelsListTitle(3).contains("3"))
+        assertTrue(PharmStringsTh.labelsPrintCount(7).contains("7"))
+        assertTrue(PharmStringsEn.labelsPrintCount(7).contains("7"))
+        assertTrue(PharmStringsTh.labelsPreviewLabel("50×30").contains("50×30"))
+        assertTrue(PharmStringsEn.labelsPreviewLabel("50×30").contains("50×30"))
     }
 
     @Test
