@@ -4,16 +4,11 @@ import app.devper.pharm.data.remote.api.SettingsApi
 import app.devper.pharm.data.remote.dto.KySettingsDto
 import app.devper.pharm.data.remote.dto.PharmacistInfoDto
 import app.devper.pharm.data.remote.dto.ReceiptSettingsDto
-import app.devper.pharm.data.remote.dto.SettingsDto
 import app.devper.pharm.data.remote.dto.SettingsInputDto
 import app.devper.pharm.data.remote.dto.StockSettingsDto
 import app.devper.pharm.data.remote.dto.StoreInfoDto
-import app.devper.pharm.domain.model.KySettings
-import app.devper.pharm.domain.model.PharmacistInfo
-import app.devper.pharm.domain.model.ReceiptSettings
+import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.model.StockSettings
-import app.devper.pharm.domain.model.StoreInfo
 import app.devper.pharm.domain.param.UpdateSettingsParam
 import app.devper.pharm.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,38 +35,6 @@ class SettingsRepositoryImpl(
         _settings.value = mapped
         return mapped
     }
-
-    private fun SettingsDto.toDomain() = Settings(
-        store = store.toDomain(),
-        receipt = receipt.toDomain(),
-        stock = stock.toDomain(),
-        pharmacist = pharmacist.toDomain(),
-        ky = ky.toDomain(),
-        timezone = timezone.takeIf { it.isNotBlank() } ?: "Asia/Bangkok",
-    )
-
-    private fun StoreInfoDto.toDomain() = StoreInfo(
-        name = name, address = address, phone = phone, taxId = taxId,
-    )
-
-    private fun ReceiptSettingsDto.toDomain() = ReceiptSettings(
-        header = header, footer = footer, paperWidth = paperWidth, showPharmacist = showPharmacist,
-    )
-
-    private fun StockSettingsDto.toDomain() = StockSettings(
-        lowStockThreshold = lowStockThreshold,
-        reorderDays = reorderDays,
-        reorderLookahead = reorderLookahead,
-        expiringDays = expiringDays,
-    )
-
-    private fun PharmacistInfoDto.toDomain() = PharmacistInfo(
-        name = name, licenseNo = licenseNo,
-    )
-
-    private fun KySettingsDto.toDomain() = KySettings(
-        skipAuto = skipAuto, defaultBuyerAddress = defaultBuyerAddress,
-    )
 
     private fun UpdateSettingsParam.toDto() = SettingsInputDto(
         store = StoreInfoDto(

@@ -4,11 +4,10 @@ import app.devper.pharm.data.network.AppJson
 import app.devper.pharm.data.remote.api.SaleApi
 import app.devper.pharm.data.remote.dto.SaleItemRequest
 import app.devper.pharm.data.remote.dto.SaleRequest
-import app.devper.pharm.data.remote.dto.SaleResponse
 import app.devper.pharm.data.remote.dto.VoidSaleRequest
+import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.model.StockUpdate
 import app.devper.pharm.domain.param.CheckoutLineParam
 import app.devper.pharm.domain.param.CheckoutParam
 import app.devper.pharm.domain.param.VoidSaleParam
@@ -61,15 +60,5 @@ class SaleRepositoryImpl(
         allowOversell = allowOversell,
         unit = unit,
         unitFactor = unitFactor,
-    )
-
-    private fun SaleResponse.toDomain() = Sale(
-        id = id,
-        billNo = billNo,
-        total = total,
-        change = change,
-        discount = discount,
-        stockUpdates = stockUpdates.map { StockUpdate(it.drugId, it.newStock) },
-        kySkippedByCashier = kySkippedByCashier,
     )
 }

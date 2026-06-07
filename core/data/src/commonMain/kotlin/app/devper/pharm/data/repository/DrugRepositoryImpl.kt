@@ -4,17 +4,13 @@ import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.DrugApi
 import app.devper.pharm.data.remote.dto.AltUnitDto
 import app.devper.pharm.data.remote.dto.BulkDrugImportInputDto
-import app.devper.pharm.data.remote.dto.BulkImportResultDto
-import app.devper.pharm.data.remote.dto.BulkImportRowErrorDto
 import app.devper.pharm.data.remote.dto.CreateLotDto
-import app.devper.pharm.data.remote.dto.DrugDto
 import app.devper.pharm.data.remote.dto.DrugInputDto
 import app.devper.pharm.data.remote.dto.DrugUpdateDto
-import app.devper.pharm.data.remote.dto.ReorderSuggestionDto
+import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.BulkImportResult
-import app.devper.pharm.domain.model.BulkImportRowError
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.domain.param.AddDrugParam
@@ -28,10 +24,10 @@ class DrugRepositoryImpl(
     private val stockChangeBus: StockChangeBus,
 ) : DrugRepository {
 
-    override suspend fun list(): List<Drug> = api.list().map(::toDomain)
+    override suspend fun list(): List<Drug> = api.list().map { it.toDomain() }
 
     override suspend fun add(param: AddDrugParam): Drug {
-        val drug = toDomain(api.add(param.toRequest()))
+        val drug = api.add(param.toRequest()).toDomain()
         stockChangeBus.emit()
         return drug
     }
@@ -48,37 +44,10 @@ class DrugRepositoryImpl(
         return response.toDomain()
     }
 
-    override suspend fun lowStock(): List<Drug> = api.lowStock().map(::toDomain)
+    override suspend fun lowStock(): List<Drug> = api.lowStock().map { it.toDomain() }
 
     override suspend fun reorderSuggestions(param: ReorderSuggestionsParam): List<ReorderSuggestion> =
-        api.reorderSuggestions(param.days, param.lookahead).map(::toReorderDomain)
-
-    private fun toDomain(d: DrugDto) = Drug(
-        id = d.id,
-        name = d.name,
-        genericName = d.genericName?.takeIf { it.isNotBlank() },
-        type = d.type?.takeIf { it.isNotBlank() },
-        strength = d.strength?.takeIf { it.isNotBlank() },
-        barcode = d.barcode?.takeIf { it.isNotBlank() },
-        sellPrice = d.sellPrice,
-        costPrice = d.costPrice,
-        stock = d.stock,
-        minStock = d.minStock,
-        unit = d.unit?.takeIf { it.isNotBlank() },
-        regNo = d.regNo?.takeIf { it.isNotBlank() },
-        prices = d.prices.orEmpty(),
-        altUnits = d.altUnits.orEmpty().map(::toAltDomain),
-        reportTypes = d.reportTypes.orEmpty(),
-    )
-
-    private fun toAltDomain(a: AltUnitDto) = AltUnit(
-        name = a.name,
-        factor = a.factor,
-        sellPrice = a.sellPrice,
-        prices = a.prices.orEmpty(),
-        barcode = a.barcode?.takeIf { it.isNotBlank() },
-        hidden = a.hidden,
-    )
+        api.reorderSuggestions(param.days, param.lookahead).map { it.toDomain() }
 
     private fun AddDrugParam.toRequest() = DrugInputDto(
         name = name,
@@ -130,30 +99,5 @@ class DrugRepositoryImpl(
         costPrice = costPrice,
         sellPrice = sellPrice,
         quantity = quantity,
-    )
-
-    private fun BulkImportResultDto.toDomain() = BulkImportResult(
-        imported = imported,
-        errors = errors.map { it.toDomain() },
-    )
-
-    private fun BulkImportRowErrorDto.toDomain() = BulkImportRowError(
-        row = row,
-        name = name,
-        message = message,
-    )
-
-    private fun toReorderDomain(d: ReorderSuggestionDto) = ReorderSuggestion(
-        drugId = d.drugId,
-        drugName = d.drugName,
-        unit = d.unit,
-        currentStock = d.currentStock,
-        minStock = d.minStock,
-        qtySold = d.qtySold,
-        avgDailySale = d.avgDailySale,
-        daysLeft = d.daysLeft,
-        suggestedQty = d.suggestedQty,
-        costPrice = d.costPrice,
-        sellPrice = d.sellPrice,
     )
 }
