@@ -31,6 +31,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -53,14 +54,15 @@ fun ImportSupplierPickerDialog(
             }
         }
     }
+    val s = pharmStrings
     PharmModal(
         open = true,
         onDismiss = onDismiss,
-        title = "เลือกผู้จัดจำหน่าย",
+        title = s.importsFormSupplierPickerTitle,
         size = PharmModalSize.Lg,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Ghost,
             )
@@ -70,7 +72,7 @@ fun ImportSupplierPickerDialog(
             PharmTextField(
                 value = query,
                 onValueChange = { query = it },
-                placeholder = "ค้นหาชื่อ / ผู้ติดต่อ / เบอร์โทร",
+                placeholder = s.importsFormSupplierSearchPlaceholder,
                 singleLine = true,
                 imeAction = ImeAction.Search,
                 leadingSlot = {
@@ -92,7 +94,7 @@ fun ImportSupplierPickerDialog(
                         ) {
                             Icon(
                                 PharmIcons.Close,
-                                contentDescription = "ล้าง",
+                                contentDescription = s.bulkImportClearCta,
                                 tint = t.colors.fgMuted,
                                 modifier = Modifier.size(18.dp),
                             )

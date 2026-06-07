@@ -17,6 +17,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun ImportFormHeader(
@@ -24,8 +25,9 @@ internal fun ImportFormHeader(
     callbacks: ImportFormCallbacks,
     onPickSupplier: () -> Unit,
 ) {
+    val s = pharmStrings
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ImportLabeledField(label = "ผู้จัดจำหน่าย", required = true) {
+        ImportLabeledField(label = s.importsFormSupplier, required = true) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -35,13 +37,13 @@ internal fun ImportFormHeader(
                     PharmTextField(
                         value = state.form.supplier,
                         onValueChange = callbacks.onSupplier,
-                        placeholder = "เช่น บริษัท เอ บี ซี ฟาร์มา",
+                        placeholder = s.importsFormSupplierPlaceholder,
                         enabled = !state.readOnly,
                     )
                 }
                 if (!state.readOnly && state.suppliers.isNotEmpty()) {
                     PharmButton(
-                        label = "เลือก",
+                        label = s.commonPick,
                         onClick = onPickSupplier,
                         variant = PharmButtonVariant.Outline,
                         size = PharmButtonSize.Sm,
@@ -54,25 +56,25 @@ internal fun ImportFormHeader(
             val twoCol = maxWidth >= 600.dp
             if (twoCol) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ImportLabeledField(label = "เลขที่ Invoice", modifier = Modifier.weight(1f)) {
+                    ImportLabeledField(label = s.importsHeaderInvoiceNo, modifier = Modifier.weight(1f)) {
                         InvoiceNoField(state, callbacks)
                     }
-                    ImportLabeledField(label = "วันที่รับ", modifier = Modifier.weight(1f)) {
+                    ImportLabeledField(label = s.importsFormReceiveDate, modifier = Modifier.weight(1f)) {
                         ReceiveDateField(state, callbacks)
                     }
                 }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ImportLabeledField(label = "เลขที่ Invoice") {
+                    ImportLabeledField(label = s.importsHeaderInvoiceNo) {
                         InvoiceNoField(state, callbacks)
                     }
-                    ImportLabeledField(label = "วันที่รับ") {
+                    ImportLabeledField(label = s.importsFormReceiveDate) {
                         ReceiveDateField(state, callbacks)
                     }
                 }
             }
         }
-        ImportLabeledField(label = "หมายเหตุ") {
+        ImportLabeledField(label = s.commonNote) {
             Column(modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp, max = 100.dp)) {
                 PharmTextField(
                     value = state.form.notes,
@@ -91,7 +93,7 @@ private fun InvoiceNoField(state: ImportFormUiState, callbacks: ImportFormCallba
     ImportFormField(
         value = state.form.invoiceNo,
         onValueChange = callbacks.onInvoiceNo,
-        placeholder = "ออปชัน",
+        placeholder = pharmStrings.importsFormHeaderOptions,
         enabled = !state.readOnly,
     )
 }

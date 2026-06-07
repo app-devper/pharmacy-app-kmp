@@ -53,8 +53,7 @@ data class ImportFormUiState(
                 )
             }
 
-    val titleLabel: String
-        get() = if (mode is ImportFormMode.Edit) "แก้ไขใบรับสินค้า" else "ใบรับสินค้าใหม่"
+    val isEdit: Boolean get() = mode is ImportFormMode.Edit
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)

@@ -153,7 +153,33 @@ class PharmStringsTablesTest {
         check("stockCountFormFillSystem", PharmStringsTh.stockCountFormFillSystem, PharmStringsEn.stockCountFormFillSystem, mismatches)
         check("stockCountFormConfirmTitle", PharmStringsTh.stockCountFormConfirmTitle, PharmStringsEn.stockCountFormConfirmTitle, mismatches)
         check("stockCountFormConfirmMessage", PharmStringsTh.stockCountFormConfirmMessage, PharmStringsEn.stockCountFormConfirmMessage, mismatches)
+        check("importsTitle", PharmStringsTh.importsTitle, PharmStringsEn.importsTitle, mismatches)
+        check("importsSubtitle", PharmStringsTh.importsSubtitle, PharmStringsEn.importsSubtitle, mismatches)
+        check("importsAddCta", PharmStringsTh.importsAddCta, PharmStringsEn.importsAddCta, mismatches)
+        check("importsListEmpty", PharmStringsTh.importsListEmpty, PharmStringsEn.importsListEmpty, mismatches)
+        check("importsHeaderDocNo", PharmStringsTh.importsHeaderDocNo, PharmStringsEn.importsHeaderDocNo, mismatches)
+        check("importsHeaderSupplier", PharmStringsTh.importsHeaderSupplier, PharmStringsEn.importsHeaderSupplier, mismatches)
+        check("importsStatusDraft", PharmStringsTh.importsStatusDraft, PharmStringsEn.importsStatusDraft, mismatches)
+        check("importsStatusReceived", PharmStringsTh.importsStatusReceived, PharmStringsEn.importsStatusReceived, mismatches)
+        check("importsConfirmReceiveTitle", PharmStringsTh.importsConfirmReceiveTitle, PharmStringsEn.importsConfirmReceiveTitle, mismatches)
+        check("importsNewTitle", PharmStringsTh.importsNewTitle, PharmStringsEn.importsNewTitle, mismatches)
+        check("importsFormEditTitle", PharmStringsTh.importsFormEditTitle, PharmStringsEn.importsFormEditTitle, mismatches)
+        check("commonPick", PharmStringsTh.commonPick, PharmStringsEn.commonPick, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun batch14_lambda_keys_interpolate_values_per_locale() {
+        assertTrue(PharmStringsTh.importsFormItemListTitle(3).contains("3"))
+        assertTrue(PharmStringsEn.importsFormItemListTitle(3).contains("3"))
+        assertTrue(PharmStringsTh.importsFormItemTotal("฿100").contains("฿100"))
+        assertTrue(PharmStringsEn.importsFormItemTotal("฿100").contains("฿100"))
+        assertTrue(PharmStringsTh.importsFormItemLotLine("A1", "2027-06").contains("A1"))
+        assertTrue(PharmStringsEn.importsFormItemLotLine("A1", "2027-06").contains("A1"))
+        assertNotEquals(
+            PharmStringsTh.importsFormItemListTitle(3),
+            PharmStringsEn.importsFormItemListTitle(3),
+        )
     }
 
     @Test
