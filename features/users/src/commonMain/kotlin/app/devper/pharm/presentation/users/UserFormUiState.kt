@@ -27,8 +27,6 @@ data class UserFormUiState(
 
     val isEdit: Boolean get() = mode is UserFormMode.Edit
 
-    val titleLabel: String get() = if (isEdit) "แก้ไขผู้ใช้งาน" else "เพิ่มผู้ใช้งาน"
-
     override val canSubmit: Boolean
         get() {
             if (saving || loading) return false

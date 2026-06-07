@@ -30,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -42,10 +43,11 @@ internal fun UsersListTable(
     modifier: Modifier = Modifier,
     emptySearching: Boolean = false,
 ) {
-    val columns = remember(callbacks, currentUserId, actorRole) {
+    val s = pharmStrings
+    val columns = remember(callbacks, currentUserId, actorRole, s) {
         listOf(
         PharmTableColumn<UmUser>(
-            header = "ชื่อ-นามสกุล",
+            header = s.usersHeaderName,
             weight = 2.2f,
             cell = { user -> UserNameCell(user = user, isSelf = user.id == currentUserId) },
         ),
@@ -55,7 +57,7 @@ internal fun UsersListTable(
             cell = { user -> UserUsernameCell(user) },
         ),
         PharmTableColumn(
-            header = "เบอร์โทร",
+            header = s.commonPhone,
             weight = 1.0f,
             cell = { user -> UserPhoneCell(user) },
         ),
@@ -71,7 +73,7 @@ internal fun UsersListTable(
             },
         ),
         PharmTableColumn(
-            header = "สถานะ",
+            header = s.commonStatus,
             weight = 0.8f,
             cell = { user ->
                 PharmStatusBadge(
@@ -81,7 +83,7 @@ internal fun UsersListTable(
             },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { user ->
@@ -107,12 +109,12 @@ internal fun UsersListTable(
             if (emptySearching) {
                 PharmEmptyState(
                     icon = PharmIcons.Search,
-                    title = "ไม่พบผู้ใช้งานที่ค้นหา",
+                    title = s.usersListNotFound,
                 )
             } else {
                 PharmEmptyState(
                     icon = PharmIcons.Users,
-                    title = "ยังไม่มีผู้ใช้งาน",
+                    title = s.usersListEmpty,
                 )
             }
         },
@@ -122,6 +124,7 @@ internal fun UsersListTable(
 @Composable
 private fun UserNameCell(user: UmUser, isSelf: Boolean) {
     val t = pharmTokens
+    val s = pharmStrings
     androidx.compose.foundation.layout.Row(
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -140,7 +143,7 @@ private fun UserNameCell(user: UmUser, isSelf: Boolean) {
             )
             if (isSelf) {
                 Text(
-                    text = "บัญชีของคุณ",
+                    text = s.usersOwnAccountBadge,
                     style = PharmText.micro.copy(color = t.colors.accent),
                 )
             }
@@ -185,11 +188,12 @@ private fun UsersRowActions(
     isSelf: Boolean,
     callbacks: UsersListCallbacks,
 ) {
+    val s = pharmStrings
     val canManage = actorRole.canManage(target = user.role, isSelf = isSelf)
     val actions = buildList {
         add(
             PharmAction(
-                label = "แก้ไข",
+                label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onEditUser(user) },
@@ -198,21 +202,21 @@ private fun UsersRowActions(
         if (canManage) {
             add(
                 PharmAction(
-                    label = "เปลี่ยน Role",
+                    label = s.usersActionChangeRole,
                     icon = PharmIcons.Person,
                     onClick = { callbacks.onRequestRoleEdit(user) },
                 ),
             )
             add(
                 PharmAction(
-                    label = if (user.status.isActive) "ระงับ" else "เปิดใช้",
+                    label = if (user.status.isActive) s.usersActionSuspend else s.usersActionEnable,
                     icon = PharmIcons.Ban,
                     onClick = { callbacks.onRequestStatusToggle(user) },
                 ),
             )
             add(
                 PharmAction(
-                    label = "ตั้งรหัสผ่าน",
+                    label = s.usersActionSetPassword,
                     icon = PharmIcons.Pencil,
                     tone = PharmActionTone.Success,
                     onClick = { callbacks.onRequestPasswordSet(user) },
@@ -220,7 +224,7 @@ private fun UsersRowActions(
             )
             add(
                 PharmAction(
-                    label = "ลบ",
+                    label = s.commonDelete,
                     icon = PharmIcons.Trash,
                     tone = PharmActionTone.Danger,
                     onClick = { callbacks.onRequestDelete(user) },

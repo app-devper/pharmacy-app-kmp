@@ -21,6 +21,7 @@ import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,10 +33,11 @@ fun UserFormContent(
     callbacks: UserFormCallbacks,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val loadingEmpty = state.loading && state.form.firstName.isBlank()
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.titleLabel,
+            title = if (state.isEdit) s.usersFormEditTitle else s.usersFormAddTitle,
             onBack = callbacks.onBack,
             actions = {
                 PharmSaveAction(
@@ -61,7 +63,7 @@ fun UserFormContent(
                     PharmCircularProgress(color = t.colors.accent)
                 }
             } else {
-                PharmFormCard(title = "ข้อมูลผู้ใช้") {
+                PharmFormCard(title = s.usersFormInfoSection) {
                     FormFields(state = state, callbacks = callbacks)
                 }
             }
@@ -75,17 +77,18 @@ private fun FormFields(
     state: UserFormUiState,
     callbacks: UserFormCallbacks,
 ) {
+    val s = pharmStrings
     val isEdit = state.isEdit
-    FormField(label = "ชื่อ", required = true) {
+    FormField(label = s.profileFirstName, required = true) {
         PharmTextField(value = state.form.firstName, onValueChange = callbacks.onFirstName)
     }
-    FormField(label = "นามสกุล", required = true) {
+    FormField(label = s.profileLastName, required = true) {
         PharmTextField(value = state.form.lastName, onValueChange = callbacks.onLastName)
     }
     FormField(
-        label = "ชื่อผู้ใช้",
+        label = s.usersFormUsername,
         required = !isEdit,
-        hint = if (isEdit) "ไม่สามารถแก้ไขได้" else null,
+        hint = if (isEdit) s.usersCannotEdit else null,
     ) {
         PharmTextField(
             value = state.form.username,
@@ -97,9 +100,9 @@ private fun FormFields(
     if (!isEdit) {
         val pwdError = state.form.password.isNotBlank() && state.form.password.length < 8
         FormField(
-            label = "รหัสผ่าน (≥8 ตัว)",
+            label = s.usersFormPasswordCreate,
             required = true,
-            error = if (pwdError) "รหัสผ่านต้องไม่น้อยกว่า 8 ตัวอักษร" else null,
+            error = if (pwdError) s.usersFormPasswordHint else null,
         ) {
             PharmTextField(
                 value = state.form.password,
@@ -110,14 +113,14 @@ private fun FormFields(
             )
         }
     }
-    FormField(label = "เบอร์โทร") {
+    FormField(label = s.commonPhone) {
         PharmTextField(
             value = state.form.phone,
             onValueChange = callbacks.onPhone,
             keyboardType = KeyboardType.Phone,
         )
     }
-    FormField(label = "อีเมล") {
+    FormField(label = s.profileEmail) {
         PharmTextField(
             value = state.form.email,
             onValueChange = callbacks.onEmail,
