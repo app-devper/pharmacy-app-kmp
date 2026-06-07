@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.print.PharmLabelCard
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -21,6 +22,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 @Composable
 internal fun LabelPreviewPane(size: LabelSize, line: LabelLine?, modifier: Modifier = Modifier) {
     val t = pharmTokens
+    val s = pharmStrings
     if (line == null) return
     Column(
         modifier = modifier
@@ -31,7 +33,7 @@ internal fun LabelPreviewPane(size: LabelSize, line: LabelLine?, modifier: Modif
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = "ตัวอย่าง (${size.label})",
+            text = s.labelsPreviewLabel(size.label),
             style = PharmText.micro.copy(color = t.colors.fg2, fontWeight = FontWeight.SemiBold),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {

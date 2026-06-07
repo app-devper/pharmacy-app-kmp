@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.labels.LabelPrintUiState
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -48,7 +49,7 @@ internal fun LabelDrugPicker(
             PharmTextField(
                 value = state.query,
                 onValueChange = onQueryChange,
-                placeholder = "ค้นหายา (เพิ่มทีละบรรทัด)…",
+                placeholder = pharmStrings.labelsSearchPlaceholder,
             )
         }
         if (state.loading) {

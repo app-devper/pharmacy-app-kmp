@@ -20,6 +20,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -34,6 +35,7 @@ internal fun LabelPrintToolbar(
     onPrint: () -> Unit,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val chips = remember(t) {
         LabelSize.entries.map { PharmFilterChip(id = it.wire, label = it.label) }
     }
@@ -48,7 +50,7 @@ internal fun LabelPrintToolbar(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "ขนาดฉลาก",
+            text = s.labelsSizeLabel,
             style = PharmText.micro.copy(color = t.colors.fg2),
         )
         PharmSingleSelectChips(
@@ -58,14 +60,14 @@ internal fun LabelPrintToolbar(
         )
         Spacer(modifier = Modifier.weight(1f))
         PharmButton(
-            label = "ล้าง",
+            label = s.labelsClear,
             onClick = onClearAll,
             variant = PharmButtonVariant.Ghost,
             size = PharmButtonSize.Sm,
             enabled = !printing,
         )
         PharmButton(
-            label = if (printing) "กำลังพิมพ์…" else "พิมพ์ $totalCopies ดวง",
+            label = if (printing) s.labelsPrinting else s.labelsPrintCount(totalCopies),
             onClick = onPrint,
             variant = PharmButtonVariant.Primary,
             size = PharmButtonSize.Sm,

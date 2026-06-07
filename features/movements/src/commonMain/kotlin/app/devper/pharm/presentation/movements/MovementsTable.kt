@@ -28,6 +28,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -38,37 +39,38 @@ internal fun MovementsTable(
     modifier: Modifier = Modifier,
 ) {
     val rows = state.pageItems
-    val columns = remember {
+    val s = pharmStrings
+    val columns = remember(s) {
         listOf(
             PharmTableColumn<StockMovement>(
-                header = "เวลา",
+                header = s.salesHistoryHeaderTime,
                 weight = 1.2f,
                 cell = { m -> TimeCell(m) },
             ),
             PharmTableColumn(
-                header = "ประเภท",
+                header = s.movementsHeaderType,
                 weight = 1.2f,
                 cell = { m -> TypeCell(m) },
             ),
             PharmTableColumn(
-                header = "ชื่อยา",
+                header = s.expiryHeaderDrugName,
                 weight = 2.0f,
                 compactTitle = true,
                 cell = { m -> DrugCell(m) },
             ),
             PharmTableColumn(
-                header = "จำนวน",
+                header = s.commonQty,
                 weight = 0.9f,
                 align = PharmColumnAlign.End,
                 cell = { m -> QtyCell(m) },
             ),
             PharmTableColumn(
-                header = "อ้างอิง",
+                header = s.movementsHeaderRef,
                 weight = 1.4f,
                 cell = { m -> ReferenceCell(m) },
             ),
             PharmTableColumn(
-                header = "โดย",
+                header = s.movementsHeaderBy,
                 weight = 1.0f,
                 cell = { m -> UserCell(m) },
             ),
@@ -84,7 +86,7 @@ internal fun MovementsTable(
         emptyContent = {
             PharmEmptyState(
                 icon = PharmIcons.Movements,
-                title = "ไม่มีรายการในช่วงเวลานี้",
+                title = s.movementsEmpty,
             )
         },
         bottomRow = {
@@ -211,6 +213,7 @@ private fun MovementsPaginationRow(
     callbacks: MovementsCallbacks,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val shown = state.pageItems.size
     val total = state.items.size
     val hasPrev = state.page > 1
@@ -224,7 +227,7 @@ private fun MovementsPaginationRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "แสดง $shown จาก $total รายการ",
+            text = s.movementsShownOf(shown, total),
             style = PharmText.micro.copy(color = t.colors.fg3),
         )
         Row(
@@ -233,19 +236,19 @@ private fun MovementsPaginationRow(
         ) {
             Box(modifier = Modifier.padding(end = 4.dp)) {
                 Text(
-                    text = "หน้า ${state.page} / ${state.pageCount}",
+                    text = s.movementsPagination(state.page, state.pageCount),
                     style = PharmText.micro.copy(color = t.colors.fg3),
                 )
             }
             PharmButton(
-                label = "‹ ก่อนหน้า",
+                label = s.movementsPrevPage,
                 onClick = callbacks.onPrevPage,
                 size = PharmButtonSize.Sm,
                 variant = PharmButtonVariant.Outline,
                 enabled = hasPrev,
             )
             PharmButton(
-                label = "ถัดไป ›",
+                label = s.movementsNextPage,
                 onClick = callbacks.onNextPage,
                 size = PharmButtonSize.Sm,
                 variant = PharmButtonVariant.Outline,

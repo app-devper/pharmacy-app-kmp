@@ -20,6 +20,7 @@ import app.devper.pharm.presentation.labels.components.LabelPreviewPane
 import app.devper.pharm.presentation.labels.components.LabelPrintToolbar
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,7 @@ fun LabelPrintContent(
     callbacks: LabelPrintCallbacks = LabelPrintCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Column(
         modifier = Modifier
@@ -37,8 +39,8 @@ fun LabelPrintContent(
             .background(t.colors.bgPage),
     ) {
         PharmListToolbar(
-            title = "พิมพ์ฉลาก",
-            subtitle = "ออกแบบและพิมพ์ฉลากยา",
+            title = s.navLabelPrint,
+            subtitle = s.labelsSubtitle,
         )
         BoxWithConstraints(
             modifier = Modifier
@@ -85,7 +87,7 @@ fun LabelPrintContent(
     }
 
     if (state.message != null) {
-        ErrorBottomSheet(message = state.message, onDismiss = callbacks.onDismissMessage, title = "พิมพ์สำเร็จ")
+        ErrorBottomSheet(message = state.message, onDismiss = callbacks.onDismissMessage, title = s.labelsPrintSuccess)
     }
     if (state.error != null) {
         ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)

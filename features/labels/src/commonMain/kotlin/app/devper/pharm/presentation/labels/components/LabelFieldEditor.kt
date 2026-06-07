@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -59,14 +60,14 @@ internal fun LabelFieldEditor(
                 .padding(horizontal = 16.dp, vertical = 10.dp),
         ) {
             Text(
-                text = "รายการฉลาก (${lines.size} บรรทัด)",
+                text = pharmStrings.labelsListTitle(lines.size),
                 style = PharmText.micro.copy(color = t.colors.fg2, fontWeight = FontWeight.SemiBold),
             )
         }
         if (lines.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "ยังไม่มีรายการ เลือกยาทางซ้ายเพื่อเพิ่ม",
+                    text = pharmStrings.labelsEmpty,
                     style = PharmText.body.copy(color = t.colors.fg3),
                 )
             }
@@ -139,6 +140,7 @@ private fun LabelLineRow(
 @Composable
 private fun NameBlock(line: LabelLine, modifier: Modifier = Modifier) {
     val t = pharmTokens
+    val s = pharmStrings
     Column(modifier = modifier) {
         Text(
             text = line.drugName,
@@ -146,7 +148,7 @@ private fun NameBlock(line: LabelLine, modifier: Modifier = Modifier) {
             maxLines = 1,
         )
         Text(
-            text = "ล็อต: ${line.lotNumber.ifBlank { "(ไม่ระบุ)" }}",
+            text = "${s.labelsLotPrefix}: ${line.lotNumber.ifBlank { s.labelsLotUnspecified }}",
             style = PharmText.micro.copy(color = t.colors.fg3),
         )
     }
@@ -178,7 +180,7 @@ private fun CopiesField(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
-            text = "จำนวน",
+            text = pharmStrings.commonQty,
             style = PharmText.micro.copy(color = t.colors.fg2),
         )
         PharmTextField(
@@ -228,7 +230,7 @@ private fun IncludePriceToggle(
             }
         }
         Text(
-            text = "รวมราคา",
+            text = pharmStrings.labelsTotalPrice,
             style = PharmText.micro.copy(color = t.colors.fg2),
         )
     }
@@ -237,20 +239,21 @@ private fun IncludePriceToggle(
 @Composable
 private fun RemoveButton(onRemove: () -> Unit) {
     val t = pharmTokens
+    val s = pharmStrings
     Box(
         modifier = Modifier
             .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
             .clip(t.shapes.sm)
             .clickable(role = Role.Button, onClick = onRemove)
             .semantics {
-                contentDescription = "ลบบรรทัด"
+                contentDescription = s.labelsRemoveLine
                 role = Role.Button
             },
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = PharmIcons.Trash,
-            contentDescription = "ลบบรรทัด",
+            contentDescription = s.labelsRemoveLine,
             tint = t.colors.fg3,
             modifier = Modifier.size(18.dp),
         )

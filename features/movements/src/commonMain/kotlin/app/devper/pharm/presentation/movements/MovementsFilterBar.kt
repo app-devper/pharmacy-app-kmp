@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -27,18 +28,19 @@ internal fun MovementsListToolbar(
     callbacks: MovementsCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     val range = PharmDateRange(
         fromMillis = state.dateRange.fromMillis,
         toMillis = state.dateRange.toMillis,
     )
 
     PharmListToolbar(
-        title = "ความเคลื่อนไหวสต็อก",
-        subtitle = "ประวัติการเข้า-ออกของสต็อก",
+        title = s.navMovements,
+        subtitle = s.movementsSubtitle,
         modifier = modifier,
         searchValue = state.drugName,
         onSearchChange = callbacks.onSearchChange,
-        searchPlaceholder = "ค้นหาชื่อยา…",
+        searchPlaceholder = s.movementsSearchPlaceholder,
         filters = {
             MovementsTypeChips(
                 activeIds = state.activeTypeIds,
@@ -61,7 +63,7 @@ internal fun MovementsListToolbar(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 PharmButton(
-                    label = "ค้นหา",
+                    label = s.commonSearch,
                     onClick = callbacks.onApplyFilter,
                     size = PharmButtonSize.Sm,
                 )
