@@ -25,6 +25,21 @@ class DateConvTest {
     }
 
     @Test
+    fun parseLocalDateOrNull_handles_datetime_string_from_backend() {
+        assertEquals(LocalDate(2027, 6, 30), "2027-06-30T00:00:00Z".parseLocalDateOrNull())
+    }
+
+    @Test
+    fun parseLocalDateOrNull_handles_datetime_string_with_offset() {
+        assertEquals(LocalDate(2027, 6, 30), "2027-06-30T18:00:00+07:00".parseLocalDateOrNull())
+    }
+
+    @Test
+    fun parseLocalDateOrNull_handles_datetime_string_with_fractional_seconds() {
+        assertEquals(LocalDate(2027, 6, 30), "2027-06-30T12:34:56.789Z".parseLocalDateOrNull())
+    }
+
+    @Test
     fun parseLocalDateOrNull_returns_null_for_malformed() {
         assertNull("07/06/2026".parseLocalDateOrNull())
         assertNull("not-a-date".parseLocalDateOrNull())

@@ -76,6 +76,11 @@ class BuddhistEraTest {
     }
 
     @Test
+    fun isoDateToBuddhist_accepts_datetime_string_and_keeps_date_part() {
+        assertEquals("30/06/2570", isoDateToBuddhist("2027-06-30T00:00:00Z"))
+    }
+
+    @Test
     fun isoDateTimeToBuddhist_naked_datetime_assumed_already_bangkok_local() {
         assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00"))
     }
