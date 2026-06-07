@@ -119,4 +119,14 @@ class DateFormatTest {
     fun isoDateTimeToBuddhist_returns_blank_for_blank() {
         assertEquals("", isoDateTimeToBuddhist(""))
     }
+
+    @Test
+    fun toLocalDateOrNull_handles_datetime_string_from_backend() {
+        assertEquals(kotlinx.datetime.LocalDate(2027, 6, 30), "2027-06-30T00:00:00Z".toLocalDateOrNull())
+    }
+
+    @Test
+    fun isoDateToBuddhist_handles_datetime_string_from_backend() {
+        assertEquals("30/06/2570", isoDateToBuddhist("2027-06-30T00:00:00Z"))
+    }
 }

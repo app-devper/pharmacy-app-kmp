@@ -12,6 +12,7 @@ private val BANGKOK = TimeZone.of("Asia/Bangkok")
 fun String?.parseLocalDateOrNull(): LocalDate? {
     if (this.isNullOrBlank()) return null
     return runCatching { LocalDate.parse(this) }.getOrNull()
+        ?: runCatching { LocalDate.parse(this.take(10)) }.getOrNull()
 }
 
 fun String.parseLocalDateOrEpoch(): LocalDate =

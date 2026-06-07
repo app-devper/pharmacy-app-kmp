@@ -62,7 +62,9 @@ fun todayBuddhistDisplay(tz: TimeZone = DEFAULT_ZONE): String =
 
 fun isoDateToBuddhist(s: String): String {
     if (s.isBlank()) return ""
-    val date = runCatching { LocalDate.parse(s) }.getOrNull() ?: return s
+    val date = runCatching { LocalDate.parse(s) }.getOrNull()
+        ?: runCatching { LocalDate.parse(s.take(10)) }.getOrNull()
+        ?: return s
     return toBuddhistEraDisplay(date)
 }
 
@@ -94,6 +96,7 @@ fun LocalDate.toIsoYmd(): String = toString()
 fun String.toLocalDateOrNull(): LocalDate? {
     if (isBlank()) return null
     return runCatching { LocalDate.parse(this) }.getOrNull()
+        ?: runCatching { LocalDate.parse(this.take(10)) }.getOrNull()
 }
 
 fun LocalDate.formatBuddhist(): String = toBuddhistEraDisplay(this)
