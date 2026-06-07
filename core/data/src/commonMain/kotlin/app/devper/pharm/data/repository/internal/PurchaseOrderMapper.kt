@@ -1,5 +1,7 @@
 package app.devper.pharm.data.repository.internal
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.data.internal.parseLocalDateOrNull
 import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
 import app.devper.pharm.data.internal.toIso
@@ -24,7 +26,7 @@ internal fun PurchaseOrderDto.toDomain(): PurchaseOrder = PurchaseOrder(
     receiveDate = receiveDate.parseLocalDateOrNull(),
     items = items.map { it.toDomain() },
     itemCount = itemCount,
-    totalCost = totalCost,
+    totalCost = Money(totalCost),
     status = PurchaseOrderStatus.fromWire(status),
     notes = notes,
     createdAt = createdAt.parseLocalDateTimeOrNull(),
@@ -38,7 +40,7 @@ internal fun PurchaseOrderSummaryDto.toDomain(): PurchaseOrderSummary = Purchase
     invoiceNo = invoiceNo,
     receiveDate = receiveDate.parseLocalDateOrNull(),
     itemCount = itemCount,
-    totalCost = totalCost,
+    totalCost = Money(totalCost),
     status = PurchaseOrderStatus.fromWire(status),
     notes = notes,
     createdAt = createdAt.parseLocalDateTimeOrNull(),
@@ -50,9 +52,9 @@ internal fun PurchaseOrderItemDto.toDomain(): PurchaseOrderItem = PurchaseOrderI
     drugName = drugName,
     lotNumber = lotNumber,
     expiryDate = expiryDate.parseLocalDateOrNull(),
-    qty = qty,
-    costPrice = costPrice,
-    sellPrice = sellPrice,
+    qty = Quantity(qty),
+    costPrice = Money(costPrice),
+    sellPrice = sellPrice?.let(::Money),
 )
 
 internal fun AddPurchaseOrderParam.toDto(): PurchaseOrderInputDto = PurchaseOrderInputDto(
@@ -76,7 +78,7 @@ internal fun PurchaseOrderItemInput.toDto(): PurchaseOrderItemInputDto = Purchas
     drugName = drugName.trim(),
     lotNumber = lotNumber.trim(),
     expiryDate = expiryDate.toIso(),
-    qty = qty,
-    costPrice = costPrice,
-    sellPrice = sellPrice,
+    qty = qty.value,
+    costPrice = costPrice.amount,
+    sellPrice = sellPrice?.amount,
 )

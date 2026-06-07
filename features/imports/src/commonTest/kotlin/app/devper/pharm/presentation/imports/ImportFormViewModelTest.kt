@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.PurchaseOrder
@@ -29,8 +32,8 @@ class ImportFormViewModelTest {
     private fun drug(
         id: String = "d1",
         name: String = "Paracetamol",
-        sellPrice: Double = 5.0,
-        costPrice: Double = 2.0,
+        sellPrice: Money = Money(5.0),
+        costPrice: Money = Money(2.0),
     ) = Drug(
         id = id,
         name = name,
@@ -40,8 +43,8 @@ class ImportFormViewModelTest {
         barcode = null,
         sellPrice = sellPrice,
         costPrice = costPrice,
-        stock = 0,
-        minStock = 0,
+        stock = Quantity(0),
+        minStock = Quantity(0),
         unit = "เม็ด",
         regNo = null,
     )
@@ -62,13 +65,13 @@ class ImportFormViewModelTest {
                 drugName = "Paracetamol",
                 lotNumber = "L-1",
                 expiryDate = kotlinx.datetime.LocalDate.parse("2027-12-31"),
-                qty = 100,
-                costPrice = 2.0,
-                sellPrice = 5.0,
+                qty = Quantity(100),
+                costPrice = Money(2.0),
+                sellPrice = Money(5.0),
             ),
         ),
         itemCount = 1,
-        totalCost = 200.0,
+        totalCost = Money(200.0),
         status = status,
         notes = "",
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-01T00:00:00"),
@@ -176,7 +179,7 @@ class ImportFormViewModelTest {
         vm.init(ImportFormMode.Add)
         advanceUntilIdle()
         vm.addLine()
-        vm.onLineDrug(0, drug(sellPrice = 7.0, costPrice = 3.5))
+        vm.onLineDrug(0, drug(sellPrice = Money(7.0), costPrice = Money(3.5)))
         val line = vm.state.value.form.items[0]
         assertEquals("d1", line.drugId)
         assertEquals("Paracetamol", line.drugName)
@@ -192,7 +195,7 @@ class ImportFormViewModelTest {
         vm.addLine()
         vm.onLineCost(0, "9.99")
         vm.onLineSell(0, "12")
-        vm.onLineDrug(0, drug(costPrice = 3.5, sellPrice = 7.0))
+        vm.onLineDrug(0, drug(costPrice = Money(3.5), sellPrice = Money(7.0)))
         val line = vm.state.value.form.items[0]
         assertEquals("9.99", line.costPrice)
         assertEquals("12", line.sellPrice)
@@ -256,8 +259,8 @@ class ImportFormViewModelTest {
         assertEquals("ACME", p.supplier)
         assertEquals("INV-001", p.invoiceNo)
         assertEquals(1, p.items.size)
-        assertEquals(50, p.items[0].qty)
-        assertEquals(2.50, p.items[0].costPrice)
+        assertEquals(Quantity(50), p.items[0].qty)
+        assertEquals(Money(2.50), p.items[0].costPrice)
         assertTrue(vm.state.value.saved)
     }
 

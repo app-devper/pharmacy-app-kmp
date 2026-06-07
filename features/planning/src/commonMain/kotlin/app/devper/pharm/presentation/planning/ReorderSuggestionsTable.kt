@@ -101,13 +101,13 @@ private fun SuggestionNameCell(row: ReorderSuggestion) {
 @Composable
 private fun SuggestionStockCell(row: ReorderSuggestion) {
     val t = pharmTokens
-    val isOut = row.currentStock <= 0
+    val isOut = !row.currentStock.isPositive
     Column(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         horizontalAlignment = androidx.compose.ui.Alignment.End,
     ) {
         Text(
-            text = "${row.currentStock} ${row.unit}",
+            text = "${row.currentStock.value} ${row.unit}",
             style = PharmText.bodySm.copy(
                 fontWeight = FontWeight.SemiBold,
                 color = if (isOut) t.colors.dangerFg else t.colors.fg1,
@@ -125,7 +125,7 @@ private fun SuggestionStockCell(row: ReorderSuggestion) {
 private fun SuggestionSuggestedQtyCell(row: ReorderSuggestion) {
     val t = pharmTokens
     Text(
-        text = "+${row.suggestedQty} ${row.unit}",
+        text = "+${row.suggestedQty.value} ${row.unit}",
         style = PharmText.bodySm.copy(fontWeight = FontWeight.Bold, color = t.colors.accent).tabular(),
         maxLines = 1,
     )
@@ -134,12 +134,12 @@ private fun SuggestionSuggestedQtyCell(row: ReorderSuggestion) {
 @Composable
 private fun SuggestionCostCell(row: ReorderSuggestion) {
     val t = pharmTokens
-    val estimate = row.suggestedQty * row.costPrice
-    if (row.costPrice <= 0.0) {
+    val estimate = row.costPrice * row.suggestedQty.value
+    if (!row.costPrice.isPositive) {
         Text(text = "—", style = PharmText.bodySm.copy(color = t.colors.fgMuted))
     } else {
         Text(
-            text = fmtBaht(estimate),
+            text = fmtBaht(estimate.amount),
             style = PharmText.bodySm.copy(color = t.colors.fg2).tabular(),
             maxLines = 1,
         )

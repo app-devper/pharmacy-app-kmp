@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -181,7 +184,7 @@ private fun HeaderBlock(po: PurchaseOrder) {
         ) {
             StatusChip(po.status)
             Text(
-                text = "รวม ${formatBahtCurrency(po.totalCost)}",
+                text = "รวม ${formatBahtCurrency(po.totalCost.amount)}",
                 style = PharmText.h2.tabular(),
             )
         }
@@ -252,7 +255,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
                 style = PharmText.h3.tabular(),
             )
             Text(
-                text = "@${formatBaht(item.costPrice)}",
+                text = "@${formatBaht(item.costPrice.amount)}",
                 style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
             )
         }
@@ -313,17 +316,17 @@ private val previewItems = listOf(
         drugName = "พาราเซตามอล 500mg",
         lotNumber = "A12345",
         expiryDate = kotlinx.datetime.LocalDate.parse("2027-06-30"),
-        qty = 100,
-        costPrice = 1.25,
-        sellPrice = 2.0,
+        qty = Quantity(100),
+        costPrice = Money(1.25),
+        sellPrice = Money(2.0),
     ),
     PurchaseOrderItem(
         drugId = "d2",
         drugName = "อะม็อกซีซิลลิน 250mg",
         lotNumber = "B67890",
         expiryDate = kotlinx.datetime.LocalDate.parse("2026-12-31"),
-        qty = 50,
-        costPrice = 3.5,
+        qty = Quantity(50),
+        costPrice = Money(3.5),
         sellPrice = null,
     ),
 )
@@ -336,7 +339,7 @@ private fun previewPo(status: PurchaseOrderStatus) = PurchaseOrder(
     receiveDate = kotlinx.datetime.LocalDate.parse("2026-06-05"),
     items = previewItems,
     itemCount = previewItems.size,
-    totalCost = 300.0,
+    totalCost = Money(300.0),
     status = status,
     notes = "รับของครบ",
     createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-05T09:30:00"),

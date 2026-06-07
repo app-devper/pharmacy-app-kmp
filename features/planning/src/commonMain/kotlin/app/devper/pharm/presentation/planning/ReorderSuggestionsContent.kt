@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.planning
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -82,40 +85,40 @@ private val sampleSuggestions = listOf(
         drugId = "1",
         drugName = "Paracetamol 500 mg",
         unit = "เม็ด",
-        currentStock = 0,
-        minStock = 50,
-        qtySold = 320,
+        currentStock = Quantity(0),
+        minStock = Quantity(50),
+        qtySold = Quantity(320),
         avgDailySale = 10.6,
         daysLeft = 0.0,
-        suggestedQty = 200,
-        costPrice = 1.20,
-        sellPrice = 2.0,
+        suggestedQty = Quantity(200),
+        costPrice = Money(1.20),
+        sellPrice = Money(2.0),
     ),
     ReorderSuggestion(
         drugId = "2",
         drugName = "Amoxicillin 250 mg",
         unit = "แคปซูล",
-        currentStock = 18,
-        minStock = 40,
-        qtySold = 95,
+        currentStock = Quantity(18),
+        minStock = Quantity(40),
+        qtySold = Quantity(95),
         avgDailySale = 3.2,
         daysLeft = 5.6,
-        suggestedQty = 100,
-        costPrice = 2.50,
-        sellPrice = 5.0,
+        suggestedQty = Quantity(100),
+        costPrice = Money(2.50),
+        sellPrice = Money(5.0),
     ),
     ReorderSuggestion(
         drugId = "3",
         drugName = "Cetirizine 10 mg",
         unit = "เม็ด",
-        currentStock = 25,
-        minStock = 30,
-        qtySold = 60,
+        currentStock = Quantity(25),
+        minStock = Quantity(30),
+        qtySold = Quantity(60),
         avgDailySale = 2.0,
         daysLeft = 12.5,
-        suggestedQty = 60,
-        costPrice = 0.80,
-        sellPrice = 1.5,
+        suggestedQty = Quantity(60),
+        costPrice = Money(0.80),
+        sellPrice = Money(1.5),
     ),
 )
 

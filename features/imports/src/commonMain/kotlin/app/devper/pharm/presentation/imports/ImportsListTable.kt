@@ -173,7 +173,7 @@ private fun ItemCountCell(row: PurchaseOrderSummary) {
 private fun TotalCell(row: PurchaseOrderSummary) {
     val t = pharmTokens
     Text(
-        text = fmtBaht(row.totalCost),
+        text = fmtBaht(row.totalCost.amount),
         style = PharmText.bodySm.copy(
             color = t.colors.fg1,
             fontWeight = FontWeight.SemiBold,

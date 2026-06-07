@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.param
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import kotlinx.datetime.LocalDate
 
 data class AddLotParam(
@@ -7,9 +9,9 @@ data class AddLotParam(
     val lotNumber: String,
     val expiryDate: LocalDate,
     val importDate: LocalDate? = null,
-    val costPrice: Double? = null,
-    val sellPrice: Double? = null,
-    val quantity: Int,
+    val costPrice: Money? = null,
+    val sellPrice: Money? = null,
+    val quantity: Quantity,
 )
 
 data class DeleteLotParam(

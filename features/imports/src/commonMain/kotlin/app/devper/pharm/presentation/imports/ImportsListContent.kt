@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -169,7 +172,7 @@ private val sampleOrders = listOf(
         invoiceNo = "INV-26050-014",
         receiveDate = kotlinx.datetime.LocalDate.parse("2026-05-16"),
         itemCount = 8,
-        totalCost = 32400.0,
+        totalCost = Money(32400.0),
         status = PurchaseOrderStatus.Confirmed,
         notes = "",
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-16T09:00:00"),
@@ -182,7 +185,7 @@ private val sampleOrders = listOf(
         invoiceNo = "INV-26050-072",
         receiveDate = kotlinx.datetime.LocalDate.parse("2026-05-16"),
         itemCount = 3,
-        totalCost = 5400.0,
+        totalCost = Money(5400.0),
         status = PurchaseOrderStatus.Confirmed,
         notes = "",
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-16T11:00:00"),
@@ -195,7 +198,7 @@ private val sampleOrders = listOf(
         invoiceNo = "INV-26050-027",
         receiveDate = kotlinx.datetime.LocalDate.parse("2026-05-14"),
         itemCount = 5,
-        totalCost = 19800.0,
+        totalCost = Money(19800.0),
         status = PurchaseOrderStatus.Confirmed,
         notes = "",
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T09:00:00"),
@@ -208,7 +211,7 @@ private val sampleOrders = listOf(
         invoiceNo = "INV-26050-041",
         receiveDate = kotlinx.datetime.LocalDate.parse("2026-05-13"),
         itemCount = 12,
-        totalCost = 48700.0,
+        totalCost = Money(48700.0),
         status = PurchaseOrderStatus.Draft,
         notes = "",
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-13T09:00:00"),
@@ -221,7 +224,7 @@ private val sampleOrders = listOf(
         invoiceNo = "INV-26050-008",
         receiveDate = kotlinx.datetime.LocalDate.parse("2026-05-10"),
         itemCount = 4,
-        totalCost = 9360.0,
+        totalCost = Money(9360.0),
         status = PurchaseOrderStatus.Confirmed,
         notes = "",
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-10T09:00:00"),

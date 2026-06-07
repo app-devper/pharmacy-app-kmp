@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.param
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import kotlinx.datetime.LocalDate
 
 data class AddPurchaseOrderParam(
@@ -24,7 +26,7 @@ data class PurchaseOrderItemInput(
     val drugName: String = "",
     val lotNumber: String,
     val expiryDate: LocalDate,
-    val qty: Int,
-    val costPrice: Double,
-    val sellPrice: Double? = null,
+    val qty: Quantity,
+    val costPrice: Money,
+    val sellPrice: Money? = null,
 )

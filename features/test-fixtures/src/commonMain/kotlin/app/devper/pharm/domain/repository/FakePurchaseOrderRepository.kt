@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderItem
 import app.devper.pharm.domain.model.PurchaseOrderStatus
@@ -79,7 +80,7 @@ class FakePurchaseOrderRepository(
             )
         },
         itemCount = items.size,
-        totalCost = items.sumOf { it.costPrice * it.qty },
+        totalCost = items.fold(Money.Zero) { acc, item -> acc + item.costPrice * item.qty.value },
         status = PurchaseOrderStatus.Draft,
         notes = notes,
         createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T10:00:00"),

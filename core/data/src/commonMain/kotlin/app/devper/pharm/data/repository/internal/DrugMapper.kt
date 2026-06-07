@@ -62,14 +62,14 @@ internal fun ReorderSuggestionDto.toDomain(): ReorderSuggestion = ReorderSuggest
     drugId = drugId,
     drugName = drugName,
     unit = unit,
-    currentStock = currentStock,
-    minStock = minStock,
-    qtySold = qtySold,
+    currentStock = Quantity(currentStock),
+    minStock = Quantity(minStock),
+    qtySold = Quantity(qtySold),
     avgDailySale = avgDailySale,
     daysLeft = daysLeft,
-    suggestedQty = suggestedQty,
-    costPrice = costPrice,
-    sellPrice = sellPrice,
+    suggestedQty = Quantity(suggestedQty),
+    costPrice = Money(costPrice),
+    sellPrice = Money(sellPrice),
 )
 
 internal fun AddDrugParam.toRequest(): DrugInputDto = DrugInputDto(

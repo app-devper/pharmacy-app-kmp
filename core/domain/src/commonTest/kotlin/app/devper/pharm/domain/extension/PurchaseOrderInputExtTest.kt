@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -23,9 +26,9 @@ class PurchaseOrderInputExtTest {
         assertEquals("Paracetamol", r.drugName)
         assertEquals("LOT-1", r.lotNumber)
         assertEquals(kotlinx.datetime.LocalDate.parse("2027-01-01"), r.expiryDate)
-        assertEquals(10, r.qty)
-        assertEquals(1.5, r.costPrice)
-        assertEquals(2.0, r.sellPrice)
+        assertEquals(Quantity(10), r.qty)
+        assertEquals(Money(1.5), r.costPrice)
+        assertEquals(Money(2.0), r.sellPrice)
     }
 
     @Test
@@ -43,7 +46,7 @@ class PurchaseOrderInputExtTest {
             drugId = "d1", drugName = "x", lotNumber = "L", expiryDate = "2027-01-01",
             qty = "1", costPrice = "", sellPrice = "",
         ).getOrThrow()
-        assertEquals(0.0, r.costPrice)
+        assertEquals(Money.Zero, r.costPrice)
     }
 
     @Test
