@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.param.AddDrugParam
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class BulkImportUiState(
     val text: String = "",
@@ -12,9 +12,12 @@ data class BulkImportUiState(
     val submitting: Boolean = false,
     val result: BulkImportResult? = null,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<BulkImportUiState> {
 
     override val loading: Boolean get() = submitting
+
+    override fun withLoading(value: Boolean) = copy(submitting = value)
+    override fun withError(value: String?) = copy(error = value)
 
     val canSubmit: Boolean get() = !submitting && text.isNotBlank()
 
