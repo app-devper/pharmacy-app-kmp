@@ -1,7 +1,7 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.AuthApi
-import app.devper.pharm.data.remote.dto.LoginRequest
+import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.User
@@ -45,10 +45,4 @@ class AuthRepositoryImpl(
             tokenStorage.clear()
         }
     }
-
-    private fun LoginParam.toRequest() = LoginRequest(
-        username = username,
-        password = password,
-        system = system,
-    )
 }

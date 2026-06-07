@@ -4,6 +4,7 @@ import app.devper.pharm.data.remote.dto.KySettingsDto
 import app.devper.pharm.data.remote.dto.PharmacistInfoDto
 import app.devper.pharm.data.remote.dto.ReceiptSettingsDto
 import app.devper.pharm.data.remote.dto.SettingsDto
+import app.devper.pharm.data.remote.dto.SettingsInputDto
 import app.devper.pharm.data.remote.dto.StockSettingsDto
 import app.devper.pharm.data.remote.dto.StoreInfoDto
 import app.devper.pharm.domain.model.KySettings
@@ -12,6 +13,7 @@ import app.devper.pharm.domain.model.ReceiptSettings
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StockSettings
 import app.devper.pharm.domain.model.StoreInfo
+import app.devper.pharm.domain.param.UpdateSettingsParam
 
 internal fun SettingsDto.toDomain(): Settings = Settings(
     store = store.toDomain(),
@@ -43,4 +45,34 @@ internal fun PharmacistInfoDto.toDomain(): PharmacistInfo = PharmacistInfo(
 
 internal fun KySettingsDto.toDomain(): KySettings = KySettings(
     skipAuto = skipAuto, defaultBuyerAddress = defaultBuyerAddress,
+)
+
+internal fun UpdateSettingsParam.toDto(): SettingsInputDto = SettingsInputDto(
+    store = StoreInfoDto(
+        name = store.name,
+        address = store.address,
+        phone = store.phone,
+        taxId = store.taxId,
+    ),
+    receipt = ReceiptSettingsDto(
+        header = receipt.header,
+        footer = receipt.footer,
+        paperWidth = receipt.paperWidth,
+        showPharmacist = receipt.showPharmacist,
+    ),
+    stock = StockSettingsDto(
+        lowStockThreshold = stock.lowStockThreshold,
+        reorderDays = stock.reorderDays,
+        reorderLookahead = stock.reorderLookahead,
+        expiringDays = stock.expiringDays,
+    ),
+    pharmacist = PharmacistInfoDto(
+        name = pharmacist.name,
+        licenseNo = pharmacist.licenseNo,
+    ),
+    ky = KySettingsDto(
+        skipAuto = ky.skipAuto,
+        defaultBuyerAddress = ky.defaultBuyerAddress,
+    ),
+    timezone = timezone,
 )

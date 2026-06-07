@@ -1,8 +1,8 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.CustomerApi
-import app.devper.pharm.data.remote.dto.CustomerInputDto
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.param.AddCustomerParam
@@ -21,18 +21,4 @@ class CustomerRepositoryImpl(private val api: CustomerApi) : CustomerRepository 
 
     override suspend fun getCustomerSales(customerId: String): List<SaleSummary> =
         api.getSales(customerId).map { it.toDomain() }
-
-    private fun AddCustomerParam.toDto() = CustomerInputDto(
-        name = name.trim(),
-        phone = phone.trim(),
-        disease = allergyNote.trim(),
-        priceTier = priceTier.trim(),
-    )
-
-    private fun UpdateCustomerParam.toDto() = CustomerInputDto(
-        name = name.trim(),
-        phone = phone.trim(),
-        disease = allergyNote.trim(),
-        priceTier = priceTier.trim(),
-    )
 }

@@ -2,13 +2,19 @@ package app.devper.pharm.data.repository.internal
 
 import app.devper.pharm.data.internal.parseLocalDateOrNull
 import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.dto.PurchaseOrderDto
+import app.devper.pharm.data.remote.dto.PurchaseOrderInputDto
 import app.devper.pharm.data.remote.dto.PurchaseOrderItemDto
+import app.devper.pharm.data.remote.dto.PurchaseOrderItemInputDto
 import app.devper.pharm.data.remote.dto.PurchaseOrderSummaryDto
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderItem
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
+import app.devper.pharm.domain.param.AddPurchaseOrderParam
+import app.devper.pharm.domain.param.PurchaseOrderItemInput
+import app.devper.pharm.domain.param.UpdatePurchaseOrderParam
 
 internal fun PurchaseOrderDto.toDomain(): PurchaseOrder = PurchaseOrder(
     id = id,
@@ -44,6 +50,32 @@ internal fun PurchaseOrderItemDto.toDomain(): PurchaseOrderItem = PurchaseOrderI
     drugName = drugName,
     lotNumber = lotNumber,
     expiryDate = expiryDate.parseLocalDateOrNull(),
+    qty = qty,
+    costPrice = costPrice,
+    sellPrice = sellPrice,
+)
+
+internal fun AddPurchaseOrderParam.toDto(): PurchaseOrderInputDto = PurchaseOrderInputDto(
+    supplier = supplier.trim(),
+    invoiceNo = invoiceNo.trim(),
+    receiveDate = receiveDate?.toIso() ?: "",
+    notes = notes.trim(),
+    items = items.map { it.toDto() },
+)
+
+internal fun UpdatePurchaseOrderParam.toDto(): PurchaseOrderInputDto = PurchaseOrderInputDto(
+    supplier = supplier.trim(),
+    invoiceNo = invoiceNo.trim(),
+    receiveDate = receiveDate?.toIso() ?: "",
+    notes = notes.trim(),
+    items = items.map { it.toDto() },
+)
+
+internal fun PurchaseOrderItemInput.toDto(): PurchaseOrderItemInputDto = PurchaseOrderItemInputDto(
+    drugId = drugId,
+    drugName = drugName.trim(),
+    lotNumber = lotNumber.trim(),
+    expiryDate = expiryDate.toIso(),
     qty = qty,
     costPrice = costPrice,
     sellPrice = sellPrice,

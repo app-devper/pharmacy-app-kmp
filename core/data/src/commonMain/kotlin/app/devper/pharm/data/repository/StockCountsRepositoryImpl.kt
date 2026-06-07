@@ -1,9 +1,8 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.StockCountsApi
-import app.devper.pharm.data.remote.dto.StockCountInputDto
-import app.devper.pharm.data.remote.dto.StockCountInputItemDto
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.param.CreateStockCountParam
@@ -23,9 +22,4 @@ class StockCountsRepositoryImpl(
         stockChangeBus.emit()
         return result
     }
-
-    private fun CreateStockCountParam.toDto() = StockCountInputDto(
-        note = note.trim(),
-        items = items.map { StockCountInputItemDto(drugId = it.drugId, counted = it.counted) },
-    )
 }

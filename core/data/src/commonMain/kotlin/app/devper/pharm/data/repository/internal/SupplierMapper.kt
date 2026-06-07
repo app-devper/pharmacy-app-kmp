@@ -1,7 +1,10 @@
 package app.devper.pharm.data.repository.internal
 
 import app.devper.pharm.data.remote.dto.SupplierDto
+import app.devper.pharm.data.remote.dto.SupplierInputDto
 import app.devper.pharm.domain.model.Supplier
+import app.devper.pharm.domain.param.AddSupplierParam
+import app.devper.pharm.domain.param.UpdateSupplierParam
 
 internal fun SupplierDto.toDomain(): Supplier = Supplier(
     id = id,
@@ -11,4 +14,22 @@ internal fun SupplierDto.toDomain(): Supplier = Supplier(
     address = address,
     taxId = taxId,
     notes = notes,
+)
+
+internal fun AddSupplierParam.toDto(): SupplierInputDto = SupplierInputDto(
+    name = name.trim(),
+    contactName = contactName.trim(),
+    phone = phone.trim(),
+    address = address.trim(),
+    taxId = taxId.trim(),
+    notes = notes.trim(),
+)
+
+internal fun UpdateSupplierParam.toDto(): SupplierInputDto = SupplierInputDto(
+    name = name.trim(),
+    contactName = contactName.trim(),
+    phone = phone.trim(),
+    address = address.trim(),
+    taxId = taxId.trim(),
+    notes = notes.trim(),
 )

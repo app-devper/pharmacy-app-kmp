@@ -1,12 +1,11 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.UsersApi
-import app.devper.pharm.data.remote.dto.CreateUserRequest
 import app.devper.pharm.data.remote.dto.SetPasswordRequest
 import app.devper.pharm.data.remote.dto.SetRoleRequest
 import app.devper.pharm.data.remote.dto.SetStatusRequest
-import app.devper.pharm.data.remote.dto.UpdateUserRequest
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.CreateUserParam
 import app.devper.pharm.domain.param.SetUserPasswordParam
@@ -42,20 +41,3 @@ class UsersRepositoryImpl(
         api.setPassword(param.id, SetPasswordRequest(password = param.password))
     }
 }
-
-private fun CreateUserParam.toRequest() = CreateUserRequest(
-    firstName = firstName.trim(),
-    lastName = lastName.trim(),
-    username = username.trim(),
-    password = password,
-    phone = phone.trim(),
-    email = email.trim(),
-    clientId = clientId,
-)
-
-private fun UpdateUserParam.toRequest() = UpdateUserRequest(
-    firstName = firstName.trim(),
-    lastName = lastName.trim(),
-    phone = phone.trim(),
-    email = email.trim(),
-)

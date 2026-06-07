@@ -2,13 +2,12 @@ package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.network.AppJson
 import app.devper.pharm.data.remote.api.SaleApi
-import app.devper.pharm.data.remote.dto.SaleItemRequest
 import app.devper.pharm.data.remote.dto.SaleRequest
 import app.devper.pharm.data.remote.dto.VoidSaleRequest
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.CheckoutLineParam
 import app.devper.pharm.domain.param.CheckoutParam
 import app.devper.pharm.domain.param.VoidSaleParam
 import app.devper.pharm.domain.repository.SaleRepository
@@ -40,25 +39,4 @@ class SaleRepositoryImpl(
         stockChangeBus.emit()
         return sale
     }
-
-    private fun CheckoutParam.toRequest() = SaleRequest(
-        items = items.map { it.toRequest() },
-        received = received,
-        discount = discount,
-        customerId = customerId,
-        clientRequestId = clientRequestId,
-        kySkippedByCashier = kySkippedByCashier,
-    )
-
-    private fun CheckoutLineParam.toRequest() = SaleItemRequest(
-        drugId = drugId,
-        qty = qty,
-        price = unitPrice,
-        originalPrice = originalUnitPrice,
-        itemDiscount = itemDiscount,
-        priceTier = priceTier,
-        allowOversell = allowOversell,
-        unit = unit,
-        unitFactor = unitFactor,
-    )
 }

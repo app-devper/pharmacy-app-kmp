@@ -1,9 +1,8 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.remote.api.ProfileApi
-import app.devper.pharm.data.remote.dto.ChangePasswordRequest
-import app.devper.pharm.data.remote.dto.UpdateProfileRequest
 import app.devper.pharm.data.repository.internal.toDomain
+import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.ChangePasswordParam
 import app.devper.pharm.domain.param.UpdateProfileParam
@@ -22,15 +21,3 @@ class ProfileRepositoryImpl(
         api.changeMyPassword(param.toRequest())
     }
 }
-
-private fun UpdateProfileParam.toRequest() = UpdateProfileRequest(
-    firstName = firstName.trim(),
-    lastName = lastName.trim(),
-    phone = phone.trim(),
-    email = email.trim(),
-)
-
-private fun ChangePasswordParam.toRequest() = ChangePasswordRequest(
-    oldPassword = oldPassword,
-    newPassword = newPassword,
-)
