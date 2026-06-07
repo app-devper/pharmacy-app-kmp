@@ -56,6 +56,7 @@ class SalesHistoryViewModelTest {
             getHistory = GetSaleHistoryUseCase(repo, dispatchers),
             getItems = GetSaleItemsUseCase(repo, dispatchers),
             submitReturn = SubmitSaleReturnUseCase(repo, dispatchers),
+            timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         return Bundle(vm, repo)
     }

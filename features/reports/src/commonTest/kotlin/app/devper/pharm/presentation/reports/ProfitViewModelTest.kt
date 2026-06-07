@@ -19,6 +19,7 @@ class ProfitViewModelTest {
         ProfitViewModel(
             GetProfitReportUseCase(FakeReportsRepository(), d),
             ExportProfitCsvUseCase(FakeExportRepository(), d),
+            app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
 
     @Test

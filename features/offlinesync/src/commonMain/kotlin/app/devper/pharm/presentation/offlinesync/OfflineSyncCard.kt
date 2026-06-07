@@ -24,13 +24,14 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 internal fun OfflineSyncCard(
     row: PendingSale,
+    tz: TimeZone,
     callbacks: OfflineSyncCallbacks,
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
     PharmListCard(
         title = "OFFLINE-${row.id.take(8)}",
-        subtitle = formatEnqueuedAt(row.enqueuedAt),
+        subtitle = formatEnqueuedAt(row.enqueuedAt, tz),
         modifier = modifier,
         status = {
             if (row.lastError != null) {
@@ -77,8 +78,8 @@ internal fun OfflineSyncCard(
 }
 
 @OptIn(ExperimentalTime::class)
-private fun formatEnqueuedAt(millis: Long): String {
-    val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
+private fun formatEnqueuedAt(millis: Long, tz: TimeZone): String {
+    val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(tz)
     val mm = dt.month.number.toString().padStart(2, '0')
     val dd = dt.day.toString().padStart(2, '0')
     val yy = (dt.year % 100).toString().padStart(2, '0')

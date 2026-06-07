@@ -87,7 +87,7 @@ fun OfflineSyncContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(state.pending, key = { it.id }) { row ->
-                        OfflineSyncCard(row = row, callbacks = callbacks)
+                        OfflineSyncCard(row = row, tz = state.tz, callbacks = callbacks)
                     }
                 }
             }

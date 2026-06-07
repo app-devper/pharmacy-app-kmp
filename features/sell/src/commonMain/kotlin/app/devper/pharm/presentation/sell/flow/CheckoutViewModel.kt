@@ -11,6 +11,7 @@ import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
+import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.CheckoutUseCase
 import app.devper.pharm.domain.usecase.ClearCartUseCase
 import app.devper.pharm.domain.usecase.DismissReceiptUseCase
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.onEach
 class CheckoutViewModel(
     cartState: CartStateProvider,
     settings: SettingsProvider,
+    private val timeZoneProvider: TimeZoneProvider,
     private val checkout: CheckoutUseCase,
     private val clearCart: ClearCartUseCase,
     private val dismissReceiptUseCase: DismissReceiptUseCase,
@@ -161,7 +163,7 @@ class CheckoutViewModel(
         val kyRequiredAtSubmit = pendingKyRequired
         val kyFieldsAtSubmit = pendingKyFields
         val kySkippedAtSubmit = pendingKySkippedByCashier
-        val tzAtSubmit = lastSettings.timezone
+        val tzAtSubmit = timeZoneProvider.current
         val cartSnapshot = lastCart
         val customerSnapshot = lastCustomer
         val receivedSnapshot = lastReceivedNum
@@ -192,7 +194,7 @@ class CheckoutViewModel(
         sale: Sale,
         kyRequired: KyRequired?,
         kyFields: KyCaptureFields?,
-        tz: String,
+        tz: kotlinx.datetime.TimeZone,
         cart: List<CartLine>,
         customer: Customer?,
         received: Double,

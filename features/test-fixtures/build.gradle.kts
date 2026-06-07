@@ -9,6 +9,7 @@ kotlin {
             implementation(project(":core:domain"))
 
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

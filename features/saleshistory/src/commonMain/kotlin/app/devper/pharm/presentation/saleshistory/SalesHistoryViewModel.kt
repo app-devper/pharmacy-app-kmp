@@ -4,6 +4,7 @@ import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.param.ReturnLineParam
 import app.devper.pharm.domain.param.SaleHistoryFilterParam
 import app.devper.pharm.domain.param.SubmitReturnParam
+import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
@@ -15,7 +16,8 @@ class SalesHistoryViewModel(
     private val getHistory: GetSaleHistoryUseCase,
     private val getItems: GetSaleItemsUseCase,
     private val submitReturn: SubmitSaleReturnUseCase,
-) : BaseViewModel<SalesHistoryUiState>(SalesHistoryUiState()) {
+    timeZoneProvider: TimeZoneProvider,
+) : BaseViewModel<SalesHistoryUiState>(SalesHistoryUiState(tz = timeZoneProvider.current)) {
 
     init { loadList() }
 
@@ -23,8 +25,8 @@ class SalesHistoryViewModel(
     fun onToChange(value: String) = setState { copy(to = value) }
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
-    fun onFromMillisChange(millis: Long?) = onFromChange(millisToYmd(millis))
-    fun onToMillisChange(millis: Long?) = onToChange(millisToYmd(millis))
+    fun onFromMillisChange(millis: Long?) = onFromChange(millisToYmd(millis, current.tz))
+    fun onToMillisChange(millis: Long?) = onToChange(millisToYmd(millis, current.tz))
 
     fun applyFilter() = loadList()
 

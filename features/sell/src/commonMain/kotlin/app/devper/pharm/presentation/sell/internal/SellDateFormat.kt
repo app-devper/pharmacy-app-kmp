@@ -8,9 +8,8 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-internal fun todayYmd(tzId: String): String {
-    val zone = runCatching { TimeZone.of(tzId) }.getOrDefault(TimeZone.of("Asia/Bangkok"))
-    val date: LocalDate = Clock.System.now().toLocalDateTime(zone).date
+internal fun todayYmd(tz: TimeZone): String {
+    val date: LocalDate = Clock.System.now().toLocalDateTime(tz).date
     val mm = date.month.number.toString().padStart(2, '0')
     val dd = date.day.toString().padStart(2, '0')
     return "${date.year}-$mm-$dd"

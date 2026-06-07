@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.offlinesync
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.observer.OfflineQueueProvider
+import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
 import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
 import app.devper.pharm.ui.common.BaseViewModel
@@ -14,7 +15,8 @@ class OfflineSyncViewModel(
     offlineQueue: OfflineQueueProvider,
     private val markSynced: MarkOfflineSaleSyncedUseCase,
     private val retrySale: RetryOfflineSaleUseCase,
-) : BaseViewModel<OfflineSyncUiState>(OfflineSyncUiState()) {
+    timeZoneProvider: TimeZoneProvider,
+) : BaseViewModel<OfflineSyncUiState>(OfflineSyncUiState(tz = timeZoneProvider.current)) {
 
     init {
         offlineQueue.pending

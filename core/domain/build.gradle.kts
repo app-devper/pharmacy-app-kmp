@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":core:common"))
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
         }

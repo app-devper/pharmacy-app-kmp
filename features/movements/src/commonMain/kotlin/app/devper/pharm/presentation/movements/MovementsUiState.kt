@@ -2,8 +2,10 @@ package app.devper.pharm.presentation.movements
 
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.ui.common.BaseUiState
+import kotlinx.datetime.TimeZone
 
 data class MovementsUiState(
+    val tz: TimeZone = TimeZone.of("Asia/Bangkok"),
     val items: List<StockMovement> = emptyList(),
     val total: Int = 0,
     override val loading: Boolean = false,

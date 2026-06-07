@@ -39,12 +39,12 @@ internal fun ProfitFilterBar(
 ) {
     val t = pharmTokens
     val range = PharmDateRange(
-        fromMillis = ymdToMillis(state.from),
-        toMillis = ymdToMillis(state.to),
+        fromMillis = ymdToMillis(state.from, state.tz),
+        toMillis = ymdToMillis(state.to, state.tz),
     )
-    val quickPeriods = remember(todayDate()) {
+    val quickPeriods = remember(todayDate(state.tz)) {
         ProfitQuickPeriod.entries.map { period ->
-            val resolved = period.resolve()
+            val resolved = period.resolve(state.tz)
             PharmDateQuickPeriod(
                 label = period.label,
                 fromMillis = resolved.fromMillis,
@@ -84,7 +84,7 @@ internal fun ProfitFilterBar(
                         if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
                         if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                     },
-                    formatDate = { millis -> formatYmdDisplay(millis) },
+                    formatDate = { millis -> formatYmdDisplay(millis, state.tz) },
                     quickPeriods = quickPeriods,
                 )
             }
