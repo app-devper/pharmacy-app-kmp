@@ -55,13 +55,13 @@ class ImportFormViewModelTest {
         docNo = "PO-$id",
         supplier = supplier,
         invoiceNo = "INV-1",
-        receiveDate = "2026-05-14",
+        receiveDate = kotlinx.datetime.LocalDate.parse("2026-05-14"),
         items = listOf(
             PurchaseOrderItem(
                 drugId = "d1",
                 drugName = "Paracetamol",
                 lotNumber = "L-1",
-                expiryDate = "2027-12-31",
+                expiryDate = kotlinx.datetime.LocalDate.parse("2027-12-31"),
                 qty = 100,
                 costPrice = 2.0,
                 sellPrice = 5.0,
@@ -71,7 +71,7 @@ class ImportFormViewModelTest {
         totalCost = 200.0,
         status = status,
         notes = "",
-        createdAt = "2026-05-01T00:00:00Z",
+        createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-01T00:00:00"),
         confirmedAt = null,
     )
 

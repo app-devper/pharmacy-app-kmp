@@ -22,7 +22,7 @@ class PurchaseOrderInputExtTest {
         assertEquals("d1", r.drugId)
         assertEquals("Paracetamol", r.drugName)
         assertEquals("LOT-1", r.lotNumber)
-        assertEquals("2027-01-01", r.expiryDate)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2027-01-01"), r.expiryDate)
         assertEquals(10, r.qty)
         assertEquals(1.5, r.costPrice)
         assertEquals(2.0, r.sellPrice)

@@ -18,9 +18,9 @@ import kotlin.test.assertNull
 class ImportDetailViewModelTest {
 
     private fun po(id: String) = PurchaseOrder(
-        id = id, docNo = "GR-$id", supplier = "s", invoiceNo = "INV-$id", receiveDate = "2026-06-01",
+        id = id, docNo = "GR-$id", supplier = "s", invoiceNo = "INV-$id", receiveDate = kotlinx.datetime.LocalDate.parse("2026-06-01"),
         items = emptyList(), itemCount = 0, totalCost = 0.0, status = PurchaseOrderStatus.Draft,
-        notes = "", createdAt = "2026-06-01T09:00:00", confirmedAt = null,
+        notes = "", createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T09:00:00"), confirmedAt = null,
     )
 
     private fun vm(repo: FakePurchaseOrderRepository, d: app.devper.pharm.common.AppDispatchers) =

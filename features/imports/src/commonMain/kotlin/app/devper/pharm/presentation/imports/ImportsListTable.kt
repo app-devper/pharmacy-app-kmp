@@ -18,6 +18,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
+import app.devper.pharm.ui.format.localDateToBuddhist
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.theme.PharmText
@@ -107,7 +108,7 @@ internal fun ImportsListTable(
 private fun DateCell(row: PurchaseOrderSummary) {
     val t = pharmTokens
     Text(
-        text = row.receiveDate.take(10),
+        text = localDateToBuddhist(row.receiveDate),
         style = PharmText.micro.copy(
             color = t.colors.fg3,
             fontFeatureSettings = "tnum",

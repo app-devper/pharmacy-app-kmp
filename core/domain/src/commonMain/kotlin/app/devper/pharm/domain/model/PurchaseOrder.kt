@@ -1,18 +1,21 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+
 data class PurchaseOrder(
     val id: String,
     val docNo: String,
     val supplier: String,
     val invoiceNo: String,
-    val receiveDate: String,
+    val receiveDate: LocalDate?,
     val items: List<PurchaseOrderItem>,
     val itemCount: Int,
     val totalCost: Double,
     val status: PurchaseOrderStatus,
     val notes: String,
-    val createdAt: String,
-    val confirmedAt: String?,
+    val createdAt: LocalDateTime?,
+    val confirmedAt: LocalDateTime?,
 )
 
 data class PurchaseOrderSummary(
@@ -20,20 +23,20 @@ data class PurchaseOrderSummary(
     val docNo: String,
     val supplier: String,
     val invoiceNo: String,
-    val receiveDate: String,
+    val receiveDate: LocalDate?,
     val itemCount: Int,
     val totalCost: Double,
     val status: PurchaseOrderStatus,
     val notes: String,
-    val createdAt: String,
-    val confirmedAt: String?,
+    val createdAt: LocalDateTime?,
+    val confirmedAt: LocalDateTime?,
 )
 
 data class PurchaseOrderItem(
     val drugId: String,
     val drugName: String,
     val lotNumber: String,
-    val expiryDate: String,
+    val expiryDate: LocalDate?,
     val qty: Int,
     val costPrice: Double,
     val sellPrice: Double?,
