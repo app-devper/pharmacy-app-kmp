@@ -15,6 +15,7 @@ import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun StockToolbar(
@@ -24,12 +25,12 @@ internal fun StockToolbar(
     modifier: Modifier = Modifier,
 ) {
     PharmListToolbar(
-        title = "คลังยา",
-        subtitle = "จัดการรายการยาและสต็อกคงเหลือ",
+        title = pharmStrings.navStock,
+        subtitle = pharmStrings.stockSubtitle,
         modifier = modifier,
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
-        searchPlaceholder = "ค้นหายา ชื่อสามัญ บาร์โค้ด…",
+        searchPlaceholder = pharmStrings.stockSearchPlaceholder,
         filters = {
             PharmSingleSelectChips(
                 chips = StockTypeFilter.entries.map { PharmFilterChip(id = it.name, label = it.label) },
@@ -51,21 +52,21 @@ internal fun StockToolbar(
                     leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
                 )
                 PharmButton(
-                    label = "นำเข้า",
+                    label = pharmStrings.stockActionImport,
                     onClick = callbacks.onImport,
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.Imports, contentDescription = null) },
                 )
                 PharmButton(
-                    label = "สั่งซื้อ",
+                    label = pharmStrings.stockActionPurchase,
                     onClick = callbacks.onOpenReorderSuggestions,
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                 )
                 PharmButton(
-                    label = "เพิ่มยา",
+                    label = pharmStrings.stockAddDrugCta,
                     onClick = callbacks.onAddDrug,
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },

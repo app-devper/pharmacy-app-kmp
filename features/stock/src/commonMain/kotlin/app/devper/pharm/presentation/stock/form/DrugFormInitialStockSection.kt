@@ -14,6 +14,7 @@ import app.devper.pharm.presentation.stock.DrugFormFields
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 fun DrugFormInitialStockSection(
@@ -22,8 +23,8 @@ fun DrugFormInitialStockSection(
     modifier: Modifier = Modifier,
 ) {
     PharmFormCard(
-        title = "สต็อกเริ่มต้น (ถ้ามี)",
-        subtitle = "หากใส่จำนวน > 0 ต้องระบุเลขล็อตและวันหมดอายุ",
+        title = pharmStrings.stockHeaderInitialStock,
+        subtitle = pharmStrings.stockHeaderInitialLotHint,
         modifier = modifier,
     ) {
         InitialStockGrid(form = form, callbacks = callbacks)
@@ -55,7 +56,7 @@ private fun InitialStockGrid(
 
 @Composable
 private fun QuantityField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "จำนวน") {
+    FormField(label = pharmStrings.commonQty) {
         PharmTextField(
             value = form.initialStock,
             onValueChange = callbacks.onInitialStock,
@@ -67,18 +68,18 @@ private fun QuantityField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
 
 @Composable
 private fun LotNumberField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "เลขล็อต") {
+    FormField(label = pharmStrings.stockLotNumber) {
         PharmTextField(
             value = form.lotNumber,
             onValueChange = callbacks.onLotNumber,
-            placeholder = "เช่น PCM-260517",
+            placeholder = pharmStrings.stockExampleLotNo,
         )
     }
 }
 
 @Composable
 private fun ExpiryField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "วันหมดอายุ", hint = "YYYY-MM-DD") {
+    FormField(label = pharmStrings.importsExpiryDateLabel, hint = "YYYY-MM-DD") {
         PharmTextField(
             value = form.lotExpiry,
             onValueChange = callbacks.onLotExpiry,

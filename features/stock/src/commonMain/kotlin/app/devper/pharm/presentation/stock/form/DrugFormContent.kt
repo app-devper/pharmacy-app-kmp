@@ -34,6 +34,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 fun DrugFormContent(
@@ -95,20 +96,20 @@ private fun DrugFormLotsAndAdjustmentsCard(
     onOpenAdjustments: (String, String) -> Unit,
 ) {
     PharmFormCard(
-        title = "ล็อต & การปรับสต็อก",
-        subtitle = "เพิ่ม / ดู / ลบล็อต — รักษาการตรวจสอบ FEFO",
+        title = pharmStrings.stockLotsTitle,
+        subtitle = pharmStrings.stockLotsSubtitle,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PharmButton(
-                label = "ดูล็อตทั้งหมด",
+                label = pharmStrings.stockSeeAllLots,
                 onClick = { onOpenLots(drugId, drugName) },
                 variant = PharmButtonVariant.Outline,
             )
             PharmButton(
-                label = "ปรับปรุงสต็อก",
+                label = pharmStrings.stockAdjustmentTitle,
                 onClick = { onOpenAdjustments(drugId, drugName) },
                 variant = PharmButtonVariant.Outline,
             )
@@ -138,7 +139,7 @@ private fun DrugFormContent_AddFilled_Preview() {
                     genericName = "Paracetamol",
                     strength = "500mg",
                     unit = "เม็ด",
-                    type = "ยาแผนปัจจุบัน",
+                    type = pharmStrings.stockTypeRegular,
                     regNo = "1A 123/45",
                     barcode = "8851234567001",
                     costPrice = "1.2",
@@ -167,7 +168,7 @@ private fun DrugFormContent_Edit_Preview() {
                     genericName = "Paracetamol",
                     strength = "500 mg",
                     unit = "เม็ด",
-                    type = "ยาแผนปัจจุบัน",
+                    type = pharmStrings.stockTypeRegular,
                     sellPrice = "2",
                     costPrice = "1",
                     altUnits = listOf(

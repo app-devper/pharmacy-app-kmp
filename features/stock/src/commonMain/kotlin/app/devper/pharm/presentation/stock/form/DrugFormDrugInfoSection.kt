@@ -31,6 +31,7 @@ import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 
 private val kyForms = listOf(9, 10, 11, 12)
 private fun kyCode(form: Int) = "ky$form"
@@ -41,7 +42,7 @@ fun DrugFormDrugInfoSection(
     callbacks: DrugFormCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    PharmFormCard(modifier = modifier, title = "ข้อมูลยา") {
+    PharmFormCard(modifier = modifier, title = pharmStrings.importsFormInfoSection) {
         DrugInfoGrid(form = form, callbacks = callbacks)
         KyChecklist(
             selected = form.reportTypes,
@@ -110,40 +111,40 @@ private fun GridRow(
 
 @Composable
 private fun TradeNameField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ชื่อการค้า", required = true) {
+    FormField(label = pharmStrings.stockHeaderName, required = true) {
         PharmTextField(
             value = form.name,
             onValueChange = callbacks.onName,
-            placeholder = "เช่น Tylenol 500mg",
+            placeholder = pharmStrings.stockExampleBrand,
         )
     }
 }
 
 @Composable
 private fun GenericNameField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ชื่อสามัญ") {
+    FormField(label = pharmStrings.stockHeaderGeneric) {
         PharmTextField(
             value = form.genericName,
             onValueChange = callbacks.onGenericName,
-            placeholder = "เช่น Paracetamol",
+            placeholder = pharmStrings.stockExampleGeneric,
         )
     }
 }
 
 @Composable
 private fun StrengthField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ขนาด / Strength") {
+    FormField(label = pharmStrings.stockHeaderStrength) {
         PharmTextField(
             value = form.strength,
             onValueChange = callbacks.onStrength,
-            placeholder = "เช่น 500mg",
+            placeholder = pharmStrings.stockExampleStrength,
         )
     }
 }
 
 @Composable
 private fun UnitField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "หน่วย") {
+    FormField(label = pharmStrings.commonUnit) {
         PharmTextField(
             value = form.unit,
             onValueChange = callbacks.onUnit,
@@ -154,40 +155,40 @@ private fun UnitField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
 
 @Composable
 private fun TypeField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ประเภท") {
+    FormField(label = pharmStrings.stockHeaderCategory) {
         PharmTextField(
             value = form.type,
             onValueChange = callbacks.onType,
-            placeholder = "ยาแผนปัจจุบัน / สมุนไพร",
+            placeholder = pharmStrings.stockTypeBoth,
         )
     }
 }
 
 @Composable
 private fun RegNoField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ทะเบียนยา (อย.)") {
+    FormField(label = pharmStrings.stockHeaderRegistration) {
         PharmTextField(
             value = form.regNo,
             onValueChange = callbacks.onRegNo,
-            placeholder = "เช่น 1A 123/45",
+            placeholder = pharmStrings.stockExampleReg,
         )
     }
 }
 
 @Composable
 private fun BarcodeField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "บาร์โค้ด") {
+    FormField(label = pharmStrings.stockHeaderBarcode) {
         PharmTextField(
             value = form.barcode,
             onValueChange = callbacks.onBarcode,
-            placeholder = "สแกนหรือพิมพ์",
+            placeholder = pharmStrings.stockBarcodeScanHint,
         )
     }
 }
 
 @Composable
 private fun CostPriceField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ราคาทุน / หน่วย") {
+    FormField(label = pharmStrings.stockHeaderCostPrice) {
         PharmTextField(
             value = form.costPrice,
             onValueChange = callbacks.onCostPrice,
@@ -199,7 +200,7 @@ private fun CostPriceField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
 
 @Composable
 private fun SellPriceField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "ราคาขาย / หน่วย", required = true) {
+    FormField(label = pharmStrings.stockHeaderSellPrice, required = true) {
         PharmTextField(
             value = form.sellPrice,
             onValueChange = callbacks.onSellPrice,
@@ -229,7 +230,7 @@ private fun KyChecklist(
     val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            text = "รายงาน ขย. (เลือกได้หลายรายการ)",
+            text = pharmStrings.stockHeaderReportsMultiHint,
             style = PharmText.h3.copy(color = t.colors.fg2),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

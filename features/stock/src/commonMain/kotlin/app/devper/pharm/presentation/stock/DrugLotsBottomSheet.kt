@@ -34,6 +34,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.format.localDateToBuddhist
+import app.devper.pharm.ui.i18n.pharmStrings
 
 data class DrugLotsCallbacks(
     val onClose: () -> Unit = {},
@@ -111,15 +112,15 @@ fun DrugLotsDialogs(
         PharmModal(
             open = true,
             onDismiss = callbacks.onCancelDelete,
-            title = "ลบล็อตนี้?",
+            title = pharmStrings.stockLotDeleteTitle,
             footer = {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = pharmStrings.commonCancel,
                     onClick = callbacks.onCancelDelete,
                     variant = PharmButtonVariant.Ghost,
                 )
                 PharmButton(
-                    label = "ลบ",
+                    label = pharmStrings.commonDelete,
                     onClick = callbacks.onConfirmDelete,
                     variant = PharmButtonVariant.Danger,
                 )
@@ -156,7 +157,7 @@ private fun HeaderRow(state: DrugLotsUiState) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "ล็อตทั้งหมด",
+                text = pharmStrings.stockSeeAllLots,
                 style = PharmText.h2,
             )
             if (state.drugName.isNotBlank()) {
@@ -185,7 +186,7 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
             }
             state.lots.isEmpty() -> {
                 Text(
-                    text = "ยังไม่มีล็อต",
+                    text = pharmStrings.stockLotsEmpty,
                     style = PharmText.body.copy(color = t.colors.fg2),
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
@@ -202,7 +203,7 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
 
         Spacer(Modifier.height(8.dp))
         PharmButton(
-            label = if (state.addFormOpen) "ปิดฟอร์มเพิ่มล็อต" else "เพิ่มล็อต",
+            label = if (state.addFormOpen) pharmStrings.stockLotCloseAddForm else pharmStrings.stockLotAddCta,
             onClick = callbacks.onToggleAddForm,
             variant = PharmButtonVariant.Ghost,
             leadingIcon = {
@@ -255,19 +256,19 @@ private fun AddLotForm(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = "เพิ่มล็อตใหม่",
+            text = pharmStrings.stockLotAddTitle,
             style = PharmText.h2,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             LotField(
-                label = "เลขล็อต *",
+                label = pharmStrings.stockLotNumber,
                 value = state.draft.lotNumber,
                 onValueChange = callbacks.onLotNumber,
-                placeholder = "เช่น L240501",
+                placeholder = pharmStrings.stockLotNumberPlaceholder,
                 modifier = Modifier.weight(1f),
             )
             LotField(
-                label = "วันหมดอายุ * (YYYY-MM-DD)",
+                label = pharmStrings.stockLotExpiryRequired,
                 value = state.draft.expiryDate,
                 onValueChange = callbacks.onExpiryDate,
                 placeholder = "2026-12-31",
@@ -276,7 +277,7 @@ private fun AddLotForm(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             LotField(
-                label = "จำนวน *",
+                label = pharmStrings.stockLotInitialQty,
                 value = state.draft.quantity,
                 onValueChange = callbacks.onQuantity,
                 placeholder = "0",
@@ -284,18 +285,18 @@ private fun AddLotForm(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
                 modifier = Modifier.weight(1f),
             )
             LotField(
-                label = "ราคาทุน/หน่วย",
+                label = pharmStrings.stockHeaderCostPrice,
                 value = state.draft.costPrice,
                 onValueChange = callbacks.onCostPrice,
-                placeholder = "ใช้ราคาทุนของยา",
+                placeholder = pharmStrings.stockLotInitialCostHint,
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f),
             )
             LotField(
-                label = "ราคาขาย/หน่วย",
+                label = pharmStrings.stockHeaderSellPrice,
                 value = state.draft.sellPrice,
                 onValueChange = callbacks.onSellPrice,
-                placeholder = "ใช้ราคาขายของยา",
+                placeholder = pharmStrings.stockLotInitialSellHint,
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f),
             )

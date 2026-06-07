@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -41,7 +42,7 @@ fun DrugAdjustScreen(
     )
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(title = "ปรับสต็อก", onBack = onBack)
+        PharmListToolbar(title = pharmStrings.stockActionAdjust, onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)

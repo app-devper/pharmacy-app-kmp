@@ -23,6 +23,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 fun StockContent(
@@ -61,7 +62,7 @@ fun StockContent(
             ) {
                 PharmListResultLine(
                     total = state.drugs.size,
-                    noun = "รายการ",
+                    noun = pharmStrings.movementsCountNoun,
                     visible = visible.size,
                     searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
                 )
