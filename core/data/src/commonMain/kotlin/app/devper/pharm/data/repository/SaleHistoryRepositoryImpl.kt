@@ -1,6 +1,8 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.common.NotFoundException
+import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.SaleHistoryApi
 import app.devper.pharm.data.remote.dto.DrugReturnItemRequest
 import app.devper.pharm.data.remote.dto.DrugReturnRequest
@@ -19,7 +21,7 @@ class SaleHistoryRepositoryImpl(
 ) : SaleHistoryRepository {
 
     override suspend fun list(filter: SaleHistoryFilterParam): List<SaleSummary> =
-        api.list(filter.from, filter.to, filter.query, filter.limit).map { it.toDomain() }
+        api.list(filter.from?.toIso(), filter.to?.toIso(), filter.query, filter.limit).map { it.toDomain() }
 
     override suspend fun get(saleId: String): SaleSummary {
 
@@ -59,7 +61,7 @@ class SaleHistoryRepositoryImpl(
         customerName = customerName,
         total = total,
         discount = discount,
-        soldAt = soldAt,
+        soldAt = soldAt.parseLocalDateTimeOrNull(),
         voided = voided,
     )
 

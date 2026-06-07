@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.model.SaleSummary
+import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.presentation.reports.components.EmptyEod
 import app.devper.pharm.presentation.reports.components.EodBalanceCard
 import app.devper.pharm.presentation.reports.components.EodBillRow
@@ -100,10 +101,10 @@ fun EodContent(
 }
 
 private val sampleBills = listOf(
-    SaleSummary("s1", "B260517-001", "นาย ก", 420.0, 0.0, "2026-05-17T09:15:00", false),
-    SaleSummary("s2", "B260517-002", "", 180.0, 20.0, "2026-05-17T10:45:00", false),
-    SaleSummary("s3", "B260517-003", "นาง ข", 950.0, 0.0, "2026-05-17T12:02:00", true),
-    SaleSummary("s4", "B260517-004", "ร้านยาฝั่งตรงข้าม", 2350.0, 50.0, "2026-05-17T13:24:00", false),
+    SaleSummary("s1", "B260517-001", "นาย ก", 420.0, 0.0, LocalDateTime.parse("2026-05-17T09:15:00"), false),
+    SaleSummary("s2", "B260517-002", "", 180.0, 20.0, LocalDateTime.parse("2026-05-17T10:45:00"), false),
+    SaleSummary("s3", "B260517-003", "นาง ข", 950.0, 0.0, LocalDateTime.parse("2026-05-17T12:02:00"), true),
+    SaleSummary("s4", "B260517-004", "ร้านยาฝั่งตรงข้าม", 2350.0, 50.0, LocalDateTime.parse("2026-05-17T13:24:00"), false),
 )
 
 private val sampleReport = EodReport(

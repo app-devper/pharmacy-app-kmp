@@ -28,7 +28,7 @@ import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.domain.extension.tierLabel
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.format.isoDateTimeToBuddhist
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -214,7 +214,7 @@ private fun SaleRow(sale: SaleSummary) {
                 }
             }
             Text(
-                text = isoDateTimeToBuddhist(sale.soldAt),
+                text = localDateTimeToBuddhist(sale.soldAt),
                 style = PharmText.micro.tabular().copy(color = t.colors.fg2),
             )
         }
@@ -240,7 +240,7 @@ private val sampleSales = listOf(
         customerName = "สมศรี ใจดี",
         total = 480.0,
         discount = 0.0,
-        soldAt = "2026-06-01T10:30:00",
+        soldAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T10:30:00"),
         voided = false,
     ),
     SaleSummary(
@@ -249,7 +249,7 @@ private val sampleSales = listOf(
         customerName = "สมศรี ใจดี",
         total = 120.0,
         discount = 20.0,
-        soldAt = "2026-05-28T16:05:00",
+        soldAt = kotlinx.datetime.LocalDateTime.parse("2026-05-28T16:05:00"),
         voided = true,
     ),
 )

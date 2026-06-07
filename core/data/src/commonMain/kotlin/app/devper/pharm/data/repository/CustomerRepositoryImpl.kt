@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
 import app.devper.pharm.data.remote.api.CustomerApi
 import app.devper.pharm.data.remote.dto.CustomerDto
 import app.devper.pharm.data.remote.dto.CustomerInputDto
@@ -37,7 +38,7 @@ class CustomerRepositoryImpl(private val api: CustomerApi) : CustomerRepository 
         customerName = d.customerName,
         total = d.total,
         discount = d.discount,
-        soldAt = d.soldAt,
+        soldAt = d.soldAt.parseLocalDateTimeOrNull(),
         voided = d.voided,
     )
 

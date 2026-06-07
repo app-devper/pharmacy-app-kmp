@@ -27,7 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
-import app.devper.pharm.ui.format.isoDateTimeToBuddhist
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -100,7 +100,7 @@ private fun BillHeader(sale: SaleSummary) {
             }
         }
         Text(
-            text = "${sale.customerName} · ${isoDateTimeToBuddhist(sale.soldAt)}",
+            text = "${sale.customerName} · ${localDateTimeToBuddhist(sale.soldAt)}",
             style = PharmText.body.copy(color = t.colors.fg2),
         )
     }

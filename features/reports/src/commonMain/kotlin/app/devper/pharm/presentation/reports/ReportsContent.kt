@@ -19,6 +19,7 @@ import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.domain.model.ReportSummary
 import app.devper.pharm.domain.model.SaleSummary
+import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -140,11 +141,11 @@ private val previewMonthly = listOf(
 )
 
 private val previewRecent = listOf(
-    SaleSummary("s1", "SC-260516-014", "คุณสมศรี ใจดี", 1742.0, 0.0, "2026-05-17T14:42:00", false),
-    SaleSummary("s2", "SC-260516-013", "", 120.0, 0.0, "2026-05-17T14:18:00", false),
-    SaleSummary("s3", "SC-260516-012", "นาย วรพล สุขสันต์", 892.0, 0.0, "2026-05-17T13:55:00", false),
-    SaleSummary("s4", "SC-260516-011", "", 240.0, 0.0, "2026-05-17T13:30:00", false),
-    SaleSummary("s5", "SC-260516-010", "นาง พรรณี สวยงาม", 520.0, 0.0, "2026-05-17T12:45:00", true),
+    SaleSummary("s1", "SC-260516-014", "คุณสมศรี ใจดี", 1742.0, 0.0, LocalDateTime.parse("2026-05-17T14:42:00"), false),
+    SaleSummary("s2", "SC-260516-013", "", 120.0, 0.0, LocalDateTime.parse("2026-05-17T14:18:00"), false),
+    SaleSummary("s3", "SC-260516-012", "นาย วรพล สุขสันต์", 892.0, 0.0, LocalDateTime.parse("2026-05-17T13:55:00"), false),
+    SaleSummary("s4", "SC-260516-011", "", 240.0, 0.0, LocalDateTime.parse("2026-05-17T13:30:00"), false),
+    SaleSummary("s5", "SC-260516-010", "นาง พรรณี สวยงาม", 520.0, 0.0, LocalDateTime.parse("2026-05-17T12:45:00"), true),
 )
 
 private val previewTop = listOf(

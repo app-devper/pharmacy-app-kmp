@@ -10,6 +10,7 @@ import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
 import app.devper.pharm.presentation.saleshistory.internal.millisToYmd
+import app.devper.pharm.ui.format.toLocalDateOrNull
 import app.devper.pharm.ui.common.BaseViewModel
 
 class SalesHistoryViewModel(
@@ -37,8 +38,8 @@ class SalesHistoryViewModel(
             block = {
                 getHistory(
                     SaleHistoryFilterParam(
-                        from = s.from.takeIf { it.isNotBlank() },
-                        to = s.to.takeIf { it.isNotBlank() },
+                        from = s.from.toLocalDateOrNull(),
+                        to = s.to.toLocalDateOrNull(),
                         query = s.query.takeIf { it.isNotBlank() },
                     ),
                 )
