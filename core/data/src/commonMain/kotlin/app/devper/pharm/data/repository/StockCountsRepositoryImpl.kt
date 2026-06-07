@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
 import app.devper.pharm.data.remote.api.StockCountsApi
 import app.devper.pharm.data.remote.dto.StockCountDto
 import app.devper.pharm.data.remote.dto.StockCountInputDto
@@ -31,7 +32,7 @@ class StockCountsRepositoryImpl(
         countNo = d.countNo,
         note = d.note,
         items = d.items.map(::toLine),
-        createdAt = d.createdAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
     )
 
     private fun toLine(d: StockCountItemDto) = StockCountLine(

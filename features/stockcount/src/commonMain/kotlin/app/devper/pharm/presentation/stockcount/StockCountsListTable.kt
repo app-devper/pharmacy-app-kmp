@@ -116,7 +116,7 @@ private fun StockCountNoCell(count: StockCount) {
 private fun StockCountDateCell(count: StockCount) {
     val t = pharmTokens
     Text(
-        text = count.createdAt.take(19).replace('T', ' '),
+        text = app.devper.pharm.ui.format.localDateTimeToBuddhist(count.createdAt),
         style = PharmText.meta.copy(color = t.colors.fg2),
         maxLines = 1,
     )

@@ -36,7 +36,7 @@ class FakeStockCountsRepository(
                     delta = it.counted,
                 )
             },
-            createdAt = "2026-05-14T00:00:00Z",
+            createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T00:00:00"),
         )
     }
 }

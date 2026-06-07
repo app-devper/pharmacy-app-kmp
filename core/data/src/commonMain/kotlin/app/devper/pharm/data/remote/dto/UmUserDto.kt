@@ -1,5 +1,6 @@
 package app.devper.pharm.data.remote.dto
 
+import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
@@ -30,7 +31,7 @@ data class UmUserDto(
         status = UmStatus.parse(status),
         phone = phone,
         email = email,
-        createdDate = createdDate,
-        updatedDate = updatedDate,
+        createdDate = createdDate.parseLocalDateTimeOrNull(),
+        updatedDate = updatedDate.parseLocalDateTimeOrNull(),
     )
 }

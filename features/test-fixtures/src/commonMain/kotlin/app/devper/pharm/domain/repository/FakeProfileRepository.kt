@@ -60,8 +60,8 @@ class FakeProfileRepository(
             status = UmStatus.ACTIVE,
             phone = "0812345678",
             email = "somchai@example.com",
-            createdDate = "2025-01-01T00:00:00Z",
-            updatedDate = "2025-01-01T00:00:00Z",
+            createdDate = kotlinx.datetime.LocalDateTime.parse("2025-01-01T00:00:00"),
+            updatedDate = kotlinx.datetime.LocalDateTime.parse("2025-01-01T00:00:00"),
         )
         val notFound = NotFoundException("ไม่พบผู้ใช้")
     }
