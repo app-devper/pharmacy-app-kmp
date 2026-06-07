@@ -66,10 +66,15 @@ fun isoDateToBuddhist(s: String): String {
     return toBuddhistEraDisplay(date)
 }
 
-fun isoDateTimeToBuddhist(s: String): String {
+@OptIn(ExperimentalTime::class)
+fun isoDateTimeToBuddhist(s: String, tz: TimeZone = DEFAULT_ZONE): String {
     if (s.isBlank()) return ""
-    val trimmed = s.removeSuffix("Z").substringBefore('+').take(19)
-    val dt = runCatching { LocalDateTime.parse(trimmed) }.getOrNull() ?: return s
+    val asInstant = runCatching { Instant.parse(s) }.getOrNull()
+    val dt = if (asInstant != null) {
+        asInstant.toLocalDateTime(tz)
+    } else {
+        runCatching { LocalDateTime.parse(s.take(19)) }.getOrNull() ?: return s
+    }
     return localDateTimeToBuddhist(dt)
 }
 

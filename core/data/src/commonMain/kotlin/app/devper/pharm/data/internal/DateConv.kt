@@ -1,7 +1,13 @@
 package app.devper.pharm.data.internal
 
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
+private val BANGKOK = TimeZone.of("Asia/Bangkok")
 
 fun String?.parseLocalDateOrNull(): LocalDate? {
     if (this.isNullOrBlank()) return null
@@ -11,9 +17,12 @@ fun String?.parseLocalDateOrNull(): LocalDate? {
 fun String.parseLocalDateOrEpoch(): LocalDate =
     parseLocalDateOrNull() ?: LocalDate(1970, 1, 1)
 
+@OptIn(ExperimentalTime::class)
 fun String?.parseLocalDateTimeOrNull(): LocalDateTime? {
     if (this.isNullOrBlank()) return null
-    val trimmed = this.removeSuffix("Z").substringBefore('+').take(19)
+    val asInstant = runCatching { Instant.parse(this) }.getOrNull()
+    if (asInstant != null) return asInstant.toLocalDateTime(BANGKOK)
+    val trimmed = this.take(19)
     return runCatching { LocalDateTime.parse(trimmed) }.getOrNull()
 }
 

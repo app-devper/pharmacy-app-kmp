@@ -32,7 +32,7 @@ class DateConvTest {
     }
 
     @Test
-    fun parseLocalDateTimeOrNull_returns_typed_value_for_iso_datetime() {
+    fun parseLocalDateTimeOrNull_naked_datetime_assumed_already_bangkok_local() {
         assertEquals(
             LocalDateTime(2026, 5, 17, 14, 42, 0),
             "2026-05-17T14:42:00".parseLocalDateTimeOrNull(),
@@ -40,18 +40,42 @@ class DateConvTest {
     }
 
     @Test
-    fun parseLocalDateTimeOrNull_strips_trailing_Z() {
+    fun parseLocalDateTimeOrNull_utc_z_converts_to_bangkok_plus_seven() {
         assertEquals(
-            LocalDateTime(2026, 5, 17, 14, 42, 0),
+            LocalDateTime(2026, 5, 17, 21, 42, 0),
             "2026-05-17T14:42:00Z".parseLocalDateTimeOrNull(),
         )
     }
 
     @Test
-    fun parseLocalDateTimeOrNull_strips_plus_offset() {
+    fun parseLocalDateTimeOrNull_plus_seven_offset_stays_bangkok() {
         assertEquals(
             LocalDateTime(2026, 5, 17, 14, 42, 0),
             "2026-05-17T14:42:00+07:00".parseLocalDateTimeOrNull(),
+        )
+    }
+
+    @Test
+    fun parseLocalDateTimeOrNull_arbitrary_offset_normalises_to_bangkok() {
+        assertEquals(
+            LocalDateTime(2026, 5, 17, 14, 42, 0),
+            "2026-05-17T03:42:00-04:00".parseLocalDateTimeOrNull(),
+        )
+    }
+
+    @Test
+    fun parseLocalDateTimeOrNull_z_at_midnight_utc_becomes_morning_bangkok() {
+        assertEquals(
+            LocalDateTime(2026, 5, 17, 7, 0, 0),
+            "2026-05-17T00:00:00Z".parseLocalDateTimeOrNull(),
+        )
+    }
+
+    @Test
+    fun parseLocalDateTimeOrNull_z_late_evening_utc_rolls_to_next_day_bangkok() {
+        assertEquals(
+            LocalDateTime(2026, 5, 18, 6, 30, 0),
+            "2026-05-17T23:30:00Z".parseLocalDateTimeOrNull(),
         )
     }
 

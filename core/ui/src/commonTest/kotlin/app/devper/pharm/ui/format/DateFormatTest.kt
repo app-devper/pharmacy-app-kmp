@@ -89,4 +89,34 @@ class DateFormatTest {
     fun toLocalDateOrNull_returns_null_for_invalid_month() {
         assertNull("2026-13-01".toLocalDateOrNull())
     }
+
+    @Test
+    fun isoDateTimeToBuddhist_naked_datetime_assumed_already_bangkok_local() {
+        assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_utc_z_converts_to_bangkok_plus_seven() {
+        assertEquals("17/05/2569 21:42", isoDateTimeToBuddhist("2026-05-17T14:42:00Z"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_plus_seven_offset_stays_bangkok() {
+        assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00+07:00"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_z_late_evening_utc_rolls_to_next_day_bangkok() {
+        assertEquals("18/05/2569 06:30", isoDateTimeToBuddhist("2026-05-17T23:30:00Z"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_returns_input_for_unparseable() {
+        assertEquals("not-a-datetime", isoDateTimeToBuddhist("not-a-datetime"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_returns_blank_for_blank() {
+        assertEquals("", isoDateTimeToBuddhist(""))
+    }
 }
