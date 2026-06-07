@@ -32,7 +32,7 @@ fun main() {
     val jvmPlatformModule = module {
         single<Settings> { PreferencesSettings(Preferences.userRoot().node("pharmacy.app")) }
         single<SecureStorage> { JvmSecureStorage() }
-        single { buildHttpClient(Java, get<TokenStorage>()) }
+        single { buildHttpClient(Java, get<TokenStorage>(), enableLogging = true) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
         single<FileDownloader> { FileDownloaderImpl(logger = get()) }

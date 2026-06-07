@@ -76,17 +76,17 @@ class BuddhistEraTest {
     }
 
     @Test
-    fun isoDateTimeToBuddhist_parses_local_iso() {
+    fun isoDateTimeToBuddhist_naked_datetime_assumed_already_bangkok_local() {
         assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00"))
     }
 
     @Test
-    fun isoDateTimeToBuddhist_strips_trailing_z() {
-        assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00Z"))
+    fun isoDateTimeToBuddhist_utc_z_converts_to_bangkok_plus_seven() {
+        assertEquals("17/05/2569 21:42", isoDateTimeToBuddhist("2026-05-17T14:42:00Z"))
     }
 
     @Test
-    fun isoDateTimeToBuddhist_strips_offset() {
+    fun isoDateTimeToBuddhist_plus_seven_offset_stays_bangkok() {
         assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00+07:00"))
     }
 
