@@ -24,6 +24,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -36,6 +37,7 @@ fun OfflineSyncContent(
     callbacks: OfflineSyncCallbacks = OfflineSyncCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Column(
         modifier = Modifier
@@ -43,18 +45,18 @@ fun OfflineSyncContent(
             .background(t.colors.bgPage),
     ) {
         PharmListToolbar(
-            title = "รายการค้างซิงก์",
-            subtitle = "ตรวจสอบบิล offline ที่ยังไม่ได้ส่งเข้า backend",
+            title = s.navOfflineSync,
+            subtitle = s.offlineSyncSubtitle,
             actions = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     PharmButton(
-                        label = "รีเฟรช",
+                        label = s.commonRefresh,
                         onClick = callbacks.onRefresh,
                         variant = PharmButtonVariant.Secondary,
                         size = PharmButtonSize.Md,
                     )
                     PharmButton(
-                        label = "ลองซิงก์ทั้งหมด",
+                        label = s.offlineSyncRetryAllCta,
                         onClick = callbacks.onSyncAll,
                         variant = PharmButtonVariant.Primary,
                         size = PharmButtonSize.Md,
@@ -98,16 +100,16 @@ fun OfflineSyncContent(
         PharmModal(
             open = true,
             onDismiss = callbacks.onDismissCancel,
-            title = "ลบรายการค้างซิงก์?",
+            title = s.offlineSyncDeleteConfirmTitle,
             footer = {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = s.commonCancel,
                     onClick = callbacks.onDismissCancel,
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
                 )
                 PharmButton(
-                    label = "ลบ",
+                    label = s.commonDelete,
                     onClick = callbacks.onConfirmCancel,
                     variant = PharmButtonVariant.Danger,
                     size = PharmButtonSize.Md,
@@ -115,8 +117,7 @@ fun OfflineSyncContent(
             },
         ) {
             Text(
-                text = "บิลนี้จะถูกลบออกจากคิวภายในเครื่อง — ใช้เมื่อแน่ใจว่า " +
-                    "backend รับบิลนี้ไปแล้วหรือไม่ต้องการให้ส่งซ้ำอีก",
+                text = s.offlineSyncDeleteConfirmMessage,
                 style = PharmText.body,
             )
         }
@@ -128,6 +129,7 @@ fun OfflineSyncContent(
 @Composable
 private fun EmptyOfflineSync() {
     val t = pharmTokens
+    val s = pharmStrings
     Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
@@ -137,12 +139,12 @@ private fun EmptyOfflineSync() {
                 modifier = Modifier.size(56.dp),
             )
             Text(
-                text = "ไม่มีบิลค้างซิงก์",
+                text = s.offlineSyncEmptyTitle,
                 style = PharmText.h2,
                 modifier = Modifier.padding(top = 12.dp),
             )
             Text(
-                text = "ทุกบิลส่งเข้า backend แล้ว",
+                text = s.offlineSyncEmpty,
                 style = PharmText.meta.copy(color = t.colors.fgMuted),
                 modifier = Modifier.padding(top = 4.dp),
             )
