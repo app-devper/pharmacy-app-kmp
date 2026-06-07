@@ -44,6 +44,19 @@ class OfflineSaleQueueTest {
     }
 
     @Test
+    fun mark_failed_with_unknown_id_does_not_touch_existing_entries() {
+        val queue = OfflineSaleQueueImpl(memorySettings())
+        val id = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r1", payloadJson = "{}"))
+
+        queue.markFailed(MarkOfflineSaleFailedParam(id = "stale-id", error = "noop"))
+
+        val entry = queue.pending.value.single()
+        assertEquals(id, entry.id)
+        assertEquals(0, entry.attempts)
+        assertNull(entry.lastError)
+    }
+
+    @Test
     fun clear_empties_queue_and_persists_to_settings() {
         val settings = memorySettings()
         val queue = OfflineSaleQueueImpl(settings)

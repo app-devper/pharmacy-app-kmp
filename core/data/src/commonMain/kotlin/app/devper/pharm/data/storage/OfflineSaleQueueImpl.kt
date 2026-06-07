@@ -58,6 +58,7 @@ class OfflineSaleQueueImpl(
 
     override fun markFailed(param: MarkOfflineSaleFailedParam) {
         val current = readDtos()
+        if (current.none { it.id == param.id }) return
         val next = current.map {
             if (it.id == param.id) it.copy(lastError = param.error, attempts = it.attempts + 1) else it
         }
