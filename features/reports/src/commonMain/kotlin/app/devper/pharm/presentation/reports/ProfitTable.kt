@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

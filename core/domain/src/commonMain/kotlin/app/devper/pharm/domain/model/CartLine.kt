@@ -21,9 +21,9 @@ data class CartLine(
 
     val basePrice: Double
         get() = if (selectedUnit != null) {
-            resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor
+            resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier).amount / factor
         } else {
-            resolvePrice(drug.sellPrice, drug.prices, tier)
+            resolvePrice(drug.sellPrice, drug.prices, tier).amount
         }
 
     val unitPrice: Double get() = basePrice * factor

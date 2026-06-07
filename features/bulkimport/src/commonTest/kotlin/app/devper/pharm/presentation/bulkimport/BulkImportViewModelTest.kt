@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.bulkimport
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.model.BulkImportResult
@@ -92,15 +95,15 @@ class BulkImportViewModelTest {
         assertNotNull(params)
         assertEquals(2, params.size)
         assertEquals("Paracetamol", params[0].name)
-        assertEquals(2.0, params[0].sellPrice)
-        assertEquals(1.0, params[0].costPrice)
-        assertEquals(5, params[0].stock)
-        assertEquals(3, params[0].minStock)
+        assertEquals(Money(2.0), params[0].sellPrice)
+        assertEquals(Money(1.0), params[0].costPrice)
+        assertEquals(Quantity(5), params[0].stock)
+        assertEquals(Quantity(3), params[0].minStock)
         assertEquals("เม็ด", params[0].unit)
         assertEquals("Ibuprofen", params[1].name)
 
         assertEquals("ชิ้น", params[1].unit)
-        assertEquals(0, params[1].stock)
+        assertEquals(Quantity(0), params[1].stock)
     }
 
     @Test

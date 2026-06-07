@@ -1,6 +1,8 @@
 package app.devper.pharm.domain.extension
 
 import app.devper.pharm.common.ValidationException
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.param.AddDrugParam
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -41,10 +43,10 @@ private fun JsonObject.toAddDrugParam(): AddDrugParam {
         type = stringField("type").orEmpty(),
         strength = stringField("strength").orEmpty(),
         barcode = stringField("barcode").orEmpty(),
-        sellPrice = doubleField("sell_price") ?: 0.0,
-        costPrice = doubleField("cost_price") ?: 0.0,
-        stock = intField("stock") ?: 0,
-        minStock = intField("min_stock") ?: 0,
+        sellPrice = Money(doubleField("sell_price") ?: 0.0),
+        costPrice = Money(doubleField("cost_price") ?: 0.0),
+        stock = Quantity(intField("stock") ?: 0),
+        minStock = Quantity(intField("min_stock") ?: 0),
         regNo = stringField("reg_no").orEmpty(),
         unit = stringField("unit").orEmpty().ifBlank { "ชิ้น" },
         reportTypes = stringArrayField("report_types"),

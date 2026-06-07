@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -83,33 +86,33 @@ fun StockContent(
 private val sampleDrugs = listOf(
     Drug(
         id = "1", name = "พาราเซตามอล 500mg", genericName = "Paracetamol 500mg", strength = "500mg",
-        type = "cur", regNo = "1A 123/45", costPrice = 1.20, sellPrice = 2.0, stock = 480,
-        unit = "เม็ด", barcode = "8851234567001", minStock = 20, reportTypes = emptyList(),
+        type = "cur", regNo = "1A 123/45", costPrice = Money(1.20), sellPrice = Money(2.0), stock = Quantity(480),
+        unit = "เม็ด", barcode = "8851234567001", minStock = Quantity(20), reportTypes = emptyList(),
     ),
     Drug(
         id = "2", name = "อะม็อกซีซิลลิน 500mg", genericName = "Amoxicillin 500mg", strength = "500mg",
-        type = "cur", regNo = "1A 091/52", costPrice = 5.50, sellPrice = 8.0, stock = 120,
-        unit = "แคปซูล", barcode = "8851234567002", minStock = 30, reportTypes = listOf("ky11"),
+        type = "cur", regNo = "1A 091/52", costPrice = Money(5.50), sellPrice = Money(8.0), stock = Quantity(120),
+        unit = "แคปซูล", barcode = "8851234567002", minStock = Quantity(30), reportTypes = listOf("ky11"),
     ),
     Drug(
         id = "3", name = "ไอบูโพรเฟน 400mg", genericName = "Ibuprofen 400mg", strength = "400mg",
-        type = "cur", regNo = "1A 220/61", costPrice = 1.80, sellPrice = 3.0, stock = 0,
-        unit = "เม็ด", barcode = "8851234567003", minStock = 20, reportTypes = emptyList(),
+        type = "cur", regNo = "1A 220/61", costPrice = Money(1.80), sellPrice = Money(3.0), stock = Quantity(0),
+        unit = "เม็ด", barcode = "8851234567003", minStock = Quantity(20), reportTypes = emptyList(),
     ),
     Drug(
         id = "4", name = "ฟ้าทะลายโจร แคปซูล", genericName = "Andrographis", strength = "400mg",
-        type = "herb", regNo = "G 808/63", costPrice = 75.0, sellPrice = 120.0, stock = 38,
-        unit = "ขวด", barcode = "8851234567004", minStock = 10, reportTypes = emptyList(),
+        type = "herb", regNo = "G 808/63", costPrice = Money(75.0), sellPrice = Money(120.0), stock = Quantity(38),
+        unit = "ขวด", barcode = "8851234567004", minStock = Quantity(10), reportTypes = emptyList(),
     ),
     Drug(
         id = "5", name = "ทรามาดอล 50mg", genericName = "Tramadol 50mg", strength = "50mg",
-        type = "cur", regNo = "1A 200/58", costPrice = 6.20, sellPrice = 9.0, stock = -4,
-        unit = "แคปซูล", barcode = "8851234567011", minStock = 30, reportTypes = listOf("ky10", "ky11"),
+        type = "cur", regNo = "1A 200/58", costPrice = Money(6.20), sellPrice = Money(9.0), stock = Quantity(-4),
+        unit = "แคปซูล", barcode = "8851234567011", minStock = Quantity(30), reportTypes = listOf("ky10", "ky11"),
     ),
     Drug(
         id = "6", name = "วิตามินซี 1000mg", genericName = "Vit. C 1000mg", strength = "1000mg",
-        type = "supp", regNo = "S 105/60", costPrice = 110.0, sellPrice = 180.0, stock = 64,
-        unit = "ขวด", barcode = "8851234567005", minStock = 5, reportTypes = emptyList(),
+        type = "supp", regNo = "S 105/60", costPrice = Money(110.0), sellPrice = Money(180.0), stock = Quantity(64),
+        unit = "ขวด", barcode = "8851234567005", minStock = Quantity(5), reportTypes = emptyList(),
     ),
 )
 

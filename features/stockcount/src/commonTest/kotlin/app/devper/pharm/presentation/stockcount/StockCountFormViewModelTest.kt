@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.StockCountDraft
@@ -25,17 +28,17 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class StockCountFormViewModelTest {
 
-    private fun drug(id: String, name: String = "Drug $id", stock: Int = 100) = Drug(
+    private fun drug(id: String, name: String = "Drug $id", stock: Quantity = Quantity(100)) = Drug(
         id = id,
         name = name,
         genericName = null,
         type = null,
         strength = null,
         barcode = null,
-        sellPrice = 5.0,
-        costPrice = 2.0,
+        sellPrice = Money(5.0),
+        costPrice = Money(2.0),
         stock = stock,
-        minStock = 0,
+        minStock = Quantity(0),
         unit = "เม็ด",
         regNo = null,
     )
@@ -343,12 +346,12 @@ class StockCountFormViewModelTest {
             dispatchers,
             drugs = FakeDrugRepository(
                 seed = listOf(
-                    drug("a", stock = 10),
-                    drug("b", stock = 100),
-                    drug("c", stock = 50),
-                    drug("d", stock = 0),
-                    drug("e", stock = 20),
-                    drug("f", stock = 1),
+                    drug("a", stock = Quantity(10)),
+                    drug("b", stock = Quantity(100)),
+                    drug("c", stock = Quantity(50)),
+                    drug("d", stock = Quantity(0)),
+                    drug("e", stock = Quantity(20)),
+                    drug("f", stock = Quantity(1)),
                 ),
             ),
         )

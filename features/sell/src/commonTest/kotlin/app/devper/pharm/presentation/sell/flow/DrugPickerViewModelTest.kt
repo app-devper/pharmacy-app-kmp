@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.AltUnit
@@ -31,8 +34,8 @@ class DrugPickerViewModelTest {
         stock: Int = 100,
     ) = Drug(
         id = id, name = name, genericName = null, type = null, strength = null,
-        barcode = barcode, sellPrice = 5.0, costPrice = 0.0, stock = stock,
-        minStock = 0, unit = "เม็ด", regNo = regNo, altUnits = altUnits,
+        barcode = barcode, sellPrice = Money(5.0), costPrice = Money(0.0), stock = Quantity(stock),
+        minStock = Quantity(0), unit = "เม็ด", regNo = regNo, altUnits = altUnits,
     )
 
     private data class Bundle(
@@ -102,7 +105,7 @@ class DrugPickerViewModelTest {
 
     @Test
     fun onTapDrug_with_visible_altUnits_opens_picker_sheet_without_adding() = runVmTest { dispatchers ->
-        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = 45.0)
+        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = Money(45.0))
         val d = drug(altUnits = listOf(alt))
         val (vm, cart) = newVm(dispatchers, repo = FakeDrugRepository(seed = listOf(d)))
         advanceUntilIdle()
@@ -115,7 +118,7 @@ class DrugPickerViewModelTest {
 
     @Test
     fun onTapDrug_with_all_hidden_altUnits_falls_through_to_base_unit_add() = runVmTest { dispatchers ->
-        val alt = AltUnit(name = "ซ่อน", factor = 5, sellPrice = 0.0, hidden = true)
+        val alt = AltUnit(name = "ซ่อน", factor = 5, sellPrice = Money(0.0), hidden = true)
         val d = drug(altUnits = listOf(alt))
         val (vm, cart) = newVm(dispatchers, repo = FakeDrugRepository(seed = listOf(d)))
         advanceUntilIdle()
@@ -129,7 +132,7 @@ class DrugPickerViewModelTest {
 
     @Test
     fun onPickAltUnit_adds_that_unit_and_closes_sheet() = runVmTest { dispatchers ->
-        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = 45.0)
+        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = Money(45.0))
         val d = drug(altUnits = listOf(alt))
         val (vm, cart) = newVm(dispatchers, repo = FakeDrugRepository(seed = listOf(d)))
         advanceUntilIdle()
@@ -143,7 +146,7 @@ class DrugPickerViewModelTest {
 
     @Test
     fun onPickAltUnit_null_adds_base_unit() = runVmTest { dispatchers ->
-        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = 45.0)
+        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = Money(45.0))
         val d = drug(altUnits = listOf(alt))
         val (vm, cart) = newVm(dispatchers, repo = FakeDrugRepository(seed = listOf(d)))
         advanceUntilIdle()
@@ -186,7 +189,7 @@ class DrugPickerViewModelTest {
 
     @Test
     fun onScanBarcode_alt_unit_match_adds_that_unit() = runVmTest { dispatchers ->
-        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = 45.0, barcode = "ALT-001")
+        val alt = AltUnit(name = "แผง", factor = 10, sellPrice = Money(45.0), barcode = "ALT-001")
         val d = drug(barcode = "DRUG-001", altUnits = listOf(alt))
         val (vm, cart) = newVm(dispatchers, repo = FakeDrugRepository(seed = listOf(d)))
         advanceUntilIdle()

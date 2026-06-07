@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.param.AddLotParam
 import app.devper.pharm.domain.param.DeleteLotParam

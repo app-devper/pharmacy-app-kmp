@@ -93,8 +93,9 @@ class CheckoutUseCase(
             .mapNotNull { (_, group) ->
                 val drug = group.first().drug
                 val totalQty = group.sumOf { it.qty }
-                if (totalQty > drug.stock.coerceAtLeast(0)) {
-                    OversellShortfall(drug.id, drug.name, totalQty, drug.stock.coerceAtLeast(0))
+                val available = drug.stock.value.coerceAtLeast(0)
+                if (totalQty > available) {
+                    OversellShortfall(drug.id, drug.name, totalQty, available)
                 } else null
             }
 }

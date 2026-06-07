@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -151,7 +154,7 @@ private fun StockCountFormUiState.toFormRows(): List<StockCountFormRow> {
     return filtered.map { drug ->
         val text = counts[drug.id].orEmpty()
         val counted = text.toIntOrNull()
-        val delta = counted?.let { it - drug.stock }
+        val delta = counted?.let { it - drug.stock.value }
         StockCountFormRow(
             drug = drug,
             countedText = text,
@@ -166,27 +169,27 @@ private val previewDrugs = listOf(
     Drug(
         id = "1", name = "พาราเซตามอล 500mg", genericName = "Paracetamol",
         type = "cur", strength = "500mg", barcode = "8851234567001",
-        sellPrice = 2.0, costPrice = 1.2, stock = 480, minStock = 20, unit = "เม็ด", regNo = null,
+        sellPrice = Money(2.0), costPrice = Money(1.2), stock = Quantity(480), minStock = Quantity(20), unit = "เม็ด", regNo = null,
     ),
     Drug(
         id = "2", name = "อะม็อกซีซิลลิน 500mg", genericName = "Amoxicillin",
         type = "cur", strength = "500mg", barcode = "8851234567002",
-        sellPrice = 8.0, costPrice = 5.5, stock = 120, minStock = 30, unit = "แคปซูล", regNo = null,
+        sellPrice = Money(8.0), costPrice = Money(5.5), stock = Quantity(120), minStock = Quantity(30), unit = "แคปซูล", regNo = null,
     ),
     Drug(
         id = "3", name = "ไอบูโพรเฟน 400mg", genericName = "Ibuprofen",
         type = "cur", strength = "400mg", barcode = "8851234567003",
-        sellPrice = 3.0, costPrice = 1.8, stock = 0, minStock = 20, unit = "เม็ด", regNo = null,
+        sellPrice = Money(3.0), costPrice = Money(1.8), stock = Quantity(0), minStock = Quantity(20), unit = "เม็ด", regNo = null,
     ),
     Drug(
         id = "4", name = "ฟ้าทะลายโจร แคปซูล", genericName = "Andrographis",
         type = "herb", strength = "400mg", barcode = "8851234567004",
-        sellPrice = 120.0, costPrice = 75.0, stock = 38, minStock = 10, unit = "ขวด", regNo = null,
+        sellPrice = Money(120.0), costPrice = Money(75.0), stock = Quantity(38), minStock = Quantity(10), unit = "ขวด", regNo = null,
     ),
     Drug(
         id = "5", name = "วิตามินซี 1000mg", genericName = "Vit C",
         type = "supp", strength = "1000mg", barcode = "8851234567005",
-        sellPrice = 180.0, costPrice = 110.0, stock = 64, minStock = 5, unit = "ขวด", regNo = null,
+        sellPrice = Money(180.0), costPrice = Money(110.0), stock = Quantity(64), minStock = Quantity(5), unit = "ขวด", regNo = null,
     ),
 )
 

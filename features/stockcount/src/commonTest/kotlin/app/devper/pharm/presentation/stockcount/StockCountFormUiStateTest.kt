@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.domain.model.Drug
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,7 +14,7 @@ class StockCountFormUiStateTest {
     private fun drug(id: String = "d1", name: String = "Paracetamol") = Drug(
         id = id, name = name,
         genericName = null, type = null, strength = null, barcode = null,
-        sellPrice = 0.0, costPrice = 0.0, stock = 0, minStock = 0, unit = "ชิ้น", regNo = null,
+        sellPrice = Money(0.0), costPrice = Money(0.0), stock = Quantity(0), minStock = Quantity(0), unit = "ชิ้น", regNo = null,
     )
 
     @Test

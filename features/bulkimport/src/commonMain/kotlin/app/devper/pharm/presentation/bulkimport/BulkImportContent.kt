@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.bulkimport
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -271,27 +274,27 @@ private val sampleParsed: List<AddDrugParam> = listOf(
         name = "พาราเซตามอล 500mg",
         genericName = "Paracetamol",
         unit = "เม็ด",
-        sellPrice = 2.0,
-        stock = 100,
+        sellPrice = Money(2.0),
+        stock = Quantity(100),
     ),
     AddDrugParam(
         name = "อะม็อกซีซิลลิน 500mg",
         genericName = "Amoxicillin",
         unit = "แคปซูล",
-        sellPrice = 5.0,
-        stock = 200,
+        sellPrice = Money(5.0),
+        stock = Quantity(200),
     ),
     AddDrugParam(
         name = "ลอราทาดีน 10mg",
         unit = "เม็ด",
-        sellPrice = 3.0,
-        stock = 80,
+        sellPrice = Money(3.0),
+        stock = Quantity(80),
     ),
     AddDrugParam(
         name = "ไอบูโพรเฟน 400mg",
         unit = "เม็ด",
-        sellPrice = 4.0,
-        stock = 60,
+        sellPrice = Money(4.0),
+        stock = Quantity(60),
     ),
 )
 

@@ -107,7 +107,7 @@ internal fun StockTable(
             hideInCompact = true,
             cell = { drug ->
                 Text(
-                    text = fmtBaht(drug.costPrice),
+                    text = fmtBaht(drug.costPrice.amount),
                     style = PharmText.meta.copy(color = t.colors.fg3),
                 )
             },
@@ -118,7 +118,7 @@ internal fun StockTable(
             align = PharmColumnAlign.End,
             cell = { drug ->
                 Text(
-                    text = fmtBaht(drug.sellPrice),
+                    text = fmtBaht(drug.sellPrice.amount),
                     style = PharmText.bodySm.copy(fontWeight = FontWeight.SemiBold),
                 )
             },
@@ -218,7 +218,7 @@ private fun KyBadgesCell(drug: Drug) {
 private fun StockQtyCell(drug: Drug) {
     val t = pharmTokens
     val stockColor = when {
-        drug.stock < 0 -> t.colors.dangerFg
+        drug.stock.value < 0 -> t.colors.dangerFg
         drug.stockStatus == StockStatus.OutOrOversold -> t.colors.warningFg
         drug.stockStatus == StockStatus.Low -> t.colors.warningFg
         else -> t.colors.fg1
@@ -242,7 +242,7 @@ private fun StockQtyCell(drug: Drug) {
 private fun StockStatusBadge(drug: Drug) {
     val (tone, label) = when (drug.stockStatus) {
         StockStatus.OutOrOversold ->
-            if (drug.stock < 0) PharmBadgeTone.Red to "ค้างส่ง"
+            if (drug.stock.value < 0) PharmBadgeTone.Red to "ค้างส่ง"
             else PharmBadgeTone.Amber to "หมด"
         StockStatus.Low -> PharmBadgeTone.Amber to "ใกล้หมด"
         StockStatus.Healthy -> PharmBadgeTone.Green to "ปกติ"

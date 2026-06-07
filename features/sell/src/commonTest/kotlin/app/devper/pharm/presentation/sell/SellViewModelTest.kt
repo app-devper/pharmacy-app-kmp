@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
@@ -44,10 +47,10 @@ class SellViewModelTest {
         type = null,
         strength = null,
         barcode = null,
-        sellPrice = price,
-        costPrice = 0.0,
-        stock = stock,
-        minStock = 0,
+        sellPrice = Money(price),
+        costPrice = Money(0.0),
+        stock = Quantity(stock),
+        minStock = Quantity(0),
         unit = "เม็ด",
         regNo = null,
     )

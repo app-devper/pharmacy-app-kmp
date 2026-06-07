@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
@@ -43,8 +46,8 @@ class CheckoutViewModelTest {
     private fun drug(
         id: String = "d1",
         name: String = "Paracetamol",
-        stock: Int = 100,
-        price: Double = 5.0,
+        stock: Quantity = Quantity(100),
+        price: Money = Money(5.0),
         reportTypes: List<String> = emptyList(),
     ) = Drug(
         id = id,
@@ -54,9 +57,9 @@ class CheckoutViewModelTest {
         strength = null,
         barcode = null,
         sellPrice = price,
-        costPrice = 0.0,
+        costPrice = Money(0.0),
         stock = stock,
-        minStock = 0,
+        minStock = Quantity(0),
         unit = "เม็ด",
         regNo = "REG-001",
         reportTypes = reportTypes,
@@ -349,7 +352,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun submit_oversell_routes_to_confirm_sheet() = runVmTest { dispatchers ->
-        val lowStock = drug(stock = 1)
+        val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
             dispatchers,
             FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100"),
@@ -369,7 +372,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun confirmOversell_reruns_with_allowOversell_flag() = runVmTest { dispatchers ->
-        val lowStock = drug(stock = 1)
+        val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
             dispatchers,
             FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100"),
@@ -387,7 +390,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun dismissOversell_clears_pending_without_rerun() = runVmTest { dispatchers ->
-        val lowStock = drug(stock = 1)
+        val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
             dispatchers,
             FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100"),

@@ -1,5 +1,7 @@
 package app.devper.pharm.data.repository.internal
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.dto.AltUnitDto
 import app.devper.pharm.data.remote.dto.BulkImportResultDto
@@ -25,13 +27,13 @@ internal fun DrugDto.toDomain(): Drug = Drug(
     type = type?.takeIf { it.isNotBlank() },
     strength = strength?.takeIf { it.isNotBlank() },
     barcode = barcode?.takeIf { it.isNotBlank() },
-    sellPrice = sellPrice,
-    costPrice = costPrice,
-    stock = stock,
-    minStock = minStock,
+    sellPrice = Money(sellPrice),
+    costPrice = Money(costPrice),
+    stock = Quantity(stock),
+    minStock = Quantity(minStock),
     unit = unit?.takeIf { it.isNotBlank() },
     regNo = regNo?.takeIf { it.isNotBlank() },
-    prices = prices.orEmpty(),
+    prices = prices.orEmpty().mapValues { Money(it.value) },
     altUnits = altUnits.orEmpty().map { it.toDomain() },
     reportTypes = reportTypes.orEmpty(),
 )
@@ -39,8 +41,8 @@ internal fun DrugDto.toDomain(): Drug = Drug(
 internal fun AltUnitDto.toDomain(): AltUnit = AltUnit(
     name = name,
     factor = factor,
-    sellPrice = sellPrice,
-    prices = prices.orEmpty(),
+    sellPrice = Money(sellPrice),
+    prices = prices.orEmpty().mapValues { Money(it.value) },
     barcode = barcode?.takeIf { it.isNotBlank() },
     hidden = hidden,
 )
@@ -76,15 +78,15 @@ internal fun AddDrugParam.toRequest(): DrugInputDto = DrugInputDto(
     type = type,
     strength = strength,
     barcode = barcode,
-    sellPrice = sellPrice,
-    costPrice = costPrice,
-    stock = stock,
-    minStock = minStock,
+    sellPrice = sellPrice.amount,
+    costPrice = costPrice.amount,
+    stock = stock.value,
+    minStock = minStock.value,
     regNo = regNo,
     unit = unit,
     reportTypes = reportTypes,
     altUnits = altUnits.map { it.toDto() },
-    prices = prices,
+    prices = prices.mapValues { it.value.amount },
     createLot = createLot?.toDto(),
 )
 
@@ -94,21 +96,21 @@ internal fun UpdateDrugParam.toRequest(): DrugUpdateDto = DrugUpdateDto(
     type = type,
     strength = strength,
     barcode = barcode,
-    sellPrice = sellPrice,
-    costPrice = costPrice,
-    minStock = minStock,
+    sellPrice = sellPrice.amount,
+    costPrice = costPrice.amount,
+    minStock = minStock.value,
     regNo = regNo,
     unit = unit,
     reportTypes = reportTypes,
     altUnits = altUnits.map { it.toDto() },
-    prices = prices,
+    prices = prices.mapValues { it.value.amount },
 )
 
 internal fun AltUnit.toDto(): AltUnitDto = AltUnitDto(
     name = name,
     factor = factor,
-    sellPrice = sellPrice,
-    prices = prices,
+    sellPrice = sellPrice.amount,
+    prices = prices.mapValues { it.value.amount },
     barcode = barcode,
     hidden = hidden,
 )
@@ -117,7 +119,7 @@ internal fun CreateLotPayload.toDto(): CreateLotDto = CreateLotDto(
     lotNumber = lotNumber,
     expiryDate = expiryDate.toIso(),
     importDate = importDate?.toIso(),
-    costPrice = costPrice,
-    sellPrice = sellPrice,
-    quantity = quantity,
+    costPrice = costPrice?.amount,
+    sellPrice = sellPrice?.amount,
+    quantity = quantity.value,
 )

@@ -1,5 +1,7 @@
 package app.devper.pharm.data.storage
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.CartDiscount
@@ -120,9 +122,9 @@ private fun Drug.toDto() = ParkedDrugDto(
     barcode = barcode,
     regNo = regNo,
     unit = unit,
-    sellPrice = sellPrice,
-    stock = stock,
-    prices = prices,
+    sellPrice = sellPrice.amount,
+    stock = stock.value,
+    prices = prices.mapValues { it.value.amount },
     altUnits = altUnits.map { it.toDto() },
     reportTypes = reportTypes,
 )
@@ -134,13 +136,13 @@ private fun ParkedDrugDto.toDomain() = Drug(
     type = null,
     strength = null,
     barcode = barcode,
-    sellPrice = sellPrice,
-    costPrice = 0.0,
-    stock = stock,
-    minStock = 0,
+    sellPrice = Money(sellPrice),
+    costPrice = Money.Zero,
+    stock = Quantity(stock),
+    minStock = Quantity.Zero,
     unit = unit,
     regNo = regNo,
-    prices = prices,
+    prices = prices.mapValues { Money(it.value) },
     altUnits = altUnits.map { it.toDomain() },
     reportTypes = reportTypes,
 )
@@ -148,8 +150,8 @@ private fun ParkedDrugDto.toDomain() = Drug(
 private fun AltUnit.toDto() = ParkedAltUnitDto(
     name = name,
     factor = factor,
-    sellPrice = sellPrice,
-    prices = prices,
+    sellPrice = sellPrice.amount,
+    prices = prices.mapValues { it.value.amount },
     barcode = barcode,
     hidden = hidden,
 )
@@ -157,8 +159,8 @@ private fun AltUnit.toDto() = ParkedAltUnitDto(
 private fun ParkedAltUnitDto.toDomain() = AltUnit(
     name = name,
     factor = factor,
-    sellPrice = sellPrice,
-    prices = prices,
+    sellPrice = Money(sellPrice),
+    prices = prices.mapValues { Money(it.value) },
     barcode = barcode,
     hidden = hidden,
 )

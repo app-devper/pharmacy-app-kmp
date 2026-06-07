@@ -2,6 +2,9 @@
 
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
 import app.devper.pharm.data.storage.MemorySettings
 import app.devper.pharm.data.storage.ParkedCartStorage
 import app.devper.pharm.domain.model.CartLine
@@ -33,10 +36,10 @@ class CartRepositoryImplAtomicityTest {
             type = null,
             strength = null,
             barcode = null,
-            sellPrice = 5.0,
-            costPrice = 2.0,
-            stock = 100,
-            minStock = 0,
+            sellPrice = Money(5.0),
+            costPrice = Money(2.0),
+            stock = Quantity(100),
+            minStock = Quantity(0),
             unit = "เม็ด",
             regNo = null,
         )

@@ -11,9 +11,9 @@ import app.devper.pharm.ui.theme.fmtBaht
 @Composable
 internal fun StockMetricsRow(drugs: List<Drug>, modifier: Modifier = Modifier) {
     val total = drugs.size
-    val oos = drugs.count { it.stock <= 0 }
-    val low = drugs.count { it.stock > 0 && it.minStock > 0 && it.stock <= it.minStock }
-    val stockValue = drugs.sumOf { it.stock.coerceAtLeast(0) * it.costPrice }
+    val oos = drugs.count { !it.stock.isPositive }
+    val low = drugs.count { it.stock.isPositive && it.minStock.isPositive && it.stock <= it.minStock }
+    val stockValue = drugs.sumOf { it.stock.value.coerceAtLeast(0) * it.costPrice.amount }
 
     MetricCardRow(modifier = modifier) {
         MetricCard(

@@ -99,7 +99,7 @@ class LabelPrintViewModel(
         drugName = name,
         lotNumber = "",
         barcode = (barcode?.takeIf { it.isNotBlank() }) ?: id,
-        price = sellPrice,
+        price = sellPrice.amount,
         includePrice = true,
         copies = 1,
     )

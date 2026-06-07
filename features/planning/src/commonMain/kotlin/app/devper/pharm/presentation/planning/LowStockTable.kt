@@ -113,10 +113,10 @@ private fun LowStockCurrentCell(drug: Drug) {
 @Composable
 private fun LowStockMinCell(drug: Drug) {
     val t = pharmTokens
-    val text = if (drug.minStock > 0) drug.minStock.toString() else "—"
+    val text = if (drug.minStock.isPositive) drug.minStock.toString() else "—"
     Text(
         text = text,
-        style = PharmText.bodySm.copy(color = if (drug.minStock > 0) t.colors.fg2 else t.colors.fgMuted).tabular(),
+        style = PharmText.bodySm.copy(color = if (drug.minStock.isPositive) t.colors.fg2 else t.colors.fgMuted).tabular(),
         maxLines = 1,
     )
 }
