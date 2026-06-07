@@ -13,13 +13,10 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListCard
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
+import app.devper.pharm.ui.format.millisToBuddhistDisplayWithTime
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun OfflineSyncCard(
@@ -77,13 +74,5 @@ internal fun OfflineSyncCard(
     )
 }
 
-@OptIn(ExperimentalTime::class)
-private fun formatEnqueuedAt(millis: Long, tz: TimeZone): String {
-    val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(tz)
-    val mm = dt.month.number.toString().padStart(2, '0')
-    val dd = dt.day.toString().padStart(2, '0')
-    val yy = (dt.year % 100).toString().padStart(2, '0')
-    val hh = dt.hour.toString().padStart(2, '0')
-    val mi = dt.minute.toString().padStart(2, '0')
-    return "$dd/$mm/$yy $hh:$mi"
-}
+private fun formatEnqueuedAt(millis: Long, tz: TimeZone): String =
+    millisToBuddhistDisplayWithTime(millis, tz)
