@@ -59,4 +59,44 @@ class BuddhistEraTest {
             .toEpochMilliseconds()
         assertEquals("07/06/2569 01:05", millisToBuddhistDisplayWithTime(millis, TZ))
     }
+
+    @Test
+    fun isoDateToBuddhist_parses_iso_date() {
+        assertEquals("31/12/2569", isoDateToBuddhist("2026-12-31"))
+    }
+
+    @Test
+    fun isoDateToBuddhist_returns_empty_for_blank() {
+        assertEquals("", isoDateToBuddhist(""))
+    }
+
+    @Test
+    fun isoDateToBuddhist_returns_original_on_parse_failure() {
+        assertEquals("not-a-date", isoDateToBuddhist("not-a-date"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_parses_local_iso() {
+        assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_strips_trailing_z() {
+        assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00Z"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_strips_offset() {
+        assertEquals("17/05/2569 14:42", isoDateTimeToBuddhist("2026-05-17T14:42:00+07:00"))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_returns_empty_for_blank() {
+        assertEquals("", isoDateTimeToBuddhist(""))
+    }
+
+    @Test
+    fun isoDateTimeToBuddhist_returns_original_on_parse_failure() {
+        assertEquals("garbage", isoDateTimeToBuddhist("garbage"))
+    }
 }

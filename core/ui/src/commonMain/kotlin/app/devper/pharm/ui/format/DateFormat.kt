@@ -59,3 +59,19 @@ fun millisToBuddhistDisplayWithTime(millis: Long, tz: TimeZone = DEFAULT_ZONE): 
 @OptIn(ExperimentalTime::class)
 fun todayBuddhistDisplay(tz: TimeZone = DEFAULT_ZONE): String =
     toBuddhistEraDisplay(Clock.System.now().toLocalDateTime(tz).date)
+
+fun isoDateToBuddhist(s: String): String {
+    if (s.isBlank()) return ""
+    val date = runCatching { LocalDate.parse(s) }.getOrNull() ?: return s
+    return toBuddhistEraDisplay(date)
+}
+
+fun isoDateTimeToBuddhist(s: String): String {
+    if (s.isBlank()) return ""
+    val trimmed = s.removeSuffix("Z").substringBefore('+').take(19)
+    val dt = runCatching { LocalDateTime.parse(trimmed) }.getOrNull() ?: return s
+    val datePart = toBuddhistEraDisplay(dt.date)
+    val hh = dt.hour.toString().padStart(2, '0')
+    val mi = dt.minute.toString().padStart(2, '0')
+    return "$datePart $hh:$mi"
+}
