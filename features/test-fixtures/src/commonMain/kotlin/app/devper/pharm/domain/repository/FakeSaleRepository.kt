@@ -34,7 +34,7 @@ class FakeSaleRepository(
         lastCheckout = param
         checkoutThrows?.let { throw it }
         return successResult.copy(
-            total = Money(param.items.sumOf { it.unitPrice * it.qty } - param.discount),
+            total = param.items.fold(Money.Zero) { acc, item -> acc + item.unitPrice * item.qty } - param.discount,
         )
     }
 

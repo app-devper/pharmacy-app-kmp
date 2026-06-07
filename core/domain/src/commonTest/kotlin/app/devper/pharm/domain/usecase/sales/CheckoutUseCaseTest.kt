@@ -50,7 +50,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun empty_cart_fails_with_validation() = runTest {
-        val result = useCase(cart(), FakeSales()).invoke(received = 0.0)
+        val result = useCase(cart(), FakeSales()).invoke(received = Money(0.0))
         assertTrue(result.isFailure)
         val failure = result.exceptionOrNull()
         assertTrue(failure is CheckoutFailure)
@@ -60,7 +60,7 @@ class CheckoutUseCaseTest {
     @Test
     fun shortfall_without_oversell_routes_to_confirm() = runTest {
         val line = CartLine(drug = drug("a", stock = 1), qty = 3)
-        val outcome = useCase(cart(line), FakeSales()).invoke(received = 100.0).getOrThrow()
+        val outcome = useCase(cart(line), FakeSales()).invoke(received = Money(100.0)).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.NeedsOversellConfirm)
         val shortfalls = outcome.shortfalls
         assertEquals(1, shortfalls.size)
@@ -74,7 +74,7 @@ class CheckoutUseCaseTest {
         val outcome = useCase(
             cart(CartLine(drug = d, qty = 3), CartLine(drug = d, qty = 3, tier = "x")),
             FakeSales(),
-        ).invoke(received = 100.0).getOrThrow()
+        ).invoke(received = Money(100.0)).getOrThrow()
         val shortfalls = (outcome as CheckoutOutcome.NeedsOversellConfirm).shortfalls
         assertEquals(1, shortfalls.size)
         assertEquals(6, shortfalls[0].asked)
@@ -86,7 +86,7 @@ class CheckoutUseCaseTest {
         val sales = FakeSales()
         val short = CartLine(drug = drug("short", stock = 1), qty = 3)
         val ok = CartLine(drug = drug("ok", stock = 50), qty = 2)
-        val outcome = useCase(cart(short, ok), sales).invoke(received = 100.0, allowOversell = true).getOrThrow()
+        val outcome = useCase(cart(short, ok), sales).invoke(received = Money(100.0), allowOversell = true).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         val param = sales.lastParam!!
         assertTrue(param.items.first { it.drugId == "short" }.allowOversell)
@@ -97,7 +97,7 @@ class CheckoutUseCaseTest {
     fun line_without_alt_unit_sends_unit_factor_one_not_zero() = runTest {
         val sales = FakeSales()
         val line = CartLine(drug = drug("a", stock = 10), qty = 2)
-        useCase(cart(line), sales).invoke(received = 100.0).getOrThrow()
+        useCase(cart(line), sales).invoke(received = Money(100.0)).getOrThrow()
         val itemParam = sales.lastParam!!.items.single()
         assertEquals(1, itemParam.unitFactor)
         assertEquals("", itemParam.unit)
@@ -110,7 +110,7 @@ class CheckoutUseCaseTest {
             name = "กล่อง", factor = 10, sellPrice = Money(100.0),
         )
         val line = CartLine(drug = drug("a", stock = 100), qty = 10, selectedUnit = alt)
-        useCase(cart(line), sales).invoke(received = 200.0).getOrThrow()
+        useCase(cart(line), sales).invoke(received = Money(200.0)).getOrThrow()
         val itemParam = sales.lastParam!!.items.single()
         assertEquals(10, itemParam.unitFactor)
         assertEquals("กล่อง", itemParam.unit)
@@ -120,7 +120,7 @@ class CheckoutUseCaseTest {
     fun success_commits_receipt_to_cart() = runTest {
         val sales = FakeSales()
         val fakeCart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
-        val outcome = CheckoutUseCase(fakeCart, sales, testDispatchers()).invoke(received = 100.0).getOrThrow()
+        val outcome = CheckoutUseCase(fakeCart, sales, testDispatchers()).invoke(received = Money(100.0)).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         assertEquals(sales.sale.id, fakeCart.committed?.id)
     }
@@ -133,7 +133,7 @@ class CheckoutUseCaseTest {
             FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1))),
             sales,
             testDispatchers(),
-        ).invoke(received = 100.0, clientRequestId = "req-1")
+        ).invoke(received = Money(100.0), clientRequestId = "req-1")
         assertTrue(result.isFailure)
         val failure = result.exceptionOrNull() as CheckoutFailure
         assertEquals(boom, failure.cause)
