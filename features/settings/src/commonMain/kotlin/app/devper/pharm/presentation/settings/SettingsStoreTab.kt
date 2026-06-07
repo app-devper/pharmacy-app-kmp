@@ -9,39 +9,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun SettingsStoreTab(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
     val f = state.form
-    SettingsLabeledField(label = "ชื่อร้าน *") {
-        SettingsFormField(value = f.storeName, onValueChange = editor.onStoreName, placeholder = "เช่น ร้านยาดี")
+    val s = pharmStrings
+    SettingsLabeledField(label = s.settingsStoreNameLabel) {
+        SettingsFormField(value = f.storeName, onValueChange = editor.onStoreName, placeholder = s.settingsStoreNamePlaceholder)
     }
-    SettingsLabeledField(label = "ที่อยู่") {
+    SettingsLabeledField(label = s.settingsStoreAddress) {
         SettingsFormField(value = f.storeAddress, onValueChange = editor.onStoreAddress)
     }
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val twoCol = maxWidth >= 560.dp
         if (twoCol) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                SettingsLabeledField(label = "เบอร์โทร", modifier = Modifier.weight(1f)) {
+                SettingsLabeledField(label = s.commonPhone, modifier = Modifier.weight(1f)) {
                     SettingsFormField(value = f.storePhone, onValueChange = editor.onStorePhone, keyboardType = KeyboardType.Phone)
                 }
-                SettingsLabeledField(label = "เลขผู้เสียภาษี", modifier = Modifier.weight(1f)) {
+                SettingsLabeledField(label = s.settingsStoreTaxId, modifier = Modifier.weight(1f)) {
                     SettingsFormField(value = f.storeTaxId, onValueChange = editor.onStoreTaxId)
                 }
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                SettingsLabeledField(label = "เบอร์โทร") {
+                SettingsLabeledField(label = s.commonPhone) {
                     SettingsFormField(value = f.storePhone, onValueChange = editor.onStorePhone, keyboardType = KeyboardType.Phone)
                 }
-                SettingsLabeledField(label = "เลขผู้เสียภาษี") {
+                SettingsLabeledField(label = s.settingsStoreTaxId) {
                     SettingsFormField(value = f.storeTaxId, onValueChange = editor.onStoreTaxId)
                 }
             }
         }
     }
-    SettingsLabeledField(label = "เขตเวลา (IANA)") {
+    SettingsLabeledField(label = s.settingsStoreTimezone) {
         SettingsFormField(value = f.timezone, onValueChange = editor.onTimezone, placeholder = "Asia/Bangkok")
     }
 }
