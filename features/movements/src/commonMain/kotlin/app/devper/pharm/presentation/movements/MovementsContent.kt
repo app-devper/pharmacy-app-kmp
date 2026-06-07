@@ -110,8 +110,7 @@ private fun MovementsContent_Loaded_Preview() {
             state = MovementsUiState(
                 items = sampleMovements,
                 total = sampleMovements.size,
-                from = "2026-04-17",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-04-17", to = "2026-05-17"),
             ),
         )
     }
@@ -125,8 +124,7 @@ private fun MovementsContent_Empty_Preview() {
             state = MovementsUiState(
                 items = emptyList(),
                 total = 0,
-                from = "2026-04-17",
-                to = "2026-05-17",
+                dateRange = app.devper.pharm.ui.format.DateRangeFilter(from = "2026-04-17", to = "2026-05-17"),
             ),
         )
     }
