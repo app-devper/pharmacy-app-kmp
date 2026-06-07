@@ -45,6 +45,18 @@ internal fun ProfileDisplayPreferences(
                 scrollable = false,
             )
         }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(text = "ภาษา", style = PharmText.bodySm.copy(color = pharmTokens.colors.fg2))
+            PharmSingleSelectChips(
+                chips = LocaleChips,
+                activeId = state.locale,
+                onSelect = callbacks.onLocaleChange,
+                scrollable = false,
+            )
+            state.localeChangeMessage?.let { msg ->
+                Text(text = msg, style = PharmText.meta.copy(color = pharmTokens.colors.accent))
+            }
+        }
     }
 }
 
@@ -64,4 +76,10 @@ private val FontSizeChips = listOf(
 private val DensityChips = listOf(
     PharmFilterChip(id = "comfortable", label = "สบายตา"),
     PharmFilterChip(id = "compact", label = "กระชับ"),
+)
+
+private val LocaleChips = listOf(
+    PharmFilterChip(id = "system", label = "ตามระบบ"),
+    PharmFilterChip(id = "th", label = "ไทย"),
+    PharmFilterChip(id = "en", label = "English"),
 )

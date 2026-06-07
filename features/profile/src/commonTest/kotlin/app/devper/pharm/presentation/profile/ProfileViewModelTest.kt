@@ -29,6 +29,7 @@ class ProfileViewModelTest {
             setTheme = app.devper.pharm.domain.usecase.SetThemePreferenceUseCase(uiPrefs),
             setFontSize = app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase(uiPrefs),
             setDensity = app.devper.pharm.domain.usecase.SetDensityPreferenceUseCase(uiPrefs),
+            setLocale = app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase(uiPrefs),
         )
     }
 
@@ -155,5 +156,43 @@ class ProfileViewModelTest {
         vm.onDensityChange("compact")
         advanceUntilIdle()
         assertEquals("compact", vm.state.value.density)
+    }
+
+    @Test
+    fun locale_change_is_reflected_in_state_and_surfaces_restart_message() = runVmTest { dispatchers ->
+        val fake = FakeProfileRepository()
+        val vm = bundle(fake, dispatchers)
+        advanceUntilIdle()
+        assertEquals("system", vm.state.value.locale)
+        assertNull(vm.state.value.localeChangeMessage)
+
+        vm.onLocaleChange("en")
+        advanceUntilIdle()
+
+        assertEquals("en", vm.state.value.locale)
+        assertNotNull(vm.state.value.localeChangeMessage)
+    }
+
+    @Test
+    fun locale_change_to_same_value_does_not_surface_restart_message() = runVmTest { dispatchers ->
+        val fake = FakeProfileRepository()
+        val vm = bundle(fake, dispatchers)
+        advanceUntilIdle()
+        vm.onLocaleChange("system")
+        advanceUntilIdle()
+        assertNull(vm.state.value.localeChangeMessage)
+    }
+
+    @Test
+    fun dismiss_locale_change_message_clears_it() = runVmTest { dispatchers ->
+        val fake = FakeProfileRepository()
+        val vm = bundle(fake, dispatchers)
+        advanceUntilIdle()
+        vm.onLocaleChange("th")
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.localeChangeMessage)
+        vm.dismissLocaleChangeMessage()
+        advanceUntilIdle()
+        assertNull(vm.state.value.localeChangeMessage)
     }
 }

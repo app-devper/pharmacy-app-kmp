@@ -30,6 +30,8 @@ data class ProfileUiState(
     val theme: String = "auto",
     val fontSize: String = "md",
     val density: String = "comfortable",
+    val locale: String = "system",
+    val localeChangeMessage: String? = null,
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,

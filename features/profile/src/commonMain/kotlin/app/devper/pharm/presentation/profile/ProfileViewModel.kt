@@ -5,6 +5,7 @@ import app.devper.pharm.common.error.ErrorMessages
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
+import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.observer.UiPreferencesProvider
@@ -14,6 +15,7 @@ import app.devper.pharm.domain.usecase.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.GetProfileUseCase
 import app.devper.pharm.domain.usecase.SetDensityPreferenceUseCase
 import app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase
+import app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase
 import app.devper.pharm.domain.usecase.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.UpdateProfileUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
@@ -28,13 +30,21 @@ class ProfileViewModel(
     private val setTheme: SetThemePreferenceUseCase,
     private val setFontSize: SetFontSizePreferenceUseCase,
     private val setDensity: SetDensityPreferenceUseCase,
+    private val setLocale: SetLocalePreferenceUseCase,
 ) : BaseFormViewModel<ProfileUiState>(ProfileUiState()) {
 
     init {
         load()
         uiPreferences.state
             .onEach { prefs ->
-                setState { copy(theme = prefs.theme.wire, fontSize = prefs.fontSize.wire, density = prefs.density.wire) }
+                setState {
+                    copy(
+                        theme = prefs.theme.wire,
+                        fontSize = prefs.fontSize.wire,
+                        density = prefs.density.wire,
+                        locale = prefs.locale.wire,
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -69,6 +79,15 @@ class ProfileViewModel(
     fun onDensityChange(value: String) {
         setDensity(DensityPreference.parse(value))
     }
+
+    fun onLocaleChange(value: String) {
+        val parsed = LocalePreference.parse(value)
+        if (parsed.wire == current.locale) return
+        setLocale(parsed)
+        setState { copy(localeChangeMessage = LOCALE_RESTART_MESSAGE) }
+    }
+
+    fun dismissLocaleChangeMessage() = setState { copy(localeChangeMessage = null) }
 
     fun submitPasswordChange() {
         val pwd = current.password
@@ -136,5 +155,9 @@ class ProfileViewModel(
 
     private fun patchPassword(transform: PasswordFormFields.() -> PasswordFormFields) {
         setState { copy(password = password.transform()) }
+    }
+
+    private companion object {
+        const val LOCALE_RESTART_MESSAGE = "ภาษาจะเปลี่ยนหลังจากเปิดแอปใหม่"
     }
 }

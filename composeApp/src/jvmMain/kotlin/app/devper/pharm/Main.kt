@@ -29,8 +29,11 @@ import org.koin.dsl.module
 import java.util.prefs.Preferences
 
 fun main() {
+    val rootPreferences = Preferences.userRoot().node("pharmacy.app")
+    applyPersistedLocale(rootPreferences.get("ui.locale", null))
+
     val jvmPlatformModule = module {
-        single<Settings> { PreferencesSettings(Preferences.userRoot().node("pharmacy.app")) }
+        single<Settings> { PreferencesSettings(rootPreferences) }
         single<SecureStorage> { JvmSecureStorage() }
         single { buildHttpClient(Java, get<TokenStorage>(), enableLogging = true) }
 
@@ -56,4 +59,13 @@ fun main() {
             App()
         }
     }
+}
+
+private fun applyPersistedLocale(wire: String?) {
+    val tag = when (wire?.lowercase()) {
+        "th" -> "th"
+        "en" -> "en"
+        else -> null
+    } ?: return
+    java.util.Locale.setDefault(java.util.Locale.forLanguageTag(tag))
 }

@@ -38,6 +38,7 @@ fun ProfileScreen(
             onThemeChange = viewModel::onThemeChange,
             onFontSizeChange = viewModel::onFontSizeChange,
             onDensityChange = viewModel::onDensityChange,
+            onLocaleChange = viewModel::onLocaleChange,
             onBack = onBack,
         ),
     )
