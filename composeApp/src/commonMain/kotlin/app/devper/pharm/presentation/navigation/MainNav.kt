@@ -177,7 +177,7 @@ private val DEST_INFO: Map<String, DestInfo> = buildMap {
     add(Help::class, { it.navHelp }, Help::class)
     add(BulkImport::class, { "นำเข้ายาด้วย JSON" }, null)
     add(LowStock::class, { "ยาใกล้หมด" }, null)
-    add(Profile::class, { "ข้อมูลส่วนตัว" }, null)
+    add(Profile::class, { it.profileSectionPersonal }, null)
 }
 
 @Composable

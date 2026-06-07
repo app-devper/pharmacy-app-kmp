@@ -25,6 +25,7 @@ import app.devper.pharm.presentation.profile.components.ProfilePasswordSection
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -34,10 +35,11 @@ fun ProfileContent(
     callbacks: ProfileCallbacks,
 ) {
     val t = pharmTokens
+    val strings = pharmStrings
     val loadingEmpty = state.loading && state.user == null
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = "โปรไฟล์ของฉัน",
+            title = strings.profileTitle,
             onBack = callbacks.onBack,
         )
         Column(
@@ -58,20 +60,20 @@ fun ProfileContent(
             } else {
                 state.user?.let { user -> ProfileHeaderCard(user) }
                 ProfileCard(
-                    title = "ข้อมูลส่วนตัว",
-                    subtitle = "แก้ไขชื่อ, เบอร์โทร และอีเมลของบัญชีคุณ",
+                    title = strings.profileSectionPersonal,
+                    subtitle = strings.profileSectionPersonalSubtitle,
                 ) {
                     ProfileFormSection(state, callbacks)
                 }
                 ProfileCard(
-                    title = "เปลี่ยนรหัสผ่าน",
-                    subtitle = "รหัสใหม่ต้องไม่น้อยกว่า 8 ตัวอักษร",
+                    title = strings.profileSectionPassword,
+                    subtitle = strings.profileSectionPasswordSubtitle,
                 ) {
                     ProfilePasswordSection(state, callbacks)
                 }
                 ProfileCard(
-                    title = "การแสดงผล",
-                    subtitle = "ปรับสำหรับเครื่องนี้เท่านั้น",
+                    title = strings.profileSectionDisplay,
+                    subtitle = strings.profileSectionDisplaySubtitle,
                 ) {
                     ProfileDisplayPreferences(state, callbacks)
                 }

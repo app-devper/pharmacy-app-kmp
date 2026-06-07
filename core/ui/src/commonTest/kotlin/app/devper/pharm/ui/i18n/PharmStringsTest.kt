@@ -27,6 +27,17 @@ class PharmStringsTablesTest {
         check("navReports", PharmStringsTh.navReports, PharmStringsEn.navReports, mismatches)
         check("navSettings", PharmStringsTh.navSettings, PharmStringsEn.navSettings, mismatches)
         check("titleSell", PharmStringsTh.titleSell, PharmStringsEn.titleSell, mismatches)
+        check("profileTitle", PharmStringsTh.profileTitle, PharmStringsEn.profileTitle, mismatches)
+        check("profileSectionPersonal", PharmStringsTh.profileSectionPersonal, PharmStringsEn.profileSectionPersonal, mismatches)
+        check("profileFirstName", PharmStringsTh.profileFirstName, PharmStringsEn.profileFirstName, mismatches)
+        check("profileLastName", PharmStringsTh.profileLastName, PharmStringsEn.profileLastName, mismatches)
+        check("profileEmail", PharmStringsTh.profileEmail, PharmStringsEn.profileEmail, mismatches)
+        check("profilePasswordOld", PharmStringsTh.profilePasswordOld, PharmStringsEn.profilePasswordOld, mismatches)
+        check("profilePasswordChanged", PharmStringsTh.profilePasswordChanged, PharmStringsEn.profilePasswordChanged, mismatches)
+        check("profileDisplayTheme", PharmStringsTh.profileDisplayTheme, PharmStringsEn.profileDisplayTheme, mismatches)
+        check("profileThemeLight", PharmStringsTh.profileThemeLight, PharmStringsEn.profileThemeLight, mismatches)
+        check("profileFontMd", PharmStringsTh.profileFontMd, PharmStringsEn.profileFontMd, mismatches)
+        check("profileDensityComfortable", PharmStringsTh.profileDensityComfortable, PharmStringsEn.profileDensityComfortable, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
     }
 
