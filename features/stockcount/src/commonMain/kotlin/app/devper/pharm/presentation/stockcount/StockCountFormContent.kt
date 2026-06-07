@@ -25,6 +25,7 @@ import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,17 +38,18 @@ fun StockCountFormContent(
     history: List<StockCountHistoryEntry> = emptyList(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = "นับสต็อกใหม่",
+            title = s.stockCountHistoryNewCta,
             onBack = callbacks.onBack,
             actions = {
                 PharmSaveAction(
                     saving = false,
                     canSubmit = state.canSubmit,
                     onSubmit = callbacks.onSave,
-                    label = "บันทึก ${state.changedCount} รายการ",
+                    label = s.stockCountFormSaveCountLabel(state.changedCount),
                 )
             },
         )

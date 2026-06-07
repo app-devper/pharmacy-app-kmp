@@ -143,7 +143,32 @@ class PharmStringsTablesTest {
         check("bulkImportResultPartial", PharmStringsTh.bulkImportResultPartial, PharmStringsEn.bulkImportResultPartial, mismatches)
         check("bulkImportStatusReady", PharmStringsTh.bulkImportStatusReady, PharmStringsEn.bulkImportStatusReady, mismatches)
         check("bulkImportStatusError", PharmStringsTh.bulkImportStatusError, PharmStringsEn.bulkImportStatusError, mismatches)
+        check("stockCountHistoryTitle", PharmStringsTh.stockCountHistoryTitle, PharmStringsEn.stockCountHistoryTitle, mismatches)
+        check("stockCountHistorySubtitle", PharmStringsTh.stockCountHistorySubtitle, PharmStringsEn.stockCountHistorySubtitle, mismatches)
+        check("stockCountHistoryNewCta", PharmStringsTh.stockCountHistoryNewCta, PharmStringsEn.stockCountHistoryNewCta, mismatches)
+        check("stockCountHistoryEmpty", PharmStringsTh.stockCountHistoryEmpty, PharmStringsEn.stockCountHistoryEmpty, mismatches)
+        check("stockCountHeaderRound", PharmStringsTh.stockCountHeaderRound, PharmStringsEn.stockCountHeaderRound, mismatches)
+        check("stockCountStatusAdjusted", PharmStringsTh.stockCountStatusAdjusted, PharmStringsEn.stockCountStatusAdjusted, mismatches)
+        check("stockCountFormCounted", PharmStringsTh.stockCountFormCounted, PharmStringsEn.stockCountFormCounted, mismatches)
+        check("stockCountFormFillSystem", PharmStringsTh.stockCountFormFillSystem, PharmStringsEn.stockCountFormFillSystem, mismatches)
+        check("stockCountFormConfirmTitle", PharmStringsTh.stockCountFormConfirmTitle, PharmStringsEn.stockCountFormConfirmTitle, mismatches)
+        check("stockCountFormConfirmMessage", PharmStringsTh.stockCountFormConfirmMessage, PharmStringsEn.stockCountFormConfirmMessage, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun batch13_lambda_keys_interpolate_values_per_locale() {
+        assertTrue(PharmStringsTh.stockCountFormUnitLabel("เม็ด").contains("เม็ด"))
+        assertTrue(PharmStringsEn.stockCountFormUnitLabel("tablet").contains("tablet"))
+        val thStatus = PharmStringsTh.stockCountFormStatusLine(10, 5, 3, 8)
+        val enStatus = PharmStringsEn.stockCountFormStatusLine(10, 5, 3, 8)
+        assertTrue(thStatus.contains("10") && thStatus.contains("8"))
+        assertTrue(enStatus.contains("10") && enStatus.contains("8"))
+        assertNotEquals(thStatus, enStatus)
+        assertTrue(PharmStringsTh.stockCountFormSaveCountLabel(5).contains("5"))
+        assertTrue(PharmStringsEn.stockCountFormSaveCountLabel(5).contains("5"))
+        assertTrue(PharmStringsTh.stockCountFormTopDiscrepancy(3).contains("3"))
+        assertTrue(PharmStringsEn.stockCountFormTopDiscrepancy(3).contains("3"))
     }
 
     @Test

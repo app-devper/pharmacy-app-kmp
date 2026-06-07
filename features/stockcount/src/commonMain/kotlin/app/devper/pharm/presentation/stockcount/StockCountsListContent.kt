@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -50,7 +51,7 @@ fun StockCountsListContent(
         ) {
             PharmListResultLine(
                 total = state.counts.size,
-                noun = "รอบ",
+                noun = pharmStrings.stockCountHistoryCountNoun,
                 visible = visible.size,
                 searching = searching,
             )
