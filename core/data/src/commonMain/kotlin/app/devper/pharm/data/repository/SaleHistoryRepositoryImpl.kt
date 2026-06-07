@@ -1,13 +1,11 @@
 package app.devper.pharm.data.repository
 
 import app.devper.pharm.common.NotFoundException
-import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
 import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.SaleHistoryApi
 import app.devper.pharm.data.remote.dto.DrugReturnItemRequest
 import app.devper.pharm.data.remote.dto.DrugReturnRequest
-import app.devper.pharm.data.remote.dto.SaleItemDto
-import app.devper.pharm.data.remote.dto.SaleSummaryDto
+import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
@@ -54,28 +52,4 @@ class SaleHistoryRepositoryImpl(
         )
         stockChangeBus.emit()
     }
-
-    private fun SaleSummaryDto.toDomain() = SaleSummary(
-        id = id,
-        billNo = billNo ?: "",
-        customerName = customerName,
-        total = total,
-        discount = discount,
-        soldAt = soldAt.parseLocalDateTimeOrNull(),
-        voided = voided,
-    )
-
-    private fun SaleItemDto.toDomain(returnedQty: Int) = SaleItemSnapshot(
-        id = id,
-        drugId = drugId,
-        drugName = drugName,
-        qty = qty,
-        price = price,
-        originalPrice = originalPrice,
-        itemDiscount = itemDiscount,
-        unit = unit,
-        unitFactor = unitFactor,
-        priceTier = priceTier,
-        returnedQty = returnedQty,
-    )
 }

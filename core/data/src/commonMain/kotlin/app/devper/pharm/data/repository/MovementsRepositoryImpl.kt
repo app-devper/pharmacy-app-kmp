@@ -2,9 +2,7 @@ package app.devper.pharm.data.repository
 
 import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.MovementsApi
-import app.devper.pharm.data.remote.dto.MovementDto
-import app.devper.pharm.domain.model.MovementType
-import app.devper.pharm.domain.model.StockMovement
+import app.devper.pharm.data.repository.internal.toDomainOrNull
 import app.devper.pharm.domain.model.StockMovementsPage
 import app.devper.pharm.domain.param.MovementsFilterParam
 import app.devper.pharm.domain.repository.MovementsRepository
@@ -23,22 +21,8 @@ class MovementsRepositoryImpl(
             offset = filter.offset,
         )
         return StockMovementsPage(
-            items = dto.items.mapNotNull(::toDomainOrNull),
+            items = dto.items.mapNotNull { it.toDomainOrNull() },
             total = dto.total,
-        )
-    }
-
-    private fun toDomainOrNull(d: MovementDto): StockMovement? {
-        val type = MovementType.fromWire(d.type) ?: return null
-        return StockMovement(
-            id = d.id,
-            type = type,
-            drugId = d.drugId,
-            drugName = d.drugName,
-            delta = d.delta,
-            reference = d.reference,
-            note = d.note,
-            at = d.at,
         )
     }
 }
