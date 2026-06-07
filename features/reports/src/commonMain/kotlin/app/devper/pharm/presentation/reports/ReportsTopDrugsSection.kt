@@ -40,7 +40,7 @@ internal fun ReportsTopDrugsSection(rows: List<TopDrug>, modifier: Modifier = Mo
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(text = "Top 10 ยาขายดี", style = PharmText.h3)
+        Text(text = "10 อันดับยาขายดี", style = PharmText.h3)
         if (visible.isEmpty()) {
             Text(text = "ยังไม่มีข้อมูล", style = PharmText.meta)
         } else {
