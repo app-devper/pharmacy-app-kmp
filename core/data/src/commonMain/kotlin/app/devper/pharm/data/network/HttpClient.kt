@@ -14,6 +14,7 @@ import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -28,11 +29,16 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+private const val CONNECT_TIMEOUT_MS = 15_000L
+private const val REQUEST_TIMEOUT_MS = 30_000L
+private const val SOCKET_TIMEOUT_MS = 30_000L
+
 fun <T : HttpClientEngineConfig> buildHttpClient(
     engine: HttpClientEngineFactory<T>,
     tokenStorage: TokenStorage,
     json: Json = AppJson,
-    enableLogging: Boolean = true,
+    enableLogging: Boolean = false,
+    installTimeout: Boolean = true,
 ): HttpClient = HttpClient(engine) {
     expectSuccess = false
 
@@ -48,10 +54,18 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
         }
     }
 
+    if (installTimeout) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = CONNECT_TIMEOUT_MS
+            requestTimeoutMillis = REQUEST_TIMEOUT_MS
+            socketTimeoutMillis = SOCKET_TIMEOUT_MS
+        }
+    }
+
     if (enableLogging) {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.BODY
+            level = LogLevel.INFO
         }
     }
 

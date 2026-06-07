@@ -6,7 +6,10 @@
 
     <application
         android:name=".PharmacyApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/full_backup_content"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:label="PharmacyApp"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
