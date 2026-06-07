@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.common
 
 import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.userMessageOr
 
 abstract class BaseFormViewModel<S : BaseFormUiState<S>>(
     initial: S,
@@ -17,7 +18,7 @@ abstract class BaseFormViewModel<S : BaseFormUiState<S>>(
         launchResult(
             block = { persist() },
             onSuccess = { setState { withSaving(false).withSaved(true) } },
-            onFailure = { e -> setState { withSaving(false).withError(e.message ?: saveErrorFallback) } },
+            onFailure = { e -> setState { withSaving(false).withError(e.userMessageOr(saveErrorFallback)) } },
         )
     }
 

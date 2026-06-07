@@ -3,6 +3,7 @@
 package app.devper.pharm.presentation.users
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.error.ErrorMessages
 import app.devper.pharm.domain.repository.FakeUsersRepository
 import app.devper.pharm.domain.usecase.CreateUserUseCase
 import app.devper.pharm.domain.usecase.GetUsersUseCase
@@ -109,7 +110,7 @@ class UserFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         val state = vm.state.value
-        assertEquals("server boom", state.error)
+        assertEquals(ErrorMessages.SAVE_FAILED, state.error)
         assertFalse(state.saved)
         assertFalse(state.saving)
     }
