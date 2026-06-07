@@ -43,6 +43,15 @@ data class PharmStrings(
     val settingsLocaleSystem: String,
     val settingsLocaleAppliedInline: String,
     val settingsLocaleRestartHint: String,
+    val loginUsernameLabel: String,
+    val loginUsernamePlaceholder: String,
+    val loginPasswordLabel: String,
+    val loginPasswordPlaceholder: String,
+    val loginSubmit: String,
+    val loginSubmitting: String,
+    val loginBrandName: String,
+    val loginBrandTagline: String,
+    val loginVersionPrefix: String,
 )
 
 val PharmStringsTh: PharmStrings = PharmStrings(
@@ -84,6 +93,15 @@ val PharmStringsTh: PharmStrings = PharmStrings(
     settingsLocaleSystem = "ตามระบบ",
     settingsLocaleAppliedInline = "เปลี่ยนภาษาแล้ว",
     settingsLocaleRestartHint = "บางส่วน (เช่น ปฏิทิน) จะเปลี่ยนหลังจากเปิดแอปใหม่",
+    loginUsernameLabel = "ชื่อผู้ใช้",
+    loginUsernamePlaceholder = "กรอกชื่อผู้ใช้",
+    loginPasswordLabel = "รหัสผ่าน",
+    loginPasswordPlaceholder = "กรอกรหัสผ่าน",
+    loginSubmit = "เข้าสู่ระบบ",
+    loginSubmitting = "กำลังเข้าสู่ระบบ…",
+    loginBrandName = "ร้านยา เฮลท์ตี้ฟาร์ม",
+    loginBrandTagline = "ระบบ POS ร้านขายยา",
+    loginVersionPrefix = "เชื่อมต่อกับ Um-Api",
 )
 
 val PharmStringsEn: PharmStrings = PharmStrings(
@@ -125,6 +143,15 @@ val PharmStringsEn: PharmStrings = PharmStrings(
     settingsLocaleSystem = "System default",
     settingsLocaleAppliedInline = "Language updated",
     settingsLocaleRestartHint = "Some parts (e.g. calendar) update after restarting the app",
+    loginUsernameLabel = "Username",
+    loginUsernamePlaceholder = "Enter your username",
+    loginPasswordLabel = "Password",
+    loginPasswordPlaceholder = "Enter your password",
+    loginSubmit = "Sign in",
+    loginSubmitting = "Signing in…",
+    loginBrandName = "Healthy Pharm",
+    loginBrandTagline = "Pharmacy POS",
+    loginVersionPrefix = "Connected to Um-Api",
 )
 
 val LocalPharmStrings = staticCompositionLocalOf { PharmStringsTh }

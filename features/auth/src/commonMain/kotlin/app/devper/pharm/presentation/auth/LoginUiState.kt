@@ -6,6 +6,7 @@ import app.devper.pharm.ui.common.LoadableUiState
 data class LoginUiState(
     val username: String = "",
     val password: String = "",
+    val locale: String = "system",
     override val loading: Boolean = false,
     override val error: String? = null,
     val loggedInUser: User? = null,
