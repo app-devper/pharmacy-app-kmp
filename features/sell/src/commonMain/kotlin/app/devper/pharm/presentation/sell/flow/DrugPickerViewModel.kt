@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.AltUnit
@@ -45,7 +47,7 @@ class DrugPickerViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(drugsLoading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(drugsLoading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 

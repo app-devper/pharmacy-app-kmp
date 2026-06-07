@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.settings
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.KySettings
 import app.devper.pharm.domain.model.PharmacistInfo
@@ -102,7 +104,7 @@ class SettingsEditorViewModel(
                 val fields = fresh.toForm()
                 setState { copy(saving = false, baseline = fields, form = fields, message = "บันทึกแล้ว") }
             },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: "บันทึกไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
         )
     }
 

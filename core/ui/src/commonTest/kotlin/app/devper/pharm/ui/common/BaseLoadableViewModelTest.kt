@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.common
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.common.AuthException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,7 +89,7 @@ class BaseLoadableViewModelTest {
         val vm = StubVm { Result.failure(IllegalStateException("internal leak")) }
         vm.load()
         advanceUntilIdle()
-        assertEquals("โหลดข้อมูลไม่สำเร็จ", vm.state.value.error)
+        assertEquals(ErrorMessages.LOAD_FAILED, vm.state.value.error)
     }
 
     @Test

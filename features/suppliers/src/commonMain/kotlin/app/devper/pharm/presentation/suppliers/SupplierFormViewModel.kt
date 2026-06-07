@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.suppliers
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.param.AddSupplierParam
 import app.devper.pharm.domain.param.UpdateSupplierParam
 import app.devper.pharm.domain.usecase.AddSupplierUseCase
@@ -57,7 +59,7 @@ class SupplierFormViewModel(
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 

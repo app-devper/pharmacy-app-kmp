@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.param.AddStockAdjustmentParam
 import app.devper.pharm.domain.usecase.AddStockAdjustmentUseCase
@@ -69,7 +71,7 @@ class StockAdjustmentsViewModel(
                 setState { copy(saving = false, addFormOpen = false, draft = AdjustmentDraft()) }
                 reload()
             },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: "บันทึกไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
         )
     }
 

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.profile
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
@@ -110,7 +112,7 @@ class ProfileViewModel(
                 hydrate(user)
                 setState { copy(loading = false) }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 

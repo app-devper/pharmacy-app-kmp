@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.param.ReportRangeParam
@@ -45,14 +47,14 @@ class ProfitViewModel(
         val s = current
         val rows = s.sortedRows
         if (rows.isEmpty()) {
-            setState { copy(message = "ยังไม่มีข้อมูลให้ส่งออก") }
+            setState { copy(message = ErrorMessages.EXPORT_EMPTY) }
             return
         }
         setState { copy(exporting = true) }
         launchResult(
             block = { exportProfitCsv(ExportProfitCsvParam(s.dateRange.fromDate, s.dateRange.toDate, rows)) },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: "ส่งออกไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: ErrorMessages.EXPORT_FAILED) } },
         )
     }
 

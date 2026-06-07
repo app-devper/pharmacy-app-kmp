@@ -2,6 +2,8 @@
 
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
@@ -152,7 +154,7 @@ class UsersListViewModelTest {
         val state = vm.state.value
         assertFalse(state.loading)
         assertEquals(0, state.users.size)
-        assertEquals("โหลดข้อมูลไม่สำเร็จ", state.error)
+        assertEquals(ErrorMessages.LOAD_FAILED, state.error)
     }
 
     @Test

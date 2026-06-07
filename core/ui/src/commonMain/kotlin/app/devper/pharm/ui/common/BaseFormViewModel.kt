@@ -1,10 +1,12 @@
 package app.devper.pharm.ui.common
 
+import app.devper.pharm.common.error.ErrorMessages
+
 abstract class BaseFormViewModel<S : BaseFormUiState<S>>(
     initial: S,
 ) : BaseViewModel<S>(initial) {
 
-    protected open val saveErrorFallback: String = "บันทึกไม่สำเร็จ"
+    protected open val saveErrorFallback: String = ErrorMessages.SAVE_FAILED
 
     protected abstract suspend fun persist(): Result<Unit>
 

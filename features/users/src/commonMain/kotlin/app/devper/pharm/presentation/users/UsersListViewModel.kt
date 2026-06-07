@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
@@ -51,7 +53,7 @@ class UsersListViewModel(
                 reload()
             },
             onFailure = { e ->
-                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, error = e.message ?: "ลบไม่สำเร็จ") }
+                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, error = e.message ?: ErrorMessages.DELETE_FAILED) }
             },
         )
     }

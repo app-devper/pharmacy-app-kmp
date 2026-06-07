@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.param.ExportKyFormParam
 import app.devper.pharm.domain.param.KyMonthFilterParam
 import app.devper.pharm.domain.usecase.ExportKyFormUseCase
@@ -35,7 +37,7 @@ class Ky9ViewModel(
         launchResult(
             block = { getKy9Entries(KyMonthFilterParam(month = s.month)) },
             onSuccess = { list -> setState { copy(loading = false, entries = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 }

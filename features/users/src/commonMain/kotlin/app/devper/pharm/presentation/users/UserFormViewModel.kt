@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.common.error.ErrorMessages
+
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.CreateUserParam
 import app.devper.pharm.domain.param.UpdateUserParam
@@ -63,7 +65,7 @@ class UserFormViewModel(
                     hydrate(user)
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
         )
     }
 
