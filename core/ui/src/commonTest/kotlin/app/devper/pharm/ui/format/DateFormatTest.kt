@@ -64,4 +64,29 @@ class DateFormatTest {
     }
 
     private fun millisForKnownDay(): Long = ymdToMillis("2026-05-17")!!
+
+    @Test
+    fun toLocalDateOrNull_parses_iso_date() {
+        assertEquals(kotlinx.datetime.LocalDate(2026, 6, 7), "2026-06-07".toLocalDateOrNull())
+    }
+
+    @Test
+    fun toLocalDateOrNull_returns_null_for_blank() {
+        assertNull("".toLocalDateOrNull())
+    }
+
+    @Test
+    fun toLocalDateOrNull_returns_null_for_thai_dd_mm_yyyy_format() {
+        assertNull("07/06/2026".toLocalDateOrNull())
+    }
+
+    @Test
+    fun toLocalDateOrNull_returns_null_for_garbage() {
+        assertNull("not-a-date".toLocalDateOrNull())
+    }
+
+    @Test
+    fun toLocalDateOrNull_returns_null_for_invalid_month() {
+        assertNull("2026-13-01".toLocalDateOrNull())
+    }
 }

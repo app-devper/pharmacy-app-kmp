@@ -6,6 +6,7 @@ import app.devper.pharm.data.remote.dto.SetPasswordRequest
 import app.devper.pharm.data.remote.dto.SetRoleRequest
 import app.devper.pharm.data.remote.dto.SetStatusRequest
 import app.devper.pharm.data.remote.dto.UpdateUserRequest
+import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.CreateUserParam
 import app.devper.pharm.domain.param.SetUserPasswordParam

@@ -37,7 +37,7 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
     engine: HttpClientEngineFactory<T>,
     tokenStorage: TokenStorage,
     json: Json = AppJson,
-    enableLogging: Boolean = false,
+    enableLogging: Boolean = true,
     installTimeout: Boolean = true,
 ): HttpClient = HttpClient(engine) {
     expectSuccess = false
@@ -65,7 +65,7 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
     if (enableLogging) {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.INFO
+            level = LogLevel.BODY
         }
     }
 

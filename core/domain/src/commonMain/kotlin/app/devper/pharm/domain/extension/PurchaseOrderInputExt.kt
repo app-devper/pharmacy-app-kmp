@@ -39,4 +39,5 @@ fun isPurchaseOrderLineValid(
     drugId.isNotBlank() &&
         lotNumber.isNotBlank() &&
         expiryDate.isNotBlank() &&
+        runCatching { LocalDate.parse(expiryDate.trim()) }.isSuccess &&
         (qty.toIntOrNull() ?: 0) > 0

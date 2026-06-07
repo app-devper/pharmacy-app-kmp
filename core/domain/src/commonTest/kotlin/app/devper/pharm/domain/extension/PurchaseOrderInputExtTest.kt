@@ -84,5 +84,7 @@ class PurchaseOrderInputExtTest {
         assertFalse(isPurchaseOrderLineValid("d1", "L", "", "1"))
         assertFalse(isPurchaseOrderLineValid("d1", "L", "2027-01-01", "0"))
         assertFalse(isPurchaseOrderLineValid("d1", "L", "2027-01-01", "abc"))
+        assertFalse(isPurchaseOrderLineValid("d1", "L", "31/12/2027", "1"))
+        assertFalse(isPurchaseOrderLineValid("d1", "L", "not-a-date", "1"))
     }
 }
