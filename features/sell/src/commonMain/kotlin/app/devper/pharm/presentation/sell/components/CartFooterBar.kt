@@ -24,6 +24,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -87,7 +88,7 @@ fun CartFooterBar(
                 text = when {
                     !empty    -> "$itemCount รายการ"
                     hasParked -> "บิลที่พัก $parkedFilledCount รอเปิด"
-                    else      -> "ตะกร้าว่าง"
+                    else      -> pharmStrings.sellEmptyCart
                 },
                 style = PharmText.micro.copy(color = contentColor.copy(alpha = 0.8f)),
             )

@@ -25,6 +25,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 fun CartTotalsBlock(
@@ -52,7 +53,7 @@ fun CartTotalsBlock(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = if (open) "ซ่อนยอดย่อย" else "ดูยอดย่อย",
+                text = if (open) pharmStrings.sellHideSubtotal else pharmStrings.sellShowSubtotal,
                 style = PharmText.micro.copy(color = t.colors.fg3),
                 modifier = Modifier
                     .weight(1f)
@@ -84,9 +85,9 @@ fun CartTotalsBlock(
 
         AnimatedVisibility(visible = open) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                CartTotalsRow("ยอดรวม", fmtBaht(grossSubtotal), color = t.colors.fg2)
+                CartTotalsRow(pharmStrings.sellTotal, fmtBaht(grossSubtotal), color = t.colors.fg2)
                 if (itemDiscountTotal > 0.0) {
-                    CartTotalsRow("ส่วนลดรายการ", "−${fmtBaht(itemDiscountTotal)}", color = t.colors.discount)
+                    CartTotalsRow(pharmStrings.sellDiscountLine, "−${fmtBaht(itemDiscountTotal)}", color = t.colors.discount)
                 }
                 if (cartDiscountAmount > 0.0) {
                     CartTotalsRow(cartDiscountLabel(cartDiscount), "−${fmtBaht(cartDiscountAmount)}", color = t.colors.discount)

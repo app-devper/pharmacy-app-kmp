@@ -37,6 +37,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,12 +75,12 @@ fun KyCaptureSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "บันทึก ขย. ก่อนออกบิล",
+                    text = pharmStrings.sellSaveKyBeforeBill,
                     style = PharmText.h1.copy(color = t.colors.fg1),
                     modifier = Modifier.weight(1f),
                 )
                 PharmHelpHint(
-                    text = "ยาควบคุมพิเศษ (ขย.10–13) ต้องบันทึกชื่อเภสัชกร เลขที่ใบอนุญาต ผู้สั่งใช้ และข้อมูลผู้ซื้อ/ผู้ป่วย ก่อนออกบิลตามข้อกำหนด",
+                    text = pharmStrings.sellControlledNote,
                 )
             }
             Text(
@@ -128,13 +129,13 @@ fun KyCaptureSheet(
                     variant = PharmButtonVariant.Ghost,
                 )
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = pharmStrings.commonCancel,
                     onClick = onDismiss,
                     enabled = !submitting,
                     variant = PharmButtonVariant.Ghost,
                 )
                 PharmButton(
-                    label = "บันทึกและออกบิล",
+                    label = pharmStrings.sellCheckoutSave,
                     onClick = { onConfirm(fields) },
                     enabled = canSubmit,
                     loading = submitting,
@@ -188,21 +189,21 @@ private fun Ky11Section(
             fgColor = t.colors.ky11Fg,
         )
         KyField(
-            label = "ชื่อผู้ซื้อ",
+            label = pharmStrings.sellBuyerName,
             required = true,
             value = fields.ky11BuyerName,
             onValueChange = { onChange(fields.copy(ky11BuyerName = it)) },
             enabled = enabled,
         )
         KyField(
-            label = "วัตถุประสงค์",
+            label = pharmStrings.sellPurpose,
             required = true,
             value = fields.ky11Purpose,
             onValueChange = { onChange(fields.copy(ky11Purpose = it)) },
             enabled = enabled,
         )
         KyField(
-            label = "เภสัชกรผู้จ่าย",
+            label = pharmStrings.sellPharmacist,
             required = true,
             value = fields.ky11Pharmacist,
             onValueChange = { onChange(fields.copy(ky11Pharmacist = it)) },
@@ -227,14 +228,14 @@ private fun Ky10Section(
             fgColor = t.colors.ky10Fg,
         )
         KyField(
-            label = "ชื่อผู้ซื้อ",
+            label = pharmStrings.sellBuyerName,
             required = true,
             value = fields.ky10BuyerName,
             onValueChange = { onChange(fields.copy(ky10BuyerName = it)) },
             enabled = enabled,
         )
         KyField(
-            label = "ที่อยู่ผู้ซื้อ",
+            label = pharmStrings.sellBuyerAddress,
             required = true,
             value = fields.ky10BuyerAddress,
             onValueChange = { onChange(fields.copy(ky10BuyerAddress = it)) },
@@ -242,14 +243,14 @@ private fun Ky10Section(
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             KyField(
-                label = "เลขใบสั่ง",
+                label = pharmStrings.sellPrescriptionNo,
                 value = fields.ky10RxNo,
                 onValueChange = { onChange(fields.copy(ky10RxNo = it)) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
             )
             KyField(
-                label = "แพทย์ผู้สั่ง",
+                label = pharmStrings.sellPrescriber,
                 value = fields.ky10Doctor,
                 onValueChange = { onChange(fields.copy(ky10Doctor = it)) },
                 enabled = enabled,
@@ -257,7 +258,7 @@ private fun Ky10Section(
             )
         }
         KyField(
-            label = "คงเหลือ",
+            label = pharmStrings.sellRemaining,
             value = fields.ky10Balance.toString(),
             onValueChange = { v ->
                 onChange(fields.copy(ky10Balance = v.toIntOrNull() ?: 0))
@@ -285,7 +286,7 @@ private fun Ky12Section(
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             KyField(
-                label = "เลขใบสั่ง",
+                label = pharmStrings.sellPrescriptionNo,
                 required = true,
                 value = fields.ky12RxNo,
                 onValueChange = { onChange(fields.copy(ky12RxNo = it)) },
@@ -293,7 +294,7 @@ private fun Ky12Section(
                 modifier = Modifier.weight(1f),
             )
             KyField(
-                label = "ผู้ป่วย",
+                label = pharmStrings.sellPatient,
                 required = true,
                 value = fields.ky12PatientName,
                 onValueChange = { onChange(fields.copy(ky12PatientName = it)) },
@@ -303,14 +304,14 @@ private fun Ky12Section(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             KyField(
-                label = "แพทย์",
+                label = pharmStrings.kyDoctorPrescriber,
                 value = fields.ky12Doctor,
                 onValueChange = { onChange(fields.copy(ky12Doctor = it)) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
             )
             KyField(
-                label = "โรงพยาบาล",
+                label = pharmStrings.sellHospital,
                 value = fields.ky12Hospital,
                 onValueChange = { onChange(fields.copy(ky12Hospital = it)) },
                 enabled = enabled,
@@ -318,7 +319,7 @@ private fun Ky12Section(
             )
         }
         KyField(
-            label = "สถานะ",
+            label = pharmStrings.commonStatus,
             value = fields.ky12Status,
             onValueChange = { onChange(fields.copy(ky12Status = it)) },
             enabled = enabled,

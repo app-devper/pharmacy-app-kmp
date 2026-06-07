@@ -28,6 +28,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -56,7 +57,7 @@ fun CartCashReceivedRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                "รับเงิน",
+                pharmStrings.sellReceived,
                 style = PharmText.bodySm.copy(color = t.colors.fg2),
                 modifier = Modifier.weight(1f),
             )
@@ -79,7 +80,7 @@ fun CartCashReceivedRow(
                             ) {
                                 Icon(
                                     imageVector = PharmIcons.Close,
-                                    contentDescription = "ล้างยอดรับเงิน",
+                                    contentDescription = pharmStrings.sellClearReceived,
                                     tint = t.colors.fgMuted,
                                     modifier = Modifier.size(16.dp),
                                 )
@@ -131,7 +132,7 @@ fun CartCashReceivedRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "ทอน",
+                pharmStrings.sellChange,
                 style = PharmText.bodySm.copy(color = t.colors.fg3),
                 modifier = Modifier.weight(1f),
             )

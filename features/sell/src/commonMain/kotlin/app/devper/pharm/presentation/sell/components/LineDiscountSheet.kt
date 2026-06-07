@@ -27,6 +27,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,11 +60,11 @@ fun LineDiscountSheet(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text("ส่วนลดต่อหน่วย", style = PharmText.h1)
+            Text(pharmStrings.sellDiscountPerUnit, style = PharmText.h1)
             Text(line.drug.name, style = PharmText.meta)
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("ราคาเดิม", style = PharmText.bodySm.copy(color = t.colors.fg2))
+                Text(pharmStrings.sellPriceOriginal, style = PharmText.bodySm.copy(color = t.colors.fg2))
                 Text(fmtBaht(unitPriceDouble), style = PharmText.bodySm.tabular())
             }
 
@@ -81,7 +82,7 @@ fun LineDiscountSheet(
             }
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("ราคาหลังหัก", style = PharmText.body)
+                Text(pharmStrings.sellPriceAfterDiscount, style = PharmText.body)
                 Text(fmtBaht(effective), style = PharmText.price)
             }
 
@@ -90,14 +91,14 @@ fun LineDiscountSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 PharmButton(
-                    label = "ล้างส่วนลด",
+                    label = pharmStrings.sellDiscountClear,
                     onClick = { onApply(line.key, 0.0) },
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
                     modifier = Modifier.weight(1f),
                 )
                 PharmButton(
-                    label = "บันทึก",
+                    label = pharmStrings.commonSave,
                     onClick = {
                         val perBase = (parsed ?: 0.0) / factor
                         onApply(line.key, perBase)

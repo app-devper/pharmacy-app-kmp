@@ -20,6 +20,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -48,7 +49,7 @@ internal fun EmptyCart(
             )
         }
         Text(
-            text = "ตะกร้าว่างเปล่า",
+            text = pharmStrings.sellEmptyCart,
             style = PharmText.body.copy(
                 fontWeight = FontWeight.SemiBold,
                 color = t.colors.fg1,
@@ -56,8 +57,8 @@ internal fun EmptyCart(
             modifier = Modifier.padding(top = 16.dp),
         )
         Text(
-            text = if (compact) "แตะรายการยาด้านบนเพื่อเริ่มขาย"
-            else "แตะรายการยาทางซ้ายเพื่อเริ่มขาย",
+            text = if (compact) pharmStrings.sellEmptyCartHint
+            else pharmStrings.sellEmptyCartHint,
             style = PharmText.meta,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 6.dp),
