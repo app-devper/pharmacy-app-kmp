@@ -1,22 +1,16 @@
 package app.devper.pharm.presentation.planning
 
 import app.devper.pharm.domain.usecase.GetReorderSuggestionsUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class ReorderSuggestionsViewModel(
     private val getReorderSuggestions: GetReorderSuggestionsUseCase,
-) : BaseViewModel<ReorderSuggestionsUiState>(ReorderSuggestionsUiState()) {
+) : BaseLoadableViewModel<ReorderSuggestionsUiState>(ReorderSuggestionsUiState()) {
 
     init { reload() }
 
-    fun dismissError() = setState { copy(error = null) }
-
-    fun reload() {
-        setState { copy(loading = true, error = null) }
-        launchResult(
-            block = { getReorderSuggestions() },
-            onSuccess = { list -> setState { copy(loading = false, suggestions = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
-        )
-    }
+    fun reload() = launchLoad(
+        block = { getReorderSuggestions() },
+        onSuccess = { list -> copy(suggestions = list) },
+    )
 }

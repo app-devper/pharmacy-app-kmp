@@ -5,27 +5,22 @@ import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.domain.usecase.ConfirmPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.DeletePurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.GetPurchaseOrdersUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class ImportsListViewModel(
     private val getPurchaseOrders: GetPurchaseOrdersUseCase,
     private val confirmPurchaseOrder: ConfirmPurchaseOrderUseCase,
     private val deletePurchaseOrder: DeletePurchaseOrderUseCase,
-) : BaseViewModel<ImportsListUiState>(ImportsListUiState()) {
+) : BaseLoadableViewModel<ImportsListUiState>(ImportsListUiState()) {
 
     init { reload() }
 
     fun onQueryChange(value: String) = setState { copy(query = value) }
-    fun dismissError() = setState { copy(error = null) }
 
-    fun reload() {
-        setState { copy(loading = true, error = null) }
-        launchResult(
-            block = { getPurchaseOrders() },
-            onSuccess = { list -> setState { copy(loading = false, orders = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
-        )
-    }
+    fun reload() = launchLoad(
+        block = { getPurchaseOrders() },
+        onSuccess = { list -> copy(orders = list) },
+    )
 
     fun requestConfirm(order: PurchaseOrderSummary) {
         if (order.status != PurchaseOrderStatus.Draft) return

@@ -152,7 +152,7 @@ class UsersListViewModelTest {
         val state = vm.state.value
         assertFalse(state.loading)
         assertEquals(0, state.users.size)
-        assertEquals("network down", state.error)
+        assertEquals("โหลดข้อมูลไม่สำเร็จ", state.error)
     }
 
     @Test
