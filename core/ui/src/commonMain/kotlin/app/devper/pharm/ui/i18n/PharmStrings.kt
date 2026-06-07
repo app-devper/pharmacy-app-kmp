@@ -554,6 +554,81 @@ interface PharmStrings {
     val kyTotalAll: String
     val kyDateYmd: String
     val kyMonthLabel: String
+    val stockSubtitle: String
+    val stockSearchPlaceholder: String
+    val stockAddDrugCta: String
+    val stockEditDrugTitle: String
+    val stockAddDrugTitle: String
+    val stockListEmpty: String
+    val stockListNotFound: String
+    val stockHeaderName: String
+    val stockHeaderGeneric: String
+    val stockHeaderBarcode: String
+    val stockHeaderRegistration: String
+    val stockHeaderCostPrice: String
+    val stockHeaderSellPrice: String
+    val stockHeaderSize: String
+    val stockHeaderStrength: String
+    val stockHeaderInitialStock: String
+    val stockHeaderInitialLotHint: String
+    val stockHeaderCategory: String
+    val stockHeaderReports: String
+    val stockHeaderReportsMultiHint: String
+    val stockHistoryTitle: String
+    val stockHistoryEmpty: String
+    val stockHistoryDrugEmpty: String
+    val stockHeaderReason: String
+    val stockTypeAll: String
+    val stockTypeRegular: String
+    val stockTypeHerbal: String
+    val stockTypeSupplement: String
+    val stockTypeBoth: String
+    val stockTypeAbbrev: String
+    val stockMetricCount: String
+    val stockMetricValueByCost: String
+    val stockMetricBelowMin: String
+    val stockMetricOut: String
+    val stockMetricBackorder: String
+    val stockStatusOut: String
+    val stockStatusLow: String
+    val stockStatusNormal: String
+    val stockStatusUrgent: String
+    val stockActionAdjust: String
+    val stockActionCount: String
+    val stockActionLots: String
+    val stockActionHistory: String
+    val stockActionImport: String
+    val stockActionPurchase: String
+    val stockLotsTitle: String
+    val stockLotsSubtitle: String
+    val stockLotsEmpty: String
+    val stockLotMeta: (String, Int, Int) -> String
+    val stockLotAddTitle: String
+    val stockLotAddCta: String
+    val stockLotCloseAddForm: String
+    val stockLotDeleteTitle: String
+    val stockLotDeleteMessage: (String) -> String
+    val stockLotNumber: String
+    val stockLotNumberPlaceholder: String
+    val stockLotExpiryRequired: String
+    val stockLotExpiryRequiredInvalid: String
+    val stockLotInitialExpiryInvalid: String
+    val stockLotInitialHint: String
+    val stockLotInitialQty: String
+    val stockLotInitialCostHint: String
+    val stockLotInitialSellHint: String
+    val stockAdjustmentTitle: String
+    val stockAdjustmentEmpty: String
+    val stockNewAdjust: String
+    val stockNotFound: String
+    val stockSeeAllLots: String
+    val stockExampleLotNo: String
+    val stockExampleGeneric: String
+    val stockExampleBrand: String
+    val stockExampleStrength: String
+    val stockExampleReg: String
+    val stockExampleBarcode: String
+    val stockBarcodeScanHint: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -1116,6 +1191,81 @@ object PharmStringsTh : PharmStrings {
     override val kyTotalAll = "รวมทั้งหมด"
     override val kyDateYmd = "วันที่ (YYYY-MM-DD)"
     override val kyMonthLabel = "เดือน"
+    override val stockSubtitle = "จัดการรายการยาและสต็อกคงเหลือ"
+    override val stockSearchPlaceholder = "ค้นหายา ชื่อสามัญ บาร์โค้ด…"
+    override val stockAddDrugCta = "เพิ่มยา"
+    override val stockEditDrugTitle = "แก้ไขยา"
+    override val stockAddDrugTitle = "เพิ่มยา"
+    override val stockListEmpty = "ยังไม่มีรายการยาในคลัง"
+    override val stockListNotFound = "ไม่พบยาที่ค้นหา"
+    override val stockHeaderName = "ชื่อการค้า"
+    override val stockHeaderGeneric = "ชื่อสามัญ"
+    override val stockHeaderBarcode = "บาร์โค้ด"
+    override val stockHeaderRegistration = "ทะเบียนยา (อย.)"
+    override val stockHeaderCostPrice = "ราคาทุน / หน่วย"
+    override val stockHeaderSellPrice = "ราคาขาย / หน่วย"
+    override val stockHeaderSize = "ขนาด"
+    override val stockHeaderStrength = "ขนาด / Strength"
+    override val stockHeaderInitialStock = "สต็อกเริ่มต้น (ถ้ามี)"
+    override val stockHeaderInitialLotHint = "หากใส่จำนวน > 0 ต้องระบุเลขล็อตและวันหมดอายุ"
+    override val stockHeaderCategory = "ประเภท"
+    override val stockHeaderReports = "รายงาน ขย."
+    override val stockHeaderReportsMultiHint = "รายงาน ขย. (เลือกได้หลายรายการ)"
+    override val stockHistoryTitle = "ประวัติสต็อก"
+    override val stockHistoryEmpty = "ยังไม่มีประวัติการปรับปรุง"
+    override val stockHistoryDrugEmpty = "ยังไม่มีประวัติสต็อกของยานี้"
+    override val stockHeaderReason = "เหตุผล"
+    override val stockTypeAll = "ทุกประเภท"
+    override val stockTypeRegular = "ยาแผนปัจจุบัน"
+    override val stockTypeHerbal = "ยาสมุนไพร"
+    override val stockTypeSupplement = "อาหารเสริม"
+    override val stockTypeBoth = "ยาแผนปัจจุบัน / สมุนไพร"
+    override val stockTypeAbbrev = "แผนปัจจุบัน"
+    override val stockMetricCount = "จำนวนรายการยา"
+    override val stockMetricValueByCost = "ตามราคาทุน"
+    override val stockMetricBelowMin = "ต่ำกว่าขั้นต่ำ"
+    override val stockMetricOut = "หมดสต็อก"
+    override val stockMetricBackorder = "ค้างส่ง"
+    override val stockStatusOut = "หมด"
+    override val stockStatusLow = "ใกล้หมด"
+    override val stockStatusNormal = "ปกติ"
+    override val stockStatusUrgent = "ต้องสั่งด่วน"
+    override val stockActionAdjust = "ปรับสต็อก"
+    override val stockActionCount = "นับสต็อก"
+    override val stockActionLots = "จัดการล็อต"
+    override val stockActionHistory = "ประวัติ"
+    override val stockActionImport = "นำเข้า"
+    override val stockActionPurchase = "สั่งซื้อ"
+    override val stockLotsTitle = "ล็อต & การปรับสต็อก"
+    override val stockLotsSubtitle = "เพิ่ม / ดู / ลบล็อต — รักษาการตรวจสอบ FEFO"
+    override val stockLotsEmpty = "ยังไม่มีล็อต"
+    override val stockLotMeta: (String, Int, Int) -> String = { exp, remaining, qty -> "หมดอายุ $exp · เหลือ $remaining/$qty" }
+    override val stockLotAddTitle = "เพิ่มล็อตใหม่"
+    override val stockLotAddCta = "เพิ่มล็อต"
+    override val stockLotCloseAddForm = "ปิดฟอร์มเพิ่มล็อต"
+    override val stockLotDeleteTitle = "ลบล็อตนี้?"
+    override val stockLotDeleteMessage: (String) -> String = { lotNo -> "ล็อต $lotNo จะถูกลบออก — รายการนี้ไม่สามารถกู้คืนได้" }
+    override val stockLotNumber = "เลขล็อต *"
+    override val stockLotNumberPlaceholder = "เช่น L240501"
+    override val stockLotExpiryRequired = "วันหมดอายุ * (YYYY-MM-DD)"
+    override val stockLotExpiryRequiredInvalid = "วันหมดอายุไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)"
+    override val stockLotInitialExpiryInvalid = "วันหมดอายุของล็อตเริ่มต้นไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)"
+    override val stockLotInitialHint = "ใช้ราคาทุนของยา"
+    override val stockLotInitialQty = "จำนวน *"
+    override val stockLotInitialCostHint = "ใช้ราคาทุนของยา"
+    override val stockLotInitialSellHint = "ใช้ราคาขายของยา"
+    override val stockAdjustmentTitle = "ปรับปรุงสต็อก"
+    override val stockAdjustmentEmpty = "ยังไม่มีประวัติการปรับปรุง"
+    override val stockNewAdjust = "ปรับปรุงใหม่"
+    override val stockNotFound = "ไม่พบยา"
+    override val stockSeeAllLots = "ดูล็อตทั้งหมด"
+    override val stockExampleLotNo = "เช่น PCM-260517"
+    override val stockExampleGeneric = "เช่น Paracetamol"
+    override val stockExampleBrand = "เช่น Tylenol 500mg"
+    override val stockExampleStrength = "เช่น 500mg"
+    override val stockExampleReg = "เช่น 1A 123/45"
+    override val stockExampleBarcode = "8851111222333"
+    override val stockBarcodeScanHint = "สแกนหรือพิมพ์"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -1678,6 +1828,81 @@ object PharmStringsEn : PharmStrings {
     override val kyTotalAll = "Total"
     override val kyDateYmd = "Date (YYYY-MM-DD)"
     override val kyMonthLabel = "Month"
+    override val stockSubtitle = "Manage drug items and stock balance"
+    override val stockSearchPlaceholder = "Search drug / generic / barcode…"
+    override val stockAddDrugCta = "Add drug"
+    override val stockEditDrugTitle = "Edit drug"
+    override val stockAddDrugTitle = "Add drug"
+    override val stockListEmpty = "No drugs in inventory"
+    override val stockListNotFound = "No drugs match the search"
+    override val stockHeaderName = "Brand"
+    override val stockHeaderGeneric = "Generic"
+    override val stockHeaderBarcode = "Barcode"
+    override val stockHeaderRegistration = "Registration no."
+    override val stockHeaderCostPrice = "Cost / unit"
+    override val stockHeaderSellPrice = "Sell / unit"
+    override val stockHeaderSize = "Size"
+    override val stockHeaderStrength = "Strength"
+    override val stockHeaderInitialStock = "Initial stock (optional)"
+    override val stockHeaderInitialLotHint = "If qty > 0, lot number and expiry are required"
+    override val stockHeaderCategory = "Category"
+    override val stockHeaderReports = "KY reports"
+    override val stockHeaderReportsMultiHint = "KY reports (multiple allowed)"
+    override val stockHistoryTitle = "Stock history"
+    override val stockHistoryEmpty = "No adjustment history"
+    override val stockHistoryDrugEmpty = "No history for this drug yet"
+    override val stockHeaderReason = "Reason"
+    override val stockTypeAll = "All categories"
+    override val stockTypeRegular = "Modern drug"
+    override val stockTypeHerbal = "Herbal"
+    override val stockTypeSupplement = "Supplement"
+    override val stockTypeBoth = "Modern / Herbal"
+    override val stockTypeAbbrev = "Modern"
+    override val stockMetricCount = "Drug count"
+    override val stockMetricValueByCost = "By cost"
+    override val stockMetricBelowMin = "Below minimum"
+    override val stockMetricOut = "Out of stock"
+    override val stockMetricBackorder = "Backorder"
+    override val stockStatusOut = "Out"
+    override val stockStatusLow = "Low"
+    override val stockStatusNormal = "OK"
+    override val stockStatusUrgent = "Order urgently"
+    override val stockActionAdjust = "Adjust stock"
+    override val stockActionCount = "Count stock"
+    override val stockActionLots = "Manage lots"
+    override val stockActionHistory = "History"
+    override val stockActionImport = "Import"
+    override val stockActionPurchase = "Order"
+    override val stockLotsTitle = "Lots & adjustments"
+    override val stockLotsSubtitle = "Add / view / delete lots — preserve FEFO audit"
+    override val stockLotsEmpty = "No lots yet"
+    override val stockLotMeta: (String, Int, Int) -> String = { exp, remaining, qty -> "Expires $exp · $remaining/$qty remaining" }
+    override val stockLotAddTitle = "Add new lot"
+    override val stockLotAddCta = "Add lot"
+    override val stockLotCloseAddForm = "Close add-lot form"
+    override val stockLotDeleteTitle = "Delete this lot?"
+    override val stockLotDeleteMessage: (String) -> String = { lotNo -> "Lot $lotNo will be removed — this cannot be reverted" }
+    override val stockLotNumber = "Lot number *"
+    override val stockLotNumberPlaceholder = "e.g. L240501"
+    override val stockLotExpiryRequired = "Expiry * (YYYY-MM-DD)"
+    override val stockLotExpiryRequiredInvalid = "Invalid expiry (format YYYY-MM-DD)"
+    override val stockLotInitialExpiryInvalid = "Initial lot expiry invalid (format YYYY-MM-DD)"
+    override val stockLotInitialHint = "Defaults to drug cost"
+    override val stockLotInitialQty = "Qty *"
+    override val stockLotInitialCostHint = "Defaults to drug cost"
+    override val stockLotInitialSellHint = "Defaults to drug sell price"
+    override val stockAdjustmentTitle = "Adjust stock"
+    override val stockAdjustmentEmpty = "No adjustment history"
+    override val stockNewAdjust = "New adjustment"
+    override val stockNotFound = "Drug not found"
+    override val stockSeeAllLots = "See all lots"
+    override val stockExampleLotNo = "e.g. PCM-260517"
+    override val stockExampleGeneric = "e.g. Paracetamol"
+    override val stockExampleBrand = "e.g. Tylenol 500mg"
+    override val stockExampleStrength = "e.g. 500mg"
+    override val stockExampleReg = "e.g. 1A 123/45"
+    override val stockExampleBarcode = "8851111222333"
+    override val stockBarcodeScanHint = "Scan or type"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }

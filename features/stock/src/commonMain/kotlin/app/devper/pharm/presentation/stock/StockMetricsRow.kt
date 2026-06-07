@@ -7,6 +7,7 @@ import app.devper.pharm.ui.designsystem.MetricCard
 import app.devper.pharm.ui.designsystem.MetricCardRow
 import app.devper.pharm.ui.designsystem.MetricTint
 import app.devper.pharm.ui.theme.fmtBaht
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun StockMetricsRow(drugs: List<Drug>, modifier: Modifier = Modifier) {
@@ -17,30 +18,30 @@ internal fun StockMetricsRow(drugs: List<Drug>, modifier: Modifier = Modifier) {
 
     MetricCardRow(modifier = modifier) {
         MetricCard(
-            label = "จำนวนรายการยา",
+            label = pharmStrings.stockMetricCount,
             value = total.toString(),
-            sub = "รายการ",
+            sub = pharmStrings.movementsCountNoun,
             tint = MetricTint.Blue,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "หมดสต็อก",
+            label = pharmStrings.stockMetricOut,
             value = oos.toString(),
-            sub = "ต้องสั่งด่วน",
+            sub = pharmStrings.stockStatusUrgent,
             tint = MetricTint.Purple,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "ใกล้หมด",
+            label = pharmStrings.stockStatusLow,
             value = low.toString(),
-            sub = "ต่ำกว่าขั้นต่ำ",
+            sub = pharmStrings.stockMetricBelowMin,
             tint = MetricTint.Indigo,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "มูลค่าสต็อก",
+            label = pharmStrings.reportsMetricStockValue,
             value = fmtBaht(stockValue),
-            sub = "ตามราคาทุน",
+            sub = pharmStrings.stockMetricValueByCost,
             tint = MetricTint.Green,
             modifier = Modifier.weight(1f),
         )

@@ -38,6 +38,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
+import app.devper.pharm.ui.i18n.pharmStrings
 
 data class StockAdjustmentsCallbacks(
     val onClose: () -> Unit = {},
@@ -129,7 +130,7 @@ private fun HeaderRow(state: StockAdjustmentsUiState, callbacks: StockAdjustment
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "ปรับปรุงสต็อก",
+                text = pharmStrings.stockAdjustmentTitle,
                 style = PharmText.h2,
             )
             Text(
@@ -138,7 +139,7 @@ private fun HeaderRow(state: StockAdjustmentsUiState, callbacks: StockAdjustment
             )
         }
         PharmButton(
-            label = if (state.addFormOpen) "ปิด" else "ปรับปรุงใหม่",
+            label = if (state.addFormOpen) pharmStrings.commonClose else pharmStrings.stockNewAdjust,
             onClick = callbacks.onToggleAddForm,
             variant = PharmButtonVariant.Ghost,
             leadingIcon = {
@@ -163,7 +164,7 @@ private fun HistoryBody(state: StockAdjustmentsUiState) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "ยังไม่มีประวัติการปรับปรุง",
+                    pharmStrings.stockHistoryEmpty,
                     style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
@@ -236,7 +237,7 @@ private fun AddAdjustmentForm(state: StockAdjustmentsUiState, callbacks: StockAd
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "ปรับปรุงใหม่",
+            text = pharmStrings.stockNewAdjust,
             style = PharmText.h3,
         )
 
@@ -246,24 +247,24 @@ private fun AddAdjustmentForm(state: StockAdjustmentsUiState, callbacks: StockAd
         ) {
             PharmSingleSelectChips(
                 chips = listOf(
-                    PharmFilterChip(id = AdjustmentSign.Decrease.name, label = "ลด"),
-                    PharmFilterChip(id = AdjustmentSign.Increase.name, label = "เพิ่ม"),
+                    PharmFilterChip(id = AdjustmentSign.Decrease.name, label = pharmStrings.commonDelete),
+                    PharmFilterChip(id = AdjustmentSign.Increase.name, label = pharmStrings.commonAdd),
                 ),
                 activeId = state.draft.sign.name,
                 onSelect = { callbacks.onSign(AdjustmentSign.valueOf(it)) },
                 scrollable = false,
             )
-            FormField(label = "จำนวน", modifier = Modifier.weight(1f)) {
+            FormField(label = pharmStrings.commonQty, modifier = Modifier.weight(1f)) {
                 PharmTextField(
                     value = state.draft.absDelta,
                     onValueChange = callbacks.onAbsDelta,
-                    placeholder = "จำนวน",
+                    placeholder = pharmStrings.commonQty,
                     keyboardType = KeyboardType.Number,
                 )
             }
         }
 
-        FormField(label = "เหตุผล") {
+        FormField(label = pharmStrings.stockHeaderReason) {
             PharmSingleSelectChips(
                 chips = AdjustmentReason.pickerOrder.map {
                     PharmFilterChip(id = it.name, label = it.wire)
@@ -273,17 +274,17 @@ private fun AddAdjustmentForm(state: StockAdjustmentsUiState, callbacks: StockAd
             )
         }
 
-        FormField(label = "หมายเหตุ") {
+        FormField(label = pharmStrings.commonNote) {
             PharmTextField(
                 value = state.draft.note,
                 onValueChange = callbacks.onNote,
-                placeholder = "หมายเหตุ (ออปชัน)",
+                placeholder = pharmStrings.commonNote,
                 singleLine = false,
             )
         }
 
         PharmButton(
-            label = "บันทึก",
+            label = pharmStrings.commonSave,
             onClick = callbacks.onSubmitAdd,
             enabled = state.canSubmitDraft,
             loading = state.saving,

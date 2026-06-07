@@ -28,6 +28,7 @@ import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun StockTable(
@@ -37,10 +38,11 @@ internal fun StockTable(
     emptySearching: Boolean = false,
 ) {
     val t = pharmTokens
-    val columns = remember(callbacks, t) {
+    val s = pharmStrings
+    val columns = remember(callbacks, t, s) {
         listOf(
         PharmTableColumn<Drug>(
-            header = "ชื่อยา",
+            header = s.expiryHeaderDrugName,
             weight = 2.4f,
             cell = { drug ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -65,7 +67,7 @@ internal fun StockTable(
             },
         ),
         PharmTableColumn(
-            header = "ชื่อสามัญ",
+            header = s.stockHeaderGeneric,
             weight = 1.6f,
             hideInCompact = true,
             cell = { drug ->
@@ -78,7 +80,7 @@ internal fun StockTable(
             },
         ),
         PharmTableColumn(
-            header = "ขนาด",
+            header = s.stockHeaderSize,
             weight = 0.8f,
             hideInCompact = true,
             cell = { drug ->
@@ -91,17 +93,17 @@ internal fun StockTable(
             },
         ),
         PharmTableColumn(
-            header = "ประเภท",
+            header = s.stockHeaderCategory,
             weight = 1.0f,
             cell = { drug -> TypeBadge(drug) },
         ),
         PharmTableColumn(
-            header = "รายงาน ขย.",
+            header = s.stockHeaderReports,
             weight = 1.2f,
             cell = { drug -> KyBadgesCell(drug) },
         ),
         PharmTableColumn(
-            header = "ราคาทุน",
+            header = s.importsFormHeaderCostPrice,
             weight = 0.8f,
             align = PharmColumnAlign.End,
             hideInCompact = true,
@@ -113,7 +115,7 @@ internal fun StockTable(
             },
         ),
         PharmTableColumn(
-            header = "ราคาขาย",
+            header = s.importsFormHeaderSellPrice,
             weight = 0.8f,
             align = PharmColumnAlign.End,
             cell = { drug ->
@@ -130,12 +132,12 @@ internal fun StockTable(
             cell = { drug -> StockQtyCell(drug) },
         ),
         PharmTableColumn(
-            header = "สถานะ",
+            header = s.commonStatus,
             weight = 0.9f,
             cell = { drug -> StockStatusBadge(drug) },
         ),
         PharmTableColumn(
-            header = "บาร์โค้ด",
+            header = s.stockHeaderBarcode,
             weight = 1.2f,
             hideInCompact = true,
             cell = { drug ->
@@ -151,7 +153,7 @@ internal fun StockTable(
             },
         ),
         PharmTableColumn(
-            header = "จัดการ",
+            header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { drug -> StockRowActions(drug = drug, callbacks = callbacks) },
@@ -170,12 +172,12 @@ internal fun StockTable(
             if (emptySearching) {
                 PharmEmptyState(
                     icon = PharmIcons.Search,
-                    title = "ไม่พบยาที่ค้นหา",
+                    title = pharmStrings.stockListNotFound,
                 )
             } else {
                 PharmEmptyState(
                     icon = PharmIcons.Stock,
-                    title = "ยังไม่มีรายการยาในคลัง",
+                    title = pharmStrings.stockListEmpty,
                 )
             }
         },
@@ -187,8 +189,8 @@ private fun TypeBadge(drug: Drug) {
     val type = drug.type?.trim()?.lowercase().orEmpty()
     val (tone, label) = when {
         type.contains("herb") || type.contains("สมุนไพร")    -> PharmBadgeTone.Emerald to "สมุนไพร"
-        type.contains("supp") || type.contains("อาหารเสริม") -> PharmBadgeTone.Orange  to "อาหารเสริม"
-        else                                                  -> PharmBadgeTone.Purple  to "แผนปัจจุบัน"
+        type.contains("supp") || type.contains(pharmStrings.stockTypeSupplement) -> PharmBadgeTone.Orange  to pharmStrings.stockTypeSupplement
+        else                                                  -> PharmBadgeTone.Purple  to pharmStrings.stockTypeAbbrev
     }
     PharmBadge(text = label, tone = tone, size = PharmBadgeSize.Sm)
 }
@@ -242,37 +244,38 @@ private fun StockQtyCell(drug: Drug) {
 private fun StockStatusBadge(drug: Drug) {
     val (tone, label) = when (drug.stockStatus) {
         StockStatus.OutOrOversold ->
-            if (drug.stock.value < 0) PharmBadgeTone.Red to "ค้างส่ง"
-            else PharmBadgeTone.Amber to "หมด"
-        StockStatus.Low -> PharmBadgeTone.Amber to "ใกล้หมด"
-        StockStatus.Healthy -> PharmBadgeTone.Green to "ปกติ"
+            if (drug.stock.value < 0) PharmBadgeTone.Red to pharmStrings.stockMetricBackorder
+            else PharmBadgeTone.Amber to pharmStrings.stockStatusOut
+        StockStatus.Low -> PharmBadgeTone.Amber to pharmStrings.stockStatusLow
+        StockStatus.Healthy -> PharmBadgeTone.Green to pharmStrings.stockStatusNormal
     }
     PharmBadge(text = label, tone = tone, size = PharmBadgeSize.Sm)
 }
 
 @Composable
 private fun StockRowActions(drug: Drug, callbacks: StockCallbacks) {
-    val actions = remember(drug.id, callbacks) {
+    val s = pharmStrings
+    val actions = remember(drug.id, callbacks, s) {
         listOf(
             PharmAction(
-                label = "แก้ไข",
+                label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onEditDrug(drug) },
             ),
             PharmAction(
-                label = "ล็อต",
+                label = s.labelsLotPrefix,
                 icon = PharmIcons.Stock,
                 onClick = { callbacks.onOpenLots(drug) },
             ),
             PharmAction(
-                label = "ปรับสต็อก",
+                label = s.stockActionAdjust,
                 icon = PharmIcons.Pencil,
                 tone = PharmActionTone.Success,
                 onClick = { callbacks.onOpenAdjust(drug) },
             ),
             PharmAction(
-                label = "ประวัติ",
+                label = s.stockActionHistory,
                 icon = PharmIcons.Movements,
                 onClick = { callbacks.onOpenHistory(drug) },
             ),
