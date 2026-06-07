@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.users
 
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 enum class UsersAction { Delete, EditRole, ToggleStatus, SetPassword }
 
@@ -16,7 +16,10 @@ data class UsersListUiState(
     val actionBusy: Boolean = false,
     override val loading: Boolean = false,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<UsersListUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
 
     val filtered: List<UmUser> = if (searchQuery.isBlank()) {
         users

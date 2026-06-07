@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.imports
 
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
-import app.devper.pharm.ui.common.BaseUiState
+import app.devper.pharm.ui.common.LoadableUiState
 
 data class ImportsListUiState(
     override val loading: Boolean = false,
@@ -12,7 +12,11 @@ data class ImportsListUiState(
     val pendingDelete: PurchaseOrderSummary? = null,
     val busy: Boolean = false,
     override val error: String? = null,
-) : BaseUiState {
+) : LoadableUiState<ImportsListUiState> {
+
+    override fun withLoading(value: Boolean) = copy(loading = value)
+    override fun withError(value: String?) = copy(error = value)
+
     val filtered: List<PurchaseOrderSummary> = if (query.isBlank()) {
         orders
     } else {

@@ -12,7 +12,7 @@ import app.devper.pharm.domain.usecase.GetUsersUseCase
 import app.devper.pharm.domain.usecase.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.SetUserRoleUseCase
 import app.devper.pharm.domain.usecase.SetUserStatusUseCase
-import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class UsersListViewModel(
     private val getProfile: GetProfileUseCase,
@@ -21,24 +21,19 @@ class UsersListViewModel(
     private val setUserRole: SetUserRoleUseCase,
     private val setUserStatus: SetUserStatusUseCase,
     private val setUserPassword: SetUserPasswordUseCase,
-) : BaseViewModel<UsersListUiState>(UsersListUiState()) {
+) : BaseLoadableViewModel<UsersListUiState>(UsersListUiState()) {
 
     init {
         loadProfile()
         reload()
     }
 
-    fun reload() {
-        setState { copy(loading = true, error = null) }
-        launchResult(
-            block = { getUsers() },
-            onSuccess = { list -> setState { copy(loading = false, users = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
-        )
-    }
+    fun reload() = launchLoad(
+        block = { getUsers() },
+        onSuccess = { list -> copy(users = list) },
+    )
 
     fun setSearch(value: String) = setState { copy(searchQuery = value) }
-    fun dismissError() = setState { copy(error = null) }
 
     fun requestDelete(target: UmUser) = setState { copy(actionTarget = target, actionMode = UsersAction.Delete) }
     fun requestRoleEdit(target: UmUser) = setState { copy(actionTarget = target, actionMode = UsersAction.EditRole) }
