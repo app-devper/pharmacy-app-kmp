@@ -5,12 +5,20 @@ import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.ui.common.LoadableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
+import app.devper.pharm.ui.i18n.PharmStrings
 
-enum class ProfitSort(val label: String) {
-    Profit("กำไรสูง"),
-    Margin("Margin %"),
-    QtySold("ขายมาก"),
-    Revenue("รายได้"),
+enum class ProfitSort {
+    Profit,
+    Margin,
+    QtySold,
+    Revenue,
+}
+
+fun ProfitSort.label(s: PharmStrings): String = when (this) {
+    ProfitSort.Profit  -> s.reportsProfitHighMargin
+    ProfitSort.Margin  -> "Margin %"
+    ProfitSort.QtySold -> s.reportsProfitTopSelling
+    ProfitSort.Revenue -> s.reportsHeaderRevenue
 }
 
 data class ProfitUiState(

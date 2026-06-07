@@ -6,36 +6,38 @@ import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.ui.designsystem.MetricCard
 import app.devper.pharm.ui.designsystem.MetricCardRow
 import app.devper.pharm.ui.designsystem.MetricTint
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.fmtBaht
 
 @Composable
 internal fun EodSummaryCards(report: EodReport, modifier: Modifier = Modifier) {
+    val s = pharmStrings
     MetricCardRow(modifier = modifier) {
         MetricCard(
-            label = "ยอดขายสุทธิ",
+            label = s.reportsEodNetSalesLabel,
             value = fmtBaht(report.totalSales),
-            sub = "${report.billCount} บิล",
+            sub = "${report.billCount} ${s.salesHistoryCountNoun}",
             tint = MetricTint.Blue,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "รับเงิน",
+            label = s.reportsEodCashReceived,
             value = fmtBaht(report.totalReceived),
-            sub = "รวมทุกช่องทาง",
+            sub = s.reportsEodChannelSum,
             tint = MetricTint.Indigo,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "ส่วนลดรวม",
+            label = s.reportsEodTotalDiscount,
             value = fmtBaht(report.totalDiscount),
-            sub = "รวมทั้งวัน",
+            sub = s.reportsEodDayTotal,
             tint = MetricTint.Purple,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "เงินเข้าลิ้นชัก",
+            label = s.reportsEodCashIn,
             value = fmtBaht(report.netCash),
-            sub = "รับ − ทอน",
+            sub = s.reportsEodReceiveMinusChange,
             tint = MetricTint.Green,
             modifier = Modifier.weight(1f),
         )

@@ -7,35 +7,37 @@ import app.devper.pharm.ui.designsystem.MetricCard
 import app.devper.pharm.ui.designsystem.MetricCardRow
 import app.devper.pharm.ui.designsystem.MetricTint
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
 internal fun ReportsMetricsRow(summary: ReportSummary, modifier: Modifier = Modifier) {
+    val s = pharmStrings
     MetricCardRow(modifier = modifier) {
         MetricCard(
-            label = "ยอดขายวันนี้",
+            label = s.reportsMetricSalesToday,
             value = formatBahtCurrency(summary.todaySales),
-            sub = "${summary.todayBills} รายการ",
+            sub = "${summary.todayBills} ${s.movementsCountNoun}",
             tint = MetricTint.Blue,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "ยอดขายเดือนนี้",
+            label = s.reportsMetricSalesMonth,
             value = formatBahtCurrency(summary.monthSales),
-            sub = "บาท",
+            sub = s.commonBaht,
             tint = MetricTint.Indigo,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "กำไรเดือนนี้ (ประมาณ)",
+            label = s.reportsMetricProfitMonthApprox,
             value = formatBahtCurrency(estimatedMonthProfit(summary)),
-            sub = "ประเมิน ~30% ของยอดขาย",
+            sub = s.reportsMetricProfitMonthHint,
             tint = MetricTint.Green,
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "มูลค่าสต็อก",
+            label = s.reportsMetricStockValue,
             value = formatBahtCurrency(summary.stockValue),
-            sub = "หมด ${summary.outStock} / ใกล้หมด ${summary.lowStock}",
+            sub = s.reportsMetricStockHint(summary.outStock, summary.lowStock),
             tint = MetricTint.Purple,
             modifier = Modifier.weight(1f),
         )

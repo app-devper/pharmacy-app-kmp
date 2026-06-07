@@ -24,6 +24,7 @@ import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -35,33 +36,34 @@ internal fun ProfitTable(
     totals: ProfitTotals?,
     modifier: Modifier = Modifier,
 ) {
-    val columns = remember {
+    val s = pharmStrings
+    val columns = remember(s) {
         listOf(
         PharmTableColumn<DrugProfit>(
-            header = "ชื่อยา",
+            header = s.reportsHeaderDrugName,
             weight = 2.2f,
             cell = { row -> NameCell(row.drugName) },
         ),
         PharmTableColumn(
-            header = "จำนวนขาย",
+            header = s.reportsHeaderQtySold,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { row -> NumberCell(row.qtySold.toString()) },
         ),
         PharmTableColumn(
-            header = "รายได้",
+            header = s.reportsHeaderRevenue,
             weight = 1.2f,
             align = PharmColumnAlign.End,
             cell = { row -> MoneyCell(row.revenue) },
         ),
         PharmTableColumn(
-            header = "ต้นทุน",
+            header = s.reportsHeaderCost,
             weight = 1.2f,
             align = PharmColumnAlign.End,
             cell = { row -> MoneyCell(row.cost, muted = true) },
         ),
         PharmTableColumn(
-            header = "กำไร",
+            header = s.reportsHeaderProfit,
             weight = 1.2f,
             align = PharmColumnAlign.End,
             cell = { row -> MoneyCell(row.profit, bold = true) },
@@ -82,7 +84,7 @@ internal fun ProfitTable(
         modifier = modifier,
         rowHeight = 48.dp,
         emptyContent = {
-            Text(text = "ไม่มียอดขายในช่วงเวลานี้", style = PharmText.meta)
+            Text(text = pharmStrings.reportsSectionDailySalesEmpty, style = PharmText.meta)
         },
         bottomRow = totals?.let { { ProfitTotalsRow(columns = columns, totals = it) } },
     )
@@ -103,7 +105,7 @@ private fun ProfitTotalsRow(
 ) {
     val t = pharmTokens
     val cellRenderers: List<@Composable () -> Unit> = listOf(
-        { Text(text = "รวม", style = PharmText.bodySm.copy(fontWeight = FontWeight.SemiBold)) },
+        { Text(text = pharmStrings.reportsTotalLabel, style = PharmText.bodySm.copy(fontWeight = FontWeight.SemiBold)) },
         { TotalsNumber(totals.qty.toString()) },
         { TotalsMoney(totals.revenue) },
         { TotalsMoney(totals.cost, muted = true) },

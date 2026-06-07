@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.TopDrug
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -40,9 +41,10 @@ internal fun ReportsTopDrugsSection(rows: List<TopDrug>, modifier: Modifier = Mo
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(text = "10 อันดับยาขายดี", style = PharmText.h3)
+        val s = pharmStrings
+        Text(text = s.reportsTopSellingTitle, style = PharmText.h3)
         if (visible.isEmpty()) {
-            Text(text = "ยังไม่มีข้อมูล", style = PharmText.meta)
+            Text(text = s.reportsEmptyNoData, style = PharmText.meta)
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 visible.forEachIndexed { index, row ->

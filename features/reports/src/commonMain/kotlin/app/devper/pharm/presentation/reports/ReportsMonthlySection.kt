@@ -21,6 +21,7 @@ import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
 import app.devper.pharm.ui.designsystem.PharmGroupedBarChart
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -44,12 +45,13 @@ internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Mo
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val s = pharmStrings
             Text(
-                text = "รายได้ vs ต้นทุน — รายเดือน",
+                text = s.reportsSectionMonthly,
                 style = PharmText.h3,
                 modifier = Modifier.weight(1f),
             )
-            Text(text = "${recent.size} เดือนล่าสุด", style = PharmText.meta)
+            Text(text = "${recent.size} ${s.reportsRangeThisMonth}", style = PharmText.meta)
         }
         PharmGroupedBarChart(
             revenue = revenueData,
@@ -62,8 +64,8 @@ internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Mo
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            LegendDot(color = t.colors.accent, label = "รายได้")
-            LegendDot(color = t.colors.warningFg, label = "ต้นทุน")
+            LegendDot(color = t.colors.accent, label = pharmStrings.reportsHeaderRevenue)
+            LegendDot(color = t.colors.warningFg, label = pharmStrings.reportsHeaderCost)
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -46,12 +47,13 @@ internal fun EodBalanceCard(report: EodReport) {
             modifier = Modifier.size(20.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
+            val s = pharmStrings
             Text(
-                text = if (balanced) "ลิ้นชักตรงกับยอดขาย" else "ลิ้นชักไม่ตรงกับยอดขาย",
+                text = if (balanced) s.reportsEodDrawerMatches else s.reportsEodDrawerMismatches,
                 style = PharmText.h3.copy(color = fg),
             )
             Text(
-                text = "เงินเข้าลิ้นชัก ${fmtBaht(report.netCash)} · ยอดขาย ${fmtBaht(report.totalSales)}",
+                text = s.reportsEodNetSalesAndCashLine(fmtBaht(report.netCash), fmtBaht(report.totalSales)),
                 style = PharmText.meta.copy(color = fg),
             )
         }
