@@ -4,14 +4,17 @@ private val NETWORK_CLASS_HINTS = listOf(
     "ConnectException",
     "ConnectTimeoutException",
     "SocketTimeoutException",
+    "SocketException",
     "UnknownHost",
     "HttpRequestTimeout",
     "IOException",
+    "EOFException",
     "NoTransformationFound",
 )
 
 private val NETWORK_MESSAGE_HINTS = listOf(
     "Failed to connect",
+    "Failed to fetch",
     "Network is unreachable",
     "Connection refused",
     "Connection reset",
