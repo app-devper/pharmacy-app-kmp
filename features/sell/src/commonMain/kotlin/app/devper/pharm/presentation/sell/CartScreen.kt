@@ -79,11 +79,11 @@ fun CartScreen(
                 activeTier = sellState.activeTier,
                 cartDiscount = sellState.cartDiscount,
                 received = sellState.received,
-                grossSubtotal = sellState.grossSubtotal,
-                itemDiscountTotal = sellState.itemDiscountTotal,
-                cartDiscountAmount = sellState.cartDiscountAmount,
-                total = sellState.total,
-                change = sellState.change,
+                grossSubtotal = sellState.grossSubtotal.amount,
+                itemDiscountTotal = sellState.itemDiscountTotal.amount,
+                cartDiscountAmount = sellState.cartDiscountAmount.amount,
+                total = sellState.total.amount,
+                change = sellState.change.amount,
                 canCheckout = checkoutState.canCheckout,
                 checkingOut = checkoutState.checkingOut,
                 onSetQty = sellVM::onSetQty,
@@ -123,7 +123,7 @@ fun CartScreen(
     if (sellState.cartDiscountSheetOpen) {
         CartDiscountSheet(
             current = sellState.cartDiscount,
-            subtotal = sellState.subtotal,
+            subtotal = sellState.subtotal.amount,
             onApply = sellVM::onApplyCartDiscount,
             onDismiss = sellVM::onCloseCartDiscount,
         )

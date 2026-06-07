@@ -72,7 +72,7 @@ class CheckoutViewModel(
                 setState {
                     copy(
                         cartIsEmpty = snap.isEmpty,
-                        tenderOk = received >= snap.total,
+                        tenderOk = received >= snap.total.amount,
                     )
                 }
             }

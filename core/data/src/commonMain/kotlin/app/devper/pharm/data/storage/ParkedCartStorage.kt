@@ -183,12 +183,12 @@ private fun ParkedCustomerDto.toDomain() = Customer(
 
 private fun CartDiscount.toDto(): ParkedDiscountDto = when (this) {
     is CartDiscount.None    -> ParkedDiscountDto(kind = "none", value = 0.0)
-    is CartDiscount.Flat    -> ParkedDiscountDto(kind = "flat", value = amount)
+    is CartDiscount.Flat    -> ParkedDiscountDto(kind = "flat", value = amount.amount)
     is CartDiscount.Percent -> ParkedDiscountDto(kind = "percent", value = percent)
 }
 
 private fun ParkedDiscountDto.toDomain(): CartDiscount = when (kind) {
-    "flat"    -> CartDiscount.Flat(value)
+    "flat"    -> CartDiscount.Flat(Money(value))
     "percent" -> CartDiscount.Percent(value)
     else      -> CartDiscount.None
 }

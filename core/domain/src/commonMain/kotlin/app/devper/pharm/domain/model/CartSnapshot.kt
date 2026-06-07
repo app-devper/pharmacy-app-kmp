@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.model
 
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.extension.Tier
 
 data class CartSnapshot(
@@ -12,7 +13,7 @@ data class CartSnapshot(
     val lastReceipt: Sale?,
 ) {
     val isEmpty: Boolean get() = items.isEmpty()
-    val subtotal: Double get() = items.sumOf { it.lineTotal.amount }
-    val cartDiscountAmount: Double get() = cartDiscount.apply(subtotal)
-    val total: Double get() = (subtotal - cartDiscountAmount).coerceAtLeast(0.0)
+    val subtotal: Money get() = items.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
+    val cartDiscountAmount: Money get() = cartDiscount.apply(subtotal)
+    val total: Money get() = (subtotal - cartDiscountAmount).coerceAtLeast(Money.Zero)
 }

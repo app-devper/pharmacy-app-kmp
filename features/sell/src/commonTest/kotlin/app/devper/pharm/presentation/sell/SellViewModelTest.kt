@@ -93,7 +93,7 @@ class SellViewModelTest {
             FakeCartRepository(
                 initialItems = listOf(line(qty = 2)),
                 initialCustomer = customer(),
-                initialDiscount = CartDiscount.Flat(10.0),
+                initialDiscount = CartDiscount.Flat(Money(10.0)),
                 initialReceived = "100",
             ),
         )
@@ -102,7 +102,7 @@ class SellViewModelTest {
         assertEquals(1, s.cart.size)
         assertEquals(2, s.cart[0].qty)
         assertEquals("John", s.customer?.name)
-        assertEquals(CartDiscount.Flat(10.0), s.cartDiscount)
+        assertEquals(CartDiscount.Flat(Money(10.0)), s.cartDiscount)
         assertEquals("100", s.received)
 
         assertEquals(1, cart.state.value.active.items.size)
