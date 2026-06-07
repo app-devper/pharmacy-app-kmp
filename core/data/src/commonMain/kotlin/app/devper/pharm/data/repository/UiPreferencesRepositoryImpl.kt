@@ -2,6 +2,7 @@ package app.devper.pharm.data.repository
 
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
+import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
 import app.devper.pharm.domain.repository.UiPreferencesRepository
@@ -32,15 +33,22 @@ class UiPreferencesRepositoryImpl(
         settings.putString(KEY_DENSITY, density.wire)
     }
 
+    override fun setLocale(locale: LocalePreference) {
+        internal.value = internal.value.copy(locale = locale)
+        settings.putString(KEY_LOCALE, locale.wire)
+    }
+
     private fun loadFromSettings(): UiPreferences = UiPreferences(
         theme = ThemePreference.parse(settings.getStringOrNull(KEY_THEME)),
         fontSize = FontSizePreference.parse(settings.getStringOrNull(KEY_FONT_SIZE)),
         density = DensityPreference.parse(settings.getStringOrNull(KEY_DENSITY)),
+        locale = LocalePreference.parse(settings.getStringOrNull(KEY_LOCALE)),
     )
 
     private companion object {
         const val KEY_THEME = "ui.theme"
         const val KEY_FONT_SIZE = "ui.fontSize"
         const val KEY_DENSITY = "ui.density"
+        const val KEY_LOCALE = "ui.locale"
     }
 }

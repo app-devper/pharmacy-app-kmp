@@ -6,6 +6,7 @@ import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.RefreshSettingsUseCase
 import app.devper.pharm.domain.usecase.SetDensityPreferenceUseCase
 import app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase
+import app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase
 import app.devper.pharm.domain.usecase.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.UpdateSettingsUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -21,4 +22,5 @@ val settingsDomainModule = module {
     factoryOf(::SetThemePreferenceUseCase)
     factoryOf(::SetFontSizePreferenceUseCase)
     factoryOf(::SetDensityPreferenceUseCase)
+    factoryOf(::SetLocalePreferenceUseCase)
 }

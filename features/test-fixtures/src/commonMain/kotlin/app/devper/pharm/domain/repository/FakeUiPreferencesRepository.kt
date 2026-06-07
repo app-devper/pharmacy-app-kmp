@@ -2,6 +2,7 @@ package app.devper.pharm.domain.repository
 
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
+import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,8 @@ class FakeUiPreferencesRepository(
         private set
     var lastDensity: DensityPreference? = null
         private set
+    var lastLocale: LocalePreference? = null
+        private set
 
     override fun setTheme(theme: ThemePreference) {
         lastTheme = theme
@@ -35,5 +38,10 @@ class FakeUiPreferencesRepository(
     override fun setDensity(density: DensityPreference) {
         lastDensity = density
         internal.value = internal.value.copy(density = density)
+    }
+
+    override fun setLocale(locale: LocalePreference) {
+        lastLocale = locale
+        internal.value = internal.value.copy(locale = locale)
     }
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_add">Add</string>
+    <string name="common_search">Search</string>
+    <string name="common_confirm">Confirm</string>
+    <string name="common_close">Close</string>
+    <string name="common_back">Back</string>
+    <string name="common_loading">Loading</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_more">More</string>
+
+    <string name="common_total">Total</string>
+    <string name="common_qty">Qty</string>
+    <string name="common_unit">Unit</string>
+    <string name="common_price">Price</string>
+    <string name="common_status">Status</string>
+    <string name="common_note">Note</string>
+    <string name="common_name">Name</string>
+    <string name="common_phone">Phone</string>
+    <string name="common_date">Date</string>
+    <string name="common_filter">Filter</string>
+    <string name="common_export">Export</string>
+    <string name="common_print">Print</string>
+    <string name="common_refresh">Refresh</string>
+
+    <string name="common_unit_piece">pcs</string>
+    <string name="common_unit_tablet">tablet</string>
+    <string name="common_unit_capsule">capsule</string>
+
+    <string name="common_required">Required</string>
+    <string name="common_optional">Optional</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+
+    <string name="settings_locale_title">Language</string>
+    <string name="settings_locale_th">ไทย</string>
+    <string name="settings_locale_en">English</string>
+    <string name="settings_locale_system">System default</string>
+    <string name="settings_locale_restart_required">Language will change after restarting the app</string>
+
+</resources>
