@@ -88,6 +88,7 @@ class CheckoutViewModelTest {
         val vm = CheckoutViewModel(
             cartState = CartStateProvider(cart),
             settings = SettingsProvider(settings),
+            timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
             checkout = CheckoutUseCase(cart, sales, dispatchers),
             clearCart = ClearCartUseCase(cart),
             dismissReceiptUseCase = DismissReceiptUseCase(cart),

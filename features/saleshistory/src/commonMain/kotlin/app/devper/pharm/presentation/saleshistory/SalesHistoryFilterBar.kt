@@ -19,8 +19,8 @@ internal fun SalesHistoryListToolbar(
     modifier: Modifier = Modifier,
 ) {
     val range = PharmDateRange(
-        fromMillis = ymdToMillis(state.from),
-        toMillis = ymdToMillis(state.to),
+        fromMillis = ymdToMillis(state.from, state.tz),
+        toMillis = ymdToMillis(state.to, state.tz),
     )
 
     PharmListToolbar(
@@ -37,7 +37,7 @@ internal fun SalesHistoryListToolbar(
                     if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
                     if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                 },
-                formatDate = { millis -> formatYmdDisplay(millis) },
+                formatDate = { millis -> formatYmdDisplay(millis, state.tz) },
                 modifier = Modifier.weight(1f),
             )
         },

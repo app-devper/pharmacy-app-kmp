@@ -27,6 +27,7 @@ class MovementsViewModelTest {
         MovementsViewModel(
             GetMovementsUseCase(FakeMovementsRepository(page), d),
             ExportMovementsCsvUseCase(FakeExportRepository(), d),
+            app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
 
     @Test
@@ -54,6 +55,7 @@ class MovementsViewModelTest {
         val model = MovementsViewModel(
             GetMovementsUseCase(FakeMovementsRepository(StockMovementsPage(emptyList(), 0)), d),
             ExportMovementsCsvUseCase(export, d),
+            app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         advanceUntilIdle()
         model.onExportExcel()

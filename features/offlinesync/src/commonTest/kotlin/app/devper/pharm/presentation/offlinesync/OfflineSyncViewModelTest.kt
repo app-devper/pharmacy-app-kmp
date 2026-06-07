@@ -28,6 +28,7 @@ class OfflineSyncViewModelTest {
             offlineQueue = OfflineQueueProvider(queue),
             markSynced = MarkOfflineSaleSyncedUseCase(queue, dispatchers),
             retrySale = RetryOfflineSaleUseCase(queue, sales, dispatchers),
+            timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         return Triple(vm, queue, sales)
     }

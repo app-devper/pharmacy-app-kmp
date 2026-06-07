@@ -9,21 +9,23 @@ import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
+private val DEFAULT_ZONE = TimeZone.of("Asia/Bangkok")
+
 @OptIn(kotlin.time.ExperimentalTime::class)
-fun millisToYmd(millis: Long?): String {
+fun millisToYmd(millis: Long?, tz: TimeZone = DEFAULT_ZONE): String {
     if (millis == null) return ""
-    val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(tz).date
     val mm = date.month.number.toString().padStart(2, '0')
     val dd = date.day.toString().padStart(2, '0')
     return "${date.year}-$mm-$dd"
 }
 
 @OptIn(kotlin.time.ExperimentalTime::class)
-fun ymdToMillis(ymd: String): Long? {
+fun ymdToMillis(ymd: String, tz: TimeZone = DEFAULT_ZONE): Long? {
     if (ymd.isBlank()) return null
     val date = runCatching { LocalDate.parse(ymd) }.getOrNull() ?: return null
     val dt = LocalDateTime(date, LocalTime(0, 0))
-    return dt.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+    return dt.toInstant(tz).toEpochMilliseconds()
 }
 
-fun formatYmdDisplay(millis: Long): String = millisToYmd(millis)
+fun formatYmdDisplay(millis: Long, tz: TimeZone = DEFAULT_ZONE): String = millisToYmd(millis, tz)

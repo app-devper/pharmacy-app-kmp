@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.param.ReportRangeParam
 import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
@@ -13,19 +14,24 @@ import app.devper.pharm.ui.common.BaseViewModel
 class ProfitViewModel(
     private val getProfitReport: GetProfitReportUseCase,
     private val exportProfitCsv: ExportProfitCsvUseCase,
+    timeZoneProvider: TimeZoneProvider,
 ) : BaseViewModel<ProfitUiState>(
-    ProfitUiState(from = todayDate().startOfMonth().toYmd(), to = todayDate().toYmd()),
+    ProfitUiState(
+        tz = timeZoneProvider.current,
+        from = todayDate(timeZoneProvider.current).startOfMonth().toYmd(),
+        to = todayDate(timeZoneProvider.current).toYmd(),
+    ),
 ) {
 
     init { reload() }
 
     fun onFromMillisChange(millis: Long?) {
-        setState { copy(from = millisToYmd(millis)) }
+        setState { copy(from = millisToYmd(millis, tz)) }
         reload()
     }
 
     fun onToMillisChange(millis: Long?) {
-        setState { copy(to = millisToYmd(millis)) }
+        setState { copy(to = millisToYmd(millis, tz)) }
         reload()
     }
 

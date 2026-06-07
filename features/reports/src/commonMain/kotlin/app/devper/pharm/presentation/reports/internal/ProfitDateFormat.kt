@@ -16,11 +16,11 @@ import app.devper.pharm.ui.format.formatYmdDisplay as sharedFormatYmdDisplay
 import app.devper.pharm.ui.format.millisToYmd as sharedMillisToYmd
 import app.devper.pharm.ui.format.ymdToMillis as sharedYmdToMillis
 
-internal fun millisToYmd(millis: Long?): String = sharedMillisToYmd(millis)
+internal fun millisToYmd(millis: Long?, tz: TimeZone): String = sharedMillisToYmd(millis, tz)
 
-internal fun ymdToMillis(ymd: String): Long? = sharedYmdToMillis(ymd)
+internal fun ymdToMillis(ymd: String, tz: TimeZone): Long? = sharedYmdToMillis(ymd, tz)
 
-internal fun formatYmdDisplay(millis: Long): String = sharedFormatYmdDisplay(millis)
+internal fun formatYmdDisplay(millis: Long, tz: TimeZone): String = sharedFormatYmdDisplay(millis, tz)
 
 internal fun LocalDate.startOfMonth(): LocalDate = LocalDate(year, month, 1)
 
@@ -33,13 +33,13 @@ internal fun LocalDate.toYmd(): String = buildString {
 }
 
 @OptIn(ExperimentalTime::class)
-internal fun todayDate(): LocalDate =
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+internal fun todayDate(tz: TimeZone): LocalDate =
+    Clock.System.now().toLocalDateTime(tz).date
 
 @OptIn(ExperimentalTime::class)
-internal fun LocalDate.toStartOfDayMillis(): Long =
+internal fun LocalDate.toStartOfDayMillis(tz: TimeZone): Long =
     LocalDateTime(this, LocalTime(0, 0))
-        .toInstant(TimeZone.currentSystemDefault())
+        .toInstant(tz)
         .toEpochMilliseconds()
 
 enum class ProfitQuickPeriod(val label: String) {
@@ -51,24 +51,24 @@ enum class ProfitQuickPeriod(val label: String) {
 
 internal data class ProfitDateRange(val fromMillis: Long, val toMillis: Long)
 
-internal fun ProfitQuickPeriod.resolve(): ProfitDateRange {
-    val today = todayDate()
+internal fun ProfitQuickPeriod.resolve(tz: TimeZone): ProfitDateRange {
+    val today = todayDate(tz)
     return when (this) {
-        ProfitQuickPeriod.Today -> ProfitDateRange(today.toStartOfDayMillis(), today.toStartOfDayMillis())
+        ProfitQuickPeriod.Today -> ProfitDateRange(today.toStartOfDayMillis(tz), today.toStartOfDayMillis(tz))
         ProfitQuickPeriod.ThisWeek -> {
             val daysFromMonday = ((today.dayOfWeek.ordinal - DayOfWeek.MONDAY.ordinal) + 7) % 7
             val start = today.minus(daysFromMonday, DateTimeUnit.DAY)
-            ProfitDateRange(start.toStartOfDayMillis(), today.toStartOfDayMillis())
+            ProfitDateRange(start.toStartOfDayMillis(tz), today.toStartOfDayMillis(tz))
         }
         ProfitQuickPeriod.ThisMonth -> {
             val start = LocalDate(today.year, today.month, 1)
-            ProfitDateRange(start.toStartOfDayMillis(), today.toStartOfDayMillis())
+            ProfitDateRange(start.toStartOfDayMillis(tz), today.toStartOfDayMillis(tz))
         }
         ProfitQuickPeriod.LastMonth -> {
             val firstOfThisMonth = LocalDate(today.year, today.month, 1)
             val lastOfPrev = firstOfThisMonth.minus(1, DateTimeUnit.DAY)
             val firstOfPrev = LocalDate(lastOfPrev.year, lastOfPrev.month, 1)
-            ProfitDateRange(firstOfPrev.toStartOfDayMillis(), lastOfPrev.toStartOfDayMillis())
+            ProfitDateRange(firstOfPrev.toStartOfDayMillis(tz), lastOfPrev.toStartOfDayMillis(tz))
         }
     }
 }

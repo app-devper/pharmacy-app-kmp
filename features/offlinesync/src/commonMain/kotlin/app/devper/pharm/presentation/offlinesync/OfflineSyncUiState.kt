@@ -2,8 +2,10 @@ package app.devper.pharm.presentation.offlinesync
 
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.ui.common.BaseUiState
+import kotlinx.datetime.TimeZone
 
 data class OfflineSyncUiState(
+    val tz: TimeZone = TimeZone.of("Asia/Bangkok"),
     val pending: List<PendingSale> = emptyList(),
     val confirmDiscardId: String? = null,
     val message: String? = null,

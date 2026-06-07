@@ -4,6 +4,7 @@ import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.ui.common.BaseUiState
+import kotlinx.datetime.TimeZone
 
 enum class ProfitSort(val label: String) {
     Profit("กำไรสูง"),
@@ -13,6 +14,7 @@ enum class ProfitSort(val label: String) {
 }
 
 data class ProfitUiState(
+    val tz: TimeZone = TimeZone.of("Asia/Bangkok"),
     val from: String = "",
     val to: String = "",
     val sort: ProfitSort = ProfitSort.Profit,
