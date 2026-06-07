@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 
 internal const val BULK_IMPORT_SAMPLE_JSON: String = """[
   {
@@ -30,8 +31,8 @@ internal fun BulkImportJsonInput(
     modifier: Modifier = Modifier,
 ) {
     FormField(
-        label = "หรือวาง JSON ที่นี่",
-        hint = "รองรับทั้ง array หรือ {\"drugs\": [...]}",
+        label = pharmStrings.bulkImportPasteHere,
+        hint = pharmStrings.bulkImportPasteHint,
         error = parseError,
         modifier = modifier,
     ) {

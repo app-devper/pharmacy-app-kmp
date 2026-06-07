@@ -14,6 +14,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -24,32 +25,33 @@ internal fun LowStockTable(
     callbacks: LowStockCallbacks,
     modifier: Modifier = Modifier,
 ) {
-    val columns = remember {
+    val s = pharmStrings
+    val columns = remember(s) {
         listOf(
             PharmTableColumn<Drug>(
-                header = "ชื่อยา",
+                header = s.expiryHeaderDrugName,
                 weight = 2.4f,
                 cell = { drug -> LowStockNameCell(drug) },
             ),
             PharmTableColumn(
-                header = "คงเหลือ",
+                header = s.expiryHeaderRemaining,
                 weight = 1.0f,
                 align = PharmColumnAlign.End,
                 cell = { drug -> LowStockCurrentCell(drug) },
             ),
             PharmTableColumn(
-                header = "ขั้นต่ำ",
+                header = s.planningHeaderMin,
                 weight = 0.9f,
                 align = PharmColumnAlign.End,
                 cell = { drug -> LowStockMinCell(drug) },
             ),
             PharmTableColumn(
-                header = "หน่วย",
+                header = s.commonUnit,
                 weight = 0.8f,
                 cell = { drug -> LowStockUnitCell(drug) },
             ),
             PharmTableColumn(
-                header = "สถานะ",
+                header = s.commonStatus,
                 weight = 1.0f,
                 align = PharmColumnAlign.End,
                 cell = { drug -> LowStockStatusCell(drug) },
@@ -65,7 +67,7 @@ internal fun LowStockTable(
         onRowClick = { callbacks.onRowClick(it) },
         rowHeight = 56.dp,
         emptyContent = {
-            Text(text = "ไม่มียาใกล้หมด", style = PharmText.meta)
+            Text(text = s.planningLowStockEmpty, style = PharmText.meta)
         },
     )
 }

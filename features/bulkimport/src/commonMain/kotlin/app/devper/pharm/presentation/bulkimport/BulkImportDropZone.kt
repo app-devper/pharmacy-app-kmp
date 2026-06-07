@@ -28,6 +28,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -62,18 +63,18 @@ internal fun BulkImportDropZone(
                 modifier = Modifier.size(32.dp),
             )
             Text(
-                text = "ลากไฟล์ JSON มาวางที่นี่ หรือกดเลือกไฟล์",
+                text = pharmStrings.bulkImportDropZoneHint,
                 style = PharmText.body.copy(color = t.colors.fg1),
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "รองรับ array หรือ {\"drugs\": [...]} สูงสุด 1,000 รายการ",
+                text = pharmStrings.bulkImportSupportsHint,
                 style = PharmText.micro.copy(color = t.colors.fg3),
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(4.dp))
             PharmButton(
-                label = "เลือกไฟล์",
+                label = pharmStrings.bulkImportDropZonePickFile,
                 onClick = onPickFile,
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,

@@ -127,7 +127,43 @@ class PharmStringsTablesTest {
         check("helpToc", PharmStringsTh.helpToc, PharmStringsEn.helpToc, mismatches)
         check("helpNotFound", PharmStringsTh.helpNotFound, PharmStringsEn.helpNotFound, mismatches)
         check("helpTipFocusSearch", PharmStringsTh.helpTipFocusSearch, PharmStringsEn.helpTipFocusSearch, mismatches)
+        check("planningTitle", PharmStringsTh.planningTitle, PharmStringsEn.planningTitle, mismatches)
+        check("planningRefreshCta", PharmStringsTh.planningRefreshCta, PharmStringsEn.planningRefreshCta, mismatches)
+        check("planningAddPoCta", PharmStringsTh.planningAddPoCta, PharmStringsEn.planningAddPoCta, mismatches)
+        check("planningLowStockTitle", PharmStringsTh.planningLowStockTitle, PharmStringsEn.planningLowStockTitle, mismatches)
+        check("planningReorderTitle", PharmStringsTh.planningReorderTitle, PharmStringsEn.planningReorderTitle, mismatches)
+        check("planningHeaderMin", PharmStringsTh.planningHeaderMin, PharmStringsEn.planningHeaderMin, mismatches)
+        check("planningHeaderRecommend", PharmStringsTh.planningHeaderRecommend, PharmStringsEn.planningHeaderRecommend, mismatches)
+        check("bulkImportTitle", PharmStringsTh.bulkImportTitle, PharmStringsEn.bulkImportTitle, mismatches)
+        check("bulkImportSubtitle", PharmStringsTh.bulkImportSubtitle, PharmStringsEn.bulkImportSubtitle, mismatches)
+        check("bulkImportDownloadTemplate", PharmStringsTh.bulkImportDownloadTemplate, PharmStringsEn.bulkImportDownloadTemplate, mismatches)
+        check("bulkImportValidateCta", PharmStringsTh.bulkImportValidateCta, PharmStringsEn.bulkImportValidateCta, mismatches)
+        check("bulkImportImportAllCta", PharmStringsTh.bulkImportImportAllCta, PharmStringsEn.bulkImportImportAllCta, mismatches)
+        check("bulkImportResultAllSuccess", PharmStringsTh.bulkImportResultAllSuccess, PharmStringsEn.bulkImportResultAllSuccess, mismatches)
+        check("bulkImportResultPartial", PharmStringsTh.bulkImportResultPartial, PharmStringsEn.bulkImportResultPartial, mismatches)
+        check("bulkImportStatusReady", PharmStringsTh.bulkImportStatusReady, PharmStringsEn.bulkImportStatusReady, mismatches)
+        check("bulkImportStatusError", PharmStringsTh.bulkImportStatusError, PharmStringsEn.bulkImportStatusError, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun batch12_lambda_keys_interpolate_values_per_locale() {
+        assertTrue(PharmStringsTh.planningDaysLeftLabel(5).contains("5"))
+        assertTrue(PharmStringsEn.planningDaysLeftLabel(5).contains("5"))
+        assertNotEquals(PharmStringsTh.planningDaysLeftLabel(5), PharmStringsEn.planningDaysLeftLabel(5))
+        val thMeta = PharmStringsTh.planningMetaLine("2.5", "10 วัน")
+        val enMeta = PharmStringsEn.planningMetaLine("2.5", "10 day(s)")
+        assertTrue(thMeta.contains("2.5") && thMeta.contains("10"))
+        assertTrue(enMeta.contains("2.5") && enMeta.contains("10"))
+        assertTrue(PharmStringsTh.bulkImportValidatedReady(3).contains("3"))
+        assertTrue(PharmStringsEn.bulkImportValidatedReady(3).contains("3"))
+        assertTrue(PharmStringsTh.bulkImportResultTitle(7).contains("7"))
+        assertTrue(PharmStringsEn.bulkImportResultTitle(7).contains("7"))
+        val thRes = PharmStringsTh.bulkImportResultSummary(8, 10)
+        val enRes = PharmStringsEn.bulkImportResultSummary(8, 10)
+        assertTrue(thRes.contains("8") && thRes.contains("10"))
+        assertTrue(enRes.contains("8") && enRes.contains("10"))
+        assertNotEquals(thRes, enRes)
     }
 
     @Test

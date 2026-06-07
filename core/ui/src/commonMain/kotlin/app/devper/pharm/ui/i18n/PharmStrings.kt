@@ -289,6 +289,46 @@ interface PharmStrings {
     val helpTipFocusSearch: String
     val helpTipPaymentField: String
     val helpTipParkBill: String
+    val planningTitle: String
+    val planningRefreshCta: String
+    val planningAddPoCta: String
+    val planningLowStockTitle: String
+    val planningBelowMinTitle: String
+    val planningReorderTitle: String
+    val planningLowStockEmpty: String
+    val planningBelowMinEmpty: String
+    val planningReorderEmpty: String
+    val planningReorderEmptyTitle: String
+    val planningHeaderMin: String
+    val planningHeaderRecommend: String
+    val planningHeaderTotalCost: String
+    val planningCountNoun: String
+    val planningMetaLine: (String, String) -> String
+    val planningDaysLeftLabel: (Int) -> String
+    val bulkImportTitle: String
+    val bulkImportSubtitle: String
+    val bulkImportDropZoneHint: String
+    val bulkImportDropZonePickFile: String
+    val bulkImportSupportsHint: String
+    val bulkImportPasteHere: String
+    val bulkImportPasteHint: String
+    val bulkImportDownloadTemplate: String
+    val bulkImportValidateCta: String
+    val bulkImportValidatePromptHint: String
+    val bulkImportValidatedReady: (Int) -> String
+    val bulkImportImportAllCta: String
+    val bulkImportEmptyDropped: String
+    val bulkImportEmptyDefault: String
+    val bulkImportHeaderGeneric: String
+    val bulkImportStatusReady: String
+    val bulkImportStatusError: String
+    val bulkImportResultTitle: (Int) -> String
+    val bulkImportResultAllSuccess: String
+    val bulkImportResultPartial: String
+    val bulkImportResultAllFail: String
+    val bulkImportResultSummary: (Int, Int) -> String
+    val bulkImportResultSuccessLabel: String
+    val bulkImportClearCta: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -586,6 +626,46 @@ object PharmStringsTh : PharmStrings {
     override val helpTipFocusSearch = "โฟกัสช่องค้นหา"
     override val helpTipPaymentField = "ช่องรับเงิน"
     override val helpTipParkBill = "พักบิล"
+    override val planningTitle = "คำแนะนำสั่งซื้อ"
+    override val planningRefreshCta = "รีเฟรช"
+    override val planningAddPoCta = "เพิ่มใบสั่งซื้อ"
+    override val planningLowStockTitle = "ยาใกล้หมด"
+    override val planningBelowMinTitle = "ยาที่ต่ำกว่าระดับสต็อกขั้นต่ำ"
+    override val planningReorderTitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม"
+    override val planningLowStockEmpty = "ไม่มียาใกล้หมด"
+    override val planningBelowMinEmpty = "สต็อกยาทุกรายการสูงกว่าระดับขั้นต่ำ"
+    override val planningReorderEmpty = "ยังไม่มียาที่ถึงเกณฑ์แนะนำให้สั่งซื้อเพิ่ม"
+    override val planningReorderEmptyTitle = "ไม่มีรายการที่ต้องสั่งซื้อ"
+    override val planningHeaderMin = "ขั้นต่ำ"
+    override val planningHeaderRecommend = "แนะนำสั่ง"
+    override val planningHeaderTotalCost = "ต้นทุนรวม"
+    override val planningCountNoun = "รายการ"
+    override val planningMetaLine: (String, String) -> String = { rate, daysLeft -> "ขายเฉลี่ย $rate/วัน · เหลือ $daysLeft" }
+    override val planningDaysLeftLabel: (Int) -> String = { days -> "$days วัน" }
+    override val bulkImportTitle = "นำเข้ายาด้วย JSON"
+    override val bulkImportSubtitle = "อัปโหลดไฟล์ JSON หรือวางข้อความเพื่อสร้างยาทีเดียวหลายรายการ"
+    override val bulkImportDropZoneHint = "ลากไฟล์ JSON มาวางที่นี่ หรือกดเลือกไฟล์"
+    override val bulkImportDropZonePickFile = "เลือกไฟล์"
+    override val bulkImportSupportsHint = "รองรับ array หรือ {\"drugs\": [...]} สูงสุด 1,000 รายการ"
+    override val bulkImportPasteHere = "หรือวาง JSON ที่นี่"
+    override val bulkImportPasteHint = "รองรับทั้ง array หรือ {\"drugs\": [...]}"
+    override val bulkImportDownloadTemplate = "ดาวน์โหลด Template"
+    override val bulkImportValidateCta = "ตรวจสอบ"
+    override val bulkImportValidatePromptHint = "ตรวจสอบ JSON ก่อน"
+    override val bulkImportValidatedReady: (Int) -> String = { count -> "ตรวจสอบแล้ว — พบ $count รายการ พร้อมนำเข้า" }
+    override val bulkImportImportAllCta = "นำเข้าทั้งหมด"
+    override val bulkImportEmptyDropped = "ไม่มีรายการให้นำเข้า"
+    override val bulkImportEmptyDefault = "ยังไม่มีรายการ"
+    override val bulkImportHeaderGeneric = "ยาสามัญ"
+    override val bulkImportStatusReady = "พร้อมนำเข้า"
+    override val bulkImportStatusError = "ผิดพลาด"
+    override val bulkImportResultTitle: (Int) -> String = { count -> "ผลการนำเข้า · $count รายการ" }
+    override val bulkImportResultAllSuccess = "นำเข้าสำเร็จทั้งหมด"
+    override val bulkImportResultPartial = "นำเข้าบางส่วน"
+    override val bulkImportResultAllFail = "นำเข้าไม่สำเร็จ"
+    override val bulkImportResultSummary: (Int, Int) -> String = { imported, total -> "บันทึก $imported/$total รายการ" }
+    override val bulkImportResultSuccessLabel = "สำเร็จ"
+    override val bulkImportClearCta = "ล้าง"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -883,6 +963,46 @@ object PharmStringsEn : PharmStrings {
     override val helpTipFocusSearch = "Focus search field"
     override val helpTipPaymentField = "Receive payment field"
     override val helpTipParkBill = "Park bill"
+    override val planningTitle = "Order recommendations"
+    override val planningRefreshCta = "Refresh"
+    override val planningAddPoCta = "Add PO"
+    override val planningLowStockTitle = "Low stock"
+    override val planningBelowMinTitle = "Below minimum stock"
+    override val planningReorderTitle = "Suggested reorder list"
+    override val planningLowStockEmpty = "No drugs running low"
+    override val planningBelowMinEmpty = "All drugs above minimum stock"
+    override val planningReorderEmpty = "No drugs reach reorder threshold yet"
+    override val planningReorderEmptyTitle = "No items to order"
+    override val planningHeaderMin = "Minimum"
+    override val planningHeaderRecommend = "Recommend"
+    override val planningHeaderTotalCost = "Total cost"
+    override val planningCountNoun = "items"
+    override val planningMetaLine: (String, String) -> String = { rate, daysLeft -> "Avg $rate/day · $daysLeft remaining" }
+    override val planningDaysLeftLabel: (Int) -> String = { days -> "$days day(s)" }
+    override val bulkImportTitle = "Bulk import drugs (JSON)"
+    override val bulkImportSubtitle = "Upload a JSON file or paste text to create many drugs at once"
+    override val bulkImportDropZoneHint = "Drop a JSON file here or pick one"
+    override val bulkImportDropZonePickFile = "Pick file"
+    override val bulkImportSupportsHint = "Accepts an array or {\"drugs\": [...]} — up to 1,000 items"
+    override val bulkImportPasteHere = "Or paste JSON here"
+    override val bulkImportPasteHint = "Accepts either an array or {\"drugs\": [...]}"
+    override val bulkImportDownloadTemplate = "Download template"
+    override val bulkImportValidateCta = "Validate"
+    override val bulkImportValidatePromptHint = "Validate JSON first"
+    override val bulkImportValidatedReady: (Int) -> String = { count -> "Validated — $count item(s) ready to import" }
+    override val bulkImportImportAllCta = "Import all"
+    override val bulkImportEmptyDropped = "No items to import"
+    override val bulkImportEmptyDefault = "No items yet"
+    override val bulkImportHeaderGeneric = "Generic"
+    override val bulkImportStatusReady = "Ready"
+    override val bulkImportStatusError = "Error"
+    override val bulkImportResultTitle: (Int) -> String = { count -> "Import result · $count item(s)" }
+    override val bulkImportResultAllSuccess = "Imported all"
+    override val bulkImportResultPartial = "Partially imported"
+    override val bulkImportResultAllFail = "Import failed"
+    override val bulkImportResultSummary: (Int, Int) -> String = { imported, total -> "Recorded $imported/$total item(s)" }
+    override val bulkImportResultSuccessLabel = "Success"
+    override val bulkImportClearCta = "Clear"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }
