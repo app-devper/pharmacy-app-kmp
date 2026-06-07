@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.parseLocalDateOrNull
 import app.devper.pharm.data.remote.api.ExpiringLotsApi
 import app.devper.pharm.data.remote.dto.ExpiringLotDto
 import app.devper.pharm.data.remote.dto.WriteoffFailureDto
@@ -33,7 +34,7 @@ class ExpiringLotsRepositoryImpl(
         drugId = d.drugId,
         drugName = d.drugName,
         lotNumber = d.lotNumber,
-        expiryDate = d.expiryDate,
+        expiryDate = d.expiryDate.parseLocalDateOrNull(),
         remaining = d.remaining,
         daysLeft = d.daysLeft,
     )

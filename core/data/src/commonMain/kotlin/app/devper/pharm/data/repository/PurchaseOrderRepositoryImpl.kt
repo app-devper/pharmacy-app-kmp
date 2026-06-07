@@ -1,5 +1,8 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.parseLocalDateOrNull
+import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.PurchaseOrderApi
 import app.devper.pharm.data.remote.dto.PurchaseOrderDto
 import app.devper.pharm.data.remote.dto.PurchaseOrderInputDto
@@ -47,14 +50,14 @@ class PurchaseOrderRepositoryImpl(
         docNo = d.docNo,
         supplier = d.supplier,
         invoiceNo = d.invoiceNo,
-        receiveDate = d.receiveDate,
+        receiveDate = d.receiveDate.parseLocalDateOrNull(),
         items = d.items.map(::toItem),
         itemCount = d.itemCount,
         totalCost = d.totalCost,
         status = PurchaseOrderStatus.fromWire(d.status),
         notes = d.notes,
-        createdAt = d.createdAt,
-        confirmedAt = d.confirmedAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
+        confirmedAt = d.confirmedAt.parseLocalDateTimeOrNull(),
     )
 
     private fun toSummary(d: PurchaseOrderSummaryDto) = PurchaseOrderSummary(
@@ -62,20 +65,20 @@ class PurchaseOrderRepositoryImpl(
         docNo = d.docNo,
         supplier = d.supplier,
         invoiceNo = d.invoiceNo,
-        receiveDate = d.receiveDate,
+        receiveDate = d.receiveDate.parseLocalDateOrNull(),
         itemCount = d.itemCount,
         totalCost = d.totalCost,
         status = PurchaseOrderStatus.fromWire(d.status),
         notes = d.notes,
-        createdAt = d.createdAt,
-        confirmedAt = d.confirmedAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
+        confirmedAt = d.confirmedAt.parseLocalDateTimeOrNull(),
     )
 
     private fun toItem(d: PurchaseOrderItemDto) = PurchaseOrderItem(
         drugId = d.drugId,
         drugName = d.drugName,
         lotNumber = d.lotNumber,
-        expiryDate = d.expiryDate,
+        expiryDate = d.expiryDate.parseLocalDateOrNull(),
         qty = d.qty,
         costPrice = d.costPrice,
         sellPrice = d.sellPrice,
@@ -84,7 +87,7 @@ class PurchaseOrderRepositoryImpl(
     private fun AddPurchaseOrderParam.toDto() = PurchaseOrderInputDto(
         supplier = supplier.trim(),
         invoiceNo = invoiceNo.trim(),
-        receiveDate = receiveDate.trim(),
+        receiveDate = receiveDate?.toIso() ?: "",
         notes = notes.trim(),
         items = items.map { it.toDto() },
     )
@@ -92,7 +95,7 @@ class PurchaseOrderRepositoryImpl(
     private fun UpdatePurchaseOrderParam.toDto() = PurchaseOrderInputDto(
         supplier = supplier.trim(),
         invoiceNo = invoiceNo.trim(),
-        receiveDate = receiveDate.trim(),
+        receiveDate = receiveDate?.toIso() ?: "",
         notes = notes.trim(),
         items = items.map { it.toDto() },
     )
@@ -101,7 +104,7 @@ class PurchaseOrderRepositoryImpl(
         drugId = drugId,
         drugName = drugName.trim(),
         lotNumber = lotNumber.trim(),
-        expiryDate = expiryDate.trim(),
+        expiryDate = expiryDate.toIso(),
         qty = qty,
         costPrice = costPrice,
         sellPrice = sellPrice,

@@ -101,7 +101,7 @@ private val sampleKy10Rows = listOf(
         Ky10Entry(
             id = "e1",
             saleId = "",
-            date = "02/05/26",
+            date = kotlinx.datetime.LocalDate(2026, 5, 2),
             drugName = "ออเมพราโซล 20mg",
             regNo = "1A 311/55",
             qty = 14,
@@ -111,14 +111,14 @@ private val sampleKy10Rows = listOf(
             rxNo = "240501",
             doctor = "X",
             balance = 80,
-            createdAt = "2026-05-02T10:00:00",
+            createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-02T10:00:00"),
         ),
     ),
     KyRow.Ky10(
         Ky10Entry(
             id = "e2",
             saleId = "",
-            date = "06/05/26",
+            date = kotlinx.datetime.LocalDate(2026, 5, 6),
             drugName = "ยาแก้ปวด ทรามาดอล 50mg",
             regNo = "1A 200/58",
             qty = 10,
@@ -128,7 +128,7 @@ private val sampleKy10Rows = listOf(
             rxNo = "240515",
             doctor = "Y",
             balance = 90,
-            createdAt = "2026-05-06T11:00:00",
+            createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-06T11:00:00"),
         ),
     ),
 )
@@ -138,7 +138,7 @@ private val sampleKy11Rows = listOf(
         Ky11Entry(
             id = "e3",
             saleId = "",
-            date = "01/05/26",
+            date = kotlinx.datetime.LocalDate(2026, 5, 1),
             drugName = "อะม็อกซีซิลลิน 500mg",
             regNo = "1A 091/52",
             qty = 21,
@@ -146,14 +146,14 @@ private val sampleKy11Rows = listOf(
             buyerName = "นาง สุดา สมใจ",
             purpose = "—",
             pharmacist = "ภญ.A",
-            createdAt = "2026-05-01T09:00:00",
+            createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-01T09:00:00"),
         ),
     ),
     KyRow.Ky11(
         Ky11Entry(
             id = "e4",
             saleId = "",
-            date = "04/05/26",
+            date = kotlinx.datetime.LocalDate(2026, 5, 4),
             drugName = "ลอราทาดีน 10mg",
             regNo = "1A 044/58",
             qty = 10,
@@ -161,7 +161,7 @@ private val sampleKy11Rows = listOf(
             buyerName = "นาย ธีรพงษ์ ใจเย็น",
             purpose = "—",
             pharmacist = "ภญ.A",
-            createdAt = "2026-05-04T10:30:00",
+            createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-04T10:30:00"),
         ),
     ),
 )
@@ -171,7 +171,7 @@ private val sampleKy12Rows = listOf(
         Ky12Entry(
             id = "e5",
             saleId = "",
-            date = "07/05/26",
+            date = kotlinx.datetime.LocalDate(2026, 5, 7),
             rxNo = "240601",
             patientName = "นาย เอกชัย สุภาพ",
             doctor = "นพ.Z",
@@ -181,7 +181,7 @@ private val sampleKy12Rows = listOf(
             unit = "หลอด",
             totalValue = 95.0,
             status = "issued",
-            createdAt = "2026-05-07T14:20:00",
+            createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-07T14:20:00"),
         ),
     ),
 )

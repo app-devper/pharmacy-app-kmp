@@ -76,7 +76,7 @@ private val sampleCounts = listOf(
         id = "1",
         countNo = "STC-260510-001",
         note = "ตรวจประจำเดือน พ.ค.",
-        createdAt = "2026-05-10T17:42:00",
+        createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-10T17:42:00"),
         items = listOf(
             StockCountLine(drugId = "d1", drugName = "พาราเซตามอล 500mg", unit = "เม็ด", systemStock = 480, counted = 478, delta = -2),
             StockCountLine(drugId = "d2", drugName = "อะม็อกซีซิลลิน 500mg", unit = "แคปซูล", systemStock = 120, counted = 120, delta = 0),
@@ -87,7 +87,7 @@ private val sampleCounts = listOf(
         id = "2",
         countNo = "STC-260401-001",
         note = "",
-        createdAt = "2026-04-01T18:20:00",
+        createdAt = kotlinx.datetime.LocalDateTime.parse("2026-04-01T18:20:00"),
         items = listOf(
             StockCountLine(drugId = "d1", drugName = "พาราเซตามอล 500mg", unit = "เม็ด", systemStock = 500, counted = 502, delta = 2),
         ),
@@ -96,7 +96,7 @@ private val sampleCounts = listOf(
         id = "3",
         countNo = "STC-260315-001",
         note = "ก่อนเปิดร้านสาขาใหม่",
-        createdAt = "2026-03-15T08:05:00",
+        createdAt = kotlinx.datetime.LocalDateTime.parse("2026-03-15T08:05:00"),
         items = listOf(
             StockCountLine(drugId = "d4", drugName = "วิตามินซี 1000mg", unit = "ขวด", systemStock = 64, counted = 64, delta = 0),
             StockCountLine(drugId = "d5", drugName = "ลอราทาดีน 10mg", unit = "เม็ด", systemStock = 240, counted = 240, delta = 0),

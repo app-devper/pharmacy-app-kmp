@@ -54,8 +54,8 @@ class FakeUsersRepository(
             status = UmStatus.ACTIVE,
             phone = param.phone,
             email = param.email,
-            createdDate = "",
-            updatedDate = "",
+            createdDate = null,
+            updatedDate = null,
         )
         data.add(newUser)
         return newUser
@@ -113,19 +113,19 @@ class FakeUsersRepository(
                 id = "u-me", firstName = "ฉัน", lastName = "เอง", username = "selfadmin",
                 clientId = "PHA", role = Role.SUPER, status = UmStatus.ACTIVE,
                 phone = "0810000000", email = "me@example.com",
-                createdDate = "", updatedDate = "",
+                createdDate = null, updatedDate = null,
             ),
             UmUser(
                 id = "u-1", firstName = "สมชาย", lastName = "ใจดี", username = "somchai",
                 clientId = "PHA", role = Role.ADMIN, status = UmStatus.ACTIVE,
                 phone = "0812345678", email = "somchai@example.com",
-                createdDate = "", updatedDate = "",
+                createdDate = null, updatedDate = null,
             ),
             UmUser(
                 id = "u-2", firstName = "สมหญิง", lastName = "พริ้งพราย", username = "somying",
                 clientId = "PHA", role = Role.USER, status = UmStatus.ACTIVE,
                 phone = "0898765432", email = "somying@example.com",
-                createdDate = "", updatedDate = "",
+                createdDate = null, updatedDate = null,
             ),
         )
     }

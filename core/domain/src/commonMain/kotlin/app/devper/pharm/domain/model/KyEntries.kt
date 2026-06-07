@@ -1,9 +1,12 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+
 data class Ky9Entry(
     val id: String,
     val saleId: String,
-    val date: String,
+    val date: LocalDate?,
     val drugName: String,
     val regNo: String,
     val unit: String,
@@ -12,13 +15,13 @@ data class Ky9Entry(
     val totalValue: Double,
     val seller: String,
     val invoiceNo: String,
-    val createdAt: String,
+    val createdAt: LocalDateTime?,
 )
 
 data class Ky10Entry(
     val id: String,
     val saleId: String,
-    val date: String,
+    val date: LocalDate?,
     val drugName: String,
     val regNo: String,
     val qty: Int,
@@ -28,13 +31,13 @@ data class Ky10Entry(
     val rxNo: String,
     val doctor: String,
     val balance: Int,
-    val createdAt: String,
+    val createdAt: LocalDateTime?,
 )
 
 data class Ky11Entry(
     val id: String,
     val saleId: String,
-    val date: String,
+    val date: LocalDate?,
     val drugName: String,
     val regNo: String,
     val qty: Int,
@@ -42,13 +45,13 @@ data class Ky11Entry(
     val buyerName: String,
     val purpose: String,
     val pharmacist: String,
-    val createdAt: String,
+    val createdAt: LocalDateTime?,
 )
 
 data class Ky12Entry(
     val id: String,
     val saleId: String,
-    val date: String,
+    val date: LocalDate?,
     val rxNo: String,
     val patientName: String,
     val doctor: String,
@@ -58,7 +61,7 @@ data class Ky12Entry(
     val unit: String,
     val totalValue: Double,
     val status: String,
-    val createdAt: String,
+    val createdAt: LocalDateTime?,
 )
 
 enum class KyFormType(val wire: String, val label: String) {

@@ -13,6 +13,7 @@ import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.GetSuppliersUseCase
 import app.devper.pharm.domain.usecase.UpdatePurchaseOrderUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
+import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class ImportFormViewModel(
     private val getPurchaseOrder: GetPurchaseOrderUseCase,
@@ -75,7 +76,7 @@ class ImportFormViewModel(
                 AddPurchaseOrderParam(
                     supplier = f.supplier.trim(),
                     invoiceNo = f.invoiceNo.trim(),
-                    receiveDate = f.receiveDate.trim(),
+                    receiveDate = f.receiveDate.trim().toLocalDateOrNull(),
                     notes = f.notes.trim(),
                     items = itemInputs,
                 ),
@@ -86,7 +87,7 @@ class ImportFormViewModel(
                     id = mode.importId,
                     supplier = f.supplier.trim(),
                     invoiceNo = f.invoiceNo.trim(),
-                    receiveDate = f.receiveDate.trim(),
+                    receiveDate = f.receiveDate.trim().toLocalDateOrNull(),
                     notes = f.notes.trim(),
                     items = itemInputs,
                 ),
@@ -123,14 +124,14 @@ class ImportFormViewModel(
                         form = ImportFormFields(
                             supplier = po.supplier,
                             invoiceNo = po.invoiceNo,
-                            receiveDate = po.receiveDate.take(10),
+                            receiveDate = po.receiveDate?.toString() ?: "",
                             notes = po.notes,
                             items = po.items.map { item ->
                                 ImportLineFields(
                                     drugId = item.drugId,
                                     drugName = item.drugName,
                                     lotNumber = item.lotNumber,
-                                    expiryDate = item.expiryDate,
+                                    expiryDate = item.expiryDate?.toString() ?: "",
                                     qty = item.qty.toString(),
                                     costPrice = item.costPrice.cleanPrice(),
                                     sellPrice = item.sellPrice?.cleanPrice() ?: "",

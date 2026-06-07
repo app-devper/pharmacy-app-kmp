@@ -95,7 +95,7 @@ private val sampleKy9Entries = listOf(
     Ky9Entry(
         id = "k1",
         saleId = "s1",
-        date = "2026-06-01",
+        date = kotlinx.datetime.LocalDate.parse("2026-06-01"),
         drugName = "Tramadol 50mg",
         regNo = "1A 123/45",
         unit = "เม็ด",
@@ -104,7 +104,7 @@ private val sampleKy9Entries = listOf(
         totalValue = 250.0,
         seller = "บริษัท ยาดี จำกัด",
         invoiceNo = "INV-2606-001",
-        createdAt = "2026-06-01T09:00:00",
+        createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T09:00:00"),
     ),
 )
 

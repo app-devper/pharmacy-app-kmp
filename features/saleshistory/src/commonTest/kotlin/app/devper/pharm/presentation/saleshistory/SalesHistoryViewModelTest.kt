@@ -26,7 +26,7 @@ class SalesHistoryViewModelTest {
         customerName = "Walk-in",
         total = 100.0,
         discount = 0.0,
-        soldAt = "2026-05-14T10:00:00Z",
+        soldAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T10:00:00"),
         voided = false,
     )
 
@@ -82,8 +82,8 @@ class SalesHistoryViewModelTest {
         vm.onQueryChange("INV-X")
         vm.applyFilter()
         advanceUntilIdle()
-        assertEquals("2026-05-01", repo.lastListFilter?.from)
-        assertEquals("2026-05-31", repo.lastListFilter?.to)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2026-05-01"), repo.lastListFilter?.from)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2026-05-31"), repo.lastListFilter?.to)
         assertEquals("INV-X", repo.lastListFilter?.query)
     }
 

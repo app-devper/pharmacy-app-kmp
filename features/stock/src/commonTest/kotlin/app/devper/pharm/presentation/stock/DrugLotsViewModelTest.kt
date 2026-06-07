@@ -35,8 +35,8 @@ class DrugLotsViewModelTest {
         id = id,
         drugId = drugId,
         lotNumber = "L-$id",
-        expiryDate = expiry,
-        importDate = "2026-01-01",
+        expiryDate = kotlinx.datetime.LocalDate.parse(expiry),
+        importDate = kotlinx.datetime.LocalDate.parse("2026-01-01"),
         quantity = qty,
         remaining = qty,
     )
@@ -138,7 +138,7 @@ class DrugLotsViewModelTest {
         assertNotNull(captured)
         assertEquals("d1", captured.drugId)
         assertEquals("L-001", captured.lotNumber)
-        assertEquals("2027-06-30", captured.expiryDate)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2027-06-30"), captured.expiryDate)
         assertEquals(200, captured.quantity)
         assertEquals(12.50, captured.costPrice)
         assertEquals(18.00, captured.sellPrice)

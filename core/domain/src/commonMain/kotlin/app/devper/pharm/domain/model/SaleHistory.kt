@@ -1,12 +1,14 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDateTime
+
 data class SaleSummary(
     val id: String,
     val billNo: String,
     val customerName: String,
     val total: Double,
     val discount: Double,
-    val soldAt: String,
+    val soldAt: LocalDateTime?,
     val voided: Boolean,
 )
 

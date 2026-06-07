@@ -8,8 +8,12 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
+internal fun todayLocalDate(tz: TimeZone): LocalDate =
+    Clock.System.now().toLocalDateTime(tz).date
+
+@OptIn(ExperimentalTime::class)
 internal fun todayYmd(tz: TimeZone): String {
-    val date: LocalDate = Clock.System.now().toLocalDateTime(tz).date
+    val date: LocalDate = todayLocalDate(tz)
     val mm = date.month.number.toString().padStart(2, '0')
     val dd = date.day.toString().padStart(2, '0')
     return "${date.year}-$mm-$dd"

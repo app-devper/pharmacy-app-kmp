@@ -15,7 +15,7 @@ import kotlin.test.assertNull
 class StockCountsListViewModelTest {
 
     private fun count(id: String) = StockCount(
-        id = id, countNo = "SC-$id", note = "", items = emptyList(), createdAt = "2026-06-01T10:00:00",
+        id = id, countNo = "SC-$id", note = "", items = emptyList(), createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T10:00:00"),
     )
 
     @Test

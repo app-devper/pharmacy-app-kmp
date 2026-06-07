@@ -1,5 +1,7 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.parseLocalDateOrNull
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.LotsApi
 import app.devper.pharm.data.remote.dto.DrugLotDto
 import app.devper.pharm.data.remote.dto.DrugLotInputDto
@@ -33,8 +35,8 @@ class LotsRepositoryImpl(
         drugId = d.drugId,
         drugName = d.drugName?.takeIf { it.isNotBlank() },
         lotNumber = d.lotNumber,
-        expiryDate = d.expiryDate,
-        importDate = d.importDate,
+        expiryDate = d.expiryDate.parseLocalDateOrNull(),
+        importDate = d.importDate.parseLocalDateOrNull(),
         costPrice = d.costPrice,
         sellPrice = d.sellPrice,
         quantity = d.quantity,
@@ -43,8 +45,8 @@ class LotsRepositoryImpl(
 
     private fun AddLotParam.toRequest() = DrugLotInputDto(
         lotNumber = lotNumber,
-        expiryDate = expiryDate,
-        importDate = importDate,
+        expiryDate = expiryDate.toIso(),
+        importDate = importDate?.toIso(),
         costPrice = costPrice,
         sellPrice = sellPrice,
         quantity = quantity,

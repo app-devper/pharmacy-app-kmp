@@ -19,7 +19,7 @@ class Ky9DraftExtTest {
             seller = " ABC ",
             invoiceNo = " INV-1 ",
         ).getOrThrow()
-        assertEquals("2026-04-01", r.date)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2026-04-01"), r.date)
         assertEquals("Para", r.drugName)
         assertEquals("RX-1", r.regNo)
         assertEquals("เม็ด", r.unit)

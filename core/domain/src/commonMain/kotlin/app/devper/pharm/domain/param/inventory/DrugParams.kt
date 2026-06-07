@@ -41,8 +41,8 @@ data class UpdateDrugParam(
 
 data class CreateLotPayload(
     val lotNumber: String,
-    val expiryDate: String,
-    val importDate: String? = null,
+    val expiryDate: kotlinx.datetime.LocalDate,
+    val importDate: kotlinx.datetime.LocalDate? = null,
     val costPrice: Double? = null,
     val sellPrice: Double? = null,
     val quantity: Int,

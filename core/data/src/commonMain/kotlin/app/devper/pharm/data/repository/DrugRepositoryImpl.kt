@@ -1,5 +1,6 @@
 package app.devper.pharm.data.repository
 
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.DrugApi
 import app.devper.pharm.data.remote.dto.AltUnitDto
 import app.devper.pharm.data.remote.dto.BulkDrugImportInputDto
@@ -124,8 +125,8 @@ class DrugRepositoryImpl(
 
     private fun CreateLotPayload.toDto() = CreateLotDto(
         lotNumber = lotNumber,
-        expiryDate = expiryDate,
-        importDate = importDate,
+        expiryDate = expiryDate.toIso(),
+        importDate = importDate?.toIso(),
         costPrice = costPrice,
         sellPrice = sellPrice,
         quantity = quantity,

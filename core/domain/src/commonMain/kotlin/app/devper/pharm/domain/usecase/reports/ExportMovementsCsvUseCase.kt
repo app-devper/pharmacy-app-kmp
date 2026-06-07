@@ -13,7 +13,7 @@ class ExportMovementsCsvUseCase(
 ) : BaseUseCase<ExportMovementsCsvParam, String>(dispatchers) {
 
     override suspend fun execute(param: ExportMovementsCsvParam): String {
-        val filename = buildFilename(param.from, param.to, param.drugName)
+        val filename = buildFilename(param.from?.toString().orEmpty(), param.to?.toString().orEmpty(), param.drugName)
         val bytes = buildCsvBytes(
             headers = listOf("เวลา", "ประเภท", "ยา", "จำนวน", "อ้างอิง", "หมายเหตุ"),
             rows = param.rows.map { it.toCsvRow() },

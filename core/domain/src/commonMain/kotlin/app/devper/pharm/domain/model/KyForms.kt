@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDate
+
 sealed interface KyForm {
     val saleId: String
-    val date: String
+    val date: LocalDate
     val drugName: String
     val regNo: String
     val qty: Int
@@ -10,7 +12,7 @@ sealed interface KyForm {
 
     data class Ky10(
         override val saleId: String,
-        override val date: String,
+        override val date: LocalDate,
         override val drugName: String,
         override val regNo: String,
         override val qty: Int,
@@ -24,7 +26,7 @@ sealed interface KyForm {
 
     data class Ky11(
         override val saleId: String,
-        override val date: String,
+        override val date: LocalDate,
         override val drugName: String,
         override val regNo: String,
         override val qty: Int,
@@ -36,7 +38,7 @@ sealed interface KyForm {
 
     data class Ky12(
         override val saleId: String,
-        override val date: String,
+        override val date: LocalDate,
         override val drugName: String,
         override val regNo: String,
         override val qty: Int,

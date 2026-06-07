@@ -25,7 +25,7 @@ import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.common.BaseViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
-import app.devper.pharm.presentation.sell.internal.todayYmd
+import app.devper.pharm.presentation.sell.internal.todayLocalDate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -217,7 +217,7 @@ class CheckoutViewModel(
                 sale = sale,
                 required = kyRequired,
                 captured = kyFields,
-                dateYmd = todayYmd(tz),
+                date = todayLocalDate(tz),
             ).fold(
                 onSuccess = { result ->
                     if (result.anyFailed) {

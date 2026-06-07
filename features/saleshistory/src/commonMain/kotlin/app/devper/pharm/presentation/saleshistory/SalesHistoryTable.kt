@@ -23,7 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
-import app.devper.pharm.ui.format.isoDateTimeToBuddhist
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -107,7 +107,7 @@ internal fun SalesHistoryTable(
 private fun TimeCell(sale: SaleSummary) {
     val t = pharmTokens
     Text(
-        text = isoDateTimeToBuddhist(sale.soldAt),
+        text = localDateTimeToBuddhist(sale.soldAt),
         style = PharmText.micro.copy(
             color = t.colors.fg3,
             fontFeatureSettings = "tnum",

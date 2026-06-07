@@ -14,6 +14,9 @@ import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.domain.model.Ky9Entry
 import app.devper.pharm.domain.model.KyForm
+import app.devper.pharm.data.internal.parseLocalDateOrNull
+import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
+import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.domain.param.AddKy9Param
 import app.devper.pharm.domain.param.KyMonthFilterParam
 import app.devper.pharm.domain.repository.KyRepository
@@ -24,7 +27,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         api.submitKy10(
             Ky10Request(
                 saleId = form.saleId,
-                date = form.date,
+                date = form.date.toIso(),
                 drugName = form.drugName,
                 regNo = form.regNo,
                 qty = form.qty,
@@ -42,7 +45,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         api.submitKy11(
             Ky11Request(
                 saleId = form.saleId,
-                date = form.date,
+                date = form.date.toIso(),
                 drugName = form.drugName,
                 regNo = form.regNo,
                 qty = form.qty,
@@ -58,7 +61,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         api.submitKy12(
             Ky12Request(
                 saleId = form.saleId,
-                date = form.date,
+                date = form.date.toIso(),
                 rxNo = form.rxNo,
                 patientName = form.patientName,
                 doctor = form.doctor,
@@ -76,7 +79,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         api.addKy9(
             Ky9Request(
                 saleId = param.saleId.trim(),
-                date = param.date.trim(),
+                date = param.date.toIso(),
                 drugName = param.drugName.trim(),
                 regNo = param.regNo.trim(),
                 unit = param.unit.trim(),
@@ -103,7 +106,7 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
     private fun toDomain(d: Ky9Dto) = Ky9Entry(
         id = d.id,
         saleId = d.saleId,
-        date = d.date,
+        date = d.date.parseLocalDateOrNull(),
         drugName = d.drugName,
         regNo = d.regNo,
         unit = d.unit,
@@ -112,13 +115,13 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         totalValue = d.totalValue,
         seller = d.seller,
         invoiceNo = d.invoiceNo,
-        createdAt = d.createdAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
     )
 
     private fun toDomain(d: Ky10Dto) = Ky10Entry(
         id = d.id,
         saleId = d.saleId,
-        date = d.date,
+        date = d.date.parseLocalDateOrNull(),
         drugName = d.drugName,
         regNo = d.regNo,
         qty = d.qty,
@@ -128,13 +131,13 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         rxNo = d.rxNo,
         doctor = d.doctor,
         balance = d.balance,
-        createdAt = d.createdAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
     )
 
     private fun toDomain(d: Ky11Dto) = Ky11Entry(
         id = d.id,
         saleId = d.saleId,
-        date = d.date,
+        date = d.date.parseLocalDateOrNull(),
         drugName = d.drugName,
         regNo = d.regNo,
         qty = d.qty,
@@ -142,13 +145,13 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         buyerName = d.buyerName,
         purpose = d.purpose,
         pharmacist = d.pharmacist,
-        createdAt = d.createdAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
     )
 
     private fun toDomain(d: Ky12Dto) = Ky12Entry(
         id = d.id,
         saleId = d.saleId,
-        date = d.date,
+        date = d.date.parseLocalDateOrNull(),
         rxNo = d.rxNo,
         patientName = d.patientName,
         doctor = d.doctor,
@@ -158,6 +161,6 @@ class KyRepositoryImpl(private val api: KyApi) : KyRepository {
         unit = d.unit,
         totalValue = d.totalValue,
         status = d.status,
-        createdAt = d.createdAt,
+        createdAt = d.createdAt.parseLocalDateTimeOrNull(),
     )
 }

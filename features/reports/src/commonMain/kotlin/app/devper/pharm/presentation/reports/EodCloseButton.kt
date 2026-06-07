@@ -81,7 +81,7 @@ internal fun EodConfirmCloseModal(
         val t = pharmTokens
         if (report != null) {
             Text(
-                text = "วันที่ ${report.date.ifBlank { "วันนี้" }}",
+                text = "วันที่ ${app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { "วันนี้" }}",
                 style = PharmText.meta.copy(color = t.colors.fgMuted),
             )
             Text(

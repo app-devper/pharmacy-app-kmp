@@ -42,7 +42,7 @@ class ExportProfitCsvUseCaseTest {
     fun negative_margin_formats_correctly() = runTest {
         val repo = CapturingExportRepository()
         val uc = ExportProfitCsvUseCase(repo, testDispatchers())
-        uc(ExportProfitCsvParam(from = "", to = "", rows = listOf(row(margin = -50.0, profit = -150.0))))
+        uc(ExportProfitCsvParam(from = null, to = null, rows = listOf(row(margin = -50.0, profit = -150.0))))
         val csv = bodyOf(repo.lastBytes!!)
         assertTrue("-50.00%" in csv, "expected -50.00% in CSV, got: $csv")
         assertTrue("-150.00" in csv, "expected -150.00 profit, got: $csv")
@@ -52,7 +52,7 @@ class ExportProfitCsvUseCaseTest {
     fun positive_margin_formats_with_two_decimals() = runTest {
         val repo = CapturingExportRepository()
         val uc = ExportProfitCsvUseCase(repo, testDispatchers())
-        uc(ExportProfitCsvParam(from = "", to = "", rows = listOf(row(margin = 25.5))))
+        uc(ExportProfitCsvParam(from = null, to = null, rows = listOf(row(margin = 25.5))))
         val csv = bodyOf(repo.lastBytes!!)
         assertTrue("25.50%" in csv, "expected 25.50% in CSV, got: $csv")
     }
@@ -61,7 +61,7 @@ class ExportProfitCsvUseCaseTest {
     fun zero_margin_formats_zero() = runTest {
         val repo = CapturingExportRepository()
         val uc = ExportProfitCsvUseCase(repo, testDispatchers())
-        uc(ExportProfitCsvParam(from = "", to = "", rows = listOf(row(margin = 0.0, profit = 0.0))))
+        uc(ExportProfitCsvParam(from = null, to = null, rows = listOf(row(margin = 0.0, profit = 0.0))))
         val csv = bodyOf(repo.lastBytes!!)
         assertTrue("0.00%" in csv, "expected 0.00% in CSV, got: $csv")
     }
@@ -70,7 +70,7 @@ class ExportProfitCsvUseCaseTest {
     fun filename_uses_all_when_range_is_blank() = runTest {
         val repo = CapturingExportRepository()
         val uc = ExportProfitCsvUseCase(repo, testDispatchers())
-        uc(ExportProfitCsvParam(from = "", to = "", rows = emptyList()))
+        uc(ExportProfitCsvParam(from = null, to = null, rows = emptyList()))
         assertEquals("profit_all.csv", repo.lastFilename)
     }
 
@@ -78,7 +78,7 @@ class ExportProfitCsvUseCaseTest {
     fun filename_uses_single_date_when_from_equals_to() = runTest {
         val repo = CapturingExportRepository()
         val uc = ExportProfitCsvUseCase(repo, testDispatchers())
-        uc(ExportProfitCsvParam(from = "2026-05-01", to = "2026-05-01", rows = emptyList()))
+        uc(ExportProfitCsvParam(from = kotlinx.datetime.LocalDate.parse("2026-05-01"), to = kotlinx.datetime.LocalDate.parse("2026-05-01"), rows = emptyList()))
         assertEquals("profit_2026-05-01.csv", repo.lastFilename)
     }
 }

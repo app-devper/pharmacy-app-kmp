@@ -7,6 +7,7 @@ import app.devper.pharm.domain.usecase.AddLotUseCase
 import app.devper.pharm.domain.usecase.DeleteLotUseCase
 import app.devper.pharm.domain.usecase.ListLotsUseCase
 import app.devper.pharm.ui.common.BaseViewModel
+import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class DrugLotsViewModel(
     private val listLots: ListLotsUseCase,
@@ -55,11 +56,16 @@ class DrugLotsViewModel(
     fun submitAdd() {
         val s = current
         if (!s.canSubmitDraft) return
+        val parsedExpiry = s.draft.expiryDate.trim().toLocalDateOrNull()
+        if (parsedExpiry == null) {
+            setState { copy(error = "วันหมดอายุไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)") }
+            return
+        }
         setState { copy(saving = true, error = null) }
         val param = AddLotParam(
             drugId = s.drugId,
             lotNumber = s.draft.lotNumber.trim(),
-            expiryDate = s.draft.expiryDate.trim(),
+            expiryDate = parsedExpiry,
             costPrice = s.draft.costPrice.toDoubleOrNull(),
             sellPrice = s.draft.sellPrice.toDoubleOrNull(),
             quantity = s.draft.quantity.toIntOrNull() ?: 0,

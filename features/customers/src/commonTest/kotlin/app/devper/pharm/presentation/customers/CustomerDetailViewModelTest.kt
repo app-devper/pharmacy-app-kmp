@@ -33,7 +33,7 @@ class CustomerDetailViewModelTest {
         customerName = "John",
         total = 100.0,
         discount = 0.0,
-        soldAt = "2026-05-14T10:00:00Z",
+        soldAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T10:00:00"),
         voided = false,
     )
 

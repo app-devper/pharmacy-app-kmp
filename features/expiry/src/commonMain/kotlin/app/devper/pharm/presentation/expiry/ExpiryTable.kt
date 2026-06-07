@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.designsystem.PharmTriStateCheckbox
+import app.devper.pharm.ui.format.localDateToBuddhist
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -152,7 +153,7 @@ private fun SelectAllRow(state: ToggleableState, callbacks: ExpiryCallbacks) {
 private fun ExpiryDateCell(lot: ExpiringLot) {
     val t = pharmTokens
     Text(
-        text = lot.expiryDate.take(10),
+        text = localDateToBuddhist(lot.expiryDate),
         style = PharmText.bodySm.copy(color = t.colors.fg2).copy(
             fontFeatureSettings = "tnum",
         ),

@@ -16,7 +16,7 @@ import app.devper.pharm.domain.param.TopOrSlowDrugsParam
 
 class FakeReportsRepository(
     private val eodResult: EodReport = EodReport(
-        date = "2026-05-19",
+        date = kotlinx.datetime.LocalDate.parse("2026-05-19"),
         billCount = 0,
         totalSales = 0.0,
         totalDiscount = 0.0,
@@ -27,8 +27,8 @@ class FakeReportsRepository(
     ),
     private val closeResult: EodCloseResult = EodCloseResult(
         closeId = "eod-2026-05-19",
-        date = "2026-05-19",
-        closedAt = "2026-05-19T23:59:00+07:00",
+        date = kotlinx.datetime.LocalDate.parse("2026-05-19"),
+        closedAt = kotlinx.datetime.LocalDateTime.parse("2026-05-19T23:59:00"),
         closedBy = "tester",
         report = eodResult,
     ),

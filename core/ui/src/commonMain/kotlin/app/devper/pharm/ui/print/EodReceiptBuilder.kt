@@ -4,6 +4,7 @@ import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.ui.format.formatBaht
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
 
 fun buildEodReceiptTemplate(
     closed: EodCloseResult,
@@ -17,8 +18,8 @@ fun buildEodReceiptTemplate(
         storeAddress = settings.store.address,
         storePhone = settings.store.phone,
         storeTaxId = settings.store.taxId,
-        billNo = "EOD-${closed.date.ifBlank { report.date }}",
-        soldAt = closed.closedAt,
+        billNo = "EOD-${closed.date?.toString() ?: report.date?.toString() ?: ""}",
+        soldAt = localDateTimeToBuddhist(closed.closedAt),
         customerName = closedByLine,
         items = emptyList(),
         subtotal = report.totalSales,

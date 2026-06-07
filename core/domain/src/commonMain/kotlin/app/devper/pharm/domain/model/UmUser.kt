@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDateTime
+
 data class UmUser(
     val id: String,
     val firstName: String,
@@ -10,8 +12,8 @@ data class UmUser(
     val status: UmStatus,
     val phone: String,
     val email: String,
-    val createdDate: String,
-    val updatedDate: String,
+    val createdDate: LocalDateTime?,
+    val updatedDate: LocalDateTime?,
 ) {
     val displayName: String
         get() = listOf(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ").ifBlank { username }

@@ -28,7 +28,8 @@ import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.format.isoDateToBuddhist
+import app.devper.pharm.ui.format.localDateToBuddhist
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -157,7 +158,7 @@ private fun Body(po: PurchaseOrder) {
         }
         items(
             items = po.items,
-            key = { item -> "${item.drugId}|${item.lotNumber}|${item.expiryDate}" },
+            key = { item -> "${item.drugId}|${item.lotNumber}|${item.expiryDate?.toString()}" },
         ) { item -> ItemRow(item) }
     }
 }
@@ -187,11 +188,11 @@ private fun HeaderBlock(po: PurchaseOrder) {
         Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         DetailRow("ผู้จัดจำหน่าย", po.supplier.ifBlank { "-" })
         DetailRow("เลขที่ Invoice", po.invoiceNo.ifBlank { "-" })
-        DetailRow("วันที่รับ", po.receiveDate.take(10).ifBlank { "-" })
+        DetailRow("วันที่รับ", localDateToBuddhist(po.receiveDate).ifBlank { "-" })
         if (po.notes.isNotBlank()) DetailRow("หมายเหตุ", po.notes)
-        DetailRow("สร้างเมื่อ", po.createdAt.take(19).replace('T', ' '))
+        DetailRow("สร้างเมื่อ", localDateTimeToBuddhist(po.createdAt))
         po.confirmedAt?.let {
-            DetailRow("ยืนยันเมื่อ", it.take(19).replace('T', ' '))
+            DetailRow("ยืนยันเมื่อ", localDateTimeToBuddhist(it))
         }
     }
 }
@@ -241,7 +242,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
                 style = PharmText.body,
             )
             Text(
-                text = "ล็อต ${item.lotNumber} · หมดอายุ ${isoDateToBuddhist(item.expiryDate)}",
+                text = "ล็อต ${item.lotNumber} · หมดอายุ ${localDateToBuddhist(item.expiryDate)}",
                 style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
             )
         }
@@ -311,7 +312,7 @@ private val previewItems = listOf(
         drugId = "d1",
         drugName = "พาราเซตามอล 500mg",
         lotNumber = "A12345",
-        expiryDate = "2027-06-30",
+        expiryDate = kotlinx.datetime.LocalDate.parse("2027-06-30"),
         qty = 100,
         costPrice = 1.25,
         sellPrice = 2.0,
@@ -320,7 +321,7 @@ private val previewItems = listOf(
         drugId = "d2",
         drugName = "อะม็อกซีซิลลิน 250mg",
         lotNumber = "B67890",
-        expiryDate = "2026-12-31",
+        expiryDate = kotlinx.datetime.LocalDate.parse("2026-12-31"),
         qty = 50,
         costPrice = 3.5,
         sellPrice = null,
@@ -332,14 +333,14 @@ private fun previewPo(status: PurchaseOrderStatus) = PurchaseOrder(
     docNo = "GR-2026-0001",
     supplier = "บริษัท เอ บี ซี ฟาร์มา",
     invoiceNo = "INV-001",
-    receiveDate = "2026-06-05",
+    receiveDate = kotlinx.datetime.LocalDate.parse("2026-06-05"),
     items = previewItems,
     itemCount = previewItems.size,
     totalCost = 300.0,
     status = status,
     notes = "รับของครบ",
-    createdAt = "2026-06-05T09:30:00",
-    confirmedAt = if (status == PurchaseOrderStatus.Confirmed) "2026-06-05T10:00:00" else null,
+    createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-05T09:30:00"),
+    confirmedAt = if (status == PurchaseOrderStatus.Confirmed) kotlinx.datetime.LocalDateTime.parse("2026-06-05T10:00:00") else null,
 )
 
 @Preview

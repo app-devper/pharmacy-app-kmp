@@ -13,7 +13,7 @@ class ExportProfitCsvUseCase(
 ) : BaseUseCase<ExportProfitCsvParam, String>(dispatchers) {
 
     override suspend fun execute(param: ExportProfitCsvParam): String {
-        val filename = buildFilename(param.from, param.to)
+        val filename = buildFilename(param.from?.toString().orEmpty(), param.to?.toString().orEmpty())
         val bytes = buildCsvBytes(
             headers = listOf("ชื่อยา", "จำนวนขาย", "รายได้", "ต้นทุน", "กำไร", "Margin %"),
             rows = param.rows.map { it.toCsvRow() },

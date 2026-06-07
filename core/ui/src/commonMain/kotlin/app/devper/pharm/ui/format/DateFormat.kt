@@ -70,8 +70,27 @@ fun isoDateTimeToBuddhist(s: String): String {
     if (s.isBlank()) return ""
     val trimmed = s.removeSuffix("Z").substringBefore('+').take(19)
     val dt = runCatching { LocalDateTime.parse(trimmed) }.getOrNull() ?: return s
+    return localDateTimeToBuddhist(dt)
+}
+
+fun localDateToBuddhist(date: LocalDate?): String =
+    if (date == null) "" else toBuddhistEraDisplay(date)
+
+fun localDateTimeToBuddhist(dt: LocalDateTime?): String {
+    if (dt == null) return ""
     val datePart = toBuddhistEraDisplay(dt.date)
     val hh = dt.hour.toString().padStart(2, '0')
     val mi = dt.minute.toString().padStart(2, '0')
     return "$datePart $hh:$mi"
 }
+
+fun LocalDate.toIsoYmd(): String = toString()
+
+fun String.toLocalDateOrNull(): LocalDate? {
+    if (isBlank()) return null
+    return runCatching { LocalDate.parse(this) }.getOrNull()
+}
+
+fun LocalDate.formatBuddhist(): String = toBuddhistEraDisplay(this)
+
+fun LocalDateTime.formatBuddhist(): String = localDateTimeToBuddhist(this)

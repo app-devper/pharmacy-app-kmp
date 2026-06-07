@@ -8,6 +8,7 @@ import app.devper.pharm.domain.model.KySubmissionResult
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.param.SubmitKyFormsParam
 import app.devper.pharm.domain.repository.KyRepository
+import kotlinx.datetime.LocalDate
 
 class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatchers) :
     BaseUseCase<SubmitKyFormsParam, KySubmissionResult>(dispatchers) {
@@ -16,8 +17,8 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
         sale: Sale,
         required: KyRequired,
         captured: KyCaptureFields,
-        dateYmd: String,
-    ): Result<KySubmissionResult> = invoke(SubmitKyFormsParam(sale, required, captured, dateYmd))
+        date: LocalDate,
+    ): Result<KySubmissionResult> = invoke(SubmitKyFormsParam(sale, required, captured, date))
 
     override suspend fun execute(param: SubmitKyFormsParam): KySubmissionResult {
         val errors = mutableListOf<String>()
@@ -28,7 +29,7 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
             attempted++
             val form = KyForm.Ky10(
                 saleId = saleId,
-                date = param.dateYmd,
+                date = param.date,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
                 qty = line.qty,
@@ -47,7 +48,7 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
             attempted++
             val form = KyForm.Ky11(
                 saleId = saleId,
-                date = param.dateYmd,
+                date = param.date,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
                 qty = line.qty,
@@ -64,7 +65,7 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
             attempted++
             val form = KyForm.Ky12(
                 saleId = saleId,
-                date = param.dateYmd,
+                date = param.date,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
                 qty = line.qty,

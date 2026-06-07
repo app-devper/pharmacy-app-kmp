@@ -17,8 +17,8 @@ private val PreviewUser = UmUser(
     status = UmStatus.ACTIVE,
     phone = "081-234-5678",
     email = "preeya@healthypharm.co.th",
-    createdDate = "",
-    updatedDate = "",
+    createdDate = null,
+    updatedDate = null,
 )
 
 private val PreviewForm = ProfileFormFields(

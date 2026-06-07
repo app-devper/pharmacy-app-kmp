@@ -19,8 +19,8 @@ class ImportsListViewModelTest {
 
     private fun summary(id: String, status: PurchaseOrderStatus = PurchaseOrderStatus.Draft) =
         PurchaseOrderSummary(
-            id = id, docNo = "GR-$id", supplier = "s", invoiceNo = "INV-$id", receiveDate = "2026-06-01",
-            itemCount = 1, totalCost = 100.0, status = status, notes = "", createdAt = "2026-06-01T09:00:00",
+            id = id, docNo = "GR-$id", supplier = "s", invoiceNo = "INV-$id", receiveDate = kotlinx.datetime.LocalDate.parse("2026-06-01"),
+            itemCount = 1, totalCost = 100.0, status = status, notes = "", createdAt = kotlinx.datetime.LocalDateTime.parse("2026-06-01T09:00:00"),
             confirmedAt = null,
         )
 

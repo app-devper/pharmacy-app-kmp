@@ -67,7 +67,7 @@ private class StubReportsRepository(
 class CloseEodUseCaseTest {
 
     private val sampleReport = EodReport(
-        date = "2026-05-19",
+        date = kotlinx.datetime.LocalDate.parse("2026-05-19"),
         billCount = 2,
         totalSales = 100.0,
         totalDiscount = 0.0,
@@ -79,8 +79,8 @@ class CloseEodUseCaseTest {
 
     private val sampleClose = EodCloseResult(
         closeId = "eod-2026-05-19",
-        date = "2026-05-19",
-        closedAt = "2026-05-19T23:59:00+07:00",
+        date = kotlinx.datetime.LocalDate.parse("2026-05-19"),
+        closedAt = kotlinx.datetime.LocalDateTime.parse("2026-05-19T23:59:00"),
         closedBy = "user-1",
         report = sampleReport,
     )
@@ -89,17 +89,17 @@ class CloseEodUseCaseTest {
     fun happy_path_returns_repo_result_and_passes_param_through() = runTest {
         val repo = StubReportsRepository(closeResult = sampleClose)
         val uc = CloseEodUseCase(repo, testDispatchers())
-        val outcome = uc(CloseEodParam(date = "2026-05-19"))
+        val outcome = uc(CloseEodParam(date = kotlinx.datetime.LocalDate.parse("2026-05-19")))
         assertTrue(outcome.isSuccess)
         assertEquals(sampleClose, outcome.getOrThrow())
-        assertEquals("2026-05-19", repo.lastCloseParam?.date)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2026-05-19"), repo.lastCloseParam?.date)
     }
 
     @Test
     fun network_failure_propagates_as_typed_AppException_in_Result_failure() = runTest {
         val repo = StubReportsRepository(closeThrows = NetworkException())
         val uc = CloseEodUseCase(repo, testDispatchers())
-        val outcome = uc(CloseEodParam(date = "2026-05-19"))
+        val outcome = uc(CloseEodParam(date = kotlinx.datetime.LocalDate.parse("2026-05-19")))
         assertTrue(outcome.isFailure)
         val e = outcome.exceptionOrNull()
         assertTrue(e is AppException, "expected AppException, got $e")
@@ -110,7 +110,7 @@ class CloseEodUseCaseTest {
     fun conflict_failure_propagates_as_typed_ConflictException_in_Result_failure() = runTest {
         val repo = StubReportsRepository(closeThrows = ConflictException(message = "already closed"))
         val uc = CloseEodUseCase(repo, testDispatchers())
-        val outcome = uc(CloseEodParam(date = "2026-05-19"))
+        val outcome = uc(CloseEodParam(date = kotlinx.datetime.LocalDate.parse("2026-05-19")))
         assertTrue(outcome.isFailure)
         val e = outcome.exceptionOrNull()
         assertTrue(e is ConflictException)

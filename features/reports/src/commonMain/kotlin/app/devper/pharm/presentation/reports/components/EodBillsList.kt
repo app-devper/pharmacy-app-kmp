@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
-import app.devper.pharm.ui.format.isoDateTimeToBuddhist
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -52,7 +52,7 @@ internal fun EodBillRow(bill: SaleSummary) {
                 style = PharmText.bodySm,
             )
             Text(
-                text = isoDateTimeToBuddhist(bill.soldAt),
+                text = localDateTimeToBuddhist(bill.soldAt),
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
         }

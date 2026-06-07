@@ -33,6 +33,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.format.localDateToBuddhist
 
 data class DrugLotsCallbacks(
     val onClose: () -> Unit = {},
@@ -229,7 +230,7 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
                 style = PharmText.body.copy(color = t.colors.fg1),
             )
             Text(
-                text = "หมดอายุ ${lot.expiryDate.take(10)} · เหลือ ${lot.remaining}/${lot.quantity}",
+                text = "หมดอายุ ${localDateToBuddhist(lot.expiryDate)} · เหลือ ${lot.remaining}/${lot.quantity}",
                 style = PharmText.micro.tabular().copy(color = t.colors.fg2),
             )
         }

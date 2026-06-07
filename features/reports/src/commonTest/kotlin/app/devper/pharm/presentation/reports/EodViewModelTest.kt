@@ -38,7 +38,7 @@ private class RecordingPrinter(private val result: Boolean = true) : ReceiptPrin
 class EodViewModelTest {
 
     private val sampleReport = EodReport(
-        date = "2026-05-19",
+        date = kotlinx.datetime.LocalDate.parse("2026-05-19"),
         billCount = 4,
         totalSales = 3850.0,
         totalDiscount = 70.0,
@@ -50,8 +50,8 @@ class EodViewModelTest {
 
     private val sampleCloseResult = EodCloseResult(
         closeId = "eod-2026-05-19",
-        date = "2026-05-19",
-        closedAt = "2026-05-19T23:59:00+07:00",
+        date = kotlinx.datetime.LocalDate.parse("2026-05-19"),
+        closedAt = kotlinx.datetime.LocalDateTime.parse("2026-05-19T23:59:00"),
         closedBy = "cashier-01",
         report = sampleReport,
     )
@@ -99,7 +99,7 @@ class EodViewModelTest {
         advanceUntilIdle()
 
         assertEquals(1, reports.closeCallCount)
-        assertEquals("2026-05-19", reports.lastCloseParam?.date)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2026-05-19"), reports.lastCloseParam?.date)
         assertFalse(vm.state.value.confirmClose)
         assertFalse(vm.state.value.closing)
         assertTrue(vm.state.value.closed)

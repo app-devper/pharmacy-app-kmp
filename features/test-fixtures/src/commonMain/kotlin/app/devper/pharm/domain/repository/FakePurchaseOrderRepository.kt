@@ -58,7 +58,7 @@ class FakePurchaseOrderRepository(
         id: String,
         supplier: String,
         invoiceNo: String,
-        receiveDate: String,
+        receiveDate: kotlinx.datetime.LocalDate?,
         notes: String,
         items: List<PurchaseOrderItemInput>,
     ): PurchaseOrder = PurchaseOrder(
@@ -82,7 +82,7 @@ class FakePurchaseOrderRepository(
         totalCost = items.sumOf { it.costPrice * it.qty },
         status = PurchaseOrderStatus.Draft,
         notes = notes,
-        createdAt = "2026-05-14T10:00:00Z",
+        createdAt = kotlinx.datetime.LocalDateTime.parse("2026-05-14T10:00:00"),
         confirmedAt = null,
     )
 }

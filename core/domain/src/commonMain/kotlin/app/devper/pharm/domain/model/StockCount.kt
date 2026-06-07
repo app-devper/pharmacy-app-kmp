@@ -1,11 +1,13 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDateTime
+
 data class StockCount(
     val id: String,
     val countNo: String,
     val note: String,
     val items: List<StockCountLine>,
-    val createdAt: String,
+    val createdAt: LocalDateTime?,
 )
 
 data class StockCountLine(
