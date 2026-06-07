@@ -24,6 +24,7 @@ import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -42,27 +43,28 @@ internal fun StockCountFormTable(
     modifier: Modifier = Modifier,
     emptySearching: Boolean = false,
 ) {
-    val columns = remember(callbacks) {
+    val s = pharmStrings
+    val columns = remember(callbacks, s) {
         listOf(
             PharmTableColumn<StockCountFormRow>(
-                header = "ชื่อยา",
+                header = s.expiryHeaderDrugName,
                 weight = 2.4f,
                 cell = { row -> StockCountDrugCell(row) },
             ),
             PharmTableColumn(
-                header = "ในระบบ",
+                header = s.stockCountFormInSystem,
                 weight = 1.0f,
                 align = PharmColumnAlign.End,
                 cell = { row -> StockCountSystemCell(row) },
             ),
             PharmTableColumn(
-                header = "นับได้",
+                header = s.stockCountFormCounted,
                 weight = 1.1f,
                 align = PharmColumnAlign.End,
                 cell = { row -> StockCountInputCell(row = row, callbacks = callbacks) },
             ),
             PharmTableColumn(
-                header = "ส่วนต่าง",
+                header = s.stockCountFormDelta,
                 weight = 0.8f,
                 align = PharmColumnAlign.End,
                 cell = { row -> StockCountDeltaCell(row) },
@@ -78,7 +80,7 @@ internal fun StockCountFormTable(
         rowHeight = 56.dp,
         emptyContent = {
             Text(
-                text = if (emptySearching) "ไม่พบยาที่ค้นหา" else "ยังไม่มีรายการยา",
+                text = if (emptySearching) s.stockCountFormEmptySearching else s.stockCountFormEmptyDefault,
                 style = PharmText.meta,
             )
         },
@@ -106,7 +108,7 @@ private fun StockCountDrugCell(row: StockCountFormRow) {
             val unit = row.drug.unit?.takeIf { it.isNotBlank() }
             if (unit != null) {
                 Text(
-                    text = "หน่วย: $unit",
+                    text = pharmStrings.stockCountFormUnitLabel(unit),
                     style = PharmText.micro.copy(color = t.colors.fgMuted),
                     maxLines = 1,
                 )

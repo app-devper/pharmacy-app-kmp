@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -64,13 +65,14 @@ private fun SummaryCard(state: StockCountFormUiState, callbacks: StockCountFormC
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(text = "บันทึกรอบนี้", style = PharmText.h3.copy(color = t.colors.fg1))
+        val s = pharmStrings
+        Text(text = s.stockCountFormSaveRoundCta, style = PharmText.h3.copy(color = t.colors.fg1))
         Spacer(modifier = Modifier.height(4.dp))
-        SummaryRow(label = "ทั้งหมด", value = "${state.drugs.size} รายการ")
-        SummaryRow(label = "พิมพ์แล้ว", value = "${state.pendingLines.size}")
-        SummaryRow(label = "รายการที่เปลี่ยน", value = "${state.changedCount}")
+        SummaryRow(label = s.stockCountFormSummaryAll, value = "${state.drugs.size} ${s.movementsCountNoun}")
+        SummaryRow(label = s.stockCountFormPrintedShort, value = "${state.pendingLines.size}")
+        SummaryRow(label = s.stockCountFormChangedItems, value = "${state.changedCount}")
         SummaryRow(
-            label = "ส่วนต่างรวม (abs)",
+            label = s.stockCountFormDiscrepancyTotal,
             value = state.totalAbsDelta.toString(),
             highlight = state.totalAbsDelta > 0,
         )
@@ -80,14 +82,14 @@ private fun SummaryCard(state: StockCountFormUiState, callbacks: StockCountFormC
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "หมายเหตุ",
+            text = s.stockCountHeaderNote,
             style = PharmText.micro.copy(color = t.colors.fg3),
         )
         Box(modifier = Modifier.heightIn(min = 72.dp)) {
             PharmTextField(
                 value = state.note,
                 onValueChange = callbacks.onNotesChange,
-                placeholder = "เช่น ตรวจประจำเดือน…",
+                placeholder = s.stockCountFormNotePlaceholder,
                 singleLine = false,
             )
         }
@@ -123,7 +125,7 @@ private fun HistoryCard(history: List<StockCountHistoryEntry>) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(text = "ประวัติตรวจนับ", style = PharmText.h3.copy(color = t.colors.fg1))
+        Text(text = pharmStrings.stockCountHistoryTitle, style = PharmText.h3.copy(color = t.colors.fg1))
         history.forEach { entry -> HistoryRow(entry = entry) }
     }
 }

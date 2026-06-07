@@ -23,6 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -35,21 +36,22 @@ internal fun SubmitConfirmModal(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = open,
         onDismiss = onCancel,
         size = PharmModalSize.Lg,
-        title = "ยืนยันการปรับสต็อก",
-        subtitle = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้",
+        title = s.stockCountFormConfirmTitle,
+        subtitle = s.stockCountFormConfirmMessage,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Md,
             )
             PharmButton(
-                label = "ยืนยัน",
+                label = s.stockCountFormConfirmCta,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Primary,
                 size = PharmButtonSize.Md,
@@ -60,12 +62,12 @@ internal fun SubmitConfirmModal(
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 SummaryStat(
-                    label = "รายการที่เปลี่ยน",
+                    label = s.stockCountFormChangedItems,
                     value = "$changedCount",
                     modifier = Modifier.weight(1f),
                 )
                 SummaryStat(
-                    label = "ส่วนต่างรวม (abs)",
+                    label = s.stockCountFormDiscrepancyTotal,
                     value = "$totalAbsDelta",
                     highlight = totalAbsDelta > 0,
                     modifier = Modifier.weight(1f),
@@ -77,7 +79,7 @@ internal fun SubmitConfirmModal(
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "ส่วนต่างสูงสุด ${topDiscrepancies.size} อันดับ",
+                    text = s.stockCountFormTopDiscrepancy(topDiscrepancies.size),
                     style = PharmText.micro.copy(color = t.colors.fg3),
                 )
                 topDiscrepancies.forEach { row -> DiscrepancyRow(row = row) }

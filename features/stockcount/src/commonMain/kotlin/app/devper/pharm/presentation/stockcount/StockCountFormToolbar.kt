@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -30,6 +31,7 @@ internal fun StockCountFormToolbar(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -46,11 +48,11 @@ internal fun StockCountFormToolbar(
                 PharmTextField(
                     value = state.query,
                     onValueChange = callbacks.onSearchChange,
-                    placeholder = "ค้นหายา / barcode…",
+                    placeholder = s.stockCountFormSearchPlaceholder,
                 )
             }
             PharmButton(
-                label = "เติมตามระบบ",
+                label = s.stockCountFormFillSystem,
                 onClick = callbacks.onFillFromSystem,
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
@@ -58,14 +60,14 @@ internal fun StockCountFormToolbar(
                 leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
             )
             PharmButton(
-                label = "ล้าง",
+                label = s.bulkImportClearCta,
                 onClick = callbacks.onClear,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
                 enabled = state.counts.isNotEmpty(),
             )
             PharmButton(
-                label = "ล้าง draft",
+                label = s.stockCountFormClearDraftCta,
                 onClick = callbacks.onClearDraft,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
@@ -79,8 +81,8 @@ internal fun StockCountFormToolbar(
 @Composable
 private fun StockCountFormStatusLine(state: StockCountFormUiState) {
     val t = pharmTokens
-    val text = "ทั้งหมด ${state.drugs.size} รายการ · พิมพ์แล้ว ${state.pendingLines.size} · " +
-        "แก้ไข ${state.changedCount} · ส่วนต่างรวม ${state.totalAbsDelta}"
+    val s = pharmStrings
+    val text = s.stockCountFormStatusLine(state.drugs.size, state.pendingLines.size, state.changedCount, state.totalAbsDelta)
     Text(
         text = text,
         style = PharmText.micro.copy(color = t.colors.fg3),

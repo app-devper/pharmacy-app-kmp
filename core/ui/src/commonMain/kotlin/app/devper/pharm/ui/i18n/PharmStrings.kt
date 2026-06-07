@@ -329,6 +329,47 @@ interface PharmStrings {
     val bulkImportResultSummary: (Int, Int) -> String
     val bulkImportResultSuccessLabel: String
     val bulkImportClearCta: String
+    val stockCountHistoryTitle: String
+    val stockCountHistorySubtitle: String
+    val stockCountHistorySearchPlaceholder: String
+    val stockCountHistoryNewCta: String
+    val stockCountHistoryEmpty: String
+    val stockCountHistoryNotFound: String
+    val stockCountHistoryCountNoun: String
+    val stockCountHeaderRound: String
+    val stockCountHeaderItems: String
+    val stockCountHeaderDelta: String
+    val stockCountHeaderAdjust: String
+    val stockCountStatusAdjusted: String
+    val stockCountStatusNotAdjusted: String
+    val stockCountHeaderNote: String
+    val stockCountActionDetails: String
+    val stockCountFormSearchPlaceholder: String
+    val stockCountFormNotePlaceholder: String
+    val stockCountFormCounted: String
+    val stockCountFormInSystem: String
+    val stockCountFormDelta: String
+    val stockCountFormUnitLabel: (String) -> String
+    val stockCountFormChangedItems: String
+    val stockCountFormFillSystem: String
+    val stockCountFormSummaryAll: String
+    val stockCountFormSummaryAdjusted: String
+    val stockCountFormSummaryNotAdjusted: String
+    val stockCountFormPrintedShort: String
+    val stockCountFormCounted2: String
+    val stockCountFormDiscrepancyTotal: String
+    val stockCountFormTopDiscrepancy: (Int) -> String
+    val stockCountFormClearDraftCta: String
+    val stockCountFormSaveRoundCta: String
+    val stockCountFormResultLine: (Int, Int, Int) -> String
+    val stockCountFormStatusLine: (Int, Int, Int, Int) -> String
+    val stockCountFormSaveCountLabel: (Int) -> String
+    val stockCountFormSummaryDelta: (Int, Int) -> String
+    val stockCountFormEmptySearching: String
+    val stockCountFormEmptyDefault: String
+    val stockCountFormConfirmTitle: String
+    val stockCountFormConfirmMessage: String
+    val stockCountFormConfirmCta: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -666,6 +707,47 @@ object PharmStringsTh : PharmStrings {
     override val bulkImportResultSummary: (Int, Int) -> String = { imported, total -> "บันทึก $imported/$total รายการ" }
     override val bulkImportResultSuccessLabel = "สำเร็จ"
     override val bulkImportClearCta = "ล้าง"
+    override val stockCountHistoryTitle = "ประวัติตรวจนับ"
+    override val stockCountHistorySubtitle = "ประวัติรอบนับสต็อก และบันทึกการปรับยอด"
+    override val stockCountHistorySearchPlaceholder = "ค้นหาเลขรอบ / หมายเหตุ…"
+    override val stockCountHistoryNewCta = "นับสต็อกใหม่"
+    override val stockCountHistoryEmpty = "ยังไม่มีรอบนับสต็อก"
+    override val stockCountHistoryNotFound = "ไม่พบรอบนับตามที่ค้นหา"
+    override val stockCountHistoryCountNoun = "รอบ"
+    override val stockCountHeaderRound = "เลขรอบ"
+    override val stockCountHeaderItems = "รายการ"
+    override val stockCountHeaderDelta = "ส่วนต่าง"
+    override val stockCountHeaderAdjust = "ปรับยอด"
+    override val stockCountStatusAdjusted = "ปรับแล้ว"
+    override val stockCountStatusNotAdjusted = "ไม่ปรับ"
+    override val stockCountHeaderNote = "หมายเหตุ"
+    override val stockCountActionDetails = "ดูรายละเอียด"
+    override val stockCountFormSearchPlaceholder = "ค้นหายา / barcode…"
+    override val stockCountFormNotePlaceholder = "เช่น ตรวจประจำเดือน…"
+    override val stockCountFormCounted = "นับได้"
+    override val stockCountFormInSystem = "ในระบบ"
+    override val stockCountFormDelta = "ส่วนต่าง"
+    override val stockCountFormUnitLabel: (String) -> String = { unit -> "หน่วย: $unit" }
+    override val stockCountFormChangedItems = "รายการที่เปลี่ยน"
+    override val stockCountFormFillSystem = "เติมตามระบบ"
+    override val stockCountFormSummaryAll = "ทั้งหมด"
+    override val stockCountFormSummaryAdjusted = "ปรับแล้ว"
+    override val stockCountFormSummaryNotAdjusted = "ไม่ปรับ"
+    override val stockCountFormPrintedShort = "พิมพ์แล้ว"
+    override val stockCountFormCounted2 = "นับได้"
+    override val stockCountFormDiscrepancyTotal = "ส่วนต่างรวม (abs)"
+    override val stockCountFormTopDiscrepancy: (Int) -> String = { n -> "ส่วนต่างสูงสุด $n อันดับ" }
+    override val stockCountFormClearDraftCta = "ล้าง draft"
+    override val stockCountFormSaveRoundCta = "บันทึกรอบนี้"
+    override val stockCountFormResultLine: (Int, Int, Int) -> String = { total, printed, counted -> "ทั้งหมด $total รายการ · พิมพ์แล้ว $printed · นับได้ $counted" }
+    override val stockCountFormStatusLine: (Int, Int, Int, Int) -> String = { total, printed, changed, absDelta -> "ทั้งหมด $total รายการ · พิมพ์แล้ว $printed · แก้ไข $changed · ส่วนต่างรวม $absDelta" }
+    override val stockCountFormSaveCountLabel: (Int) -> String = { count -> "บันทึก $count รายการ" }
+    override val stockCountFormSummaryDelta: (Int, Int) -> String = { changed, total -> "แก้ไข $changed · ส่วนต่างรวม $total" }
+    override val stockCountFormEmptySearching = "ไม่พบยาที่ค้นหา"
+    override val stockCountFormEmptyDefault = "ยังไม่มีรายการยา"
+    override val stockCountFormConfirmTitle = "ยืนยันการปรับสต็อก"
+    override val stockCountFormConfirmMessage = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้"
+    override val stockCountFormConfirmCta = "ยืนยัน"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -1003,6 +1085,47 @@ object PharmStringsEn : PharmStrings {
     override val bulkImportResultSummary: (Int, Int) -> String = { imported, total -> "Recorded $imported/$total item(s)" }
     override val bulkImportResultSuccessLabel = "Success"
     override val bulkImportClearCta = "Clear"
+    override val stockCountHistoryTitle = "Stock count history"
+    override val stockCountHistorySubtitle = "Past stock-count rounds and adjustment records"
+    override val stockCountHistorySearchPlaceholder = "Search round number / note…"
+    override val stockCountHistoryNewCta = "New stock count"
+    override val stockCountHistoryEmpty = "No stock-count rounds yet"
+    override val stockCountHistoryNotFound = "No rounds match the search"
+    override val stockCountHistoryCountNoun = "rounds"
+    override val stockCountHeaderRound = "Round no."
+    override val stockCountHeaderItems = "Items"
+    override val stockCountHeaderDelta = "Delta"
+    override val stockCountHeaderAdjust = "Adjustment"
+    override val stockCountStatusAdjusted = "Adjusted"
+    override val stockCountStatusNotAdjusted = "No change"
+    override val stockCountHeaderNote = "Note"
+    override val stockCountActionDetails = "View details"
+    override val stockCountFormSearchPlaceholder = "Search drug / barcode…"
+    override val stockCountFormNotePlaceholder = "e.g. Monthly stock check…"
+    override val stockCountFormCounted = "Counted"
+    override val stockCountFormInSystem = "In system"
+    override val stockCountFormDelta = "Delta"
+    override val stockCountFormUnitLabel: (String) -> String = { unit -> "Unit: $unit" }
+    override val stockCountFormChangedItems = "Changed items"
+    override val stockCountFormFillSystem = "Fill from system"
+    override val stockCountFormSummaryAll = "All"
+    override val stockCountFormSummaryAdjusted = "Adjusted"
+    override val stockCountFormSummaryNotAdjusted = "Not adjusted"
+    override val stockCountFormPrintedShort = "Printed"
+    override val stockCountFormCounted2 = "Counted"
+    override val stockCountFormDiscrepancyTotal = "Total delta (abs)"
+    override val stockCountFormTopDiscrepancy: (Int) -> String = { n -> "Top $n discrepancies" }
+    override val stockCountFormClearDraftCta = "Clear draft"
+    override val stockCountFormSaveRoundCta = "Save this round"
+    override val stockCountFormResultLine: (Int, Int, Int) -> String = { total, printed, counted -> "Total $total items · printed $printed · counted $counted" }
+    override val stockCountFormStatusLine: (Int, Int, Int, Int) -> String = { total, printed, changed, absDelta -> "Total $total items · printed $printed · changed $changed · total delta $absDelta" }
+    override val stockCountFormSaveCountLabel: (Int) -> String = { count -> "Save $count items" }
+    override val stockCountFormSummaryDelta: (Int, Int) -> String = { changed, total -> "Changed $changed · total delta $total" }
+    override val stockCountFormEmptySearching = "No drugs match the search"
+    override val stockCountFormEmptyDefault = "No drugs yet"
+    override val stockCountFormConfirmTitle = "Confirm stock adjustment"
+    override val stockCountFormConfirmMessage = "The system will adjust stock to the counted quantity — once confirmed this cannot be undone"
+    override val stockCountFormConfirmCta = "Confirm"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }
