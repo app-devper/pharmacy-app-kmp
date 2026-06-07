@@ -8,7 +8,7 @@ import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.usecase.AddToCartUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.extension.BarcodeMatch
+import app.devper.pharm.domain.model.BarcodeMatch
 import app.devper.pharm.domain.extension.matchBarcode
 import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.ui.common.BaseViewModel
