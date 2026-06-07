@@ -394,50 +394,43 @@ etc.) are 18-22 lines.
 
 ## Migration history
 
-- **Phase S**: extract `:domain` from monolithic `:composeApp`
-- **MM-1**: rename `:domain` → `:core:domain`; create `:core:ui` + `:core:data`
-- **MM-2**: create `:features` and move all feature folders + DI + tests
-- **MM-3**: slim `:composeApp` to entry-only
-- **MN**: extract `:core:common` (IoDispatcher expect/actual + AppDispatchers + Logger)
-- **INVERT**: replace all 3 remaining expect/actual seams with interfaces in `:core:common` + impl classes in `:composeApp/<plat>Main`, wired through Koin. Audit gains A26 + A27.
-- **OOS**: move `AppException` + `BaseUseCase` to `:core:common`; rename package; add `build-logic/` convention plugin.
-- **UI-OOS**: move `:core:ui`'s platform code to `:core:common/common/print/`; rename packages.
-- **DATA-OOS**: move `:core:data`'s `PdfDownloader` expect/actual to `:core:common/common/platform/`.
-- **FEAT-DECOUPLE**: `:features` drops direct deps on `:core:common` + `:core:data`. Per-feature DI modules bind only VMs.
-- **A28 + typed errors (Phase W)**: every production error uses a typed `AppException` subclass.
-- **Cart atomic refactor (`bedd1ad`, `27a4d01`)**: `CartRepository.state: StateFlow<CartState>` collapses two-flow combine into one atomic emission per operation.
-- **Per-feature split arc (`5b4d0ed` → `9a76123`)** — the big one:
-  - `5b4d0ed`: extract `:features:shared` (nav hub + 20 Route data objects). Foundation for everything that follows.
-  - `26d9589`: pilot `:features:help` — proves the 6-step recipe
-  - `5768ea8`: `:features:profile`
-  - `049c7d1`: `:features:planning` (2 screens bundled)
-  - `24e22be`: `:features:labels`
-  - `d74a5e2`: `:features:offlinesync`
-  - `65ce268`: `:features:saleshistory` + `:features:expiry` + `:features:auth` (3 in one commit; first batch with full test co-location)
-  - `57e12d2`: `:features:movements` + `:features:bulkimport` + `:features:stockcount`
-  - `f788f27`: `:features:customers` + `:features:suppliers` + `:features:imports`
-  - `30f9c4f`: `:features:users` + `:features:reports` + `:features:ky`
-  - `9c34761`: `:features:stock` (16 prod + 30 tests co-located)
-  - `b643954`: `:features:sell` (39 prod, the heaviest)
-  - `2a9f822`: `:features:settings` (the planned finale)
-  - `9a76123`: extract `:features:test-fixtures` for 14 shared fakes, co-locate 18 cross-cutting tests, **delete `:features` module entirely**. Audit rule grows the `/features/test-fixtures/` A28 exclusion.
-- **Value-class chain (Phase C, #180 → #192)** — introduce `Money` + `Quantity` and route them through the domain:
-  - **#180** seed: `Money(Double)` + `Quantity(Int)` `@JvmInline value class` in `:core:common/value/` with full operator API + 24 tests.
-  - **#181 (C-1) Drug + AltUnit**: `sellPrice` / `costPrice` → `Money`; `stock` / `minStock` → `Quantity`; `prices: Map<String, Money>`. `DrugMapper` + `ParkedCartStorage` wrap at boundary. ~150 call sites updated.
-  - **#182 (C-2) Sale + SaleSummary + SaleItemSnapshot**: monetary fields → `Money`. `SaleMapper` / `SaleItemMapper` / `SaleSummaryMapper` wrap at boundary.
-  - **#183 (C-3) `CartLine` math chain**: `discount` / `basePrice` / `unitPrice` / `effectiveUnitPrice` / `lineTotal` → `Money`. `Money` gains `div(Int)` + `coerceAtLeast` / `coerceAtMost` + 5 tests.
-  - **#184 (C-4) `CartDiscount`** + `CartSnapshot` / `ParkedCart` / `SellUiState` totals → `Money`. `CartDiscount.Flat.amount` + `apply()` go through `Money` space.
-  - **#185 (C-5) `CheckoutParam` / `CheckoutLineParam` / `RunCheckoutParam`** — closes the param-level symmetry from domain → wire boundary (mapper unwraps at the SaleRequest line).
-  - **#192 (C-2 gap closure)**: `DrugLot` / `AddLotParam` / `PurchaseOrder*` / `PurchaseOrderItem*` / `ReorderSuggestion` — the inventory-side surface that C-1 missed.
-  - Still `Double` (intentional, deferred): `ReportSummary` / `DailySales` / `MonthlySales`; receipt template wire fields (printer protocol).
-- **Datetime / Bangkok TZ fixes (#187 → #189)** — UTC-stored Mongo `time.Time` was being parsed naïvely → wall-clock displayed 7h behind. Fix in 3 layers:
-  - **#187** `parseLocalDateTimeOrNull` + `isoDateTimeToBuddhist`: try `Instant.parse(s).toLocalDateTime(BANGKOK)` first, fall back to bare `LocalDateTime.parse` only when there's no offset marker.
-  - **#188** `parseLocalDateOrNull` + `isoDateToBuddhist` + `toLocalDateOrNull`: fall back to `take(10)` when strict ISO_DATE rejects a datetime-shaped string (`2027-06-30T00:00:00Z` from backend lot expiry).
-  - **#189** `ymdToMillis` / `millisToYmd` / `LocalDate.toStartOfDayMillis`: use `TimeZone.UTC` internally so the YMD ↔ millis bridge round-trips through Material 3 `DatePicker` without an off-by-one day shift.
-- **Coverage + dead-code (#186, #190, #191)**:
-  - **#186**: +27 tests covering 13 thin `CartRepository` UseCase wrappers (`AddToCart` / `SetCartQty` / `SetLineDiscount` / `SetCartDiscount` / `ClearCart` / `RemoveCartItem` / `SetCashReceived` / `SelectCustomer` / `ClearCustomer` / `ParkCart` / `RestoreCart` / `DiscardParkedCart` / `DismissReceipt`). `:core:domain` commonTest gains a dep on `:features:test-fixtures` for `FakeCartRepository`.
-  - **#190**: `OfflineAutoSync.syncPending()` aborts loop on network errors instead of inflating `attempts++` on every queued sale.
-  - **#191**: delete unused `GetSaleSummaryUseCase` (called a broken `SaleHistoryRepo.get` that filtered the latest-200 list) + `MarkOfflineSaleFailedUseCase` (pass-through, queue method called directly).
+Headline phases shaping the current 26-module layout — full per-PR
+details in git log.
+
+- **Pre-26**: extract `:core:{common,domain,ui,data}` from monolithic
+  `:composeApp`; later split `:features` into 20 per-feature modules
+  (the per-feature arc landed in 12 commits between `5b4d0ed` and
+  `9a76123`, culminating in extracting `:features:test-fixtures` for
+  shared fakes + deleting the old `:features` module).
+- **INVERT**: replace every `expect`/`actual` seam with interfaces in
+  `:core:common` + impls in `:composeApp/<plat>Main` wired through
+  Koin. Audit gains rules A26 (no platform folders outside
+  `:composeApp`) + A27 (no `expect`/`actual` anywhere).
+- **Typed errors (A28)**: every production error uses a typed
+  `AppException` subclass; `:features:test-fixtures` is exempted so
+  fakes can throw `RuntimeException` as a deliberate test signal.
+- **Cart atomic refactor**: `CartRepository.state: StateFlow<CartState>`
+  collapses two-flow combine into one atomic emission per operation.
+- **Value-class chain (Phase C, #180 → #185, #192)**: introduce
+  `Money` + `Quantity` and thread them through the domain — `Drug` +
+  `AltUnit` (#181), `Sale*` (#182), `CartLine` math (#183),
+  `CartDiscount` + cart totals (#184), `CheckoutParam` family (#185),
+  inventory-side gap closure (`DrugLot` / `PurchaseOrder*` /
+  `ReorderSuggestion`, #192). DTOs stay Double/Int — mappers wrap at
+  boundary. `ReportSummary` / `DailySales` / `MonthlySales` + receipt
+  template wire fields stay `Double` (separate RepX arc).
+- **Datetime / Bangkok TZ fixes (#187 → #189)**: UTC-stored Mongo
+  `time.Time` was parsed naïvely → wall-clock 7h behind. Fixes in 3
+  layers — `Instant.parse` first in `parseLocalDateTimeOrNull` (#187);
+  `take(10)` fallback in `parseLocalDateOrNull` for datetime-shaped
+  strings from `time.Time` date-only fields (#188); `TimeZone.UTC` in
+  `ymdToMillis` / `millisToYmd` so M3 `DatePicker` round-trips without
+  an off-by-one day shift (#189).
+- **Coverage + dead-code (#186, #190, #191)**: +27 tests for the 13
+  thin `CartRepository` UseCase wrappers; `OfflineAutoSync.syncPending`
+  aborts on network errors (was inflating `attempts++` on every queued
+  sale); deleted unused `GetSaleSummaryUseCase` +
+  `MarkOfflineSaleFailedUseCase`.
 
 ## Out of scope (deferred)
 
