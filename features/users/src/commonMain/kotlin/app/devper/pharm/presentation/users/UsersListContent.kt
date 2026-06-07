@@ -44,6 +44,7 @@ import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -55,6 +56,7 @@ fun UsersListContent(
     callbacks: UsersListCallbacks,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     val visible = state.filtered
     val searching = state.searchQuery.isNotBlank()
 
@@ -75,7 +77,7 @@ fun UsersListContent(
         ) {
             PharmListResultLine(
                 total = state.users.size,
-                noun = "คน",
+                noun = s.usersCountNoun,
                 visible = visible.size,
                 searching = searching,
             )
@@ -85,11 +87,11 @@ fun UsersListContent(
                 state.loading && state.users.isEmpty() -> PharmListSkeleton()
                 state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
                     icon = PharmIcons.Users,
-                    title = "ยังไม่มีผู้ใช้งาน",
+                    title = s.usersListEmpty,
                     action = {
                         if (state.currentUserRole.canManageUsers()) {
                             PharmButton(
-                                label = "เพิ่มผู้ใช้งานคนแรก",
+                                label = s.usersAddFirstCta,
                                 onClick = callbacks.onAddUser,
                                 variant = PharmButtonVariant.Primary,
                                 size = PharmButtonSize.Sm,
@@ -118,17 +120,18 @@ private fun UsersListToolbar(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
+    val s = pharmStrings
     PharmListToolbar(
-        title = "จัดการผู้ใช้งาน",
-        subtitle = "บัญชีผู้ใช้ในระบบ User Management",
+        title = s.navUsers,
+        subtitle = s.usersListSubtitle,
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
-        searchPlaceholder = "ค้นหาชื่อ / username / อีเมล…",
+        searchPlaceholder = s.usersSearchPlaceholder,
         titleStyle = PharmText.h2,
         actions = {
             if (state.currentUserRole.canManageUsers()) {
                 PharmButton(
-                    label = "เพิ่มผู้ใช้งาน",
+                    label = s.usersAddCta,
                     onClick = callbacks.onAddUser,
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
@@ -180,20 +183,21 @@ private fun DeleteDialogBody(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
-    Text(text = "ยืนยันลบผู้ใช้งาน", style = PharmText.h2)
+    val s = pharmStrings
+    Text(text = s.usersConfirmDeleteTitle, style = PharmText.h2)
     Text(
-        text = "ลบผู้ใช้งาน \"${target.username}\" ?\nการดำเนินการนี้ไม่สามารถกู้คืนได้",
+        text = s.usersConfirmDeleteMessage(target.username),
         style = PharmText.body,
     )
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         PharmButton(
-            label = "ยกเลิก",
+            label = s.commonCancel,
             onClick = callbacks.onDismissAction,
             variant = PharmButtonVariant.Ghost,
             enabled = !state.actionBusy,
         )
         PharmButton(
-            label = "ลบ",
+            label = s.commonDelete,
             onClick = callbacks.onConfirmDelete,
             variant = PharmButtonVariant.Danger,
             loading = state.actionBusy,
@@ -208,7 +212,8 @@ private fun RoleDialogBody(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
-    Text(text = "เปลี่ยน Role", style = PharmText.h2)
+    val s = pharmStrings
+    Text(text = s.usersConfirmRoleTitle, style = PharmText.h2)
     Text(text = "@${target.username}", style = PharmText.micro.copy(color = pharmTokens.colors.fgMuted))
     val options = roleOptionsFor(actorRole)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -223,7 +228,7 @@ private fun RoleDialogBody(
         }
     }
     PharmButton(
-        label = "ยกเลิก",
+        label = s.commonCancel,
         onClick = callbacks.onDismissAction,
         variant = PharmButtonVariant.Ghost,
         enabled = !state.actionBusy,
@@ -236,24 +241,25 @@ private fun StatusDialogBody(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
+    val s = pharmStrings
     val nextActive = !target.status.isActive
     Text(
-        text = if (nextActive) "ยืนยันเปิดใช้งาน" else "ยืนยันระงับการใช้งาน",
+        text = if (nextActive) s.usersConfirmEnableTitle else s.usersConfirmSuspendTitle,
         style = PharmText.h2,
     )
     Text(
-        text = "${if (nextActive) "เปิดใช้งาน" else "ระงับ"}ผู้ใช้ \"${target.username}\"",
+        text = if (nextActive) s.usersConfirmEnableMessage(target.username) else s.usersConfirmSuspendMessage(target.username),
         style = PharmText.body,
     )
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         PharmButton(
-            label = "ยกเลิก",
+            label = s.commonCancel,
             onClick = callbacks.onDismissAction,
             variant = PharmButtonVariant.Ghost,
             enabled = !state.actionBusy,
         )
         PharmButton(
-            label = if (nextActive) "เปิดใช้" else "ระงับ",
+            label = if (nextActive) s.usersActionEnable else s.usersActionSuspend,
             onClick = callbacks.onConfirmStatusToggle,
             variant = PharmButtonVariant.Primary,
             loading = state.actionBusy,
@@ -267,11 +273,12 @@ private fun PasswordDialogBody(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
+    val s = pharmStrings
     var pwd by rememberSaveable(target.id) { mutableStateOf("") }
     var confirm by rememberSaveable(target.id) { mutableStateOf("") }
     val matches = pwd.length >= 8 && pwd == confirm
-    Text(text = "ตั้งรหัสผ่าน — ${target.displayName}", style = PharmText.h2)
-    FormField(label = "รหัสผ่านใหม่ (≥8 ตัว)", required = true) {
+    Text(text = s.usersSetPasswordTitle(target.displayName), style = PharmText.h2)
+    FormField(label = s.usersFormPasswordNew, required = true) {
         PharmTextField(
             value = pwd,
             onValueChange = { pwd = it },
@@ -281,9 +288,9 @@ private fun PasswordDialogBody(
     }
     val confirmError = confirm.isNotBlank() && pwd != confirm
     FormField(
-        label = "ยืนยันรหัสผ่าน",
+        label = s.profilePasswordConfirm,
         required = true,
-        error = if (confirmError) "ไม่ตรงกับรหัสผ่าน" else null,
+        error = if (confirmError) s.profilePasswordMismatch else null,
     ) {
         PharmTextField(
             value = confirm,
@@ -295,13 +302,13 @@ private fun PasswordDialogBody(
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         PharmButton(
-            label = "ยกเลิก",
+            label = s.commonCancel,
             onClick = callbacks.onDismissAction,
             variant = PharmButtonVariant.Ghost,
             enabled = !state.actionBusy,
         )
         PharmButton(
-            label = "ตั้งรหัสผ่าน",
+            label = s.usersActionSetPassword,
             onClick = { callbacks.onSubmitPasswordSet(pwd) },
             variant = PharmButtonVariant.Primary,
             enabled = matches,

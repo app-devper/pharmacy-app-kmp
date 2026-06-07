@@ -76,7 +76,32 @@ class PharmStringsTablesTest {
         check("suppliersFormEditTitle", PharmStringsTh.suppliersFormEditTitle, PharmStringsEn.suppliersFormEditTitle, mismatches)
         check("suppliersFormCompanyName", PharmStringsTh.suppliersFormCompanyName, PharmStringsEn.suppliersFormCompanyName, mismatches)
         check("suppliersFormTaxId", PharmStringsTh.suppliersFormTaxId, PharmStringsEn.suppliersFormTaxId, mismatches)
+        check("usersListSubtitle", PharmStringsTh.usersListSubtitle, PharmStringsEn.usersListSubtitle, mismatches)
+        check("usersAddCta", PharmStringsTh.usersAddCta, PharmStringsEn.usersAddCta, mismatches)
+        check("usersListEmpty", PharmStringsTh.usersListEmpty, PharmStringsEn.usersListEmpty, mismatches)
+        check("usersOwnAccountBadge", PharmStringsTh.usersOwnAccountBadge, PharmStringsEn.usersOwnAccountBadge, mismatches)
+        check("usersStatusActive", PharmStringsTh.usersStatusActive, PharmStringsEn.usersStatusActive, mismatches)
+        check("usersActionChangeRole", PharmStringsTh.usersActionChangeRole, PharmStringsEn.usersActionChangeRole, mismatches)
+        check("usersFormAddTitle", PharmStringsTh.usersFormAddTitle, PharmStringsEn.usersFormAddTitle, mismatches)
+        check("usersFormUsername", PharmStringsTh.usersFormUsername, PharmStringsEn.usersFormUsername, mismatches)
+        check("usersFormPasswordHint", PharmStringsTh.usersFormPasswordHint, PharmStringsEn.usersFormPasswordHint, mismatches)
+        check("usersConfirmDeleteTitle", PharmStringsTh.usersConfirmDeleteTitle, PharmStringsEn.usersConfirmDeleteTitle, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun users_lambda_keys_interpolate_username_and_differ_per_locale() {
+        val sampleName = "somchai"
+        assertTrue(PharmStringsTh.usersConfirmDeleteMessage(sampleName).contains(sampleName))
+        assertTrue(PharmStringsEn.usersConfirmDeleteMessage(sampleName).contains(sampleName))
+        assertNotEquals(
+            PharmStringsTh.usersConfirmDeleteMessage(sampleName),
+            PharmStringsEn.usersConfirmDeleteMessage(sampleName),
+        )
+        assertTrue(PharmStringsTh.usersSetPasswordTitle("Somchai").contains("Somchai"))
+        assertTrue(PharmStringsEn.usersSetPasswordTitle("Somchai").contains("Somchai"))
+        assertTrue(PharmStringsTh.usersConfirmEnableMessage(sampleName).contains(sampleName))
+        assertTrue(PharmStringsEn.usersConfirmSuspendMessage(sampleName).contains(sampleName))
     }
 
     @Test
