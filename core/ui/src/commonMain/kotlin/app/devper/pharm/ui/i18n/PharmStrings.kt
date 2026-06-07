@@ -222,6 +222,22 @@ data class PharmStrings(
     val salesHistoryStatusOk: String,
     val salesHistoryActionViewBill: String,
     val salesHistoryActionReturn: String,
+    val offlineSyncSubtitle: String,
+    val offlineSyncRetryAllCta: String,
+    val offlineSyncEmptyTitle: String,
+    val offlineSyncEmpty: String,
+    val offlineSyncMetricsTotal: String,
+    val offlineSyncMetricsLocation: String,
+    val offlineSyncMetricsAttempts: String,
+    val offlineSyncMetricsAttemptsSuffix: String,
+    val offlineSyncMetricsFailed: String,
+    val offlineSyncStatusFailed: String,
+    val offlineSyncStatusPending: String,
+    val offlineSyncStatusRetry: String,
+    val offlineSyncAttemptsLabel: (Int) -> String,
+    val offlineSyncRetryRowCta: String,
+    val offlineSyncDeleteConfirmTitle: String,
+    val offlineSyncDeleteConfirmMessage: String,
 )
 
 val PharmStringsTh: PharmStrings = PharmStrings(
@@ -446,6 +462,24 @@ val PharmStringsTh: PharmStrings = PharmStrings(
     salesHistoryStatusOk = "สำเร็จ",
     salesHistoryActionViewBill = "ดูบิล",
     salesHistoryActionReturn = "คืนยา",
+    offlineSyncSubtitle = "ตรวจสอบบิล offline ที่ยังไม่ได้ส่งเข้า backend",
+    offlineSyncRetryAllCta = "ลองซิงก์ทั้งหมด",
+    offlineSyncEmptyTitle = "ไม่มีบิลค้างซิงก์",
+    offlineSyncEmpty = "ทุกบิลส่งเข้า backend แล้ว",
+    offlineSyncMetricsTotal = "รายการค้างทั้งหมด",
+    offlineSyncMetricsLocation = "ใน IndexedDB",
+    offlineSyncMetricsAttempts = "ความพยายามสะสม",
+    offlineSyncMetricsAttemptsSuffix = "ครั้งสะสม",
+    offlineSyncMetricsFailed = "ซิงก์ล้มเหลว",
+    offlineSyncStatusFailed = "ล้มเหลว",
+    offlineSyncStatusPending = "รอซิงก์",
+    offlineSyncStatusRetry = "รอ retry",
+    offlineSyncAttemptsLabel = { attempts -> "ลอง $attempts ครั้ง" },
+    offlineSyncRetryRowCta = "ลองส่งใหม่",
+    offlineSyncDeleteConfirmTitle = "ลบรายการค้างซิงก์?",
+    offlineSyncDeleteConfirmMessage =
+        "บิลนี้จะถูกลบออกจากคิวภายในเครื่อง — ใช้เมื่อแน่ใจว่า " +
+        "backend รับบิลนี้ไปแล้วหรือไม่ต้องการให้ส่งซ้ำอีก",
 )
 
 val PharmStringsEn: PharmStrings = PharmStrings(
@@ -670,6 +704,24 @@ val PharmStringsEn: PharmStrings = PharmStrings(
     salesHistoryStatusOk = "Completed",
     salesHistoryActionViewBill = "View bill",
     salesHistoryActionReturn = "Return",
+    offlineSyncSubtitle = "Offline bills not yet sent to the backend",
+    offlineSyncRetryAllCta = "Sync all",
+    offlineSyncEmptyTitle = "No pending sync items",
+    offlineSyncEmpty = "All bills are synced with the backend",
+    offlineSyncMetricsTotal = "Pending total",
+    offlineSyncMetricsLocation = "In IndexedDB",
+    offlineSyncMetricsAttempts = "Total attempts",
+    offlineSyncMetricsAttemptsSuffix = "attempts",
+    offlineSyncMetricsFailed = "Sync failed",
+    offlineSyncStatusFailed = "Failed",
+    offlineSyncStatusPending = "Pending sync",
+    offlineSyncStatusRetry = "Awaiting retry",
+    offlineSyncAttemptsLabel = { attempts -> "$attempts attempt(s)" },
+    offlineSyncRetryRowCta = "Retry",
+    offlineSyncDeleteConfirmTitle = "Delete pending sync item?",
+    offlineSyncDeleteConfirmMessage =
+        "This bill will be removed from the device queue — only do this if " +
+        "the backend has already received it or you don't want to retry.",
 )
 
 val LocalPharmStrings = staticCompositionLocalOf { PharmStringsTh }

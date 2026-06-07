@@ -96,7 +96,24 @@ class PharmStringsTablesTest {
         check("salesHistoryWalkInCustomer", PharmStringsTh.salesHistoryWalkInCustomer, PharmStringsEn.salesHistoryWalkInCustomer, mismatches)
         check("salesHistoryActionViewBill", PharmStringsTh.salesHistoryActionViewBill, PharmStringsEn.salesHistoryActionViewBill, mismatches)
         check("salesHistoryActionReturn", PharmStringsTh.salesHistoryActionReturn, PharmStringsEn.salesHistoryActionReturn, mismatches)
+        check("offlineSyncSubtitle", PharmStringsTh.offlineSyncSubtitle, PharmStringsEn.offlineSyncSubtitle, mismatches)
+        check("offlineSyncRetryAllCta", PharmStringsTh.offlineSyncRetryAllCta, PharmStringsEn.offlineSyncRetryAllCta, mismatches)
+        check("offlineSyncEmptyTitle", PharmStringsTh.offlineSyncEmptyTitle, PharmStringsEn.offlineSyncEmptyTitle, mismatches)
+        check("offlineSyncMetricsTotal", PharmStringsTh.offlineSyncMetricsTotal, PharmStringsEn.offlineSyncMetricsTotal, mismatches)
+        check("offlineSyncStatusPending", PharmStringsTh.offlineSyncStatusPending, PharmStringsEn.offlineSyncStatusPending, mismatches)
+        check("offlineSyncStatusFailed", PharmStringsTh.offlineSyncStatusFailed, PharmStringsEn.offlineSyncStatusFailed, mismatches)
+        check("offlineSyncRetryRowCta", PharmStringsTh.offlineSyncRetryRowCta, PharmStringsEn.offlineSyncRetryRowCta, mismatches)
+        check("offlineSyncDeleteConfirmTitle", PharmStringsTh.offlineSyncDeleteConfirmTitle, PharmStringsEn.offlineSyncDeleteConfirmTitle, mismatches)
         assertEquals(emptyList(), mismatches, "Found Thai/English entries that are identical (likely missing translation)")
+    }
+
+    @Test
+    fun offline_sync_attempts_label_interpolates_count_per_locale() {
+        val th = PharmStringsTh.offlineSyncAttemptsLabel(3)
+        val en = PharmStringsEn.offlineSyncAttemptsLabel(3)
+        assertTrue(th.contains("3"))
+        assertTrue(en.contains("3"))
+        assertNotEquals(th, en)
     }
 
     @Test

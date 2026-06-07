@@ -14,6 +14,7 @@ import app.devper.pharm.ui.designsystem.PharmListCard
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.format.millisToBuddhistDisplayWithTime
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import kotlinx.datetime.TimeZone
@@ -26,18 +27,19 @@ internal fun OfflineSyncCard(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     PharmListCard(
         title = "OFFLINE-${row.id.take(8)}",
         subtitle = formatEnqueuedAt(row.enqueuedAt, tz),
         modifier = modifier,
         status = {
             if (row.lastError != null) {
-                PharmStatusBadge(status = PharmStatus.Failed, label = "ล้มเหลว", size = PharmBadgeSize.Sm)
+                PharmStatusBadge(status = PharmStatus.Failed, label = s.offlineSyncStatusFailed, size = PharmBadgeSize.Sm)
             } else {
-                PharmStatusBadge(status = PharmStatus.Pending, label = "รอซิงก์", size = PharmBadgeSize.Sm)
+                PharmStatusBadge(status = PharmStatus.Pending, label = s.offlineSyncStatusPending, size = PharmBadgeSize.Sm)
                 if (row.attempts > 0) {
                     Text(
-                        text = "ลอง ${row.attempts} ครั้ง",
+                        text = s.offlineSyncAttemptsLabel(row.attempts),
                         style = PharmText.micro.copy(color = t.colors.fgMuted),
                     )
                 }
@@ -57,13 +59,13 @@ internal fun OfflineSyncCard(
             PharmActionMenu(
                 actions = listOf(
                     PharmAction(
-                        label = "ลองส่งใหม่",
+                        label = s.offlineSyncRetryRowCta,
                         icon = PharmIcons.OfflineSync,
                         tone = PharmActionTone.Primary,
                         onClick = { callbacks.onRetry(row) },
                     ),
                     PharmAction(
-                        label = "ยกเลิก",
+                        label = s.commonCancel,
                         icon = PharmIcons.Ban,
                         tone = PharmActionTone.Danger,
                         onClick = { callbacks.onCancel(row) },
