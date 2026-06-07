@@ -12,6 +12,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -23,9 +24,10 @@ internal fun EodCloseButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
     if (closed) {
         PharmButton(
-            label = "ปิดยอดแล้ว",
+            label = s.reportsEodClosedBadge,
             onClick = {},
             enabled = false,
             variant = PharmButtonVariant.Secondary,
@@ -41,7 +43,7 @@ internal fun EodCloseButton(
         )
     } else {
         PharmButton(
-            label = "ปิดรอบ EOD",
+            label = s.reportsTabEod,
             onClick = onClick,
             enabled = enabled,
             variant = PharmButtonVariant.Primary,
@@ -58,20 +60,21 @@ internal fun EodConfirmCloseModal(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = open,
         onDismiss = onCancel,
-        title = "ปิดยอดสิ้นวัน",
-        subtitle = "ตรวจยอดให้ตรงก่อนยืนยัน — ปิดแล้วไม่สามารถย้อนกลับได้",
+        title = s.reportsEodTitle,
+        subtitle = s.reportsEodConfirmMessage,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = s.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Md,
             )
             PharmButton(
-                label = "ยืนยันปิดยอด",
+                label = s.reportsEodConfirmTitle,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Primary,
                 size = PharmButtonSize.Md,
@@ -81,19 +84,19 @@ internal fun EodConfirmCloseModal(
         val t = pharmTokens
         if (report != null) {
             Text(
-                text = "วันที่ ${app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { "วันนี้" }}",
+                text = "${s.reportsEodDate} ${app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { s.reportsEodToday }}",
                 style = PharmText.meta.copy(color = t.colors.fgMuted),
             )
             Text(
-                text = "ยอดขายสุทธิ ${fmtBaht(report.totalSales)} · ${report.billCount} บิล",
+                text = s.reportsEodNetSalesLine(fmtBaht(report.totalSales), report.billCount),
                 style = PharmText.body,
             )
             Text(
-                text = "เงินเข้าลิ้นชัก ${fmtBaht(report.netCash)}",
+                text = s.reportsEodCashLine(fmtBaht(report.netCash)),
                 style = PharmText.bodySm.copy(color = t.colors.fg2),
             )
         } else {
-            Text(text = "ยังไม่มีข้อมูลของวันนี้", style = PharmText.body)
+            Text(text = s.reportsEmptyDay, style = PharmText.body)
         }
     }
 }

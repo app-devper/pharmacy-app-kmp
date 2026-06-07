@@ -5,10 +5,16 @@ import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.ui.common.LoadableUiState
 
-enum class DashboardWindow(val label: String, val days: Int) {
-    Last7("7 วัน", 7),
-    Last14("14 วัน", 14),
-    Last30("30 วัน", 30),
+enum class DashboardWindow(val days: Int) {
+    Last7(7),
+    Last14(14),
+    Last30(30),
+}
+
+fun DashboardWindow.label(s: app.devper.pharm.ui.i18n.PharmStrings): String = when (this) {
+    DashboardWindow.Last7 -> s.planningDaysLeftLabel(7)
+    DashboardWindow.Last14 -> s.planningDaysLeftLabel(14)
+    DashboardWindow.Last30 -> s.planningDaysLeftLabel(30)
 }
 
 data class ReportsUiState(

@@ -25,6 +25,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -64,15 +65,15 @@ fun ProfitContent(
                     .background(t.colors.surface)
                     .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
             ) {
-                PharmListResultLine(total = rows.size, noun = "รายการ")
+                PharmListResultLine(total = rows.size, noun = pharmStrings.movementsCountNoun)
                 Box(modifier = Modifier.fillMaxWidth().padding(top = 1.dp))
                 when {
                     state.loading && state.report == null -> PharmListSkeleton()
                     rows.isEmpty() && state.report != null ->
                         PharmEmptyState(
                             icon = PharmIcons.Profit,
-                            title = "ไม่มียอดขายในช่วงเวลานี้",
-                            subtitle = "ลองเปลี่ยนช่วงวันที่ด้านบน",
+                            title = pharmStrings.reportsSectionDailySalesEmpty,
+                            subtitle = pharmStrings.reportsEodTryDifferentRange,
                         )
                     else -> ProfitTable(rows = rows, totals = totals)
                 }
@@ -103,7 +104,7 @@ private fun MissingCostBanner(count: Int) {
             modifier = Modifier.size(18.dp),
         )
         Text(
-            text = "$count รายการ มีรายได้แต่ไม่มีต้นทุน — กำไรอาจคลาดเคลื่อน คลิก \"ตั้งราคาทุน\" ในหน้าสต็อก",
+            text = pharmStrings.reportsProfitMissingCostBanner(count),
             style = PharmText.bodySm.copy(color = t.colors.warningFg, fontWeight = FontWeight.Medium),
         )
     }

@@ -22,6 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.print.PharmReceiptPreview
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.print.PharmReceiptStyle
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -53,13 +54,14 @@ internal fun EodClosedReceiptCard(
                 tint = t.colors.successFg,
                 modifier = Modifier.size(18.dp),
             )
+            val s = pharmStrings
             Text(
-                text = "ปิดรอบ EOD เรียบร้อย — วันที่ ${app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { "วันนี้" }}",
+                text = s.reportsEodClosedDate(app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { s.reportsEodToday }),
                 style = PharmText.h2,
                 modifier = Modifier.weight(1f),
             )
             PharmButton(
-                label = "พิมพ์",
+                label = s.reportsEodPrintCta,
                 onClick = onPrint,
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,

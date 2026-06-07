@@ -19,6 +19,7 @@ import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
 import app.devper.pharm.ui.designsystem.PharmMiniBarChart
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -42,9 +43,10 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "ยอดขายรายวัน", style = PharmText.h3, modifier = Modifier.weight(1f))
+            val s = pharmStrings
+            Text(text = s.reportsSectionDailySales, style = PharmText.h3, modifier = Modifier.weight(1f))
             Text(
-                text = "เฉลี่ย ${formatBahtCurrency(avg)}/วัน",
+                text = s.reportsAvgPerDay(formatBahtCurrency(avg)),
                 style = PharmText.meta.tabular(),
             )
         }

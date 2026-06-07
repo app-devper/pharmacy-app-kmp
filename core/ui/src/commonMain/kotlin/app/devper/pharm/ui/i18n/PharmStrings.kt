@@ -405,6 +405,7 @@ interface PharmStrings {
     val importsFormItemLotLine: (String, String) -> String
     val importsFormPickDrug: String
     val commonPick: String
+    val commonBaht: String
     val importsFormPickDrugPlaceholder: String
     val importsFormPickDrugTitle: String
     val importsFormPickDrugSearchPlaceholder: String
@@ -430,6 +431,82 @@ interface PharmStrings {
     val importsConfirmDeleteReceivedMessage: String
     val importsHeaderInvoiceNo: String
     val importsHeaderInvoicePlaceholder: String
+    val reportsSubtitle: String
+    val reportsTabSummary: String
+    val reportsTabProfit: String
+    val reportsTabEod: String
+    val reportsMetricSalesToday: String
+    val reportsMetricSalesMonth: String
+    val reportsMetricProfitMonthApprox: String
+    val reportsMetricProfitMonthHint: String
+    val reportsMetricStockValue: String
+    val reportsMetricStockHint: (Int, Int) -> String
+    val reportsRangeToday: String
+    val reportsRangeThisWeek: String
+    val reportsRangeThisMonth: String
+    val reportsRangeLastMonth: String
+    val reportsEmptyDay: String
+    val reportsEmptyNoBills: String
+    val reportsEmptyNoData: String
+    val reportsEmptyChartHint: String
+    val reportsSectionDailySales: String
+    val reportsSectionDailySalesEmpty: String
+    val reportsSectionTopBills: String
+    val reportsSectionMonthly: String
+    val reportsAvgPerDay: (String) -> String
+    val reportsHeaderQtySold: String
+    val reportsHeaderBills: String
+    val reportsHeaderRevenue: String
+    val reportsHeaderCost: String
+    val reportsHeaderProfit: String
+    val reportsHeaderDrugName: String
+    val reportsTotalLabel: String
+    val reportsRevenueVsCostLabel: String
+    val reportsProfitTitle: String
+    val reportsProfitSubtitle: String
+    val reportsProfitTotal: String
+    val reportsProfitBeforeCost: String
+    val reportsProfitRevenue: String
+    val reportsProfitCost: String
+    val reportsTopSellingTitle: String
+    val reportsProfitTopSelling: String
+    val reportsProfitHighMargin: String
+    val reportsProfitNoMovement: String
+    val reportsProfitSetCostHint: String
+    val reportsProfitMissingCostBanner: (Int) -> String
+    val reportsProfitLossExample: String
+    val reportsRevenueMinusCost: String
+    val reportsCostBasis: String
+    val reportsDrugWord: String
+    val reportsSortBy: String
+    val reportsDatePlaceholder: String
+    val reportsEodTitle: String
+    val reportsEodSubtitle: String
+    val reportsEodDate: String
+    val reportsEodToday: String
+    val reportsEodConfirmTitle: String
+    val reportsEodConfirmMessage: String
+    val reportsEodCloseCta: String
+    val reportsEodClosedBadge: String
+    val reportsEodTryDifferentRange: String
+    val reportsEodTryAnotherDate: String
+    val reportsEodPrintCta: String
+    val reportsEodChannelSum: String
+    val reportsEodDayTotal: String
+    val reportsEodNetSalesLabel: String
+    val reportsEodTotalDiscount: String
+    val reportsEodCashIn: String
+    val reportsEodCashReceived: String
+    val reportsEodChangeOut: String
+    val reportsEodReceiveMinusChange: String
+    val reportsEodDrawerMatches: String
+    val reportsEodDrawerMismatches: String
+    val reportsEodNetSalesLine: (String, Int) -> String
+    val reportsEodNetSalesAndCashLine: (String, String) -> String
+    val reportsEodCashLine: (String) -> String
+    val reportsEodClosedDate: (String) -> String
+    val reportsBillsOfDay: (Int) -> String
+    val reportsWalkInCustomer: String
 }
 
 object PharmStringsTh : PharmStrings {
@@ -843,6 +920,7 @@ object PharmStringsTh : PharmStrings {
     override val importsFormItemLotLine: (String, String) -> String = { lotNo, expiry -> "ล็อต $lotNo · หมดอายุ $expiry" }
     override val importsFormPickDrug = "เลือกยา"
     override val commonPick = "เลือก"
+    override val commonBaht = "บาท"
     override val importsFormPickDrugPlaceholder = "เลือกยา…"
     override val importsFormPickDrugTitle = "เลือกยา"
     override val importsFormPickDrugSearchPlaceholder = "ค้นหาชื่อ / barcode"
@@ -868,6 +946,82 @@ object PharmStringsTh : PharmStrings {
     override val importsConfirmDeleteReceivedMessage = "ต้องการลบใบนำเข้านี้ใช่หรือไม่ — ใบที่ยังไม่ได้ยืนยันเท่านั้นที่ลบได้"
     override val importsHeaderInvoiceNo = "เลขที่ Invoice"
     override val importsHeaderInvoicePlaceholder = "ใบส่งของ"
+    override val reportsSubtitle = "ภาพรวมยอดขาย สต็อก และสินค้าขายดี"
+    override val reportsTabSummary = "รายงานสรุป"
+    override val reportsTabProfit = "กำไร"
+    override val reportsTabEod = "ปิดรอบ EOD"
+    override val reportsMetricSalesToday = "ยอดขายวันนี้"
+    override val reportsMetricSalesMonth = "ยอดขายเดือนนี้"
+    override val reportsMetricProfitMonthApprox = "กำไรเดือนนี้ (ประมาณ)"
+    override val reportsMetricProfitMonthHint = "ประเมิน ~30% ของยอดขาย"
+    override val reportsMetricStockValue = "มูลค่าสต็อก"
+    override val reportsMetricStockHint: (Int, Int) -> String = { out, low -> "หมด $out / ใกล้หมด $low" }
+    override val reportsRangeToday = "วันนี้"
+    override val reportsRangeThisWeek = "สัปดาห์นี้"
+    override val reportsRangeThisMonth = "เดือนนี้"
+    override val reportsRangeLastMonth = "เดือนที่แล้ว"
+    override val reportsEmptyDay = "ยังไม่มีข้อมูลของวันนี้"
+    override val reportsEmptyNoBills = "ยังไม่มีบิล"
+    override val reportsEmptyNoData = "ไม่มีข้อมูล"
+    override val reportsEmptyChartHint = "ลองเลือกวันที่อื่นเพื่อดูยอดขาย"
+    override val reportsSectionDailySales = "ยอดขายรายวัน"
+    override val reportsSectionDailySalesEmpty = "ไม่มียอดขายในช่วงเวลานี้"
+    override val reportsSectionTopBills = "บิลล่าสุด"
+    override val reportsSectionMonthly = "รายได้ vs ต้นทุน — รายเดือน"
+    override val reportsAvgPerDay: (String) -> String = { avg -> "เฉลี่ย $avg/วัน" }
+    override val reportsHeaderQtySold = "จำนวนขาย"
+    override val reportsHeaderBills = "จำนวนบิล"
+    override val reportsHeaderRevenue = "รายได้"
+    override val reportsHeaderCost = "ต้นทุน"
+    override val reportsHeaderProfit = "กำไร"
+    override val reportsHeaderDrugName = "ชื่อยา"
+    override val reportsTotalLabel = "รวม"
+    override val reportsRevenueVsCostLabel = "รวมทั้งวัน"
+    override val reportsProfitTitle = "กำไรต่อยา"
+    override val reportsProfitSubtitle = "กำไรแยกตามรายการยาในช่วงที่เลือก"
+    override val reportsProfitTotal = "กำไรรวม"
+    override val reportsProfitBeforeCost = "ก่อนหักต้นทุน"
+    override val reportsProfitRevenue = "รายได้รวม"
+    override val reportsProfitCost = "ต้นทุนรวม"
+    override val reportsTopSellingTitle = "10 อันดับยาขายดี"
+    override val reportsProfitTopSelling = "ขายมาก"
+    override val reportsProfitHighMargin = "กำไรสูง"
+    override val reportsProfitNoMovement = "ยาขายไม่ออก"
+    override val reportsProfitSetCostHint = "ตั้งราคาทุน"
+    override val reportsProfitMissingCostBanner: (Int) -> String = { count -> "$count รายการ มีรายได้แต่ไม่มีต้นทุน — กำไรอาจคลาดเคลื่อน คลิก \"ตั้งราคาทุน\" ในหน้าสต็อก" }
+    override val reportsProfitLossExample = "ขาดทุนตัวอย่าง"
+    override val reportsRevenueMinusCost = "รายได้ - ต้นทุน"
+    override val reportsCostBasis = "ตามล็อตที่ตัด"
+    override val reportsDrugWord = "ยา"
+    override val reportsSortBy = "เรียงตาม"
+    override val reportsDatePlaceholder = "รูปแบบ YYYY-MM-DD (ว่าง = วันนี้)"
+    override val reportsEodTitle = "ปิดยอดสิ้นวัน"
+    override val reportsEodSubtitle = "สรุปยอดขาย / ส่วนลด / เงินสดของวัน — ยืนยันก่อนปิดรอบ"
+    override val reportsEodDate = "วันที่"
+    override val reportsEodToday = "วันนี้"
+    override val reportsEodConfirmTitle = "ยืนยันปิดยอด"
+    override val reportsEodConfirmMessage = "ตรวจยอดให้ตรงก่อนยืนยัน — ปิดแล้วไม่สามารถย้อนกลับได้"
+    override val reportsEodCloseCta = "ปิดยอด"
+    override val reportsEodClosedBadge = "ปิดแล้ว"
+    override val reportsEodTryDifferentRange = "ลองเปลี่ยนช่วงวันที่ด้านบน"
+    override val reportsEodTryAnotherDate = "ลองเลือกวันที่อื่นเพื่อดูยอดขาย"
+    override val reportsEodPrintCta = "พิมพ์"
+    override val reportsEodChannelSum = "รวมทุกช่องทาง"
+    override val reportsEodDayTotal = "รวมทั้งวัน"
+    override val reportsEodNetSalesLabel = "ยอดขายสุทธิ"
+    override val reportsEodTotalDiscount = "ส่วนลดรวม"
+    override val reportsEodCashIn = "เงินเข้าลิ้นชัก"
+    override val reportsEodCashReceived = "รับเงิน"
+    override val reportsEodChangeOut = "ทอนเงิน"
+    override val reportsEodReceiveMinusChange = "รับ − ทอน"
+    override val reportsEodDrawerMatches = "ลิ้นชักตรงกับยอดขาย"
+    override val reportsEodDrawerMismatches = "ลิ้นชักไม่ตรงกับยอดขาย"
+    override val reportsEodNetSalesLine: (String, Int) -> String = { net, bills -> "ยอดขายสุทธิ $net · $bills บิล" }
+    override val reportsEodNetSalesAndCashLine: (String, String) -> String = { cash, sales -> "เงินเข้าลิ้นชัก $cash · ยอดขาย $sales" }
+    override val reportsEodCashLine: (String) -> String = { cash -> "เงินเข้าลิ้นชัก $cash" }
+    override val reportsEodClosedDate: (String) -> String = { date -> "ปิดรอบ EOD เรียบร้อย — วันที่ $date" }
+    override val reportsBillsOfDay: (Int) -> String = { count -> "บิลในวัน · $count รายการ" }
+    override val reportsWalkInCustomer = "ลูกค้าทั่วไป"
 }
 
 object PharmStringsEn : PharmStrings {
@@ -1281,6 +1435,7 @@ object PharmStringsEn : PharmStrings {
     override val importsFormItemLotLine: (String, String) -> String = { lotNo, expiry -> "Lot $lotNo · expires $expiry" }
     override val importsFormPickDrug = "Pick drug"
     override val commonPick = "Pick"
+    override val commonBaht = "THB"
     override val importsFormPickDrugPlaceholder = "Pick drug…"
     override val importsFormPickDrugTitle = "Pick drug"
     override val importsFormPickDrugSearchPlaceholder = "Search name / barcode"
@@ -1306,6 +1461,82 @@ object PharmStringsEn : PharmStrings {
     override val importsConfirmDeleteReceivedMessage = "Delete this import? — only unconfirmed docs can be deleted"
     override val importsHeaderInvoiceNo = "Invoice no."
     override val importsHeaderInvoicePlaceholder = "Invoice / packing slip"
+    override val reportsSubtitle = "Sales / stock / top sellers overview"
+    override val reportsTabSummary = "Summary"
+    override val reportsTabProfit = "Profit"
+    override val reportsTabEod = "EOD close"
+    override val reportsMetricSalesToday = "Sales today"
+    override val reportsMetricSalesMonth = "Sales this month"
+    override val reportsMetricProfitMonthApprox = "Profit this month (est.)"
+    override val reportsMetricProfitMonthHint = "Estimated ~30% of sales"
+    override val reportsMetricStockValue = "Stock value"
+    override val reportsMetricStockHint: (Int, Int) -> String = { out, low -> "Out $out / Low $low" }
+    override val reportsRangeToday = "Today"
+    override val reportsRangeThisWeek = "This week"
+    override val reportsRangeThisMonth = "This month"
+    override val reportsRangeLastMonth = "Last month"
+    override val reportsEmptyDay = "No data for today yet"
+    override val reportsEmptyNoBills = "No bills yet"
+    override val reportsEmptyNoData = "No data"
+    override val reportsEmptyChartHint = "Try a different date to see sales"
+    override val reportsSectionDailySales = "Daily sales"
+    override val reportsSectionDailySalesEmpty = "No sales in this range"
+    override val reportsSectionTopBills = "Latest bills"
+    override val reportsSectionMonthly = "Revenue vs cost — monthly"
+    override val reportsAvgPerDay: (String) -> String = { avg -> "Avg $avg/day" }
+    override val reportsHeaderQtySold = "Qty sold"
+    override val reportsHeaderBills = "Bills"
+    override val reportsHeaderRevenue = "Revenue"
+    override val reportsHeaderCost = "Cost"
+    override val reportsHeaderProfit = "Profit"
+    override val reportsHeaderDrugName = "Drug name"
+    override val reportsTotalLabel = "Total"
+    override val reportsRevenueVsCostLabel = "Full day"
+    override val reportsProfitTitle = "Profit per drug"
+    override val reportsProfitSubtitle = "Profit broken down by drug in the selected range"
+    override val reportsProfitTotal = "Total profit"
+    override val reportsProfitBeforeCost = "Before cost"
+    override val reportsProfitRevenue = "Total revenue"
+    override val reportsProfitCost = "Total cost"
+    override val reportsTopSellingTitle = "Top 10 best sellers"
+    override val reportsProfitTopSelling = "Top sellers"
+    override val reportsProfitHighMargin = "High margin"
+    override val reportsProfitNoMovement = "Stagnant items"
+    override val reportsProfitSetCostHint = "Set cost price"
+    override val reportsProfitMissingCostBanner: (Int) -> String = { count -> "$count items have revenue but no cost — profit may be off; click \"Set cost price\" in the stock page" }
+    override val reportsProfitLossExample = "Loss example"
+    override val reportsRevenueMinusCost = "Revenue - Cost"
+    override val reportsCostBasis = "From cut lots"
+    override val reportsDrugWord = "drug"
+    override val reportsSortBy = "Sort by"
+    override val reportsDatePlaceholder = "YYYY-MM-DD (blank = today)"
+    override val reportsEodTitle = "End-of-day close"
+    override val reportsEodSubtitle = "Sales / discount / cash summary — verify before closing"
+    override val reportsEodDate = "Date"
+    override val reportsEodToday = "Today"
+    override val reportsEodConfirmTitle = "Confirm EOD"
+    override val reportsEodConfirmMessage = "Verify totals before confirming — once closed, this cannot be reverted"
+    override val reportsEodCloseCta = "Close day"
+    override val reportsEodClosedBadge = "Closed"
+    override val reportsEodTryDifferentRange = "Try a different date range above"
+    override val reportsEodTryAnotherDate = "Try a different date to see sales"
+    override val reportsEodPrintCta = "Print"
+    override val reportsEodChannelSum = "All channels"
+    override val reportsEodDayTotal = "Day total"
+    override val reportsEodNetSalesLabel = "Net sales"
+    override val reportsEodTotalDiscount = "Total discount"
+    override val reportsEodCashIn = "Cash in drawer"
+    override val reportsEodCashReceived = "Cash received"
+    override val reportsEodChangeOut = "Change out"
+    override val reportsEodReceiveMinusChange = "Received − change"
+    override val reportsEodDrawerMatches = "Drawer matches sales"
+    override val reportsEodDrawerMismatches = "Drawer differs from sales"
+    override val reportsEodNetSalesLine: (String, Int) -> String = { net, bills -> "Net sales $net · $bills bills" }
+    override val reportsEodNetSalesAndCashLine: (String, String) -> String = { cash, sales -> "Cash in drawer $cash · sales $sales" }
+    override val reportsEodCashLine: (String) -> String = { cash -> "Cash in drawer $cash" }
+    override val reportsEodClosedDate: (String) -> String = { date -> "EOD closed — $date" }
+    override val reportsBillsOfDay: (Int) -> String = { count -> "Bills for the day · $count items" }
+    override val reportsWalkInCustomer = "Walk-in"
 }
 
 val LocalPharmStrings = staticCompositionLocalOf<PharmStrings> { PharmStringsTh }

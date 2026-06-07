@@ -21,6 +21,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -48,13 +49,14 @@ internal fun EodPaymentBreakdown(report: EodReport, onPrint: () -> Unit) {
                 tint = t.colors.successFg,
                 modifier = Modifier.size(18.dp),
             )
+            val s = pharmStrings
             Text(
-                text = "ปิดรอบ EOD เรียบร้อย — วันที่ ${app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { "วันนี้" }}",
+                text = s.reportsEodClosedDate(app.devper.pharm.ui.format.localDateToBuddhist(report.date).ifBlank { s.reportsEodToday }),
                 style = PharmText.h2,
                 modifier = Modifier.weight(1f),
             )
             PharmButton(
-                label = "พิมพ์",
+                label = s.reportsEodPrintCta,
                 onClick = onPrint,
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
@@ -67,13 +69,14 @@ internal fun EodPaymentBreakdown(report: EodReport, onPrint: () -> Unit) {
                 },
             )
         }
-        EodReceiptLine(label = "ยอดขายสุทธิ", value = fmtBaht(report.totalSales))
-        EodReceiptLine(label = "จำนวนบิล", value = "${report.billCount} บิล")
-        EodReceiptLine(label = "ส่วนลดรวม", value = fmtBaht(report.totalDiscount))
-        EodReceiptLine(label = "รับเงิน", value = fmtBaht(report.totalReceived))
-        EodReceiptLine(label = "ทอนเงิน", value = fmtBaht(report.totalChange))
+        val sl = pharmStrings
+        EodReceiptLine(label = sl.reportsEodNetSalesLabel, value = fmtBaht(report.totalSales))
+        EodReceiptLine(label = sl.reportsHeaderBills, value = "${report.billCount} ${sl.salesHistoryCountNoun}")
+        EodReceiptLine(label = sl.reportsEodTotalDiscount, value = fmtBaht(report.totalDiscount))
+        EodReceiptLine(label = sl.reportsEodCashReceived, value = fmtBaht(report.totalReceived))
+        EodReceiptLine(label = sl.reportsEodChangeOut, value = fmtBaht(report.totalChange))
         Box(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
-            EodReceiptLine(label = "เงินเข้าลิ้นชัก", value = fmtBaht(report.netCash), bold = true)
+            EodReceiptLine(label = sl.reportsEodCashIn, value = fmtBaht(report.netCash), bold = true)
         }
     }
 }

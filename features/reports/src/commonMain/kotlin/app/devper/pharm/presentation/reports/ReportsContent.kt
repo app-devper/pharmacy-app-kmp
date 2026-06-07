@@ -29,6 +29,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,12 +50,13 @@ fun ReportsContent(
         val stackTopAndSlow = maxWidth < 700.dp
 
         Column(modifier = contentModifier) {
+            val s = pharmStrings
             PharmListToolbar(
-                title = "รายงานสรุป",
-                subtitle = "ภาพรวมยอดขาย สต็อก และสินค้าขายดี",
+                title = s.reportsTabSummary,
+                subtitle = s.reportsSubtitle,
                 actions = {
                     PharmButton(
-                        label = "ปิดรอบ EOD",
+                        label = s.reportsTabEod,
                         onClick = callbacks.onCloseEod,
                         size = PharmButtonSize.Md,
                     )

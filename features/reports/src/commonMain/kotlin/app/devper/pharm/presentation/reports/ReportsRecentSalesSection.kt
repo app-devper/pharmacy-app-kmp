@@ -23,6 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -41,9 +42,10 @@ internal fun ReportsRecentSalesSection(recent: List<SaleSummary>, modifier: Modi
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(text = "บิลล่าสุด", style = PharmText.h3)
+        val s = pharmStrings
+        Text(text = s.reportsSectionTopBills, style = PharmText.h3)
         if (visible.isEmpty()) {
-            Text(text = "ยังไม่มีบิล", style = PharmText.meta)
+            Text(text = s.reportsEmptyNoBills, style = PharmText.meta)
         } else {
             visible.forEach { sale -> RecentSaleRow(sale) }
         }
@@ -72,7 +74,7 @@ private fun RecentSaleRow(sale: SaleSummary) {
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = sale.customerName.ifBlank { "ลูกค้าทั่วไป" },
+                text = sale.customerName.ifBlank { pharmStrings.reportsWalkInCustomer },
                 style = PharmText.bodySm.copy(color = t.colors.fg2),
                 modifier = Modifier.weight(1.4f),
                 maxLines = 1,

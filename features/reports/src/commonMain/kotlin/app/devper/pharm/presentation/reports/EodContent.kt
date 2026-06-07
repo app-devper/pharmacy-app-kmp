@@ -29,6 +29,7 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,13 +43,14 @@ fun EodContent(
     val report = state.report
     val t = pharmTokens
 
+    val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = "ปิดยอดสิ้นวัน",
-            subtitle = "สรุปยอดขาย / ส่วนลด / เงินสดของวัน — ยืนยันก่อนปิดรอบ",
+            title = s.reportsEodTitle,
+            subtitle = s.reportsEodSubtitle,
             onBack = onBack,
             actions = {
-                if (state.closed) PharmBadge(text = "ปิดแล้ว", tone = PharmBadgeTone.Green)
+                if (state.closed) PharmBadge(text = s.reportsEodClosedBadge, tone = PharmBadgeTone.Green)
             },
         )
         Column(

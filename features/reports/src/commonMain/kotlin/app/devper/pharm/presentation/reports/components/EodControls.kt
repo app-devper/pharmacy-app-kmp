@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
@@ -41,9 +42,10 @@ internal fun EodControls(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        val s = pharmStrings
         FormField(
-            label = "วันที่",
-            hint = "รูปแบบ YYYY-MM-DD (ว่าง = วันนี้)",
+            label = s.reportsEodDate,
+            hint = s.reportsDatePlaceholder,
             modifier = Modifier.weight(1f),
         ) {
             PharmTextField(
@@ -54,7 +56,7 @@ internal fun EodControls(
             )
         }
         PharmButton(
-            label = "ค้นหา",
+            label = s.commonSearch,
             onClick = callbacks.onApplyDate,
             variant = PharmButtonVariant.Secondary,
             size = PharmButtonSize.Md,

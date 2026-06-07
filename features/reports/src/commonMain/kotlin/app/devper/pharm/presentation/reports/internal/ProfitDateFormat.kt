@@ -44,10 +44,17 @@ internal fun LocalDate.toStartOfDayMillis(tz: TimeZone): Long =
         .toEpochMilliseconds()
 
 enum class ProfitQuickPeriod(val label: String) {
-    Today("วันนี้"),
-    ThisWeek("สัปดาห์นี้"),
-    ThisMonth("เดือนนี้"),
-    LastMonth("เดือนที่แล้ว"),
+    Today("Today"),
+    ThisWeek("This week"),
+    ThisMonth("This month"),
+    LastMonth("Last month"),
+}
+
+fun ProfitQuickPeriod.localized(s: app.devper.pharm.ui.i18n.PharmStrings): String = when (this) {
+    ProfitQuickPeriod.Today -> s.reportsRangeToday
+    ProfitQuickPeriod.ThisWeek -> s.reportsRangeThisWeek
+    ProfitQuickPeriod.ThisMonth -> s.reportsRangeThisMonth
+    ProfitQuickPeriod.LastMonth -> s.reportsRangeLastMonth
 }
 
 internal data class ProfitDateRange(val fromMillis: Long, val toMillis: Long)

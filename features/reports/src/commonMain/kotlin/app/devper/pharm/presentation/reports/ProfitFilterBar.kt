@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.reports.internal.ProfitQuickPeriod
 import app.devper.pharm.presentation.reports.internal.formatYmdDisplay
+import app.devper.pharm.presentation.reports.internal.localized
 import app.devper.pharm.presentation.reports.internal.resolve
 import app.devper.pharm.presentation.reports.internal.todayDate
 import app.devper.pharm.presentation.reports.internal.ymdToMillis
@@ -27,6 +28,7 @@ import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -42,23 +44,25 @@ internal fun ProfitFilterBar(
         fromMillis = state.dateRange.fromMillis,
         toMillis = state.dateRange.toMillis,
     )
-    val quickPeriods = remember(todayDate(state.dateRange.tz)) {
+    val s0 = pharmStrings
+    val quickPeriods = remember(todayDate(state.dateRange.tz), s0) {
         ProfitQuickPeriod.entries.map { period ->
             val resolved = period.resolve(state.dateRange.tz)
             PharmDateQuickPeriod(
-                label = period.label,
+                label = period.localized(s0),
                 fromMillis = resolved.fromMillis,
                 toMillis = resolved.toMillis,
             )
         }
     }
-    val sortChips = remember {
-        ProfitSort.entries.map { PharmFilterChip(id = it.name, label = it.label) }
+    val s = pharmStrings
+    val sortChips = remember(s) {
+        ProfitSort.entries.map { PharmFilterChip(id = it.name, label = it.label(s)) }
     }
 
     PharmListToolbar(
-        title = "กำไรต่อยา",
-        subtitle = "กำไรแยกตามรายการยาในช่วงที่เลือก",
+        title = s.reportsProfitTitle,
+        subtitle = s.reportsProfitSubtitle,
         modifier = modifier,
         actions = {
             PharmButton(
@@ -93,7 +97,7 @@ internal fun ProfitFilterBar(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "เรียงตาม",
+                    text = s.reportsSortBy,
                     style = PharmText.bodySm.copy(color = t.colors.fg3),
                 )
                 PharmSingleSelectChips(

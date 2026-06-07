@@ -17,6 +17,7 @@ import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmStaticTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -39,13 +40,14 @@ internal fun ReportsSlowDrugsSection(rows: List<SlowDrug>, modifier: Modifier = 
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Text(text = "ยาขายไม่ออก", style = PharmText.h3)
-            Text(text = "(${rows.size} รายการ)", style = PharmText.meta)
+            val s = pharmStrings
+            Text(text = s.reportsProfitNoMovement, style = PharmText.h3)
+            Text(text = "(${rows.size} ${s.movementsCountNoun})", style = PharmText.meta)
         }
         PharmStaticTable(
             rows = rows.take(10),
             columns = slowDrugColumns(),
-            emptyText = "ไม่มีรายการ",
+            emptyText = pharmStrings.bulkImportEmptyDropped,
         )
     }
 }
@@ -53,9 +55,10 @@ internal fun ReportsSlowDrugsSection(rows: List<SlowDrug>, modifier: Modifier = 
 @Composable
 private fun slowDrugColumns(): List<PharmTableColumn<SlowDrug>> {
     val t = pharmTokens
+    val s = pharmStrings
     return listOf(
         PharmTableColumn(
-            header = "ยา",
+            header = s.reportsDrugWord,
             weight = 1f,
             cell = { row ->
                 Text(
@@ -66,7 +69,7 @@ private fun slowDrugColumns(): List<PharmTableColumn<SlowDrug>> {
             },
         ),
         PharmTableColumn(
-            header = "คงเหลือ",
+            header = s.expiryHeaderRemaining,
             weight = 0.6f,
             align = PharmColumnAlign.End,
             cell = { row ->

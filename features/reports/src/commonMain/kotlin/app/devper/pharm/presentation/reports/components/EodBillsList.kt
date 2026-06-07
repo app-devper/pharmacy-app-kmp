@@ -19,6 +19,7 @@ import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -27,7 +28,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 internal fun EodBillsHeader(count: Int) {
     val t = pharmTokens
     Text(
-        text = "บิลในวัน · $count รายการ",
+        text = pharmStrings.reportsBillsOfDay(count),
         style = PharmText.h3.copy(color = t.colors.fg1),
     )
 }
@@ -57,7 +58,7 @@ internal fun EodBillRow(bill: SaleSummary) {
             )
         }
         if (bill.voided) {
-            PharmBadge(text = "ยกเลิก", tone = PharmBadgeTone.Gray)
+            PharmBadge(text = pharmStrings.commonCancel, tone = PharmBadgeTone.Gray)
         }
         Text(
             text = fmtBaht(bill.total.amount),
@@ -79,9 +80,9 @@ internal fun EmptyEod() {
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "ไม่มีข้อมูล", style = PharmText.h2)
+            Text(text = pharmStrings.reportsEmptyNoData, style = PharmText.h2)
             Text(
-                text = "ลองเลือกวันที่อื่นเพื่อดูยอดขาย",
+                text = pharmStrings.reportsEodTryAnotherDate,
                 style = PharmText.meta.copy(color = t.colors.fgMuted),
                 modifier = Modifier.padding(top = 4.dp),
             )
