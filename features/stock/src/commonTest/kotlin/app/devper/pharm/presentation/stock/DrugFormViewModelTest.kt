@@ -233,7 +233,7 @@ class DrugFormViewModelTest {
         val lot = repo.lastAdd?.createLot
         assertNotNull(lot)
         assertEquals("L-1", lot.lotNumber)
-        assertEquals("2027-12-31", lot.expiryDate)
+        assertEquals(kotlinx.datetime.LocalDate.parse("2027-12-31"), lot.expiryDate)
         assertEquals(50, lot.quantity)
         assertEquals(3.0, lot.costPrice)
     }

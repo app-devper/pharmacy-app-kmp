@@ -9,6 +9,7 @@ import app.devper.pharm.domain.usecase.AddDrugUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.UpdateDrugUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
+import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class DrugFormViewModel(
     private val getDrugs: GetDrugsUseCase,
@@ -108,10 +109,11 @@ class DrugFormViewModel(
 
     private fun buildAddParam(f: DrugFormFields): AddDrugParam {
         val stock = f.initialStock.toIntOrNull() ?: 0
-        val createLot = if (stock > 0) {
+        val parsedLotExpiry = f.lotExpiry.trim().toLocalDateOrNull()
+        val createLot = if (stock > 0 && parsedLotExpiry != null) {
             CreateLotPayload(
                 lotNumber = f.lotNumber.trim(),
-                expiryDate = f.lotExpiry.trim(),
+                expiryDate = parsedLotExpiry,
                 importDate = null,
                 costPrice = f.lotCostPrice.toDoubleOrNull(),
                 sellPrice = f.lotSellPrice.toDoubleOrNull(),

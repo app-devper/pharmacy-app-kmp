@@ -36,7 +36,7 @@ class FakeLotsRepository(
             drugId = param.drugId,
             lotNumber = param.lotNumber,
             expiryDate = param.expiryDate,
-            importDate = param.importDate ?: "2026-01-01",
+            importDate = param.importDate ?: kotlinx.datetime.LocalDate.parse("2026-01-01"),
             costPrice = param.costPrice,
             sellPrice = param.sellPrice,
             quantity = param.quantity,

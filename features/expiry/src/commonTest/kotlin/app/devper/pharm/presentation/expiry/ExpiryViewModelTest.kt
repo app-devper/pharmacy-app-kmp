@@ -18,7 +18,7 @@ class ExpiryViewModelTest {
 
     private fun lot(id: String) = ExpiringLot(
         id = id, drugId = "drug-$id", drugName = "Drug $id",
-        lotNumber = "L$id", expiryDate = "2026-07-01", remaining = 10, daysLeft = 25,
+        lotNumber = "L$id", expiryDate = kotlinx.datetime.LocalDate.parse("2026-07-01"), remaining = 10, daysLeft = 25,
     )
 
     @Test

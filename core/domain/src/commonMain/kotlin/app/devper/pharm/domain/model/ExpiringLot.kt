@@ -1,11 +1,13 @@
 package app.devper.pharm.domain.model
 
+import kotlinx.datetime.LocalDate
+
 data class ExpiringLot(
     val id: String,
     val drugId: String,
     val drugName: String,
     val lotNumber: String,
-    val expiryDate: String,
+    val expiryDate: LocalDate?,
     val remaining: Int,
     val daysLeft: Int,
 )

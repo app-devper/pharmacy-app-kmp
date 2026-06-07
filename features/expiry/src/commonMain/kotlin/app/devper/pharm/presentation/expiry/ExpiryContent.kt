@@ -180,31 +180,31 @@ private fun WriteoffResultDialog(result: WriteoffResult, onDismiss: () -> Unit) 
 private val sampleLots = listOf(
     ExpiringLot(
         id = "L001", drugId = "D001", drugName = "อะม็อกซีซิลลิน 500mg",
-        lotNumber = "AMX-25011", expiryDate = "2026-06-10", remaining = 120, daysLeft = 24,
+        lotNumber = "AMX-25011", expiryDate = kotlinx.datetime.LocalDate.parse("2026-06-10"), remaining = 120, daysLeft = 24,
     ),
     ExpiringLot(
         id = "L002", drugId = "D002", drugName = "ลอราทาดีน 10mg",
-        lotNumber = "LRT-24109", expiryDate = "2026-06-15", remaining = 240, daysLeft = 29,
+        lotNumber = "LRT-24109", expiryDate = kotlinx.datetime.LocalDate.parse("2026-06-15"), remaining = 240, daysLeft = 29,
     ),
     ExpiringLot(
         id = "L003", drugId = "D003", drugName = "ออเมพราโซล 20mg",
-        lotNumber = "OMP-25003", expiryDate = "2026-06-28", remaining = 16, daysLeft = 42,
+        lotNumber = "OMP-25003", expiryDate = kotlinx.datetime.LocalDate.parse("2026-06-28"), remaining = 16, daysLeft = 42,
     ),
     ExpiringLot(
         id = "L004", drugId = "D004", drugName = "ดิเฟนไฮดรามีน ไซรัป",
-        lotNumber = "DPH-25008", expiryDate = "2026-07-12", remaining = 9, daysLeft = 56,
+        lotNumber = "DPH-25008", expiryDate = kotlinx.datetime.LocalDate.parse("2026-07-12"), remaining = 9, daysLeft = 56,
     ),
     ExpiringLot(
         id = "L005", drugId = "D005", drugName = "ฟ้าทะลายโจร แคปซูล",
-        lotNumber = "FTJ-25002", expiryDate = "2026-08-05", remaining = 38, daysLeft = 80,
+        lotNumber = "FTJ-25002", expiryDate = kotlinx.datetime.LocalDate.parse("2026-08-05"), remaining = 38, daysLeft = 80,
     ),
     ExpiringLot(
         id = "L006", drugId = "D006", drugName = "พาราเซตามอล 500mg",
-        lotNumber = "PCM-24123", expiryDate = "2026-05-24", remaining = 42, daysLeft = 7,
+        lotNumber = "PCM-24123", expiryDate = kotlinx.datetime.LocalDate.parse("2026-05-24"), remaining = 42, daysLeft = 7,
     ),
     ExpiringLot(
         id = "L007", drugId = "D007", drugName = "ไอบูโพรเฟน 400mg",
-        lotNumber = "IBU-24087", expiryDate = "2026-05-10", remaining = 8, daysLeft = -7,
+        lotNumber = "IBU-24087", expiryDate = kotlinx.datetime.LocalDate.parse("2026-05-10"), remaining = 8, daysLeft = -7,
     ),
 )
 
