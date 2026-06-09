@@ -8,4 +8,5 @@ interface HelpStrings {
     val helpTipFocusSearch: String
     val helpTipPaymentField: String
     val helpTipParkBill: String
+    val helpLoadFailed: String
 }

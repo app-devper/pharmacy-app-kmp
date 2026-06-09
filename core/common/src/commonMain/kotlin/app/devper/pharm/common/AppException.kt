@@ -1,6 +1,6 @@
 package app.devper.pharm.common
 
-sealed class AppException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
+abstract class AppException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
 
 class AuthException(
     message: String = "กรุณาเข้าสู่ระบบใหม่",

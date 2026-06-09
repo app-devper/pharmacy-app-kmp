@@ -8,4 +8,5 @@ object HelpStringsEn : HelpStrings {
     override val helpTipFocusSearch = "Focus search field"
     override val helpTipPaymentField = "Receive payment field"
     override val helpTipParkBill = "Park bill"
+    override val helpLoadFailed = "Failed to load manual"
 }
