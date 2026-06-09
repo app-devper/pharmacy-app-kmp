@@ -14,4 +14,7 @@ interface SalesHistoryStrings {
     val salesHistoryStatusOk: String
     val salesHistoryActionViewBill: String
     val salesHistoryActionReturn: String
+    val salesHistoryLoadBillsFailed: String
+    val salesHistoryLoadItemsFailed: String
+    val salesHistorySubmitReturnFailed: String
 }

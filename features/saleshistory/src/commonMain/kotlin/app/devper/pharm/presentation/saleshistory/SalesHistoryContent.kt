@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleSummary
 import kotlinx.datetime.LocalDateTime
+import app.devper.pharm.presentation.saleshistory.i18n.localize
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -68,7 +69,7 @@ fun SalesHistoryContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleSales = listOf(
