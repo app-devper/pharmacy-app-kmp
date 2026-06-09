@@ -2,8 +2,10 @@
 
 package app.devper.pharm.presentation.profile
 
+import app.devper.pharm.presentation.profile.exception.ProfileUiStateError
+
 import app.devper.pharm.common.AuthException
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.usecase.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.GetProfileUseCase
@@ -12,6 +14,7 @@ import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -73,7 +76,7 @@ class ProfileViewModelTest {
         val state = vm.state.value
         assertFalse(state.saving)
         assertFalse(state.saved)
-        assertEquals(ErrorMessages.SAVE_FAILED, state.error)
+        assertIs<CommonUiStateError.SaveFailed>(state.errorState)
     }
 
     @Test
@@ -120,8 +123,8 @@ class ProfileViewModelTest {
         advanceUntilIdle()
         val state = vm.state.value
         assertFalse(state.passwordSaved)
-        assertNotNull(state.passwordError)
-        assertTrue(state.passwordError?.contains("รหัสผ่านเดิม") == true)
+        assertIs<ProfileUiStateError.PasswordChangeFailed>(state.passwordErrorState)
+        assertTrue(state.passwordErrorState?.cause?.message?.contains("รหัสผ่านเดิม") == true)
     }
 
     @Test
@@ -145,7 +148,9 @@ class ProfileViewModelTest {
         val state = vm.state.value
         assertFalse(state.loading)
         assertNull(state.user)
-        assertEquals("token expired", state.error)
+        val loadErr = state.errorState
+        assertIs<CommonUiStateError.LoadFailed>(loadErr)
+        assertEquals("token expired", loadErr.cause?.message)
     }
 
     @Test
@@ -164,13 +169,13 @@ class ProfileViewModelTest {
         val vm = bundle(fake, dispatchers)
         advanceUntilIdle()
         assertEquals("th", vm.state.value.locale)
-        assertNull(vm.state.value.localeChangeMessage)
+        assertFalse(vm.state.value.localeChangeApplied)
 
         vm.onLocaleChange("en")
         advanceUntilIdle()
 
         assertEquals("en", vm.state.value.locale)
-        assertNotNull(vm.state.value.localeChangeMessage)
+        assertTrue(vm.state.value.localeChangeApplied)
     }
 
     @Test
@@ -180,7 +185,7 @@ class ProfileViewModelTest {
         advanceUntilIdle()
         vm.onLocaleChange("th")
         advanceUntilIdle()
-        assertNull(vm.state.value.localeChangeMessage)
+        assertFalse(vm.state.value.localeChangeApplied)
     }
 
     @Test
@@ -190,9 +195,9 @@ class ProfileViewModelTest {
         advanceUntilIdle()
         vm.onLocaleChange("en")
         advanceUntilIdle()
-        assertNotNull(vm.state.value.localeChangeMessage)
+        assertTrue(vm.state.value.localeChangeApplied)
         vm.dismissLocaleChangeMessage()
         advanceUntilIdle()
-        assertNull(vm.state.value.localeChangeMessage)
+        assertFalse(vm.state.value.localeChangeApplied)
     }
 }

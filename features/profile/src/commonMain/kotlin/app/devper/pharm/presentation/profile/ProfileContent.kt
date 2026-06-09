@@ -22,6 +22,7 @@ import app.devper.pharm.presentation.profile.components.ProfileDisplayPreference
 import app.devper.pharm.presentation.profile.components.ProfileFormSection
 import app.devper.pharm.presentation.profile.components.ProfileHeaderCard
 import app.devper.pharm.presentation.profile.components.ProfilePasswordSection
+import app.devper.pharm.presentation.profile.i18n.localizeProfile
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -81,8 +82,8 @@ fun ProfileContent(
             }
         }
     }
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
-    ErrorBottomSheet(message = state.passwordError, onDismiss = callbacks.onDismissPasswordError)
+    ErrorBottomSheet(message = state.errorState?.localizeProfile(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.passwordErrorState?.localizeProfile(pharmStrings), onDismiss = callbacks.onDismissPasswordError)
 }
 
 @Composable

@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.profile
 
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
 
 data class ProfileFormFields(
@@ -26,16 +27,16 @@ data class ProfileUiState(
     val showPasswordPanel: Boolean = false,
     val passwordSaving: Boolean = false,
     val passwordSaved: Boolean = false,
-    val passwordError: String? = null,
+    val passwordErrorState: AppException? = null,
     val theme: String = "auto",
     val fontSize: String = "md",
     val density: String = "comfortable",
     val locale: String = "th",
-    val localeChangeMessage: String? = null,
+    val localeChangeApplied: Boolean = false,
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : BaseFormUiState<ProfileUiState> {
     override val canSubmit: Boolean
         get() = !saving && !loading && user != null && isDirty && form.firstName.isNotBlank()
@@ -48,7 +49,9 @@ data class ProfileUiState(
                 form.email != it.email
         } == true
 
+    override val domainError: AppException? get() = errorState
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
-    override fun withError(error: String?) = copy(error = error)
+    override fun withError(error: String?) = if (error == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 }
