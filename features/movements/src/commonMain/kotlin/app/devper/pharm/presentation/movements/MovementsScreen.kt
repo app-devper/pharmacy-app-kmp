@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ReloadOnResume
+import app.devper.pharm.ui.i18n.localize
+import app.devper.pharm.ui.i18n.pharmStrings
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -15,9 +17,11 @@ fun MovementsScreen(viewModel: MovementsViewModel = koinViewModel()) {
 
     ReloadOnResume(viewModel::applyFilter)
     val snackbar = LocalPharmSnackbar.current
+    val s = pharmStrings
 
-    LaunchedEffect(state.message) {
-        state.message?.let {
+    LaunchedEffect(state.message, state.messageState) {
+        val text = state.message ?: state.messageState?.localize(s)
+        text?.let {
             snackbar.showToast(PharmToast.Info(it))
             viewModel.dismissMessage()
         }

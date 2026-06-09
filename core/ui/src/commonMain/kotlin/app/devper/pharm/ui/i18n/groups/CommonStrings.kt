@@ -35,4 +35,19 @@ interface CommonStrings {
     val commonNo: String
     val commonPick: String
     val commonBaht: String
+    val commonLoadFailed: String
+    val commonSaveFailed: String
+    val commonDeleteFailed: String
+    val commonExportFailed: String
+    val commonExportEmpty: String
+    val commonErrorAuth: String
+    val commonErrorForbidden: String
+    val commonErrorNotFound: String
+    val commonErrorConflict: String
+    val commonErrorNetwork: String
+    val commonErrorServer: String
+    val commonErrorValidation: String
+    val commonErrorStorage: String
+    val commonErrorUnsupported: String
+    val commonErrorGeneric: String
 }

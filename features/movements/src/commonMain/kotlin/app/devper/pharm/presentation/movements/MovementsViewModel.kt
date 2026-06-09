@@ -1,15 +1,15 @@
 package app.devper.pharm.presentation.movements
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.MovementsFilterParam
 import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
+import app.devper.pharm.presentation.movements.exception.MovementsUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
-
-private const val LOAD_HISTORY_FAILED = "โหลดประวัติไม่สำเร็จ"
 
 class MovementsViewModel(
     private val getMovements: GetMovementsUseCase,
@@ -49,7 +49,7 @@ class MovementsViewModel(
     fun onExportExcel() {
         val s = current
         if (s.items.isEmpty()) {
-            setState { copy(message = ErrorMessages.EXPORT_EMPTY) }
+            setState { copy(messageState = CommonUiStateMessage.ExportEmpty) }
             return
         }
         setState { copy(exporting = true) }
@@ -65,17 +65,18 @@ class MovementsViewModel(
                 )
             },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: ErrorMessages.EXPORT_FAILED) } },
+            onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
         )
     }
 
-    fun dismissMessage() = setState { copy(message = null) }
+    fun dismissMessage() = setState { copy(message = null, messageState = null) }
 
     fun applyFilter() = reload()
 
     private fun reload() {
         val s = current
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = {
                 getMovements(
                     MovementsFilterParam(
@@ -88,8 +89,8 @@ class MovementsViewModel(
                     ),
                 )
             },
-            fallback = LOAD_HISTORY_FAILED,
-            onSuccess = { page -> copy(items = page.items, total = page.total, page = 1) },
+            onSuccess = { page -> setState { copy(loading = false, items = page.items, total = page.total, page = 1) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = MovementsUiStateError.LoadHistoryFailed(e)) } },
         )
     }
 }

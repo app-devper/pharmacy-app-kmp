@@ -12,4 +12,5 @@ object MovementsStringsTh : MovementsStrings {
     override val movementsNextPage = "ถัดไป ›"
     override val movementsPagination: (Int, Int) -> String = { page, total -> "หน้า $page / $total" }
     override val movementsShownOf: (Int, Int) -> String = { shown, total -> "แสดง $shown จาก $total รายการ" }
+    override val movementsLoadHistoryFailed = "โหลดประวัติไม่สำเร็จ"
 }

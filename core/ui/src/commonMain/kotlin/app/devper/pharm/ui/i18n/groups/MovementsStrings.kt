@@ -12,4 +12,5 @@ interface MovementsStrings {
     val movementsNextPage: String
     val movementsPagination: (Int, Int) -> String
     val movementsShownOf: (Int, Int) -> String
+    val movementsLoadHistoryFailed: String
 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
+import app.devper.pharm.presentation.movements.i18n.localizeMovements
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -55,7 +56,7 @@ fun MovementsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleMovements = listOf(

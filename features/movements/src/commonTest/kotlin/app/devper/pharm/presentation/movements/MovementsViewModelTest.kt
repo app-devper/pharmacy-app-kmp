@@ -7,12 +7,14 @@ import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeMovementsRepository
 import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.GetMovementsUseCase
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,7 +62,7 @@ class MovementsViewModelTest {
         advanceUntilIdle()
         model.onExportExcel()
         advanceUntilIdle()
-        assertNotNull(model.state.value.message)
+        assertIs<CommonUiStateMessage.ExportEmpty>(model.state.value.messageState)
         assertEquals(null, export.lastFilename)
     }
 }
