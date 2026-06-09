@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.auth
 
 import app.devper.pharm.domain.model.User
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class LoginUiState(
@@ -8,10 +9,11 @@ data class LoginUiState(
     val password: String = "",
     val locale: String = "th",
     override val loading: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
     val loggedInUser: User? = null,
 ) : LoadableUiState<LoginUiState> {
 
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 }
