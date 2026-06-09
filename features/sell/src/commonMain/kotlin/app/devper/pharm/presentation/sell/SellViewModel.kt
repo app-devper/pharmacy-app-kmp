@@ -95,5 +95,5 @@ class SellViewModel(
         setState { copy(cartDiscountSheetOpen = false) }
     }
 
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 }

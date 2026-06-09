@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.sell.flow
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
@@ -8,6 +8,7 @@ import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.usecase.AddToCartUseCase
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
+import app.devper.pharm.presentation.sell.exception.DrugPickerUiStateError
 import app.devper.pharm.domain.model.BarcodeMatch
 import app.devper.pharm.domain.extension.matchBarcode
 import app.devper.pharm.domain.extension.searchByQuery
@@ -35,7 +36,7 @@ class DrugPickerViewModel(
     }
 
     fun load() {
-        setState { copy(drugsLoading = true, error = null) }
+        setState { copy(drugsLoading = true, errorState = null) }
         launchResult(
             block = { getDrugs() },
             onSuccess = { list ->
@@ -47,7 +48,7 @@ class DrugPickerViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(drugsLoading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(drugsLoading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 
@@ -76,7 +77,7 @@ class DrugPickerViewModel(
         if (match != null) {
             add(match.drug, match.altUnit)
         } else {
-            setState { copy(error = "ไม่พบยาสำหรับบาร์โค้ด ${code.trim()}") }
+            setState { copy(errorState = DrugPickerUiStateError.BarcodeNotFound(code.trim())) }
         }
     }
 
@@ -85,5 +86,5 @@ class DrugPickerViewModel(
         _added.trySend(drug.name)
     }
 
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 }

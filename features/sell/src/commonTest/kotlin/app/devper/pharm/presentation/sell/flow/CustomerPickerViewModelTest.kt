@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.presentation.sell.exception.CustomerPickerUiStateError
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.repository.FakeCartRepository
@@ -12,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -133,10 +136,12 @@ class CustomerPickerViewModelTest {
         advanceUntilIdle()
         vm.open()
         advanceUntilIdle()
-        assertEquals("offline", vm.state.value.error)
+        val custErr = vm.state.value.errorState
+        assertIs<CustomerPickerUiStateError.LoadCustomersFailed>(custErr)
+        assertEquals("offline", custErr.cause?.message)
         assertFalse(vm.state.value.loading)
 
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }

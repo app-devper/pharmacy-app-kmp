@@ -293,8 +293,8 @@ class SellViewModelTest {
         val (vm, _) = newVm(dispatchers)
         advanceUntilIdle()
 
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }

@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.common.AppException
+import app.devper.pharm.presentation.sell.exception.CheckoutUiStateError
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
@@ -23,7 +26,6 @@ import app.devper.pharm.domain.extension.looksLikeNetworkError
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
-import app.devper.pharm.common.userMessageOr
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
@@ -31,7 +33,6 @@ import app.devper.pharm.presentation.sell.internal.todayLocalDate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-private const val CHECKOUT_FAILED = "ออกใบเสร็จไม่สำเร็จ"
 
 class CheckoutViewModel(
     cartState: CartStateProvider,
@@ -150,7 +151,7 @@ class CheckoutViewModel(
     fun printLastReceipt(sale: Sale) {
         val template = current.lastReceiptTemplate ?: return
         if (!receiptPrinter.print(template)) {
-            setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") }
+            setState { copy(errorState = CheckoutUiStateError.PrintReceiptUnsupported()) }
         }
     }
 
@@ -171,7 +172,7 @@ class CheckoutViewModel(
         val customerSnapshot = lastCustomer
         val receivedSnapshot = lastReceivedNum
 
-        setState { copy(checkingOut = true, error = null) }
+        setState { copy(checkingOut = true, errorState = null) }
         launchResult(
             block = { checkout(Money(receivedSnapshot), allowOversell, requestId, kySkippedAtSubmit) },
             onSuccess = { outcome ->
@@ -224,18 +225,13 @@ class CheckoutViewModel(
                 onSuccess = { result ->
                     if (result.anyFailed) {
                         setState {
-                            copy(
-                                error = "บิล ${sale.billNo} บันทึกแล้ว แต่บันทึก ขย. ไม่ครบ:\n" +
-                                    result.failed.joinToString("\n"),
-                            )
+                            copy(errorState = CheckoutUiStateError.KyIncomplete(sale.billNo, result.failed))
                         }
                     }
                 },
                 onFailure = { e ->
                     setState {
-                        copy(
-                            error = "บิล ${sale.billNo} บันทึกแล้ว แต่บันทึก ขย. ผิดพลาด: ${e.message ?: "ไม่ทราบสาเหตุ"}",
-                        )
+                        copy(errorState = CheckoutUiStateError.KyError(sale.billNo, e))
                     }
                 },
             )
@@ -254,18 +250,12 @@ class CheckoutViewModel(
             clearCart()
             clearPendingTokens()
             setState {
-                copy(
-                    checkingOut = false,
-                    error = "เครือข่ายไม่ได้เชื่อมต่อ — บิลถูกเก็บไว้เพื่อซิงค์ภายหลัง",
-                )
+                copy(checkingOut = false, errorState = CheckoutUiStateError.OfflineSaved())
             }
         } else {
             clearPendingTokens()
             setState {
-                copy(
-                    checkingOut = false,
-                    error = cause.userMessageOr(CHECKOUT_FAILED),
-                )
+                copy(checkingOut = false, errorState = (cause as? AppException) ?: CheckoutUiStateError.CheckoutFailed(cause))
             }
         }
     }

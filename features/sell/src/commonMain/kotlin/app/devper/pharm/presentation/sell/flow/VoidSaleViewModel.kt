@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.sell.flow
 import app.devper.pharm.domain.param.VoidSaleParam
 import app.devper.pharm.domain.usecase.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.VoidSaleUseCase
+import app.devper.pharm.presentation.sell.exception.VoidSaleUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 
 class VoidSaleViewModel(
@@ -15,10 +16,14 @@ class VoidSaleViewModel(
 
     fun confirm(saleId: String, reason: String) {
         if (saleId.isBlank()) {
-            setState { copy(sheetOpen = false, error = "ไม่สามารถยกเลิกบิลนี้: ไม่พบรหัสบิล") }
+            setState { copy(sheetOpen = false, errorState = VoidSaleUiStateError.MissingBillId()) }
             return
         }
-        setState { copy(submitting = true, error = null) }
+        if (reason.isBlank()) {
+            setState { copy(sheetOpen = false, errorState = VoidSaleUiStateError.ReasonRequired()) }
+            return
+        }
+        setState { copy(submitting = true, errorState = null) }
         launchResult(
             block = { voidSale(VoidSaleParam(saleId = saleId, reason = reason)) },
             onSuccess = {
@@ -30,12 +35,12 @@ class VoidSaleViewModel(
                     copy(
                         submitting = false,
                         sheetOpen = false,
-                        error = e.message ?: "ยกเลิกบิลไม่สำเร็จ",
+                        errorState = VoidSaleUiStateError.VoidFailed(e),
                     )
                 }
             },
         )
     }
 
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 }

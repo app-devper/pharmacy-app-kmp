@@ -31,7 +31,9 @@ import app.devper.pharm.ui.common.PharmShortcut
 import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.common.pharmShortcuts
+import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.scanner.scanBarcodes
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
 import app.devper.pharm.presentation.sell.components.CartDiscountSheet
@@ -93,11 +95,12 @@ fun SellScreen(
         }
     }
 
-    val combinedError = sellState.error
-        ?: checkoutState.error
-        ?: drugState.error
-        ?: customerState.error
-        ?: voidState.error
+    val combinedError = sellState.errorState
+        ?: checkoutState.errorState
+        ?: drugState.errorState
+        ?: customerState.errorState
+        ?: voidState.errorState
+    val combinedErrorText = combinedError?.localizeSell(pharmStrings)
 
     val dismissAllErrors: () -> Unit = {
         sellVM.dismissError()
@@ -368,7 +371,7 @@ fun SellScreen(
     }
 
     ErrorBottomSheet(
-        message = combinedError,
+        message = combinedErrorText,
         onDismiss = dismissAllErrors,
     )
 

@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ToastAction
+import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
 import app.devper.pharm.presentation.sell.components.CartDiscountSheet
@@ -213,13 +215,14 @@ fun CartScreen(
         }
     }
 
-    val combinedError = sellState.error
-        ?: checkoutState.error
-        ?: drugState.error
-        ?: customerState.error
-        ?: voidState.error
+    val combinedError = sellState.errorState
+        ?: checkoutState.errorState
+        ?: drugState.errorState
+        ?: customerState.errorState
+        ?: voidState.errorState
+    val combinedErrorText = combinedError?.localizeSell(pharmStrings)
     ErrorBottomSheet(
-        message = combinedError,
+        message = combinedErrorText,
         onDismiss = {
             sellVM.dismissError()
             checkoutVM.dismissError()

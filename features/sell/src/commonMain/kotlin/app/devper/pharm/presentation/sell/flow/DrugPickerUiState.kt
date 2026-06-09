@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseUiState
 
 data class DrugPickerUiState(
@@ -12,8 +13,9 @@ data class DrugPickerUiState(
     val filteredDrugs: List<Drug> = emptyList(),
 
     val altUnitPickerFor: Drug? = null,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : BaseUiState {
 
+    override val domainError: AppException? get() = errorState
     override val loading: Boolean get() = drugsLoading
 }

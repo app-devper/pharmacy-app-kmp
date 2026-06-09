@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.presentation.sell.exception.VoidSaleUiStateError
+
 import app.devper.pharm.common.value.Money
 
 import app.devper.pharm.common.AppDispatchers
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -74,7 +77,7 @@ class VoidSaleViewModelTest {
 
         assertFalse(vm.state.value.sheetOpen)
         assertFalse(vm.state.value.submitting)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -88,7 +91,7 @@ class VoidSaleViewModelTest {
         assertNull(sales.lastVoid)
 
         assertFalse(vm.state.value.sheetOpen)
-        assertEquals("ไม่สามารถยกเลิกบิลนี้: ไม่พบรหัสบิล", vm.state.value.error)
+        assertIs<VoidSaleUiStateError.MissingBillId>(vm.state.value.errorState)
         assertFalse(vm.state.value.submitting)
     }
 
@@ -106,8 +109,7 @@ class VoidSaleViewModelTest {
         assertFalse(cart.dismissReceiptCalled)
 
         assertFalse(vm.state.value.sheetOpen)
-        assertNotNull(vm.state.value.error)
-        assertEquals("กรุณาระบุเหตุผลการยกเลิก", vm.state.value.error)
+        assertIs<VoidSaleUiStateError.ReasonRequired>(vm.state.value.errorState)
         assertFalse(vm.state.value.submitting)
     }
 
@@ -122,7 +124,9 @@ class VoidSaleViewModelTest {
 
         assertNotNull(cart.state.value.lastReceipt)
         assertFalse(cart.dismissReceiptCalled)
-        assertEquals("backend 500", vm.state.value.error)
+        val voidErr = vm.state.value.errorState
+        assertIs<VoidSaleUiStateError.VoidFailed>(voidErr)
+        assertEquals("backend 500", voidErr.cause?.message)
         assertFalse(vm.state.value.sheetOpen)
         assertFalse(vm.state.value.submitting)
 
@@ -135,8 +139,8 @@ class VoidSaleViewModelTest {
         advanceUntilIdle()
         vm.confirm(saleId = "", reason = "x")
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }
