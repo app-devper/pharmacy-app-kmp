@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.i18n.localizeCommon
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -69,7 +70,7 @@ fun StockCountsListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeCommon(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleCounts = listOf(

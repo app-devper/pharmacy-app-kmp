@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.ui.common.LoadableUiState
 
@@ -7,11 +8,12 @@ data class StockCountsListUiState(
     override val loading: Boolean = false,
     val query: String = "",
     val counts: List<StockCount> = emptyList(),
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<StockCountsListUiState> {
 
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val filtered: List<StockCount> = if (query.isBlank()) {
         counts

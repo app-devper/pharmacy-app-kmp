@@ -12,11 +12,13 @@ import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeLabelRepository
 import app.devper.pharm.domain.usecase.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.PrintLabelsUseCase
+import app.devper.pharm.presentation.labels.exception.LabelPrintUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -222,7 +224,8 @@ class LabelPrintViewModelTest {
         advanceUntilIdle()
         val state = vm.state.value
         assertFalse(state.printing)
-        assertEquals("printer offline", state.error)
+        assertIs<LabelPrintUiStateError.PrintFailed>(state.errorState)
+        assertEquals("printer offline", state.errorState?.cause?.message)
         assertNull(state.message)
     }
 

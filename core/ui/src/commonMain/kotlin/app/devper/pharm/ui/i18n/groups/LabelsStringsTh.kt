@@ -15,4 +15,5 @@ object LabelsStringsTh : LabelsStrings {
     override val labelsTotalPrice = "รวมราคา"
     override val labelsLotPrefix = "ล็อต"
     override val labelsLotUnspecified = "(ไม่ระบุ)"
+    override val labelsPrintFailed = "พิมพ์ไม่สำเร็จ"
 }

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.labels
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
@@ -13,11 +14,12 @@ data class LabelPrintUiState(
     override val loading: Boolean = false,
     val printing: Boolean = false,
     val message: String? = null,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<LabelPrintUiState> {
 
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val filteredDrugs: List<Drug> = run {
         val q = query.trim().lowercase()

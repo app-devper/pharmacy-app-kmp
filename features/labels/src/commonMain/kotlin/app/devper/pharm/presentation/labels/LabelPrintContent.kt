@@ -18,6 +18,7 @@ import app.devper.pharm.presentation.labels.components.LabelDrugPicker
 import app.devper.pharm.presentation.labels.components.LabelFieldEditor
 import app.devper.pharm.presentation.labels.components.LabelPreviewPane
 import app.devper.pharm.presentation.labels.components.LabelPrintToolbar
+import app.devper.pharm.presentation.labels.i18n.localizeLabels
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -89,8 +90,8 @@ fun LabelPrintContent(
     if (state.message != null) {
         ErrorBottomSheet(message = state.message, onDismiss = callbacks.onDismissMessage, title = s.labelsPrintSuccess)
     }
-    if (state.error != null) {
-        ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    state.errorState?.let { err ->
+        ErrorBottomSheet(message = err.localizeLabels(s), onDismiss = callbacks.onDismissError)
     }
 }
 

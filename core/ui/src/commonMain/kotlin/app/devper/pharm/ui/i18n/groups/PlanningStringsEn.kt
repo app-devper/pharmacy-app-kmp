@@ -17,4 +17,5 @@ object PlanningStringsEn : PlanningStrings {
     override val planningCountNoun = "items"
     override val planningMetaLine: (String, String) -> String = { rate, daysLeft -> "Avg $rate/day · $daysLeft remaining" }
     override val planningDaysLeftLabel: (Int) -> String = { days -> "$days day(s)" }
+    override val planningTrackStockFailed = "Failed to track stock changes"
 }

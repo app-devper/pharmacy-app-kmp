@@ -17,4 +17,5 @@ object PlanningStringsTh : PlanningStrings {
     override val planningCountNoun = "รายการ"
     override val planningMetaLine: (String, String) -> String = { rate, daysLeft -> "ขายเฉลี่ย $rate/วัน · เหลือ $daysLeft" }
     override val planningDaysLeftLabel: (Int) -> String = { days -> "$days วัน" }
+    override val planningTrackStockFailed = "ติดตามการเปลี่ยนแปลงสต็อกไม่สำเร็จ"
 }

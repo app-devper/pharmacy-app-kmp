@@ -23,4 +23,5 @@ object ExpiryStringsEn : ExpiryStrings {
     override val expiryResultSuccessTitle = "Write-off complete"
     override val expiryResultPartialTitle = "Partially written off"
     override val expiryResultSummary: (Int, Int) -> String = { writtenOff, total -> "Recorded $writtenOff/$total lots" }
+    override val expiryWriteoffFailed = "Write-off failed"
 }

@@ -15,4 +15,5 @@ object LabelsStringsEn : LabelsStrings {
     override val labelsTotalPrice = "Total price"
     override val labelsLotPrefix = "Lot"
     override val labelsLotUnspecified = "(unspecified)"
+    override val labelsPrintFailed = "Printing failed"
 }

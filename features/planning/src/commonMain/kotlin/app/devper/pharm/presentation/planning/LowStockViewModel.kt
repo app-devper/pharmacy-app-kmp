@@ -1,8 +1,10 @@
 package app.devper.pharm.presentation.planning
 
 import androidx.lifecycle.viewModelScope
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.usecase.GetLowStockDrugsUseCase
+import app.devper.pharm.presentation.planning.exception.LowStockUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -17,12 +19,16 @@ class LowStockViewModel(
         reload()
         stockChangeBus.events
             .onEach { reload() }
-            .catch { e -> setState { copy(error = e.message ?: "ติดตามการเปลี่ยนแปลงสต็อกไม่สำเร็จ") } }
+            .catch { e -> setState { copy(errorState = LowStockUiStateError.TrackStockFailed(e)) } }
             .launchIn(viewModelScope)
     }
 
-    fun reload() = launchLoad(
-        block = { getLowStockDrugs() },
-        onSuccess = { list -> copy(drugs = list) },
-    )
+    fun reload() {
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
+            block = { getLowStockDrugs() },
+            onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+        )
+    }
 }

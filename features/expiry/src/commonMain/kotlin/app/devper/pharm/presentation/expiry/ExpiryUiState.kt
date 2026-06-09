@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.expiry
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.ui.common.LoadableUiState
@@ -20,11 +21,12 @@ data class ExpiryUiState(
     val confirmDialog: Boolean = false,
     val writingOff: Boolean = false,
     val writeoffResult: WriteoffResult? = null,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<ExpiryUiState> {
 
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val canWriteoff: Boolean get() = !writingOff && selected.isNotEmpty()
     val totalSelected: Int get() = selected.size
