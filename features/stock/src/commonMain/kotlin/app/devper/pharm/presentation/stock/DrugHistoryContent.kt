@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
+import app.devper.pharm.presentation.stock.i18n.localizeStock
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
@@ -65,7 +67,7 @@ fun DrugHistoryContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeStock(pharmStrings), onDismiss = onDismissError)
 }
 
 @Composable

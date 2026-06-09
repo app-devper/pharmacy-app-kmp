@@ -1,13 +1,13 @@
 package app.devper.pharm.presentation.stock
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.presentation.stock.exception.StockUiStateError
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.param.AddStockAdjustmentParam
 import app.devper.pharm.domain.usecase.AddStockAdjustmentUseCase
 import app.devper.pharm.domain.usecase.GetStockAdjustmentsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
-private const val LOAD_HISTORY_FAILED = "โหลดประวัติไม่สำเร็จ"
 
 class StockAdjustmentsViewModel(
     private val getAdjustments: GetStockAdjustmentsUseCase,
@@ -21,7 +21,7 @@ class StockAdjustmentsViewModel(
                 drugName = drugName,
                 addFormOpen = false,
                 draft = AdjustmentDraft(),
-                error = null,
+                errorState = null,
             )
         }
         reload()
@@ -34,10 +34,11 @@ class StockAdjustmentsViewModel(
     fun reload() {
         if (current.drugId.isBlank()) return
         val id = current.drugId
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = { getAdjustments(id) },
-            fallback = LOAD_HISTORY_FAILED,
-            onSuccess = { list -> copy(history = list) },
+            onSuccess = { list -> setState { copy(loading = false, history = list) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = StockUiStateError.LoadHistoryFailed(e)) } },
         )
     }
 
@@ -55,7 +56,7 @@ class StockAdjustmentsViewModel(
         if (!s.canSubmitDraft) return
         val signed = s.signedDelta()
         if (signed == 0) return
-        setState { copy(saving = true, error = null) }
+        setState { copy(saving = true, errorState = null) }
         launchResult(
             block = {
                 addAdjustment(
@@ -71,7 +72,7 @@ class StockAdjustmentsViewModel(
                 setState { copy(saving = false, addFormOpen = false, draft = AdjustmentDraft()) }
                 reload()
             },
-            onFailure = { e -> setState { copy(saving = false, error = e.message ?: ErrorMessages.SAVE_FAILED) } },
+            onFailure = { e -> setState { copy(saving = false, errorState = CommonUiStateError.SaveFailed(e)) } },
         )
     }
 

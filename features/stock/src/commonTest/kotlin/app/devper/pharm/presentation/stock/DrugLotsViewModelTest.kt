@@ -57,7 +57,7 @@ class DrugLotsViewModelTest {
         assertEquals("Paracetamol", s.drugName)
         assertEquals(2, s.lots.size)
         assertFalse(s.loading)
-        assertNull(s.error)
+        assertNull(s.errorState)
     }
 
     @Test
@@ -80,7 +80,7 @@ class DrugLotsViewModelTest {
         vm.open(drugId = "d1", drugName = "X")
         advanceUntilIdle()
         val s = vm.state.value
-        assertNotNull(s.error)
+        assertNotNull(s.errorState)
         assertFalse(s.loading)
         assertTrue(s.lots.isEmpty())
     }
@@ -167,7 +167,7 @@ class DrugLotsViewModelTest {
         vm.submitAdd()
         advanceUntilIdle()
         val s = vm.state.value
-        assertNotNull(s.error)
+        assertNotNull(s.errorState)
         assertFalse(s.saving)
 
         assertEquals("L-bad", s.draft.lotNumber)

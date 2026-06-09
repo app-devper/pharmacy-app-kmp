@@ -76,4 +76,9 @@ object StockStringsEn : StockStrings {
     override val stockExampleReg = "e.g. 1A 123/45"
     override val stockExampleBarcode = "8851111222333"
     override val stockBarcodeScanHint = "Scan or type"
+    override val stockLoadHistoryFailed = "Failed to load history"
+    override val stockLoadLotsFailed = "Failed to load lots"
+    override val stockInvalidExpiry = "Invalid expiry date (format YYYY-MM-DD)"
+    override val stockAddLotFailed = "Failed to add lot"
+    override val stockRemoveLotFailed = "Failed to remove lot"
 }

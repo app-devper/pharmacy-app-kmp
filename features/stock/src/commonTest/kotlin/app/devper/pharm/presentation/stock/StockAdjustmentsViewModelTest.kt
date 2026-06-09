@@ -197,7 +197,7 @@ class StockAdjustmentsViewModelTest {
         vm.onAbsDelta("5")
         vm.submitAdd()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.saving)
         assertTrue(vm.state.value.addFormOpen)
     }
@@ -208,8 +208,8 @@ class StockAdjustmentsViewModelTest {
         advanceUntilIdle()
         vm.open("d1", "Paracetamol")
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }
