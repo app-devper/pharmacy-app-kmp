@@ -1,6 +1,10 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface ReportsStrings {
+    val reportsLoadSummaryFailed: String
+    val reportsLoadReportFailed: String
+    val reportsEodCloseFailed: String
+    val reportsEodPrintUnsupported: String
     val reportsSubtitle: String
     val reportsTabSummary: String
     val reportsTabProfit: String

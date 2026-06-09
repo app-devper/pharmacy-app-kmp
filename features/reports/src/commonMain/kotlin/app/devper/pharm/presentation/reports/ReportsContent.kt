@@ -25,6 +25,7 @@ import app.devper.pharm.domain.model.SaleSummary
 import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
+import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -107,7 +108,7 @@ fun ReportsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val previewSummary = ReportSummary(

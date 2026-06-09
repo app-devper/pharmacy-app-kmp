@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.reports
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.LoadableUiState
 
 enum class DashboardWindow(val days: Int) {
@@ -23,9 +24,10 @@ data class ReportsUiState(
     val dashboard: Dashboard? = null,
     val topDrugs: List<TopDrug> = emptyList(),
     val slowDrugs: List<SlowDrug> = emptyList(),
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<ReportsUiState> {
 
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override val domainError: AppException? get() = errorState
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 }

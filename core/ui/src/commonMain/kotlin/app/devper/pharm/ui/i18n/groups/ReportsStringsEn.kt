@@ -77,4 +77,8 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsEodClosedDate: (String) -> String = { date -> "EOD closed — $date" }
     override val reportsBillsOfDay: (Int) -> String = { count -> "Bills for the day · $count items" }
     override val reportsWalkInCustomer = "Walk-in"
+    override val reportsLoadSummaryFailed = "Failed to load summary"
+    override val reportsLoadReportFailed = "Failed to load report"
+    override val reportsEodCloseFailed = "Failed to close the day"
+    override val reportsEodPrintUnsupported = "Failed to print receipt — not supported on this platform"
 }

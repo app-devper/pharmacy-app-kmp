@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.reports
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.LoadableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 import app.devper.pharm.ui.i18n.PharmStrings
@@ -28,11 +29,13 @@ data class ProfitUiState(
     val report: ProfitReport? = null,
     val exporting: Boolean = false,
     val message: String? = null,
-    override val error: String? = null,
+    val messageState: app.devper.pharm.common.error.CommonUiStateMessage? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<ProfitUiState> {
 
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override val domainError: AppException? get() = errorState
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val sortedRows: List<DrugProfit>
         get() {

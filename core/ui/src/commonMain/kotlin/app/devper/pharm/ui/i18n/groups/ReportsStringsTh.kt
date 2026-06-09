@@ -77,4 +77,8 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsEodClosedDate: (String) -> String = { date -> "ปิดรอบ EOD เรียบร้อย — วันที่ $date" }
     override val reportsBillsOfDay: (Int) -> String = { count -> "บิลในวัน · $count รายการ" }
     override val reportsWalkInCustomer = "ลูกค้าทั่วไป"
+    override val reportsLoadSummaryFailed = "โหลดสรุปไม่สำเร็จ"
+    override val reportsLoadReportFailed = "โหลดรายงานไม่สำเร็จ"
+    override val reportsEodCloseFailed = "ปิดยอดไม่สำเร็จ"
+    override val reportsEodPrintUnsupported = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ"
 }
