@@ -61,4 +61,6 @@ object ImportsStringsEn : ImportsStrings {
     override val importsHeaderInvoiceNo = "Invoice no."
     override val importsHeaderInvoicePlaceholder = "Invoice / packing slip"
     override val importsConfirmFailed = "Failed to confirm receipt"
+    override val importsFormLoadDrugsFailed = "Failed to load drugs"
+    override val importsFormLoadSuppliersFailed = "Failed to load suppliers"
 }

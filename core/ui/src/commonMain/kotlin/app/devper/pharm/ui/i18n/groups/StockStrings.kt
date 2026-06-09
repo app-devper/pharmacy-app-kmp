@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface StockStrings {
+    val stockDrugFormNotFound: String
     val stockLoadHistoryFailed: String
     val stockLoadLotsFailed: String
     val stockInvalidExpiry: String

@@ -1,9 +1,11 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.Drug
@@ -104,7 +106,7 @@ class ImportFormViewModel(
         launchResult(
             block = { getDrugs() },
             onSuccess = { list -> setState { copy(drugs = list) } },
-            onFailure = { e -> setState { copy(error = e.message ?: "โหลดข้อมูลยาไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadDrugsFailed(e)) } },
         )
     }
 
@@ -112,12 +114,12 @@ class ImportFormViewModel(
         launchResult(
             block = { getSuppliers() },
             onSuccess = { list -> setState { copy(suppliers = list) } },
-            onFailure = { e -> setState { copy(error = e.message ?: "โหลดข้อมูลซัพพลายเออร์ไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadSuppliersFailed(e)) } },
         )
     }
 
     private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getPurchaseOrder(id) },
             onSuccess = { po ->
@@ -146,7 +148,7 @@ class ImportFormViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 

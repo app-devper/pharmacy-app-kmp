@@ -22,6 +22,7 @@ import app.devper.pharm.presentation.stock.AltUnitDraft
 import app.devper.pharm.presentation.stock.DrugFormFields
 import app.devper.pharm.presentation.stock.DrugFormMode
 import app.devper.pharm.presentation.stock.DrugFormUiState
+import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -85,7 +86,7 @@ fun DrugFormContent(
             }
         }
     }
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeStock(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

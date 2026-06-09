@@ -61,4 +61,6 @@ object ImportsStringsTh : ImportsStrings {
     override val importsHeaderInvoiceNo = "เลขที่ Invoice"
     override val importsHeaderInvoicePlaceholder = "ใบส่งของ"
     override val importsConfirmFailed = "ยืนยันรับเข้าไม่สำเร็จ"
+    override val importsFormLoadDrugsFailed = "โหลดข้อมูลยาไม่สำเร็จ"
+    override val importsFormLoadSuppliersFailed = "โหลดข้อมูลซัพพลายเออร์ไม่สำเร็จ"
 }

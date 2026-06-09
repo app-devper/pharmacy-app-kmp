@@ -83,7 +83,7 @@ class StockCountFormViewModelTest {
     fun init_failure_surfaces_error() = runVmTest { dispatchers ->
         val (vm, _, _, _) = newVm(dispatchers, drugs = FakeDrugRepository(listThrows = true))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
         assertTrue(vm.state.value.drugs.isEmpty())
     }
@@ -171,7 +171,7 @@ class StockCountFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.saving)
     }
 
@@ -179,9 +179,9 @@ class StockCountFormViewModelTest {
     fun dismissError_clears_error() = runVmTest { dispatchers ->
         val (vm, _, _, _) = newVm(dispatchers, drugs = FakeDrugRepository(listThrows = true))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test

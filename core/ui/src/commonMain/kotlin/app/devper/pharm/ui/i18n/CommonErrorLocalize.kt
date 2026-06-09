@@ -24,7 +24,7 @@ fun AppException.localizeCommon(s: PharmStrings): String = when (this) {
     is ConflictException -> s.commonErrorConflict
     is NetworkException -> s.commonErrorNetwork
     is ServerException -> s.commonErrorServer
-    is ValidationException -> s.commonErrorValidation
+    is ValidationException -> message ?: s.commonErrorValidation
     is StorageException -> s.commonErrorStorage
     is UnsupportedPlatformException -> s.commonErrorUnsupported
     else -> s.commonErrorGeneric

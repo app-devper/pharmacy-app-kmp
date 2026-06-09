@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.common.error.CommonUiStateError
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.param.CreateStockCountParam
@@ -88,7 +90,7 @@ class StockCountFormViewModel(
     }
 
     fun reload() {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getDrugs() },
             onSuccess = { list ->
@@ -98,7 +100,7 @@ class StockCountFormViewModel(
                     copy(loading = false, drugs = list, counts = pruned)
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดยาไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 
