@@ -3,7 +3,7 @@
 package app.devper.pharm.presentation.users
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.repository.FakeUsersRepository
 import app.devper.pharm.domain.usecase.CreateUserUseCase
 import app.devper.pharm.domain.usecase.GetUsersUseCase
@@ -12,6 +12,7 @@ import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -110,7 +111,7 @@ class UserFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         val state = vm.state.value
-        assertEquals(ErrorMessages.SAVE_FAILED, state.error)
+        assertIs<CommonUiStateError.SaveFailed>(state.errorState)
         assertFalse(state.saved)
         assertFalse(state.saving)
     }

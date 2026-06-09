@@ -37,4 +37,5 @@ object UsersStringsEn : UsersStrings {
     override val usersRoleChangeFailed = "Failed to change role"
     override val usersStatusChangeFailed = "Failed to change status"
     override val usersSetPasswordFailed = "Failed to set password"
+    override val usersFormNotFound = "User not found"
 }

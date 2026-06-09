@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface UsersStrings {
+    val usersFormNotFound: String
     val usersRoleChangeFailed: String
     val usersStatusChangeFailed: String
     val usersSetPasswordFailed: String
