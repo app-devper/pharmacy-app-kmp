@@ -1,11 +1,12 @@
 package app.devper.pharm.presentation.customers
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.CustomerInput
 import app.devper.pharm.domain.param.UpdateCustomerParam
 import app.devper.pharm.domain.usecase.AddCustomerUseCase
 import app.devper.pharm.domain.usecase.GetCustomersUseCase
 import app.devper.pharm.domain.usecase.UpdateCustomerUseCase
+import app.devper.pharm.presentation.customers.exception.CustomerFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class CustomerFormViewModel(
@@ -33,13 +34,13 @@ class CustomerFormViewModel(
     }
 
     private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getCustomers() },
             onSuccess = { list ->
                 val c = list.firstOrNull { it.id == id }
                 if (c == null) {
-                    setState { copy(loading = false, error = "ไม่พบลูกค้า") }
+                    setState { copy(loading = false, errorState = CustomerFormUiStateError.NotFound()) }
                 } else {
                     setState {
                         copy(
@@ -54,7 +55,7 @@ class CustomerFormViewModel(
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 

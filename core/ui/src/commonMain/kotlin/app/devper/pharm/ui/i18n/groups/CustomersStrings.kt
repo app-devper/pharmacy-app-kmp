@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface CustomersStrings {
+    val customersFormNotFound: String
     val customersDetailNotFound: String
     val customersDetailLoadCustomerFailed: String
     val customersDetailLoadSalesFailed: String

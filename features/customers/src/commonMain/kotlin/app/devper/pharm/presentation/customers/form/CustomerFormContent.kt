@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.customers.CustomerFormFields
 import app.devper.pharm.presentation.customers.CustomerFormMode
 import app.devper.pharm.presentation.customers.CustomerFormUiState
+import app.devper.pharm.presentation.customers.i18n.localizeCustomerForm
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -64,7 +65,7 @@ fun CustomerFormContent(
             }
         }
     }
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeCustomerForm(s), onDismiss = callbacks.onDismissError)
 }
 
 @Preview

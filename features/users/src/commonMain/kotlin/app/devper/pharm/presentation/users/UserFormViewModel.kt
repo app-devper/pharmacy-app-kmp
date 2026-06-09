@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.users
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.CreateUserParam
@@ -8,6 +8,7 @@ import app.devper.pharm.domain.param.UpdateUserParam
 import app.devper.pharm.domain.usecase.CreateUserUseCase
 import app.devper.pharm.domain.usecase.GetUsersUseCase
 import app.devper.pharm.domain.usecase.UpdateUserUseCase
+import app.devper.pharm.presentation.users.exception.UserFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class UserFormViewModel(
@@ -54,18 +55,18 @@ class UserFormViewModel(
     }
 
     private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getUsers() },
             onSuccess = { list ->
                 val user = list.firstOrNull { it.id == id }
                 if (user == null) {
-                    setState { copy(loading = false, error = "ไม่พบผู้ใช้งาน") }
+                    setState { copy(loading = false, errorState = UserFormUiStateError.NotFound()) }
                 } else {
                     hydrate(user)
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 

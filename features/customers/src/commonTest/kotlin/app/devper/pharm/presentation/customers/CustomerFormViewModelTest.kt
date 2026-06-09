@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.presentation.customers.exception.CustomerFormUiStateError
+
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.repository.FakeCustomerRepository
 import app.devper.pharm.domain.usecase.AddCustomerUseCase
@@ -10,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -70,7 +73,7 @@ class CustomerFormViewModelTest {
         vm.init(CustomerFormMode.Edit("does-not-exist"))
         advanceUntilIdle()
         val s = vm.state.value
-        assertEquals("ไม่พบลูกค้า", s.error)
+        assertIs<CustomerFormUiStateError.NotFound>(s.errorState)
         assertFalse(s.loading)
     }
 
@@ -126,7 +129,7 @@ class CustomerFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         val s = vm.state.value
-        assertNotNull(s.error)
+        assertNotNull(s.errorState)
         assertFalse(s.saved)
         assertFalse(s.saving)
     }
@@ -149,9 +152,9 @@ class CustomerFormViewModelTest {
         vm.onName("Boom")
         vm.submit()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
