@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.presentation.offlinesync.i18n.localize
+import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -123,7 +125,7 @@ fun OfflineSyncContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable
@@ -215,7 +217,7 @@ private fun OfflineSyncContent_WithFailures_Preview() {
         OfflineSyncContent(
             state = OfflineSyncUiState(
                 pending = samplePending,
-                message = "ลบรายการค้างซิงก์แล้ว",
+                messageState = OfflineSyncUiStateMessage.Discarded,
             ),
         )
     }

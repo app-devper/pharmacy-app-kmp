@@ -20,4 +20,12 @@ object OfflineSyncStringsTh : OfflineSyncStrings {
 
         "บิลนี้จะถูกลบออกจากคิวภายในเครื่อง — ใช้เมื่อแน่ใจว่า " +
         "backend รับบิลนี้ไปแล้วหรือไม่ต้องการให้ส่งซ้ำอีก"
+    override val offlineSyncLoadFailed = "โหลดรายการค้างซิงก์ไม่สำเร็จ"
+    override val offlineSyncSyncPartialFailed: (Int, Int) -> String = { failed, total -> "ส่งบิลไม่สำเร็จ $failed จาก $total รายการ" }
+    override val offlineSyncRetryFailed: (String) -> String = { billId -> "ส่งบิล $billId ไม่สำเร็จ" }
+    override val offlineSyncDiscardFailed = "ลบรายการไม่สำเร็จ"
+    override val offlineSyncRefreshed = "ดึงสถานะคิวล่าสุดแล้ว"
+    override val offlineSyncSyncStarted: (Int) -> String = { count -> "เริ่มซิงก์ $count รายการ" }
+    override val offlineSyncRetryStarted: (String) -> String = { billId -> "เริ่มลองส่งบิล $billId ใหม่แล้ว" }
+    override val offlineSyncDiscarded = "ลบรายการค้างซิงก์แล้ว"
 }

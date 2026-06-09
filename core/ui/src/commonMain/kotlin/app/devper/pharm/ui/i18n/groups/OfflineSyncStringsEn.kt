@@ -20,4 +20,12 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
 
         "This bill will be removed from the device queue — only do this if " +
         "the backend has already received it or you don't want to retry."
+    override val offlineSyncLoadFailed = "Failed to load pending sync items"
+    override val offlineSyncSyncPartialFailed: (Int, Int) -> String = { failed, total -> "$failed of $total bills failed to send" }
+    override val offlineSyncRetryFailed: (String) -> String = { billId -> "Failed to send bill $billId" }
+    override val offlineSyncDiscardFailed = "Failed to remove item"
+    override val offlineSyncRefreshed = "Pulled latest queue status"
+    override val offlineSyncSyncStarted: (Int) -> String = { count -> "Syncing $count item(s)" }
+    override val offlineSyncRetryStarted: (String) -> String = { billId -> "Retrying bill $billId" }
+    override val offlineSyncDiscarded = "Pending sync item removed"
 }
