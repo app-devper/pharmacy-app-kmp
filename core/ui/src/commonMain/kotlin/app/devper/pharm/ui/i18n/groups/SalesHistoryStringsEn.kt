@@ -14,4 +14,7 @@ object SalesHistoryStringsEn : SalesHistoryStrings {
     override val salesHistoryStatusOk = "Completed"
     override val salesHistoryActionViewBill = "View bill"
     override val salesHistoryActionReturn = "Return"
+    override val salesHistoryLoadBillsFailed = "Failed to load bills"
+    override val salesHistoryLoadItemsFailed = "Failed to load sale items"
+    override val salesHistorySubmitReturnFailed = "Failed to record the return"
 }

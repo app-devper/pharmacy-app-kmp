@@ -9,10 +9,9 @@ import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
+import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
-
-private const val LOAD_BILLS_FAILED = "โหลดรายการบิลไม่สำเร็จ"
 
 class SalesHistoryViewModel(
     private val getHistory: GetSaleHistoryUseCase,
@@ -36,7 +35,8 @@ class SalesHistoryViewModel(
 
     fun loadList() {
         val s = current
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = {
                 getHistory(
                     SaleHistoryFilterParam(
@@ -46,8 +46,8 @@ class SalesHistoryViewModel(
                     ),
                 )
             },
-            fallback = LOAD_BILLS_FAILED,
-            onSuccess = { list -> copy(sales = list) },
+            onSuccess = { list -> setState { copy(loading = false, sales = list) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = SalesHistoryUiStateError.LoadBillsFailed(e)) } },
         )
     }
 
@@ -62,7 +62,7 @@ class SalesHistoryViewModel(
             },
             onFailure = { e ->
                 if (current.selected?.id != targetId) return@launchResult
-                setState { copy(itemsLoading = false, error = e.message ?: "โหลดรายการสินค้าไม่สำเร็จ") }
+                setState { copy(itemsLoading = false, errorState = SalesHistoryUiStateError.LoadItemsFailed(e)) }
             },
         )
     }
@@ -95,7 +95,7 @@ class SalesHistoryViewModel(
             },
             onFailure = { e ->
                 if (current.selected?.id != targetId) return@launchResult
-                setState { copy(itemsLoading = false, error = e.message ?: "โหลดรายการสินค้าไม่สำเร็จ") }
+                setState { copy(itemsLoading = false, errorState = SalesHistoryUiStateError.LoadItemsFailed(e)) }
             },
         )
     }
@@ -127,7 +127,7 @@ class SalesHistoryViewModel(
         val lines = s.returnDraft
             .filter { (_, qty) -> qty > 0 }
             .map { (saleItemId, qty) -> ReturnLineParam(saleItemId, qty) }
-        setState { copy(submittingReturn = true, error = null) }
+        setState { copy(submittingReturn = true, errorState = null) }
         launchResult(
             block = { submitReturn(SubmitReturnParam(saleId = sale.id, reason = s.returnReason, items = lines)) },
             onSuccess = {
@@ -141,7 +141,7 @@ class SalesHistoryViewModel(
                 }
                 onSelectSale(sale)
             },
-            onFailure = { e -> setState { copy(submittingReturn = false, error = e.message ?: "บันทึกการคืนสินค้าไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(submittingReturn = false, errorState = SalesHistoryUiStateError.SubmitReturnFailed(e)) } },
         )
     }
 }

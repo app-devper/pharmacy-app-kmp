@@ -14,4 +14,7 @@ object SalesHistoryStringsTh : SalesHistoryStrings {
     override val salesHistoryStatusOk = "สำเร็จ"
     override val salesHistoryActionViewBill = "ดูบิล"
     override val salesHistoryActionReturn = "คืนยา"
+    override val salesHistoryLoadBillsFailed = "โหลดรายการบิลไม่สำเร็จ"
+    override val salesHistoryLoadItemsFailed = "โหลดรายการสินค้าไม่สำเร็จ"
+    override val salesHistorySubmitReturnFailed = "บันทึกการคืนสินค้าไม่สำเร็จ"
 }

@@ -10,12 +10,14 @@ import app.devper.pharm.domain.repository.FakeSaleHistoryRepository
 import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
+import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -107,7 +109,7 @@ class SalesHistoryViewModelTest {
         val (vm, _) = newVm(dispatchers, FakeSaleHistoryRepository(listThrows = true))
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
-        assertNotNull(vm.state.value.error)
+        assertIs<SalesHistoryUiStateError.LoadBillsFailed>(vm.state.value.errorState)
         assertTrue(vm.state.value.sales.isEmpty())
     }
 
@@ -149,7 +151,7 @@ class SalesHistoryViewModelTest {
         advanceUntilIdle()
         assertEquals(0, vm.state.value.items.single().returnedQty)
         assertFalse(vm.state.value.itemsLoading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -297,7 +299,7 @@ class SalesHistoryViewModelTest {
         vm.onReturnLineQtyChange("i1", displayQty = 2)
         vm.confirmReturn()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.submittingReturn)
     }
 
@@ -305,8 +307,8 @@ class SalesHistoryViewModelTest {
     fun dismissError_clears_error() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers, FakeSaleHistoryRepository(listThrows = true))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }
