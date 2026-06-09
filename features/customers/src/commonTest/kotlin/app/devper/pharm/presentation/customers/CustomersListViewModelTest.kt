@@ -25,7 +25,7 @@ class CustomersListViewModelTest {
         advanceUntilIdle()
         assertEquals(2, vm.state.value.customers.size)
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test

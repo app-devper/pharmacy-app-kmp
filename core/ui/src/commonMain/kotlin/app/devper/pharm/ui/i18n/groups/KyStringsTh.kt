@@ -48,4 +48,5 @@ object KyStringsTh : KyStrings {
     override val kyTotalAll = "รวมทั้งหมด"
     override val kyDateYmd = "วันที่ (YYYY-MM-DD)"
     override val kyMonthLabel = "เดือน"
+    override val kyDownloadPdfFailed = "ดาวน์โหลด PDF ไม่สำเร็จ"
 }

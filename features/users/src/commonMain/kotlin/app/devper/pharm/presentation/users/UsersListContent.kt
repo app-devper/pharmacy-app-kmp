@@ -33,6 +33,7 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.extension.canManage
 import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.domain.extension.canViewUsers
+import app.devper.pharm.presentation.users.i18n.localizeUsers
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -112,7 +113,7 @@ fun UsersListContent(
     }
 
     ActionDialog(state = state, callbacks = callbacks)
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeUsers(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

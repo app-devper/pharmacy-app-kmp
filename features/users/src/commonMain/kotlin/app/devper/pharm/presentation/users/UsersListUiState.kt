@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.common.AppException
+
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.ui.common.LoadableUiState
@@ -15,11 +17,12 @@ data class UsersListUiState(
     val actionMode: UsersAction? = null,
     val actionBusy: Boolean = false,
     override val loading: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<UsersListUiState> {
 
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override val domainError: AppException? get() = errorState
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val filtered: List<UmUser> = if (searchQuery.isBlank()) {
         users

@@ -34,4 +34,7 @@ object UsersStringsTh : UsersStrings {
     override val usersFormPasswordCreate = "รหัสผ่าน (≥8 ตัว)"
     override val usersFormPasswordNew = "รหัสผ่านใหม่ (≥8 ตัว)"
     override val usersFormPasswordHint = "รหัสผ่านต้องไม่น้อยกว่า 8 ตัวอักษร"
+    override val usersRoleChangeFailed = "เปลี่ยน Role ไม่สำเร็จ"
+    override val usersStatusChangeFailed = "เปลี่ยนสถานะไม่สำเร็จ"
+    override val usersSetPasswordFailed = "ตั้งรหัสผ่านไม่สำเร็จ"
 }

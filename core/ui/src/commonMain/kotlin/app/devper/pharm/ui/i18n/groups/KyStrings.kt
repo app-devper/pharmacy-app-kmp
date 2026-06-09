@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface KyStrings {
+    val kyDownloadPdfFailed: String
     val kyToolbarSubtitle: String
     val kyEmptyMonth: String
     val kyCountNoun: String

@@ -18,6 +18,7 @@ import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.model.Ky10Entry
 import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
+import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -87,7 +88,7 @@ fun KyListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private fun rowTotalValue(row: KyRow): Double = when (row) {

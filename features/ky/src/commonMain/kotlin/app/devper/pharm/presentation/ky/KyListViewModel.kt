@@ -7,9 +7,9 @@ import app.devper.pharm.domain.usecase.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.GetKy10EntriesUseCase
 import app.devper.pharm.domain.usecase.GetKy11EntriesUseCase
 import app.devper.pharm.domain.usecase.GetKy12EntriesUseCase
+import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
-
-private const val DOWNLOAD_PDF_FAILED = "ดาวน์โหลด PDF ไม่สำเร็จ"
 
 class KyListViewModel(
     private val getKy10: GetKy10EntriesUseCase,
@@ -29,18 +29,19 @@ class KyListViewModel(
 
     fun exportPdf() {
         val s = current
-        setState { copy(exporting = true, error = null, message = null) }
+        setState { copy(exporting = true, errorState = null, message = null) }
         launchResult(
             block = { exportKyForm(ExportKyFormParam(form = s.formType.wire, month = s.month)) },
             onSuccess = { msg -> setState { copy(exporting = false, message = msg) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: DOWNLOAD_PDF_FAILED) } },
+            onFailure = { e -> setState { copy(exporting = false, errorState = KyUiStateError.DownloadPdfFailed(e)) } },
         )
     }
 
     fun reload() {
         val s = current
         val filter = KyMonthFilterParam(month = s.month)
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = {
                 when (s.formType) {
                     KyFormType.Ky10 -> getKy10(filter).map { list -> list.map(KyRow::Ky10) }
@@ -49,7 +50,8 @@ class KyListViewModel(
                     KyFormType.Ky9  -> Result.success(emptyList())
                 }
             },
-            onSuccess = { rows -> copy(rows = rows) },
+            onSuccess = { rows -> setState { copy(loading = false, rows = rows) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 }

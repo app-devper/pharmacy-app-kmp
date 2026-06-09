@@ -28,7 +28,7 @@ class SuppliersListViewModelTest {
         advanceUntilIdle()
         assertEquals(2, model.state.value.suppliers.size)
         assertFalse(model.state.value.loading)
-        assertNull(model.state.value.error)
+        assertNull(model.state.value.errorState)
     }
 
     @Test

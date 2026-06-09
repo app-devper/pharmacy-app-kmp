@@ -2,7 +2,7 @@
 
 package app.devper.pharm.presentation.users
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Role
@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -154,7 +155,7 @@ class UsersListViewModelTest {
         val state = vm.state.value
         assertFalse(state.loading)
         assertEquals(0, state.users.size)
-        assertEquals(ErrorMessages.LOAD_FAILED, state.error)
+        assertIs<CommonUiStateError.LoadFailed>(state.errorState)
     }
 
     @Test
@@ -169,7 +170,8 @@ class UsersListViewModelTest {
         advanceUntilIdle()
         val state = vm.state.value
         assertNull(state.actionTarget)
-        assertEquals("403", state.error)
+        assertIs<CommonUiStateError.DeleteFailed>(state.errorState)
+        assertEquals("403", state.errorState?.cause?.message)
     }
 
     @Test
