@@ -1,23 +1,27 @@
 package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.domain.model.BulkImportResult
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.param.AddDrugParam
+import app.devper.pharm.presentation.bulkimport.exception.BulkImportUiStateError
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class BulkImportUiState(
     val text: String = "",
     val parsed: List<AddDrugParam> = emptyList(),
     val previewCount: Int? = null,
-    val parseError: String? = null,
+    val parseErrorState: BulkImportUiStateError? = null,
     val submitting: Boolean = false,
     val result: BulkImportResult? = null,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<BulkImportUiState> {
+
+    override val domainError: AppException? get() = errorState
 
     override val loading: Boolean get() = submitting
 
     override fun withLoading(value: Boolean) = copy(submitting = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val canSubmit: Boolean get() = !submitting && text.isNotBlank()
 

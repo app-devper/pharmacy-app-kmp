@@ -30,6 +30,7 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.domain.extension.tierLabel
+import app.devper.pharm.presentation.customers.i18n.localizeCustomerDetail
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.designsystem.PharmBadge
@@ -80,7 +81,7 @@ fun CustomerDetailContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeCustomerDetail(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

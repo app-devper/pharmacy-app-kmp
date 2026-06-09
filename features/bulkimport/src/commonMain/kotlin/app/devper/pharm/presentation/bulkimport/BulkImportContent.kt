@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.model.BulkImportRowError
 import app.devper.pharm.domain.param.AddDrugParam
+import app.devper.pharm.presentation.bulkimport.i18n.localizeBulkImport
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -91,11 +92,11 @@ fun BulkImportContent(
             BulkImportJsonInput(
                 value = state.text,
                 onValueChange = callbacks.onJsonChange,
-                parseError = state.parseError,
+                parseError = state.parseErrorState?.localizeBulkImport(s),
             )
 
             state.previewCount?.let { count ->
-                if (state.parseError == null && state.result == null) {
+                if (state.parseErrorState == null && state.result == null) {
                     BulkImportInfoBanner(
                         text = s.bulkImportValidatedReady(count),
                     )
@@ -127,7 +128,7 @@ fun BulkImportContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeBulkImport(s), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

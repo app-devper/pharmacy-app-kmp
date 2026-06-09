@@ -26,4 +26,7 @@ object CustomersStringsEn : CustomersStrings {
     override val customersTierRetail = "Store"
     override val customersTierRegular = "Regular"
     override val customersTierWholesale = "Wholesale"
+    override val customersDetailNotFound = "Customer not found"
+    override val customersDetailLoadCustomerFailed = "Failed to load customer"
+    override val customersDetailLoadSalesFailed = "Failed to load sales history"
 }

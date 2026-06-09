@@ -43,7 +43,7 @@ class BulkImportViewModelTest {
         vm.preview()
         val s = vm.state.value
         assertEquals(1, s.previewCount)
-        assertNull(s.parseError)
+        assertNull(s.parseErrorState)
     }
 
     @Test
@@ -59,7 +59,7 @@ class BulkImportViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.onTextChange("   ")
         vm.preview()
-        assertNotNull(vm.state.value.parseError)
+        assertNotNull(vm.state.value.parseErrorState)
         assertNull(vm.state.value.previewCount)
     }
 
@@ -68,7 +68,7 @@ class BulkImportViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.onTextChange(""" "just a string" """)
         vm.preview()
-        assertNotNull(vm.state.value.parseError)
+        assertNotNull(vm.state.value.parseErrorState)
     }
 
     @Test
@@ -76,7 +76,7 @@ class BulkImportViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.onTextChange("""[{"sell_price": 5}]""")
         vm.preview()
-        assertNotNull(vm.state.value.parseError)
+        assertNotNull(vm.state.value.parseErrorState)
     }
 
     @Test
@@ -126,6 +126,6 @@ class BulkImportViewModelTest {
         advanceUntilIdle()
 
         assertNull(repo.lastBulkImport)
-        assertNotNull(vm.state.value.parseError)
+        assertNotNull(vm.state.value.parseErrorState)
     }
 }

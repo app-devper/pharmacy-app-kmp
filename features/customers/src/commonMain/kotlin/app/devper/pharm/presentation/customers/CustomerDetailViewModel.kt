@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.customers
 
 import app.devper.pharm.domain.usecase.GetCustomerSalesUseCase
 import app.devper.pharm.domain.usecase.GetCustomersUseCase
+import app.devper.pharm.presentation.customers.exception.CustomerDetailUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 
 class CustomerDetailViewModel(
@@ -17,20 +18,20 @@ class CustomerDetailViewModel(
             block = { getCustomers() },
             onSuccess = { list ->
                 val c = list.firstOrNull { it.id == customerId }
-                setState { copy(customerLoading = false, customer = c, error = error ?: if (c == null) "ไม่พบลูกค้า" else null) }
+                setState { copy(customerLoading = false, customer = c, errorState = errorState ?: if (c == null) CustomerDetailUiStateError.CustomerNotFound() else null) }
             },
             onFailure = { e ->
-                setState { copy(customerLoading = false, error = error ?: e.message ?: "โหลดข้อมูลลูกค้าไม่สำเร็จ") }
+                setState { copy(customerLoading = false, errorState = errorState ?: CustomerDetailUiStateError.LoadCustomerFailed(e)) }
             },
         )
         launchResult(
             block = { getCustomerSales(customerId) },
             onSuccess = { list -> setState { copy(salesLoading = false, sales = list) } },
             onFailure = { e ->
-                setState { copy(salesLoading = false, error = error ?: e.message ?: "โหลดประวัติการขายไม่สำเร็จ") }
+                setState { copy(salesLoading = false, errorState = errorState ?: CustomerDetailUiStateError.LoadSalesFailed(e)) }
             },
         )
     }
 
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 }

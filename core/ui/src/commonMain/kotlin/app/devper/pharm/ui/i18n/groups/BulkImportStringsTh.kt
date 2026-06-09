@@ -25,4 +25,8 @@ object BulkImportStringsTh : BulkImportStrings {
     override val bulkImportResultSummary: (Int, Int) -> String = { imported, total -> "บันทึก $imported/$total รายการ" }
     override val bulkImportResultSuccessLabel = "สำเร็จ"
     override val bulkImportClearCta = "ล้าง"
+    override val bulkImportPickFileFailed = "เลือกไฟล์ไม่สำเร็จ"
+    override val bulkImportImportFailed = "นำเข้าไม่สำเร็จ"
+    override val bulkImportNoRows = "ไม่มีรายการให้นำเข้า"
+    override val bulkImportInvalidJson = "รูปแบบ JSON ไม่ถูกต้อง"
 }
