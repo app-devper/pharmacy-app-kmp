@@ -68,4 +68,14 @@ object SellStringsTh : SellStrings {
     override val sellPrintCta = "พิมพ์"
     override val sellScannerOn = "สแกนเนอร์เปิดอยู่"
     override val sellOfflineQueueHint = "เครือข่ายไม่ได้เชื่อมต่อ — บิลถูกเก็บไว้เพื่อซิงค์ภายหลัง"
+    override val sellVoidMissingBillId = "ไม่สามารถยกเลิกบิลนี้: ไม่พบรหัสบิล"
+    override val sellVoidReasonRequired = "กรุณาระบุเหตุผลการยกเลิก"
+    override val sellVoidFailed = "ยกเลิกบิลไม่สำเร็จ"
+    override val sellBarcodeNotFound: (String) -> String = { code -> "ไม่พบยาสำหรับบาร์โค้ด $code" }
+    override val sellLoadCustomersFailed = "โหลดรายการลูกค้าไม่สำเร็จ"
+    override val sellPrintReceiptUnsupported = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ"
+    override val sellKyIncomplete: (String, String) -> String = { billNo, failed -> "บิล $billNo บันทึกแล้ว แต่บันทึก ขย. ไม่ครบ:\n$failed" }
+    override val sellKyError: (String, String) -> String = { billNo, cause -> "บิล $billNo บันทึกแล้ว แต่บันทึก ขย. ผิดพลาด: $cause" }
+    override val sellOfflineSaved = "เครือข่ายไม่ได้เชื่อมต่อ — บิลถูกเก็บไว้เพื่อซิงค์ภายหลัง"
+    override val sellCheckoutFailed = "ออกใบเสร็จไม่สำเร็จ"
 }

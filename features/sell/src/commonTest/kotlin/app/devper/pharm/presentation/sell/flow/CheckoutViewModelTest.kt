@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.presentation.sell.exception.CheckoutUiStateError
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -31,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -165,7 +168,7 @@ class CheckoutViewModelTest {
         assertTrue(cart.state.value.active.items.isEmpty())
 
         assertFalse(vm.state.value.checkingOut)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -423,8 +426,7 @@ class CheckoutViewModelTest {
         assertTrue(offline.lastEnqueue!!.payloadJson.contains("client_request_id"))
         assertTrue(cart.clearCalled)
 
-        assertNotNull(vm.state.value.error)
-        assertTrue(vm.state.value.error!!.contains("เครือข่าย"))
+        assertIs<CheckoutUiStateError.OfflineSaved>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
     }
 
@@ -442,8 +444,7 @@ class CheckoutViewModelTest {
 
         assertEquals(0, offline.pending.value.size)
         assertFalse(cart.clearCalled)
-        assertNotNull(vm.state.value.error)
-        assertEquals("ออกใบเสร็จไม่สำเร็จ", vm.state.value.error)
+        assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
     }
 
@@ -458,9 +459,9 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
         vm.submit()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -496,8 +497,8 @@ class CheckoutViewModelTest {
 
         assertNotNull(sales.lastCheckout)
 
-        assertNotNull(vm.state.value.error)
-        assertTrue(vm.state.value.error!!.contains("ขย"))
+        val kyErr = vm.state.value.errorState
+        assertTrue(kyErr is CheckoutUiStateError.KyIncomplete || kyErr is CheckoutUiStateError.KyError)
     }
 
 }

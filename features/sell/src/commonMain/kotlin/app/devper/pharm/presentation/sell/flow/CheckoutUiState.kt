@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.sell.flow
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.model.OversellShortfall
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class CheckoutUiState(
@@ -11,7 +12,7 @@ data class CheckoutUiState(
     val showSkipKyConfirm: Boolean = false,
     val oversellPending: List<OversellShortfall>? = null,
     val lastReceiptTemplate: ReceiptTemplate? = null,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 
     val cartIsEmpty: Boolean = true,
 
@@ -21,7 +22,8 @@ data class CheckoutUiState(
     override val loading: Boolean get() = checkingOut
 
     override fun withLoading(value: Boolean) = copy(checkingOut = value)
-    override fun withError(value: String?) = copy(error = value)
+    override val domainError: AppException? get() = errorState
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val canCheckout: Boolean get() =
         !cartIsEmpty &&

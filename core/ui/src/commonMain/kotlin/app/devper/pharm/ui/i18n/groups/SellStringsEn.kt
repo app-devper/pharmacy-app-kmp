@@ -68,4 +68,14 @@ object SellStringsEn : SellStrings {
     override val sellPrintCta = "Print"
     override val sellScannerOn = "Scanner is on"
     override val sellOfflineQueueHint = "Network disconnected — bill saved for later sync"
+    override val sellVoidMissingBillId = "Cannot void this bill: bill id not found"
+    override val sellVoidReasonRequired = "Please provide a void reason"
+    override val sellVoidFailed = "Failed to void the bill"
+    override val sellBarcodeNotFound: (String) -> String = { code -> "No drug found for barcode $code" }
+    override val sellLoadCustomersFailed = "Failed to load customers"
+    override val sellPrintReceiptUnsupported = "Failed to print receipt — not supported on this platform"
+    override val sellKyIncomplete: (String, String) -> String = { billNo, failed -> "Bill $billNo saved, but KY records incomplete:\n$failed" }
+    override val sellKyError: (String, String) -> String = { billNo, cause -> "Bill $billNo saved, but KY recording error: $cause" }
+    override val sellOfflineSaved = "Network unavailable — bill queued to sync later"
+    override val sellCheckoutFailed = "Failed to issue receipt"
 }

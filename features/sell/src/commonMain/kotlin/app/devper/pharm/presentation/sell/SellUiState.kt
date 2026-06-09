@@ -8,6 +8,7 @@ import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.extension.Tier
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseUiState
 
 data class SellUiState(
@@ -23,8 +24,10 @@ data class SellUiState(
 
     val settings: Settings = Settings(),
     override val loading: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : BaseUiState {
+
+    override val domainError: AppException? get() = errorState
 
     val subtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
     val cartDiscountAmount: Money get() = cartDiscount.apply(subtotal)

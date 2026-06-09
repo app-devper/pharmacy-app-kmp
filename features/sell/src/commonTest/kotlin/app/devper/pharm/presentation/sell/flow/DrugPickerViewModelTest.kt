@@ -1,5 +1,9 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.presentation.sell.exception.DrugPickerUiStateError
+
+import app.devper.pharm.common.error.CommonUiStateError
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -17,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -73,8 +78,8 @@ class DrugPickerViewModelTest {
     fun load_failure_routes_to_error_clears_spinner() = runVmTest { dispatchers ->
         val (vm) = newVm(dispatchers, repo = FakeDrugRepository(listThrows = true))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
-        assertEquals("list failed", vm.state.value.error)
+        assertIs<CommonUiStateError.LoadFailed>(vm.state.value.errorState)
+        assertEquals("list failed", vm.state.value.errorState?.cause?.message)
         assertFalse(vm.state.value.drugsLoading)
     }
 
@@ -184,7 +189,9 @@ class DrugPickerViewModelTest {
         vm.onScanBarcode("UNKNOWN-9999")
         advanceUntilIdle()
         assertNull(cart.lastAdd)
-        assertTrue(vm.state.value.error?.contains("UNKNOWN-9999") == true)
+        val barcodeErr = vm.state.value.errorState
+        assertIs<DrugPickerUiStateError.BarcodeNotFound>(barcodeErr)
+        assertEquals("UNKNOWN-9999", barcodeErr.code)
     }
 
     @Test
@@ -224,8 +231,8 @@ class DrugPickerViewModelTest {
     fun dismissError_clears_error() = runVmTest { dispatchers ->
         val (vm) = newVm(dispatchers, repo = FakeDrugRepository(listThrows = true))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }

@@ -4,6 +4,7 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.usecase.ClearCustomerUseCase
 import app.devper.pharm.domain.usecase.GetCustomersUseCase
 import app.devper.pharm.domain.usecase.SelectCustomerUseCase
+import app.devper.pharm.presentation.sell.exception.CustomerPickerUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 
 class CustomerPickerViewModel(
@@ -26,14 +27,14 @@ class CustomerPickerViewModel(
 
     fun clear() = clearCustomer()
 
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 
     private fun load() {
         setState { copy(loading = true) }
         launchResult(
             block = { getCustomers() },
             onSuccess = { list -> setState { copy(loading = false, customers = list) } },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดรายการลูกค้าไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CustomerPickerUiStateError.LoadCustomersFailed(e)) } },
         )
     }
 }
