@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.param.DashboardRangeParam
@@ -44,7 +46,7 @@ class ReportsViewModel(
     fun reload() {
         val days = current.window.days
         reloadJob?.cancel()
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         reloadJob = viewModelScope.launch {
             val (dashboard, top, slow) = coroutineScope {
                 val d = async { getDashboard(DashboardRangeParam(days)) }
@@ -60,7 +62,7 @@ class ReportsViewModel(
                     dashboard = dashboard.getOrNull() ?: this.dashboard,
                     topDrugs = top.getOrNull() ?: this.topDrugs,
                     slowDrugs = slow.getOrNull() ?: this.slowDrugs,
-                    error = dashboardError?.let { it.message ?: "โหลดสรุปไม่สำเร็จ" },
+                    errorState = dashboardError?.let { ReportsUiStateError.LoadSummaryFailed(it) },
                 )
             }
         }

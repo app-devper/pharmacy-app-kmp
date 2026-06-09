@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.error.CommonUiStateMessage
+
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
@@ -9,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
@@ -35,6 +38,6 @@ class ProfitViewModelTest {
         val model = vm(d)
         advanceUntilIdle()
         model.onExportExcel()
-        assertNotNull(model.state.value.message)
+        assertIs<CommonUiStateMessage.ExportEmpty>(model.state.value.messageState)
     }
 }

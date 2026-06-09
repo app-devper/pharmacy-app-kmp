@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.presentation.reports.exception.EodUiStateError
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
@@ -16,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -77,7 +80,7 @@ class EodViewModelTest {
         advanceUntilIdle()
         assertEquals(sampleReport, vm.state.value.report)
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -105,7 +108,7 @@ class EodViewModelTest {
         assertTrue(vm.state.value.closed)
         assertEquals(sampleCloseResult, vm.state.value.closeResult)
         assertEquals(sampleReport, vm.state.value.report)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -124,7 +127,8 @@ class EodViewModelTest {
         assertNull(vm.state.value.closeResult)
         assertFalse(vm.state.value.closing)
         assertFalse(vm.state.value.confirmClose)
-        assertEquals("ปิดยอดไม่สำเร็จ — ลองใหม่", vm.state.value.error)
+        assertIs<EodUiStateError.CloseFailed>(vm.state.value.errorState)
+        assertEquals("ปิดยอดไม่สำเร็จ — ลองใหม่", vm.state.value.errorState?.cause?.message)
     }
 
     @Test
@@ -137,7 +141,7 @@ class EodViewModelTest {
         advanceUntilIdle()
 
         assertEquals(0, printer.calls)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -160,7 +164,7 @@ class EodViewModelTest {
         assertEquals(sampleReport.totalReceived, tpl.received)
         assertEquals(sampleReport.totalChange, tpl.change)
         assertEquals(sampleReport.totalDiscount, tpl.cartDiscount)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -176,9 +180,7 @@ class EodViewModelTest {
         advanceUntilIdle()
 
         assertEquals(1, printer.calls)
-        val err = vm.state.value.error
-        assertNotNull(err)
-        assertTrue(err.contains("ยังไม่รองรับ"))
+        assertIs<EodUiStateError.PrintReceiptUnsupported>(vm.state.value.errorState)
     }
 
     @Test

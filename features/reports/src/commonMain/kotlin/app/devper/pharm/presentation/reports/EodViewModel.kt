@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.presentation.reports.exception.EodUiStateError
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.SettingsProvider
@@ -41,7 +44,7 @@ class EodViewModel(
 
     fun confirmCloseDay() {
         val s = current
-        setState { copy(confirmClose = false, closing = true, error = null) }
+        setState { copy(confirmClose = false, closing = true, errorState = null) }
         launchResult(
             block = { closeEod(CloseEodParam(date = s.date.toLocalDateOrNull())) },
             onSuccess = { result ->
@@ -61,7 +64,7 @@ class EodViewModel(
                     copy(
                         closing = false,
                         closed = false,
-                        error = e.message ?: "ปิดยอดไม่สำเร็จ",
+                        errorState = EodUiStateError.CloseFailed(e),
                     )
                 }
             },
@@ -75,18 +78,19 @@ class EodViewModel(
         launchResult(
             block = { printReceiptUseCase(template) },
             onSuccess = { ok ->
-                if (!ok) setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") }
+                if (!ok) setState { copy(errorState = EodUiStateError.PrintReceiptUnsupported()) }
             },
-            onFailure = { setState { copy(error = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ") } },
+            onFailure = { e -> setState { copy(errorState = EodUiStateError.PrintReceiptUnsupported(e)) } },
         )
     }
 
     fun reload() {
         val s = current
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
-            fallback = "โหลดรายงานไม่สำเร็จ",
-            onSuccess = { rep -> copy(report = rep) },
+            onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
+import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
@@ -81,7 +82,7 @@ fun ProfitContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

@@ -24,6 +24,7 @@ import app.devper.pharm.presentation.reports.components.EodBillRow
 import app.devper.pharm.presentation.reports.components.EodBillsHeader
 import app.devper.pharm.presentation.reports.components.EodClosedReceiptCard
 import app.devper.pharm.presentation.reports.components.EodControls
+import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
@@ -102,7 +103,7 @@ fun EodContent(
         onCancel = callbacks.onCancelClose,
     )
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleBills = listOf(

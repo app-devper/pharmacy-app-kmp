@@ -1,6 +1,8 @@
 package app.devper.pharm.presentation.reports
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.common.error.CommonUiStateMessage
+import app.devper.pharm.presentation.reports.exception.ProfitUiStateError
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.param.ReportRangeParam
@@ -12,7 +14,6 @@ import app.devper.pharm.presentation.reports.internal.toYmd
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
-private const val LOAD_REPORT_FAILED = "โหลดรายงานไม่สำเร็จ"
 
 class ProfitViewModel(
     private val getProfitReport: GetProfitReportUseCase,
@@ -41,29 +42,30 @@ class ProfitViewModel(
     }
 
     fun onSort(sort: ProfitSort) = setState { copy(sort = sort) }
-    fun dismissMessage() = setState { copy(message = null) }
+    fun dismissMessage() = setState { copy(message = null, messageState = null) }
 
     fun onExportExcel() {
         val s = current
         val rows = s.sortedRows
         if (rows.isEmpty()) {
-            setState { copy(message = ErrorMessages.EXPORT_EMPTY) }
+            setState { copy(messageState = CommonUiStateMessage.ExportEmpty) }
             return
         }
         setState { copy(exporting = true) }
         launchResult(
             block = { exportProfitCsv(ExportProfitCsvParam(s.dateRange.fromDate, s.dateRange.toDate, rows)) },
             onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
-            onFailure = { e -> setState { copy(exporting = false, error = e.message ?: ErrorMessages.EXPORT_FAILED) } },
+            onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
         )
     }
 
     fun reload() {
         val s = current
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = { getProfitReport(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
-            fallback = LOAD_REPORT_FAILED,
-            onSuccess = { rep -> copy(report = rep) },
+            onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = ProfitUiStateError.LoadReportFailed(e)) } },
         )
     }
 }
