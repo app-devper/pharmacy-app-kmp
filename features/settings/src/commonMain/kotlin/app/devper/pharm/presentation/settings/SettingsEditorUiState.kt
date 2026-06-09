@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.settings
 
+import app.devper.pharm.common.AppException
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class SettingsFormFields(
@@ -34,12 +36,13 @@ data class SettingsEditorUiState(
     val tab: SettingsTab = SettingsTab.Store,
     override val loading: Boolean = false,
     val saving: Boolean = false,
-    val message: String? = null,
-    override val error: String? = null,
+    val messageState: CommonUiStateMessage? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<SettingsEditorUiState> {
 
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override val domainError: AppException? get() = errorState
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val dirty: Boolean get() = form != baseline
     val canSave: Boolean

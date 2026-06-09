@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SettingsStrings {
+    val settingsLoadFailed: String
     val settingsToolbarSubtitle: String
     val settingsDirtySubtitle: String
     val settingsTabStore: String

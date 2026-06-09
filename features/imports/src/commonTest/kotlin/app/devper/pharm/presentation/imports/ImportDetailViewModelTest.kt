@@ -40,7 +40,7 @@ class ImportDetailViewModelTest {
         advanceUntilIdle()
         assertEquals("po1", model.state.value.po?.id)
         assertFalse(model.state.value.loading)
-        assertNull(model.state.value.error)
+        assertNull(model.state.value.errorState)
     }
 
     @Test

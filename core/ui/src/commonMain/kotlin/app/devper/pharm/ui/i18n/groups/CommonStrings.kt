@@ -40,6 +40,7 @@ interface CommonStrings {
     val commonDeleteFailed: String
     val commonExportFailed: String
     val commonExportEmpty: String
+    val commonSaved: String
     val commonErrorAuth: String
     val commonErrorForbidden: String
     val commonErrorNotFound: String

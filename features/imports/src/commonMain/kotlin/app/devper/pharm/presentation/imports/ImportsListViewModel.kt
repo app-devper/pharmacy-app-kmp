@@ -1,12 +1,12 @@
 package app.devper.pharm.presentation.imports
 
-import app.devper.pharm.common.error.ErrorMessages
-
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.domain.usecase.ConfirmPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.DeletePurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.GetPurchaseOrdersUseCase
+import app.devper.pharm.presentation.imports.exception.ImportsUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class ImportsListViewModel(
@@ -19,10 +19,14 @@ class ImportsListViewModel(
 
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
-    fun reload() = launchLoad(
-        block = { getPurchaseOrders() },
-        onSuccess = { list -> copy(orders = list) },
-    )
+    fun reload() {
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
+            block = { getPurchaseOrders() },
+            onSuccess = { list -> setState { copy(loading = false, orders = list) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+        )
+    }
 
     fun requestConfirm(order: PurchaseOrderSummary) {
         if (order.status != PurchaseOrderStatus.Draft) return
@@ -32,7 +36,7 @@ class ImportsListViewModel(
 
     fun confirmConfirmed() {
         val target = current.pendingConfirm ?: return
-        setState { copy(busy = true, error = null) }
+        setState { copy(busy = true, errorState = null) }
         launchResult(
             block = { confirmPurchaseOrder(target.id) },
             onSuccess = {
@@ -44,7 +48,7 @@ class ImportsListViewModel(
                     copy(
                         busy = false,
                         pendingConfirm = null,
-                        error = e.message ?: "ยืนยันรับเข้าไม่สำเร็จ",
+                        errorState = ImportsUiStateError.ConfirmFailed(e),
                     )
                 }
             },
@@ -59,7 +63,7 @@ class ImportsListViewModel(
 
     fun deleteConfirmed() {
         val target = current.pendingDelete ?: return
-        setState { copy(busy = true, error = null) }
+        setState { copy(busy = true, errorState = null) }
         launchResult(
             block = { deletePurchaseOrder(target.id) },
             onSuccess = {
@@ -76,7 +80,7 @@ class ImportsListViewModel(
                     copy(
                         busy = false,
                         pendingDelete = null,
-                        error = e.message ?: ErrorMessages.DELETE_FAILED,
+                        errorState = CommonUiStateError.DeleteFailed(e),
                     )
                 }
             },

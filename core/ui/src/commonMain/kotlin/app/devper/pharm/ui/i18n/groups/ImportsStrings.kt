@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface ImportsStrings {
+    val importsConfirmFailed: String
     val importsTitle: String
     val importsSubtitle: String
     val importsSearchPlaceholder: String

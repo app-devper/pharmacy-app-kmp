@@ -32,4 +32,5 @@ fun AppException.localizeCommon(s: PharmStrings): String = when (this) {
 
 fun CommonUiStateMessage.localize(s: PharmStrings): String = when (this) {
     is CommonUiStateMessage.ExportEmpty -> s.commonExportEmpty
+    is CommonUiStateMessage.Saved -> s.commonSaved
 }

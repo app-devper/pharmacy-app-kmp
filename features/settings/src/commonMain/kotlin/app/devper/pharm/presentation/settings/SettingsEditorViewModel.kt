@@ -1,8 +1,9 @@
 package app.devper.pharm.presentation.settings
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.common.error.ErrorMessages
-import app.devper.pharm.common.userMessageOr
+import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.common.error.CommonUiStateMessage
+import app.devper.pharm.presentation.settings.exception.SettingsUiStateError
 import app.devper.pharm.domain.model.KySettings
 import app.devper.pharm.domain.model.PharmacistInfo
 import app.devper.pharm.domain.model.Settings
@@ -17,8 +18,6 @@ import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-private const val LOAD_SETTINGS_FAILED = "โหลดการตั้งค่าไม่สำเร็จ"
-private const val SAVED_OK = "บันทึกแล้ว"
 
 class SettingsEditorViewModel(
     settings: SettingsProvider,
@@ -39,26 +38,28 @@ class SettingsEditorViewModel(
             }
             .launchIn(viewModelScope)
 
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = { refreshSettings() },
-            fallback = LOAD_SETTINGS_FAILED,
             onSuccess = { fresh ->
                 hydrated = true
                 val fields = fresh.toForm()
-                copy(baseline = fields, form = if (dirty) form else fields)
+                setState { copy(loading = false, baseline = fields, form = if (dirty) form else fields) }
             },
+            onFailure = { e -> setState { copy(loading = false, errorState = SettingsUiStateError.LoadSettingsFailed(e)) } },
         )
     }
 
     fun reload() {
         if (current.saving) return
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = { refreshSettings() },
-            fallback = LOAD_SETTINGS_FAILED,
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
-                copy(baseline = fields, form = if (dirty) form else fields)
+                setState { copy(loading = false, baseline = fields, form = if (dirty) form else fields) }
             },
+            onFailure = { e -> setState { copy(loading = false, errorState = SettingsUiStateError.LoadSettingsFailed(e)) } },
         )
     }
 
@@ -85,18 +86,18 @@ class SettingsEditorViewModel(
     fun submit() {
         if (!current.canSave) return
         val f = current.form
-        setState { copy(saving = true, error = null, message = null) }
+        setState { copy(saving = true, errorState = null, messageState = null) }
         launchResult(
             block = { updateSettings(f.toParam()) },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
-                setState { copy(saving = false, baseline = fields, form = fields, message = SAVED_OK) }
+                setState { copy(saving = false, baseline = fields, form = fields, messageState = CommonUiStateMessage.Saved) }
             },
-            onFailure = { e -> setState { copy(saving = false, error = e.userMessageOr(ErrorMessages.SAVE_FAILED)) } },
+            onFailure = { e -> setState { copy(saving = false, errorState = CommonUiStateError.SaveFailed(e)) } },
         )
     }
 
-    fun dismissMessage() = setState { copy(message = null) }
+    fun dismissMessage() = setState { copy(messageState = null) }
 
     private fun patch(transform: SettingsFormFields.() -> SettingsFormFields) {
         setState { copy(form = form.transform()) }

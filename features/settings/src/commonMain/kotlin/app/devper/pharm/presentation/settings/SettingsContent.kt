@@ -15,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.presentation.settings.i18n.localizeSettings
+import app.devper.pharm.ui.i18n.localize
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -60,8 +62,8 @@ fun SettingsContent(
             },
         )
 
-        state.message?.let { msg ->
-            SettingsMessageBanner(message = msg, onDismiss = editor.onDismissMessage)
+        state.messageState?.let { msg ->
+            SettingsMessageBanner(message = msg.localize(strings), onDismiss = editor.onDismissMessage)
         }
 
         PharmTabBar(
@@ -81,7 +83,7 @@ fun SettingsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = editor.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeSettings(strings), onDismiss = editor.onDismissError)
 }
 
 @Composable

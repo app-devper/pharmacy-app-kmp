@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.imports
 
 import app.devper.pharm.domain.model.PurchaseOrderStatus
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.ui.common.LoadableUiState
 
@@ -11,11 +12,13 @@ data class ImportsListUiState(
     val pendingConfirm: PurchaseOrderSummary? = null,
     val pendingDelete: PurchaseOrderSummary? = null,
     val busy: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<ImportsListUiState> {
 
+    override val domainError: AppException? get() = errorState
+
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val filtered: List<PurchaseOrderSummary> = if (query.isBlank()) {
         orders

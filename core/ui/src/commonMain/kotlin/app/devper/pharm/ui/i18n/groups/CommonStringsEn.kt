@@ -40,6 +40,7 @@ object CommonStringsEn : CommonStrings {
     override val commonDeleteFailed = "Failed to delete"
     override val commonExportFailed = "Export failed"
     override val commonExportEmpty = "No data to export yet"
+    override val commonSaved = "Saved"
     override val commonErrorAuth = "Please sign in again"
     override val commonErrorForbidden = "You don't have permission for this action"
     override val commonErrorNotFound = "Not found"
