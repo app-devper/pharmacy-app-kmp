@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SuppliersStrings {
+    val suppliersFormNotFound: String
     val suppliersListSubtitle: String
     val suppliersSearchPlaceholder: String
     val suppliersAddCta: String

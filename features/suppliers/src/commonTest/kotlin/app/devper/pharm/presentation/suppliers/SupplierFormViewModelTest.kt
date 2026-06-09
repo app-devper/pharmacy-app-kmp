@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.suppliers
 
+import app.devper.pharm.presentation.suppliers.exception.SupplierFormUiStateError
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.repository.FakeSupplierRepository
@@ -11,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -80,7 +83,7 @@ class SupplierFormViewModelTest {
         val (vm, _) = newVm(dispatchers, FakeSupplierRepository(seed = emptyList()))
         vm.init(SupplierFormMode.Edit("missing"))
         advanceUntilIdle()
-        assertEquals("ไม่พบผู้จัดจำหน่าย", vm.state.value.error)
+        assertIs<SupplierFormUiStateError.NotFound>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 
@@ -143,7 +146,7 @@ class SupplierFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.saving)
     }
 
@@ -152,8 +155,8 @@ class SupplierFormViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.init(SupplierFormMode.Edit("missing"))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }
