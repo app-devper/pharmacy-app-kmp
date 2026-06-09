@@ -4,6 +4,7 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.extension.buildStockCountInput
 import app.devper.pharm.domain.extension.parsePendingStockCounts
 import app.devper.pharm.domain.extension.searchByQuery
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
 
 data class StockCountFormUiState(
@@ -15,7 +16,7 @@ data class StockCountFormUiState(
     val note: String = "",
     val query: String = "",
     val showSubmitConfirm: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : BaseFormUiState<StockCountFormUiState> {
     private val drugById: Map<String, Drug> = drugs.associateBy { it.id }
 
@@ -56,7 +57,9 @@ data class StockCountFormUiState(
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
-    override fun withError(error: String?) = copy(error = error)
+    override val domainError: AppException? get() = errorState
+    override fun withError(error: String?) = if (error == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 }
 
 data class StockCountDiscrepancy(

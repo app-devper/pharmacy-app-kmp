@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
 
 sealed interface DrugFormMode {
@@ -46,7 +47,7 @@ data class DrugFormUiState(
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : BaseFormUiState<DrugFormUiState> {
 
     override val canSubmit: Boolean
@@ -64,5 +65,7 @@ data class DrugFormUiState(
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
-    override fun withError(error: String?) = copy(error = error)
+    override val domainError: AppException? get() = errorState
+    override fun withError(error: String?) = if (error == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 }

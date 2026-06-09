@@ -81,4 +81,5 @@ object StockStringsEn : StockStrings {
     override val stockInvalidExpiry = "Invalid expiry date (format YYYY-MM-DD)"
     override val stockAddLotFailed = "Failed to add lot"
     override val stockRemoveLotFailed = "Failed to remove lot"
+    override val stockDrugFormNotFound = "Drug not found"
 }

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.presentation.stock.exception.DrugFormUiStateError
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -15,6 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -100,7 +103,7 @@ class DrugFormViewModelTest {
         val (vm, _) = newVm(dispatchers, FakeDrugRepository(seed = emptyList()))
         vm.init(DrugFormMode.Edit("does-not-exist"))
         advanceUntilIdle()
-        assertEquals("ไม่พบยา", vm.state.value.error)
+        assertIs<DrugFormUiStateError.NotFound>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 
@@ -271,7 +274,7 @@ class DrugFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.saving)
     }
 
@@ -280,8 +283,8 @@ class DrugFormViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.init(DrugFormMode.Edit("missing"))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }

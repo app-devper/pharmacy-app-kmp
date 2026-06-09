@@ -6,6 +6,10 @@ sealed class StockUiStateError(message: String, cause: Throwable? = null) : AppE
     class LoadHistoryFailed(cause: Throwable? = null) : StockUiStateError("stock.load_history_failed", cause)
 }
 
+sealed class DrugFormUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
+    class NotFound : DrugFormUiStateError("stock.drug_not_found")
+}
+
 sealed class DrugLotsUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
     class LoadLotsFailed(cause: Throwable? = null) : DrugLotsUiStateError("stock.load_lots_failed", cause)
     class InvalidExpiry : DrugLotsUiStateError("stock.invalid_expiry")

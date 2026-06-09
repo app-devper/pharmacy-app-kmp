@@ -153,7 +153,7 @@ class ImportFormViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.init(ImportFormMode.Edit("missing"))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 
@@ -300,7 +300,7 @@ class ImportFormViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
     }
 
     @Test
@@ -308,8 +308,8 @@ class ImportFormViewModelTest {
         val (vm, _) = newVm(dispatchers)
         vm.init(ImportFormMode.Edit("missing"))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }

@@ -1,6 +1,8 @@
 package app.devper.pharm.presentation.stock
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.presentation.stock.exception.DrugFormUiStateError
+
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -70,18 +72,18 @@ class DrugFormViewModel(
     }
 
     private fun hydrateForEdit(drugId: String) {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getDrugs() },
             onSuccess = { list ->
                 val drug = list.firstOrNull { it.id == drugId }
                 if (drug == null) {
-                    setState { copy(loading = false, error = "ไม่พบยา") }
+                    setState { copy(loading = false, errorState = DrugFormUiStateError.NotFound()) }
                 } else {
                     setState { copy(loading = false, form = drug.toForm()) }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 
