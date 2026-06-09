@@ -31,4 +31,5 @@ object SettingsStringsEn : SettingsStrings {
     override val settingsKySkipAutoHint = "When enabled, the cashier skips KyCaptureSheet and checks out immediately"
     override val settingsKyDefaultBuyerAddress = "Default buyer address (KY 10)"
     override val settingsKyDefaultBuyerAddressHint = "Used as the default when KyCaptureSheet opens"
+    override val settingsLoadFailed = "Failed to load settings"
 }

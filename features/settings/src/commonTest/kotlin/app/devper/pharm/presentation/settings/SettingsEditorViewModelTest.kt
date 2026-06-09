@@ -7,9 +7,11 @@ import app.devper.pharm.domain.usecase.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
+import app.devper.pharm.common.error.CommonUiStateMessage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -59,7 +61,7 @@ class SettingsEditorViewModelTest {
         model.submit()
         advanceUntilIdle()
         assertNotNull(repo.lastUpdate)
-        assertEquals("บันทึกแล้ว", model.state.value.message)
+        assertIs<CommonUiStateMessage.Saved>(model.state.value.messageState)
         assertFalse(model.state.value.saving)
     }
 }

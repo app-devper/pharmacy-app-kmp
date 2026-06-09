@@ -60,4 +60,5 @@ object ImportsStringsEn : ImportsStrings {
     override val importsConfirmDeleteReceivedMessage = "Delete this import? — only unconfirmed docs can be deleted"
     override val importsHeaderInvoiceNo = "Invoice no."
     override val importsHeaderInvoicePlaceholder = "Invoice / packing slip"
+    override val importsConfirmFailed = "Failed to confirm receipt"
 }

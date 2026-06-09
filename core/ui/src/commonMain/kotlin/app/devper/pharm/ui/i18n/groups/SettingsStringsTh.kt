@@ -31,4 +31,5 @@ object SettingsStringsTh : SettingsStrings {
     override val settingsKySkipAutoHint = "เมื่อเปิด ผู้ขายจะข้าม KyCaptureSheet ไปออกบิลทันที"
     override val settingsKyDefaultBuyerAddress = "ที่อยู่ผู้ซื้อเริ่มต้น (ขย.10)"
     override val settingsKyDefaultBuyerAddressHint = "ใช้เป็นค่าเริ่มต้นเมื่อเปิด KyCaptureSheet"
+    override val settingsLoadFailed = "โหลดการตั้งค่าไม่สำเร็จ"
 }

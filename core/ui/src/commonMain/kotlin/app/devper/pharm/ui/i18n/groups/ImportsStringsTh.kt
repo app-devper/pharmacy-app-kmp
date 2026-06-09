@@ -60,4 +60,5 @@ object ImportsStringsTh : ImportsStrings {
     override val importsConfirmDeleteReceivedMessage = "ต้องการลบใบนำเข้านี้ใช่หรือไม่ — ใบที่ยังไม่ได้ยืนยันเท่านั้นที่ลบได้"
     override val importsHeaderInvoiceNo = "เลขที่ Invoice"
     override val importsHeaderInvoicePlaceholder = "ใบส่งของ"
+    override val importsConfirmFailed = "ยืนยันรับเข้าไม่สำเร็จ"
 }
