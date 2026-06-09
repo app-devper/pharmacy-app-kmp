@@ -24,4 +24,5 @@ object SuppliersStringsEn : SuppliersStrings {
     override val suppliersFormAddressPlaceholder = "Street / sub-district / district / province"
     override val suppliersFormTaxId = "Tax identification number"
     override val suppliersFormNotesPlaceholder = "Order terms / discounts / additional details"
+    override val suppliersFormNotFound = "Supplier not found"
 }

@@ -24,4 +24,5 @@ object SuppliersStringsTh : SuppliersStrings {
     override val suppliersFormAddressPlaceholder = "บ้านเลขที่ / ถนน / ตำบล / อำเภอ / จังหวัด"
     override val suppliersFormTaxId = "เลขประจำตัวผู้เสียภาษี"
     override val suppliersFormNotesPlaceholder = "เงื่อนไขการสั่งซื้อ / ส่วนลด / รายละเอียดเพิ่มเติม"
+    override val suppliersFormNotFound = "ไม่พบผู้จัดจำหน่าย"
 }

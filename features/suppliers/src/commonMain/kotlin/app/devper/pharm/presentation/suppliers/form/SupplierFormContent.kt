@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.suppliers.SupplierFormFields
 import app.devper.pharm.presentation.suppliers.SupplierFormMode
 import app.devper.pharm.presentation.suppliers.SupplierFormUiState
+import app.devper.pharm.presentation.suppliers.i18n.localizeSupplierForm
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -64,7 +65,7 @@ fun SupplierFormContent(
             }
         }
     }
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeSupplierForm(s), onDismiss = callbacks.onDismissError)
 }
 
 @Preview

@@ -1,11 +1,12 @@
 package app.devper.pharm.presentation.suppliers
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.SupplierInput
 import app.devper.pharm.domain.param.UpdateSupplierParam
 import app.devper.pharm.domain.usecase.AddSupplierUseCase
 import app.devper.pharm.domain.usecase.GetSuppliersUseCase
 import app.devper.pharm.domain.usecase.UpdateSupplierUseCase
+import app.devper.pharm.presentation.suppliers.exception.SupplierFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class SupplierFormViewModel(
@@ -35,13 +36,13 @@ class SupplierFormViewModel(
     }
 
     private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getSuppliers() },
             onSuccess = { list ->
                 val s = list.firstOrNull { it.id == id }
                 if (s == null) {
-                    setState { copy(loading = false, error = "ไม่พบผู้จัดจำหน่าย") }
+                    setState { copy(loading = false, errorState = SupplierFormUiStateError.NotFound()) }
                 } else {
                     setState {
                         copy(
@@ -58,7 +59,7 @@ class SupplierFormViewModel(
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 
