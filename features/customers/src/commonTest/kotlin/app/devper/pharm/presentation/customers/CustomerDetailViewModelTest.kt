@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.presentation.customers.exception.CustomerDetailUiStateError
+
 import app.devper.pharm.common.value.Money
 
 import app.devper.pharm.common.AppDispatchers
@@ -13,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -73,7 +76,7 @@ class CustomerDetailViewModelTest {
         assertEquals(2, s.sales.size)
         assertEquals("c1", repo.lastSalesQuery)
         assertFalse(s.loading)
-        assertNull(s.error)
+        assertNull(s.errorState)
     }
 
     @Test
@@ -113,7 +116,7 @@ class CustomerDetailViewModelTest {
         advanceUntilIdle()
         val s = vm.state.value
         assertNull(s.customer)
-        assertEquals("ไม่พบลูกค้า", s.error)
+        assertIs<CustomerDetailUiStateError.CustomerNotFound>(s.errorState)
         assertFalse(s.customerLoading)
         assertFalse(s.salesLoading)
     }
@@ -124,7 +127,7 @@ class CustomerDetailViewModelTest {
         advanceUntilIdle()
         vm.load("c1")
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.customerLoading)
     }
 
@@ -141,7 +144,7 @@ class CustomerDetailViewModelTest {
         vm.load("c1")
         advanceUntilIdle()
         assertEquals("c1", vm.state.value.customer?.id)
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.salesLoading)
         assertTrue(vm.state.value.sales.isEmpty())
     }
@@ -163,8 +166,8 @@ class CustomerDetailViewModelTest {
         advanceUntilIdle()
         vm.load("c1")
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 }

@@ -26,4 +26,7 @@ object CustomersStringsTh : CustomersStrings {
     override val customersTierRetail = "หน้าร้าน"
     override val customersTierRegular = "ทั่วไป"
     override val customersTierWholesale = "ส่ง"
+    override val customersDetailNotFound = "ไม่พบลูกค้า"
+    override val customersDetailLoadCustomerFailed = "โหลดข้อมูลลูกค้าไม่สำเร็จ"
+    override val customersDetailLoadSalesFailed = "โหลดประวัติการขายไม่สำเร็จ"
 }

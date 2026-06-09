@@ -1,14 +1,10 @@
 package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.common.platform.FilePicker
-import app.devper.pharm.common.userMessageOr
 import app.devper.pharm.domain.extension.parseBulkImportJson
 import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
+import app.devper.pharm.presentation.bulkimport.exception.BulkImportUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
-
-private const val PICK_FILE_FAILED = "เลือกไฟล์ไม่สำเร็จ"
-private const val IMPORT_FAILED = "นำเข้าไม่สำเร็จ"
-private const val NO_ROWS = "ไม่มีรายการให้นำเข้า"
 
 class BulkImportViewModel(
     private val bulkImportDrugs: BulkImportDrugsUseCase,
@@ -20,7 +16,7 @@ class BulkImportViewModel(
             text = value,
             parsed = emptyList(),
             previewCount = null,
-            parseError = null,
+            parseErrorState = null,
             result = null,
         )
     }
@@ -35,7 +31,7 @@ class BulkImportViewModel(
                 }
             },
             onFailure = { e ->
-                setState { copy(error = e.userMessageOr(PICK_FILE_FAILED)) }
+                setState { copy(errorState = BulkImportUiStateError.PickFileFailed(e)) }
             },
         )
     }
@@ -44,29 +40,30 @@ class BulkImportViewModel(
         parseBulkImportJson(current.text).fold(
             onSuccess = { list ->
                 setState {
-                    copy(parsed = list, previewCount = list.size, parseError = null, result = null)
+                    copy(parsed = list, previewCount = list.size, parseErrorState = null, result = null)
                 }
             },
             onFailure = { e ->
-                setState { copy(parsed = emptyList(), previewCount = null, parseError = e.message) }
+                setState { copy(parsed = emptyList(), previewCount = null, parseErrorState = BulkImportUiStateError.InvalidJson(e)) }
             },
         )
     }
 
     fun submit() {
         val parsed = parseBulkImportJson(current.text).getOrElse { e ->
-            setState { copy(parsed = emptyList(), parseError = e.message) }
+            setState { copy(parsed = emptyList(), parseErrorState = BulkImportUiStateError.InvalidJson(e)) }
             return
         }
         if (parsed.isEmpty()) {
-            setState { copy(parsed = emptyList(), parseError = NO_ROWS) }
+            setState { copy(parsed = emptyList(), parseErrorState = BulkImportUiStateError.NoRows()) }
             return
         }
         setState { copy(parsed = parsed, previewCount = parsed.size, result = null) }
-        launchLoad(
+        setState { copy(submitting = true, errorState = null) }
+        launchResult(
             block = { bulkImportDrugs(parsed) },
-            fallback = IMPORT_FAILED,
-            onSuccess = { res -> copy(result = res) },
+            onSuccess = { res -> setState { copy(submitting = false, result = res) } },
+            onFailure = { e -> setState { copy(submitting = false, errorState = BulkImportUiStateError.ImportFailed(e)) } },
         )
     }
 
