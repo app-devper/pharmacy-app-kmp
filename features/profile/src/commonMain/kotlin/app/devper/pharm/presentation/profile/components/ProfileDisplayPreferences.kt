@@ -74,7 +74,7 @@ internal fun ProfileDisplayPreferences(
                 onSelect = callbacks.onLocaleChange,
                 scrollable = false,
             )
-            state.localeChangeMessage?.let { _ ->
+            if (state.localeChangeApplied) {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(text = strings.settingsLocaleAppliedInline, style = PharmText.meta.copy(color = pharmTokens.colors.successFg))
                     Text(text = strings.settingsLocaleRestartHint, style = PharmText.meta.copy(color = pharmTokens.colors.fg2))

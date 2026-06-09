@@ -1,6 +1,8 @@
 package app.devper.pharm.presentation.profile
 
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.presentation.profile.exception.ProfileUiStateError
+
+import app.devper.pharm.common.error.CommonUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.DensityPreference
@@ -57,7 +59,7 @@ class ProfileViewModel(
     fun onEmail(v: String) = patch { copy(email = v) }
 
     fun openPasswordPanel() = setState {
-        copy(showPasswordPanel = true, password = PasswordFormFields(), passwordError = null, passwordSaved = false)
+        copy(showPasswordPanel = true, password = PasswordFormFields(), passwordErrorState = null, passwordSaved = false)
     }
 
     fun closePasswordPanel() = setState { copy(showPasswordPanel = false) }
@@ -66,7 +68,7 @@ class ProfileViewModel(
     fun onNewPassword(v: String) = patchPassword { copy(newPassword = v) }
     fun onConfirmPassword(v: String) = patchPassword { copy(confirmPassword = v) }
 
-    fun dismissPasswordError() = setState { copy(passwordError = null) }
+    fun dismissPasswordError() = setState { copy(passwordErrorState = null) }
 
     fun onThemeChange(value: String) {
         setTheme(ThemePreference.parse(value))
@@ -84,15 +86,15 @@ class ProfileViewModel(
         val parsed = LocalePreference.parse(value)
         if (parsed.wire == current.locale) return
         setLocale(parsed)
-        setState { copy(localeChangeMessage = LOCALE_RESTART_MESSAGE) }
+        setState { copy(localeChangeApplied = true) }
     }
 
-    fun dismissLocaleChangeMessage() = setState { copy(localeChangeMessage = null) }
+    fun dismissLocaleChangeMessage() = setState { copy(localeChangeApplied = false) }
 
     fun submitPasswordChange() {
         val pwd = current.password
         if (!pwd.canSubmit) return
-        setState { copy(passwordSaving = true, passwordError = null) }
+        setState { copy(passwordSaving = true, passwordErrorState = null) }
         launchResult(
             block = { changePassword(ChangePasswordParam(pwd.oldPassword, pwd.newPassword)) },
             onSuccess = {
@@ -106,7 +108,7 @@ class ProfileViewModel(
                 }
             },
             onFailure = { e ->
-                setState { copy(passwordSaving = false, passwordError = e.message ?: "เปลี่ยนรหัสผ่านไม่สำเร็จ") }
+                setState { copy(passwordSaving = false, passwordErrorState = ProfileUiStateError.PasswordChangeFailed(e)) }
             },
         )
     }
@@ -124,14 +126,14 @@ class ProfileViewModel(
     }
 
     private fun load() {
-        setState { copy(loading = true, error = null) }
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getProfile(Unit) },
             onSuccess = { user ->
                 hydrate(user)
                 setState { copy(loading = false) }
             },
-            onFailure = { e -> setState { copy(loading = false, error = e.message ?: ErrorMessages.LOAD_FAILED) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 
@@ -158,6 +160,5 @@ class ProfileViewModel(
     }
 
     private companion object {
-        const val LOCALE_RESTART_MESSAGE = "ภาษาจะเปลี่ยนหลังจากเปิดแอปใหม่"
     }
 }
