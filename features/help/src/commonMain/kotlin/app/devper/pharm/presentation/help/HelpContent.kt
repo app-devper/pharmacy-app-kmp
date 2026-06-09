@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.presentation.help.i18n.localize
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.help.MarkdownText
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -79,7 +80,7 @@ fun HelpContent(
             else -> HelpBody(state = state, callbacks = callbacks)
         }
     }
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorTyped?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

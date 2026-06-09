@@ -1,13 +1,14 @@
 package app.devper.pharm.presentation.help
 
+import app.devper.pharm.presentation.help.exception.HelpException
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HelpViewModelTest {
@@ -19,25 +20,25 @@ class HelpViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertEquals("# คู่มือผู้ใช้\n\n...", vm.state.value.markdown)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorTyped)
     }
 
     @Test
-    fun load_failure_sets_error_and_clears_loading() = runVmTest { _ ->
+    fun load_failure_sets_typed_error_and_clears_loading() = runVmTest { _ ->
         val loader = FakeMarkdownLoader(failureMessage = "ไฟล์หาย")
         val vm = HelpViewModel(loader)
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
-        assertNotNull(vm.state.value.error)
+        assertTrue(vm.state.value.errorTyped is HelpException.Markdown.LoadFailed)
     }
 
     @Test
-    fun dismiss_error_clears_error_field() = runVmTest { _ ->
+    fun dismiss_error_clears_typed_error() = runVmTest { _ ->
         val loader = FakeMarkdownLoader(failureMessage = "ไฟล์หาย")
         val vm = HelpViewModel(loader)
         advanceUntilIdle()
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorTyped)
     }
 
     @Test

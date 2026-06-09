@@ -8,4 +8,5 @@ object HelpStringsTh : HelpStrings {
     override val helpTipFocusSearch = "โฟกัสช่องค้นหา"
     override val helpTipPaymentField = "ช่องรับเงิน"
     override val helpTipParkBill = "พักบิล"
+    override val helpLoadFailed = "โหลดคู่มือไม่สำเร็จ"
 }
