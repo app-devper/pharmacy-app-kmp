@@ -1,0 +1,71 @@
+package app.devper.pharm.ui.i18n.groups
+
+interface SellStrings {
+    val sellCart: String
+    val sellSearchPlaceholder: String
+    val sellNoResults: String
+    val sellEmptyCart: String
+    val sellEmptyCartHint: String
+    val sellSubtotal: String
+    val sellTotal: String
+    val sellNetTotal: String
+    val sellDiscount: String
+    val sellDiscountLine: String
+    val sellDiscountCart: String
+    val sellDiscountPerUnit: String
+    val sellDiscountClear: String
+    val sellShowSubtotal: String
+    val sellHideSubtotal: String
+    val sellPayment: String
+    val sellReceived: String
+    val sellChange: String
+    val sellClearReceived: String
+    val sellCheckout: String
+    val sellCheckoutSave: String
+    val sellReceiptDone: String
+    val sellReceiptFailed: String
+    val sellCustomer: String
+    val sellCustomerWalkIn: String
+    val sellCustomerSelect: String
+    val sellCustomerClear: String
+    val sellCustomerSearchPlaceholder: String
+    val sellCustomerEmpty: String
+    val sellCustomerNotFound: String
+    val sellPharmacist: String
+    val sellPrescriber: String
+    val sellBuyerName: String
+    val sellBuyerAddress: String
+    val sellPrescriptionNo: String
+    val sellHospital: String
+    val sellPatient: String
+    val sellPurpose: String
+    val sellAllergies: String
+    val sellSaveKyBeforeBill: String
+    val sellControlledRx: (Int) -> String
+    val sellControlledNote: String
+    val sellSkipKyTitle: String
+    val sellSkipKyConfirmCta: String
+    val sellSkipKyConfirm: String
+    val sellPark: String
+    val sellParked: String
+    val sellNewBill: String
+    val sellCancelBillTitle: String
+    val sellCancelBillConfirm: (String) -> String
+    val sellCancelBillReason: String
+    val sellCancelBillReasonExample: String
+    val sellCancelBillCta: String
+    val sellShortcuts: String
+    val sellPriceOriginal: String
+    val sellPriceAfterDiscount: String
+    val sellPickUnit: String
+    val sellRemaining: String
+    val sellShortfall: String
+    val sellShortfallShort: (String) -> String
+    val sellOversold: String
+    val sellOversoldHint: String
+    val sellRemoveItemTitle: String
+    val sellRemoveCart: String
+    val sellPrintCta: String
+    val sellScannerOn: String
+    val sellOfflineQueueHint: String
+}
