@@ -76,4 +76,9 @@ object StockStringsTh : StockStrings {
     override val stockExampleReg = "เช่น 1A 123/45"
     override val stockExampleBarcode = "8851111222333"
     override val stockBarcodeScanHint = "สแกนหรือพิมพ์"
+    override val stockLoadHistoryFailed = "โหลดประวัติไม่สำเร็จ"
+    override val stockLoadLotsFailed = "โหลดล็อตไม่สำเร็จ"
+    override val stockInvalidExpiry = "วันหมดอายุไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)"
+    override val stockAddLotFailed = "เพิ่มล็อตไม่สำเร็จ"
+    override val stockRemoveLotFailed = "ลบล็อตไม่สำเร็จ"
 }

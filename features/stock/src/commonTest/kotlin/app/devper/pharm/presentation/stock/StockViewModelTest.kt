@@ -30,7 +30,7 @@ class StockViewModelTest {
         advanceUntilIdle()
         assertEquals(2, vm.state.value.drugs.size)
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test

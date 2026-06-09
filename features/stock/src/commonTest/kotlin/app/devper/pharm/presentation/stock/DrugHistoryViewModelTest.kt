@@ -42,7 +42,7 @@ class DrugHistoryViewModelTest {
         advanceUntilIdle()
         val s = vm.state.value
         assertFalse(s.loading)
-        assertNull(s.error)
+        assertNull(s.errorState)
         assertEquals("Paracetamol", s.drugName)
         assertEquals(2, s.items.size)
         assertEquals("Paracetamol", repo.lastFilter?.drugName)
@@ -55,7 +55,7 @@ class DrugHistoryViewModelTest {
         advanceUntilIdle()
         val s = vm.state.value
         assertFalse(s.loading)
-        assertNotNull(s.error)
+        assertNotNull(s.errorState)
     }
 }
 
