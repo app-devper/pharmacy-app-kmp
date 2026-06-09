@@ -7,11 +7,14 @@ import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
 import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
+import app.devper.pharm.presentation.offlinesync.exception.OfflineSyncUiStateError
+import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -96,7 +99,7 @@ class OfflineSyncViewModelTest {
         advanceUntilIdle()
         assertEquals("foo", queue.lastMarkSynced)
         assertNull(vm.state.value.confirmDiscardId)
-        assertEquals("ลบรายการค้างซิงก์แล้ว", vm.state.value.message)
+        assertIs<OfflineSyncUiStateMessage.Discarded>(vm.state.value.messageState)
 
         assertTrue(vm.state.value.pending.none { it.id == "foo" })
     }
@@ -115,9 +118,10 @@ class OfflineSyncViewModelTest {
         vm.discardConfirmed()
         advanceUntilIdle()
         assertEquals("foo", vm.state.value.confirmDiscardId)
-        assertNull(vm.state.value.message)
-        assertNotNull(vm.state.value.error)
-        assertTrue(vm.state.value.error!!.contains("disk full"))
+        assertNull(vm.state.value.messageState)
+        val error = vm.state.value.errorState
+        assertIs<OfflineSyncUiStateError.DiscardFailed>(error)
+        assertEquals("disk full", error.cause?.message)
         assertTrue(vm.state.value.pending.any { it.id == "foo" })
     }
 
@@ -128,7 +132,7 @@ class OfflineSyncViewModelTest {
         vm.discardConfirmed()
         advanceUntilIdle()
         assertNull(queue.lastMarkSynced)
-        assertNull(vm.state.value.message)
+        assertNull(vm.state.value.messageState)
     }
 
     @Test
@@ -141,9 +145,9 @@ class OfflineSyncViewModelTest {
         vm.askDiscard("x")
         vm.discardConfirmed()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.message)
+        assertNotNull(vm.state.value.messageState)
         vm.dismissMessage()
-        assertNull(vm.state.value.message)
+        assertNull(vm.state.value.messageState)
     }
 
     @Test
@@ -176,7 +180,7 @@ class OfflineSyncViewModelTest {
         assertEquals(seed.payloadJson, sales.lastReplay)
         assertEquals("p1", queue.lastMarkSynced)
         assertTrue(vm.state.value.pending.none { it.id == "p1" })
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -191,8 +195,10 @@ class OfflineSyncViewModelTest {
         vm.retry("p1")
         advanceUntilIdle()
         assertNull(queue.lastMarkSynced)
-        assertNotNull(vm.state.value.error)
-        assertTrue(vm.state.value.error!!.contains("p1"))
+        val error = vm.state.value.errorState
+        assertIs<OfflineSyncUiStateError.RetryFailed>(error)
+        assertEquals("p1", error.billId)
+        assertEquals("boom", error.cause?.message)
         assertTrue(vm.state.value.pending.any { it.id == "p1" })
     }
 
@@ -222,6 +228,68 @@ class OfflineSyncViewModelTest {
         vm.syncAll()
         advanceUntilIdle()
         assertNull(sales.lastReplay)
-        assertNull(vm.state.value.message)
+        assertNull(vm.state.value.messageState)
+    }
+
+    @Test
+    fun syncAll_sets_sync_started_message_with_count() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(
+                seed = listOf(
+                    pending("a", enqueuedAt = 100),
+                    pending("b", enqueuedAt = 200),
+                ),
+            ),
+        )
+        advanceUntilIdle()
+        vm.syncAll()
+        val message = vm.state.value.messageState
+        assertIs<OfflineSyncUiStateMessage.SyncStarted>(message)
+        assertEquals(2, message.count)
+        advanceUntilIdle()
+    }
+
+    @Test
+    fun syncAll_partial_failure_sets_typed_error_with_counts() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(
+                seed = listOf(
+                    pending("a", enqueuedAt = 100),
+                    pending("b", enqueuedAt = 200),
+                ),
+            ),
+            FakeSaleRepository(replayThrows = RuntimeException("network")),
+        )
+        advanceUntilIdle()
+        vm.syncAll()
+        advanceUntilIdle()
+        val error = vm.state.value.errorState
+        assertIs<OfflineSyncUiStateError.SyncPartialFailed>(error)
+        assertEquals(2, error.failed)
+        assertEquals(2, error.total)
+    }
+
+    @Test
+    fun retry_sets_retry_started_message_with_truncated_id() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(seed = listOf(pending("abcdefghij", enqueuedAt = 100))),
+        )
+        advanceUntilIdle()
+        vm.retry("abcdefghij")
+        val message = vm.state.value.messageState
+        assertIs<OfflineSyncUiStateMessage.RetryStarted>(message)
+        assertEquals("abcdefgh", message.billId)
+        advanceUntilIdle()
+    }
+
+    @Test
+    fun refresh_sets_refreshed_message() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.refresh()
+        assertIs<OfflineSyncUiStateMessage.Refreshed>(vm.state.value.messageState)
     }
 }

@@ -5,6 +5,8 @@ import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
 import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
+import app.devper.pharm.presentation.offlinesync.exception.OfflineSyncUiStateError
+import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -21,28 +23,30 @@ class OfflineSyncViewModel(
     init {
         offlineQueue.pending
             .onEach { pending -> setState { copy(pending = pending.sortedBy { it.enqueuedAt }) } }
-            .catch { e -> setState { copy(error = e.message ?: "โหลดรายการค้างซิงก์ไม่สำเร็จ") } }
+            .catch { e -> setState { copy(errorState = OfflineSyncUiStateError.LoadFailed(e)) } }
             .launchIn(viewModelScope)
     }
 
-    fun refresh() = setState { copy(message = "ดึงสถานะคิวล่าสุดแล้ว") }
+    fun refresh() = setState { copy(messageState = OfflineSyncUiStateMessage.Refreshed) }
 
     fun syncAll() {
         val snapshot = current.pending
         if (snapshot.isEmpty()) return
-        setState { copy(message = "เริ่มซิงก์ ${snapshot.size} รายการ") }
+        setState { copy(messageState = OfflineSyncUiStateMessage.SyncStarted(snapshot.size)) }
         viewModelScope.launch {
             var failed = 0
             snapshot.forEach { item ->
                 retrySale(item.id).onFailure { failed++ }
             }
-            if (failed > 0) setState { copy(error = "ส่งบิลไม่สำเร็จ $failed จาก ${snapshot.size} รายการ") }
+            if (failed > 0) {
+                setState { copy(errorState = OfflineSyncUiStateError.SyncPartialFailed(failed, snapshot.size)) }
+            }
         }
     }
 
     fun retry(id: String) {
         if (current.pending.none { it.id == id }) return
-        setState { copy(message = "เริ่มลองส่งบิล ${id.take(8)} ใหม่แล้ว") }
+        setState { copy(messageState = OfflineSyncUiStateMessage.RetryStarted(id.take(8))) }
         retryOne(id)
     }
 
@@ -51,7 +55,7 @@ class OfflineSyncViewModel(
             block = { retrySale(id) },
             onSuccess = { },
             onFailure = { e ->
-                setState { copy(error = "ส่งบิล ${id.take(8)} ไม่สำเร็จ: ${e.message ?: "ไม่ทราบสาเหตุ"}") }
+                setState { copy(errorState = OfflineSyncUiStateError.RetryFailed(id.take(8), e)) }
             },
         )
     }
@@ -63,11 +67,11 @@ class OfflineSyncViewModel(
         val id = current.confirmDiscardId ?: return
         launchResult(
             block = { markSynced(id) },
-            onSuccess = { setState { copy(confirmDiscardId = null, message = "ลบรายการค้างซิงก์แล้ว") } },
-            onFailure = { e -> setState { copy(error = "ลบรายการไม่สำเร็จ: ${e.message ?: "ไม่ทราบสาเหตุ"}") } },
+            onSuccess = { setState { copy(confirmDiscardId = null, messageState = OfflineSyncUiStateMessage.Discarded) } },
+            onFailure = { e -> setState { copy(errorState = OfflineSyncUiStateError.DiscardFailed(e)) } },
         )
     }
 
-    fun dismissMessage() = setState { copy(message = null) }
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissMessage() = setState { copy(messageState = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 }
