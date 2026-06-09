@@ -12,4 +12,5 @@ object MovementsStringsEn : MovementsStrings {
     override val movementsNextPage = "Next ›"
     override val movementsPagination: (Int, Int) -> String = { page, total -> "Page $page / $total" }
     override val movementsShownOf: (Int, Int) -> String = { shown, total -> "Showing $shown of $total items" }
+    override val movementsLoadHistoryFailed = "Failed to load history"
 }
