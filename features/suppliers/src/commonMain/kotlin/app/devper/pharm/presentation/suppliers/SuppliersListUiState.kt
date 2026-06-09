@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.suppliers
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.ui.common.LoadableUiState
 
@@ -9,11 +10,12 @@ data class SuppliersListUiState(
     val suppliers: List<Supplier> = emptyList(),
     val pendingDelete: Supplier? = null,
     val deleting: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<SuppliersListUiState> {
 
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
 
     val filtered: List<Supplier> = if (query.isBlank()) {
         suppliers

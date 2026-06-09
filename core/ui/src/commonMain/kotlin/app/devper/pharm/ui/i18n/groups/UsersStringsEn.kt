@@ -34,4 +34,7 @@ object UsersStringsEn : UsersStrings {
     override val usersFormPasswordCreate = "Password (≥8 chars)"
     override val usersFormPasswordNew = "New password (≥8 chars)"
     override val usersFormPasswordHint = "Password must be at least 8 characters"
+    override val usersRoleChangeFailed = "Failed to change role"
+    override val usersStatusChangeFailed = "Failed to change status"
+    override val usersSetPasswordFailed = "Failed to set password"
 }

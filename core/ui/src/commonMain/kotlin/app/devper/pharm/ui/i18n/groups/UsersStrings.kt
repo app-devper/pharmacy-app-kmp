@@ -1,6 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface UsersStrings {
+    val usersRoleChangeFailed: String
+    val usersStatusChangeFailed: String
+    val usersSetPasswordFailed: String
     val usersListSubtitle: String
     val usersSearchPlaceholder: String
     val usersAddCta: String

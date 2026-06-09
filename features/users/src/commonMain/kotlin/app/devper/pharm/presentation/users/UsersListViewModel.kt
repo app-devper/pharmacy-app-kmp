@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.users
 
-import app.devper.pharm.common.error.ErrorMessages
-
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
@@ -14,6 +13,7 @@ import app.devper.pharm.domain.usecase.GetUsersUseCase
 import app.devper.pharm.domain.usecase.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.SetUserRoleUseCase
 import app.devper.pharm.domain.usecase.SetUserStatusUseCase
+import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class UsersListViewModel(
@@ -30,10 +30,14 @@ class UsersListViewModel(
         reload()
     }
 
-    fun reload() = launchLoad(
-        block = { getUsers() },
-        onSuccess = { list -> copy(users = list) },
-    )
+    fun reload() {
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
+            block = { getUsers() },
+            onSuccess = { list -> setState { copy(loading = false, users = list) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+        )
+    }
 
     fun setSearch(value: String) = setState { copy(searchQuery = value) }
 
@@ -53,7 +57,7 @@ class UsersListViewModel(
                 reload()
             },
             onFailure = { e ->
-                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, error = e.message ?: ErrorMessages.DELETE_FAILED) }
+                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, errorState = CommonUiStateError.DeleteFailed(e)) }
             },
         )
     }
@@ -69,7 +73,7 @@ class UsersListViewModel(
                 reload()
             },
             onFailure = { e ->
-                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, error = e.message ?: "เปลี่ยน Role ไม่สำเร็จ") }
+                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, errorState = UsersUiStateError.RoleChangeFailed(e)) }
             },
         )
     }
@@ -85,7 +89,7 @@ class UsersListViewModel(
                 reload()
             },
             onFailure = { e ->
-                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, error = e.message ?: "เปลี่ยนสถานะไม่สำเร็จ") }
+                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, errorState = UsersUiStateError.StatusChangeFailed(e)) }
             },
         )
     }
@@ -101,7 +105,7 @@ class UsersListViewModel(
                 reload()
             },
             onFailure = { e ->
-                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, error = e.message ?: "ตั้งรหัสผ่านไม่สำเร็จ") }
+                setState { copy(actionBusy = false, actionTarget = null, actionMode = null, errorState = UsersUiStateError.SetPasswordFailed(e)) }
             },
         )
     }

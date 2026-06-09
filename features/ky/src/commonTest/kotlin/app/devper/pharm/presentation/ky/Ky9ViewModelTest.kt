@@ -21,7 +21,7 @@ class Ky9ViewModelTest {
         val vm = Ky9ViewModel(GetKy9EntriesUseCase(repo, d), ExportKyFormUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test

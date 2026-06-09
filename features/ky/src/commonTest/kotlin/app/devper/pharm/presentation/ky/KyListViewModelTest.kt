@@ -37,7 +37,7 @@ class KyListViewModelTest {
         advanceUntilIdle()
         assertEquals(KyFormType.Ky10, model.state.value.formType)
         assertFalse(model.state.value.loading)
-        assertNull(model.state.value.error)
+        assertNull(model.state.value.errorState)
     }
 
     @Test
