@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.devper.pharm.common.AppVersion
+import app.devper.pharm.presentation.auth.i18n.localizeLogin
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -144,7 +145,7 @@ fun LoginScreen(
     }
 
     ErrorBottomSheet(
-        message = state.error,
+        message = state.errorState?.localizeLogin(pharmStrings),
         onDismiss = viewModel::dismissError,
     )
 }

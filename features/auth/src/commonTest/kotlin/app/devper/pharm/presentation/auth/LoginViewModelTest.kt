@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.auth
 
+import app.devper.pharm.presentation.auth.exception.LoginUiStateError
+
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.repository.FakeAuthRepository
@@ -11,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -37,7 +40,7 @@ class LoginViewModelTest {
         vm.onPasswordChange("secret")
         vm.submit()
         advanceUntilIdle()
-        assertEquals("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน", vm.state.value.error)
+        assertIs<LoginUiStateError.RequiredFields>(vm.state.value.errorState)
         assertNull(repo.lastLogin)
         assertFalse(vm.state.value.loading)
     }
@@ -48,7 +51,7 @@ class LoginViewModelTest {
         vm.onUsernameChange("admin")
         vm.submit()
         advanceUntilIdle()
-        assertEquals("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน", vm.state.value.error)
+        assertIs<LoginUiStateError.RequiredFields>(vm.state.value.errorState)
         assertNull(repo.lastLogin)
     }
 
@@ -67,7 +70,7 @@ class LoginViewModelTest {
         assertNotNull(vm.state.value.loggedInUser)
         assertEquals("admin", vm.state.value.loggedInUser?.username)
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -78,7 +81,7 @@ class LoginViewModelTest {
         vm.submit()
         advanceUntilIdle()
         val s = vm.state.value
-        assertNotNull(s.error)
+        assertIs<LoginUiStateError.LoginFailed>(s.errorState)
         assertNull(s.loggedInUser)
         assertFalse(s.loading)
     }
@@ -99,9 +102,9 @@ class LoginViewModelTest {
         val (vm, _, _) = newVm(dispatchers)
         vm.submit()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.onUsernameChange("a")
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -109,9 +112,9 @@ class LoginViewModelTest {
         val (vm, _, _) = newVm(dispatchers)
         vm.submit()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertNotNull(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
