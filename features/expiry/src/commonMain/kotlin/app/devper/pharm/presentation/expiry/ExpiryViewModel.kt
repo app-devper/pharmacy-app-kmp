@@ -1,12 +1,12 @@
 package app.devper.pharm.presentation.expiry
 
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.WriteoffLotsParam
 import app.devper.pharm.domain.usecase.GetExpiringLotsUseCase
 import app.devper.pharm.domain.usecase.WriteoffLotsUseCase
+import app.devper.pharm.presentation.expiry.exception.ExpiryUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
-
-private const val WRITEOFF_FAILED = "ตัดจำหน่ายไม่สำเร็จ"
 
 class ExpiryViewModel(
     private val getExpiringLots: GetExpiringLotsUseCase,
@@ -37,7 +37,7 @@ class ExpiryViewModel(
     fun confirmWriteoff() {
         val s = current
         if (s.selected.isEmpty()) return
-        setState { copy(confirmDialog = false, writingOff = true, error = null, writeoffResult = null) }
+        setState { copy(confirmDialog = false, writingOff = true, errorState = null, writeoffResult = null) }
         launchResult(
             block = { writeoffLots(WriteoffLotsParam(lotIds = s.selected.toList())) },
             onSuccess = { result ->
@@ -46,7 +46,7 @@ class ExpiryViewModel(
                 }
                 reload()
             },
-            onFailure = { e -> setState { copy(writingOff = false, error = e.message ?: WRITEOFF_FAILED) } },
+            onFailure = { e -> setState { copy(writingOff = false, errorState = ExpiryUiStateError.WriteoffFailed(e)) } },
         )
     }
 
@@ -54,13 +54,15 @@ class ExpiryViewModel(
 
     fun reload() {
         val s = current
-        launchLoad(
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
             block = {
                 getExpiringLots(
                     ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
                 )
             },
-            onSuccess = { lots -> copy(lots = lots) },
+            onSuccess = { lots -> setState { copy(loading = false, lots = lots) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }
 }

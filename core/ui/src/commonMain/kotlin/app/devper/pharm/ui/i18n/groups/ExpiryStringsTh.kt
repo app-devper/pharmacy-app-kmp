@@ -23,4 +23,5 @@ object ExpiryStringsTh : ExpiryStrings {
     override val expiryResultSuccessTitle = "ตัดจำหน่ายสำเร็จ"
     override val expiryResultPartialTitle = "ตัดจำหน่ายบางส่วน"
     override val expiryResultSummary: (Int, Int) -> String = { writtenOff, total -> "บันทึก $writtenOff/$total ล็อต" }
+    override val expiryWriteoffFailed = "ตัดจำหน่ายไม่สำเร็จ"
 }

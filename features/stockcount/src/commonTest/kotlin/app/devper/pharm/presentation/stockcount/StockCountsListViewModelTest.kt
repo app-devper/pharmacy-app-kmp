@@ -25,7 +25,7 @@ class StockCountsListViewModelTest {
         advanceUntilIdle()
         assertEquals(3, vm.state.value.counts.size)
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test

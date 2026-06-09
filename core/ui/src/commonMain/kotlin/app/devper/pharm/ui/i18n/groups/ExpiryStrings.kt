@@ -20,4 +20,5 @@ interface ExpiryStrings {
     val expiryResultSuccessTitle: String
     val expiryResultPartialTitle: String
     val expiryResultSummary: (Int, Int) -> String
+    val expiryWriteoffFailed: String
 }

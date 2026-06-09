@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffFailure
 import app.devper.pharm.domain.model.WriteoffResult
+import app.devper.pharm.presentation.expiry.i18n.localizeExpiry
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -93,7 +94,7 @@ fun ExpiryContent(
         WriteoffResultDialog(result = result, onDismiss = callbacks.onDismissResult)
     }
 
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeExpiry(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

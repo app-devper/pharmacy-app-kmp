@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.usecase.GetStockCountsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
@@ -11,8 +12,12 @@ class StockCountsListViewModel(
 
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
-    fun reload() = launchLoad(
-        block = { getStockCounts() },
-        onSuccess = { list -> copy(counts = list) },
-    )
+    fun reload() {
+        setState { copy(loading = true, errorState = null) }
+        launchResult(
+            block = { getStockCounts() },
+            onSuccess = { list -> setState { copy(loading = false, counts = list) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+        )
+    }
 }
