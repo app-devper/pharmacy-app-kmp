@@ -1,0 +1,45 @@
+package app.devper.pharm.ui.i18n.groups
+
+object StockCountStringsTh : StockCountStrings {
+    override val stockCountHistoryTitle = "ประวัติตรวจนับ"
+    override val stockCountHistorySubtitle = "ประวัติรอบนับสต็อก และบันทึกการปรับยอด"
+    override val stockCountHistorySearchPlaceholder = "ค้นหาเลขรอบ / หมายเหตุ…"
+    override val stockCountHistoryNewCta = "นับสต็อกใหม่"
+    override val stockCountHistoryEmpty = "ยังไม่มีรอบนับสต็อก"
+    override val stockCountHistoryNotFound = "ไม่พบรอบนับตามที่ค้นหา"
+    override val stockCountHistoryCountNoun = "รอบ"
+    override val stockCountHeaderRound = "เลขรอบ"
+    override val stockCountHeaderItems = "รายการ"
+    override val stockCountHeaderDelta = "ส่วนต่าง"
+    override val stockCountHeaderAdjust = "ปรับยอด"
+    override val stockCountStatusAdjusted = "ปรับแล้ว"
+    override val stockCountStatusNotAdjusted = "ไม่ปรับ"
+    override val stockCountHeaderNote = "หมายเหตุ"
+    override val stockCountActionDetails = "ดูรายละเอียด"
+    override val stockCountFormSearchPlaceholder = "ค้นหายา / barcode…"
+    override val stockCountFormNotePlaceholder = "เช่น ตรวจประจำเดือน…"
+    override val stockCountFormCounted = "นับได้"
+    override val stockCountFormInSystem = "ในระบบ"
+    override val stockCountFormDelta = "ส่วนต่าง"
+    override val stockCountFormUnitLabel: (String) -> String = { unit -> "หน่วย: $unit" }
+    override val stockCountFormChangedItems = "รายการที่เปลี่ยน"
+    override val stockCountFormFillSystem = "เติมตามระบบ"
+    override val stockCountFormSummaryAll = "ทั้งหมด"
+    override val stockCountFormSummaryAdjusted = "ปรับแล้ว"
+    override val stockCountFormSummaryNotAdjusted = "ไม่ปรับ"
+    override val stockCountFormPrintedShort = "พิมพ์แล้ว"
+    override val stockCountFormCounted2 = "นับได้"
+    override val stockCountFormDiscrepancyTotal = "ส่วนต่างรวม (abs)"
+    override val stockCountFormTopDiscrepancy: (Int) -> String = { n -> "ส่วนต่างสูงสุด $n อันดับ" }
+    override val stockCountFormClearDraftCta = "ล้าง draft"
+    override val stockCountFormSaveRoundCta = "บันทึกรอบนี้"
+    override val stockCountFormResultLine: (Int, Int, Int) -> String = { total, printed, counted -> "ทั้งหมด $total รายการ · พิมพ์แล้ว $printed · นับได้ $counted" }
+    override val stockCountFormStatusLine: (Int, Int, Int, Int) -> String = { total, printed, changed, absDelta -> "ทั้งหมด $total รายการ · พิมพ์แล้ว $printed · แก้ไข $changed · ส่วนต่างรวม $absDelta" }
+    override val stockCountFormSaveCountLabel: (Int) -> String = { count -> "บันทึก $count รายการ" }
+    override val stockCountFormSummaryDelta: (Int, Int) -> String = { changed, total -> "แก้ไข $changed · ส่วนต่างรวม $total" }
+    override val stockCountFormEmptySearching = "ไม่พบยาที่ค้นหา"
+    override val stockCountFormEmptyDefault = "ยังไม่มีรายการยา"
+    override val stockCountFormConfirmTitle = "ยืนยันการปรับสต็อก"
+    override val stockCountFormConfirmMessage = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้"
+    override val stockCountFormConfirmCta = "ยืนยัน"
+}

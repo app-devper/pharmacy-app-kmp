@@ -1,0 +1,26 @@
+package app.devper.pharm.ui.i18n.groups
+
+object ExpiryStringsTh : ExpiryStrings {
+    override val expirySubtitle = "ตรวจล็อตใกล้หมดอายุ และตัดจำหน่าย"
+    override val expirySelectAll = "เลือกทั้งหมด"
+    override val expirySelectPartial = "เลือกบางส่วน · กดเพื่อล้าง"
+    override val expiryWriteoffCta = "ตัดจำหน่าย"
+    override val expiryWriteoffSelectedLabel: (Int) -> String = { count -> "เขียนทิ้ง $count รายการ" }
+    override val expiryCountNoun = "ล็อต"
+    override val expiryTotalRemaining = "คงเหลือรวม"
+    override val expiryHeaderDrugName = "ชื่อยา"
+    override val expiryHeaderLotNumber = "เลขล็อต"
+    override val expiryHeaderExpiry = "วันหมดอายุ"
+    override val expiryHeaderRemaining = "คงเหลือ"
+    override val expiryStatusExpired = "หมดอายุแล้ว"
+    override val expiryStatusDaysLeft: (Int) -> String = { days -> "อีก $days วัน" }
+    override val expiryEmpty = "ไม่มีล็อตในช่วงเวลานี้"
+    override val expiryConfirmTitle = "ตัดจำหน่ายล็อต?"
+    override val expiryConfirmMessage: (Int) -> String = { count ->
+        "ระบบจะลบ $count ล็อต และลด stock ตาม remaining ของแต่ละล็อต — " +
+        "บันทึกการตัดจำหน่ายไว้สำหรับตรวจสอบ"
+    }
+    override val expiryResultSuccessTitle = "ตัดจำหน่ายสำเร็จ"
+    override val expiryResultPartialTitle = "ตัดจำหน่ายบางส่วน"
+    override val expiryResultSummary: (Int, Int) -> String = { writtenOff, total -> "บันทึก $writtenOff/$total ล็อต" }
+}

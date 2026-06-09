@@ -1,0 +1,20 @@
+package app.devper.pharm.ui.i18n.groups
+
+object PlanningStringsEn : PlanningStrings {
+    override val planningTitle = "Order recommendations"
+    override val planningRefreshCta = "Refresh"
+    override val planningAddPoCta = "Add PO"
+    override val planningLowStockTitle = "Low stock"
+    override val planningBelowMinTitle = "Below minimum stock"
+    override val planningReorderTitle = "Suggested reorder list"
+    override val planningLowStockEmpty = "No drugs running low"
+    override val planningBelowMinEmpty = "All drugs above minimum stock"
+    override val planningReorderEmpty = "No drugs reach reorder threshold yet"
+    override val planningReorderEmptyTitle = "No items to order"
+    override val planningHeaderMin = "Minimum"
+    override val planningHeaderRecommend = "Recommend"
+    override val planningHeaderTotalCost = "Total cost"
+    override val planningCountNoun = "items"
+    override val planningMetaLine: (String, String) -> String = { rate, daysLeft -> "Avg $rate/day · $daysLeft remaining" }
+    override val planningDaysLeftLabel: (Int) -> String = { days -> "$days day(s)" }
+}
