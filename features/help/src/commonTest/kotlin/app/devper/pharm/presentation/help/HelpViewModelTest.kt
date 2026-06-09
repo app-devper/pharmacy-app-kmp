@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.help
 
-import app.devper.pharm.presentation.help.exception.HelpException
+import app.devper.pharm.presentation.help.exception.HelpUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -20,7 +20,7 @@ class HelpViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertEquals("# คู่มือผู้ใช้\n\n...", vm.state.value.markdown)
-        assertNull(vm.state.value.errorTyped)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
@@ -29,7 +29,7 @@ class HelpViewModelTest {
         val vm = HelpViewModel(loader)
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
-        assertTrue(vm.state.value.errorTyped is HelpException.Markdown.LoadFailed)
+        assertTrue(vm.state.value.errorState is HelpUiStateError.LoadFailed)
     }
 
     @Test
@@ -38,7 +38,7 @@ class HelpViewModelTest {
         val vm = HelpViewModel(loader)
         advanceUntilIdle()
         vm.dismissError()
-        assertNull(vm.state.value.errorTyped)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
