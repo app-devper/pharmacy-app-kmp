@@ -19,7 +19,7 @@ data class LabelPrintUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val filteredDrugs: List<Drug> = run {
         val q = query.trim().lowercase()

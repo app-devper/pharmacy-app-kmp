@@ -41,6 +41,8 @@ object CommonStringsTh : CommonStrings {
     override val commonExportFailed = "ส่งออกไม่สำเร็จ"
     override val commonExportEmpty = "ยังไม่มีข้อมูลให้ส่งออก"
     override val commonSaved = "บันทึกแล้ว"
+    override val commonLogoutFailed = "ออกจากระบบไม่สำเร็จ"
+    override val commonThemeChangeFailed = "เปลี่ยนธีมไม่สำเร็จ"
     override val commonErrorAuth = "กรุณาเข้าสู่ระบบใหม่"
     override val commonErrorForbidden = "ไม่มีสิทธิ์ทำรายการนี้"
     override val commonErrorNotFound = "ไม่พบข้อมูล"

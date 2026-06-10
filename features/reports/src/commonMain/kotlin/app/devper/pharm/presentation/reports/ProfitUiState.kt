@@ -35,7 +35,7 @@ data class ProfitUiState(
 
     override fun withLoading(value: Boolean) = copy(loading = value)
     override val domainError: AppException? get() = errorState
-    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val sortedRows: List<DrugProfit>
         get() {

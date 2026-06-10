@@ -41,6 +41,8 @@ object CommonStringsEn : CommonStrings {
     override val commonExportFailed = "Export failed"
     override val commonExportEmpty = "No data to export yet"
     override val commonSaved = "Saved"
+    override val commonLogoutFailed = "Failed to sign out"
+    override val commonThemeChangeFailed = "Failed to change theme"
     override val commonErrorAuth = "Please sign in again"
     override val commonErrorForbidden = "You don't have permission for this action"
     override val commonErrorNotFound = "Not found"

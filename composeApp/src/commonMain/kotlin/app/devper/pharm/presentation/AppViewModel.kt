@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation
 
+import app.devper.pharm.presentation.exception.AppUiStateError
+
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.ThemePreference
@@ -68,14 +70,14 @@ class AppViewModel(
         launchResult(
             block = { logout() },
             onSuccess = {  },
-            onFailure = { setState { copy(error = it.message ?: "ออกจากระบบไม่สำเร็จ") } },
+            onFailure = { e -> setState { copy(errorState = AppUiStateError.LogoutFailed(e)) } },
         )
     }
 
     fun toggleTheme(currentlyDark: Boolean) {
         setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark)
-            .onFailure { setState { copy(error = it.message ?: "เปลี่ยนธีมไม่สำเร็จ") } }
+            .onFailure { e -> setState { copy(errorState = AppUiStateError.ThemeChangeFailed(e)) } }
     }
 
-    fun dismissError() = setState { copy(error = null) }
+    fun dismissError() = setState { copy(errorState = null) }
 }

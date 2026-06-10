@@ -12,20 +12,20 @@ import kotlin.test.assertTrue
 
 private data class CounterState(
     override val loading: Boolean = false,
-    override val error: String? = null,
+    val message: String? = null,
     val count: Int = 0,
 ) : BaseUiState
 
 private class CounterViewModel : BaseViewModel<CounterState>(CounterState()) {
     fun increment() = setState { copy(count = count + 1) }
 
-    fun setError(message: String) = setState { copy(error = message) }
+    fun setError(value: String) = setState { copy(message = value) }
 
     fun load(value: Int, fail: Boolean = false) {
         launchResult(
             block = { if (fail) Result.failure(IllegalStateException("nope")) else Result.success(value) },
             onSuccess = { setState { copy(count = it) } },
-            onFailure = { e -> setState { copy(error = e.message) } },
+            onFailure = { e -> setState { copy(message = e.message) } },
             withLoading = { l -> setState { copy(loading = l) } },
         )
     }
@@ -34,7 +34,7 @@ private class CounterViewModel : BaseViewModel<CounterState>(CounterState()) {
         launchResult<Int>(
             block = { throw IllegalStateException("kaboom") },
             onSuccess = { setState { copy(count = it) } },
-            onFailure = { e -> setState { copy(error = e.message) } },
+            onFailure = { e -> setState { copy(message = e.message) } },
             withLoading = { l -> setState { copy(loading = l) } },
         )
     }
@@ -57,7 +57,7 @@ class BaseViewModelTest {
         vm.load(value = 42)
         advanceUntilIdle()
         assertEquals(42, vm.state.value.count)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.message)
     }
 
     @Test
@@ -65,7 +65,7 @@ class BaseViewModelTest {
         val vm = CounterViewModel()
         vm.load(value = 0, fail = true)
         advanceUntilIdle()
-        val err = vm.state.value.error
+        val err = vm.state.value.message
         assertNotNull(err)
         assertEquals("nope", err)
     }
@@ -84,14 +84,14 @@ class BaseViewModelTest {
         vm.loadThrowingBlock()
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
-        assertEquals("kaboom", vm.state.value.error)
+        assertEquals("kaboom", vm.state.value.message)
     }
 
     @Test
     fun setError_action_is_observable() = runVmTest { _ ->
         val vm = CounterViewModel()
         vm.setError("boom")
-        assertEquals("boom", vm.state.value.error)
-        assertTrue(vm.state.value.error?.isNotEmpty() == true)
+        assertEquals("boom", vm.state.value.message)
+        assertTrue(vm.state.value.message?.isNotEmpty() == true)
     }
 }

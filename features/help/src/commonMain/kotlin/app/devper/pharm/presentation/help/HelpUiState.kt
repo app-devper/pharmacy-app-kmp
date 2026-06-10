@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.help
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.presentation.help.exception.HelpUiStateError
 import app.devper.pharm.ui.common.BaseUiState
 

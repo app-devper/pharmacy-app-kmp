@@ -9,8 +9,5 @@ interface BaseFormUiState<S : BaseFormUiState<S>> : BaseUiState {
 
     fun withSaving(saving: Boolean): S
     fun withSaved(saved: Boolean): S
-    fun withError(error: String?): S
-
-    @Suppress("UNCHECKED_CAST")
-    fun withDomainError(error: AppException?): S = this as S
+    fun withDomainError(error: AppException?): S
 }
