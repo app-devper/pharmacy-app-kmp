@@ -12,11 +12,11 @@ import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.ReorderSuggestion
-import app.devper.pharm.domain.param.DashboardRangeParam
-import app.devper.pharm.domain.param.EodReportParam
-import app.devper.pharm.domain.param.ReorderSuggestionsParam
-import app.devper.pharm.domain.param.ReportRangeParam
-import app.devper.pharm.domain.param.TopOrSlowDrugsParam
+import app.devper.pharm.domain.param.reports.DashboardRangeParam
+import app.devper.pharm.domain.param.reports.EodReportParam
+import app.devper.pharm.domain.param.inventory.ReorderSuggestionsParam
+import app.devper.pharm.domain.param.reports.ReportRangeParam
+import app.devper.pharm.domain.param.reports.TopOrSlowDrugsParam
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.testDispatchers

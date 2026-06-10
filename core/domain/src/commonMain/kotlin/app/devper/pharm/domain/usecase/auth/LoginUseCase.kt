@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.User
-import app.devper.pharm.domain.param.LoginParam
-import app.devper.pharm.domain.repository.AuthRepository
+import app.devper.pharm.domain.param.auth.LoginParam
+import app.devper.pharm.domain.repository.auth.AuthRepository
 
 class LoginUseCase(private val repository: AuthRepository, dispatchers: AppDispatchers) : BaseUseCase<LoginParam, User>(dispatchers) {
     override suspend fun execute(param: LoginParam): User = repository.login(param)

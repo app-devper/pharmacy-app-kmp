@@ -3,7 +3,7 @@ package app.devper.pharm.data.repository.internal
 import app.devper.pharm.data.remote.dto.CustomerDto
 import app.devper.pharm.data.remote.dto.CustomerInputDto
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.param.CustomerInput
+import app.devper.pharm.domain.param.customers.CustomerInput
 
 internal fun CustomerDto.toDomain(): Customer = Customer(
     id = id,

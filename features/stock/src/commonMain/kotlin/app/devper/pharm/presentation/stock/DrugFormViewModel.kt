@@ -8,9 +8,9 @@ import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.param.AddDrugParam
-import app.devper.pharm.domain.param.CreateLotPayload
-import app.devper.pharm.domain.param.UpdateDrugParam
+import app.devper.pharm.domain.param.inventory.AddDrugParam
+import app.devper.pharm.domain.param.inventory.CreateLotPayload
+import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase

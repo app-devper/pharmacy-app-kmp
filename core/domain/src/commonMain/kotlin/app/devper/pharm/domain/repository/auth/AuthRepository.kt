@@ -1,7 +1,7 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.auth
 
 import app.devper.pharm.domain.model.User
-import app.devper.pharm.domain.param.LoginParam
+import app.devper.pharm.domain.param.auth.LoginParam
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {

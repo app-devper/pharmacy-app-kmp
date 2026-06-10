@@ -1,8 +1,8 @@
 package app.devper.pharm.presentation.customers
 
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.param.CustomerInput
-import app.devper.pharm.domain.param.UpdateCustomerParam
+import app.devper.pharm.domain.param.customers.CustomerInput
+import app.devper.pharm.domain.param.customers.UpdateCustomerParam
 import app.devper.pharm.domain.usecase.customers.AddCustomerUseCase
 import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.domain.usecase.customers.UpdateCustomerUseCase

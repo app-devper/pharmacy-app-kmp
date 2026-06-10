@@ -10,8 +10,8 @@ import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.PurchaseOrderStatus
-import app.devper.pharm.domain.param.AddPurchaseOrderParam
-import app.devper.pharm.domain.param.UpdatePurchaseOrderParam
+import app.devper.pharm.domain.param.purchasing.AddPurchaseOrderParam
+import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
 import app.devper.pharm.domain.extension.buildPurchaseOrderItemInput
 import app.devper.pharm.domain.extension.isPurchaseOrderLineValid
 import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase

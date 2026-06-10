@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Dashboard
-import app.devper.pharm.domain.param.DashboardRangeParam
-import app.devper.pharm.domain.repository.ReportsRepository
+import app.devper.pharm.domain.param.reports.DashboardRangeParam
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 
 class GetDashboardUseCase(private val repo: ReportsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<DashboardRangeParam, Dashboard>(dispatchers) {

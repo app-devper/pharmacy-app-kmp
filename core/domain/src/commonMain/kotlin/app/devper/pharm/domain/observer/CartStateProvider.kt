@@ -1,7 +1,7 @@
 package app.devper.pharm.domain.observer
 
 import app.devper.pharm.domain.model.CartSnapshot
-import app.devper.pharm.domain.repository.CartRepository
+import app.devper.pharm.domain.repository.sales.CartRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

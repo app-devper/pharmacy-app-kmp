@@ -5,8 +5,8 @@ package app.devper.pharm.domain.usecase
 import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.domain.param.ReturnLineParam
-import app.devper.pharm.domain.param.SubmitReturnParam
+import app.devper.pharm.domain.param.sales.ReturnLineParam
+import app.devper.pharm.domain.param.sales.SubmitReturnParam
 import app.devper.pharm.domain.repository.FakeSaleHistoryRepository
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest

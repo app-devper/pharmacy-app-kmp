@@ -1,8 +1,8 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.offlinesync
 
 import app.devper.pharm.domain.model.PendingSale
-import app.devper.pharm.domain.param.EnqueueOfflineSaleParam
-import app.devper.pharm.domain.param.MarkOfflineSaleFailedParam
+import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
+import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
 import kotlinx.coroutines.flow.StateFlow
 
 interface OfflineSaleQueue {

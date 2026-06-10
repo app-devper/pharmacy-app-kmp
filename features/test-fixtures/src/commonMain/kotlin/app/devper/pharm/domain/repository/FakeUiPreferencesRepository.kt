@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
+
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.LocalePreference

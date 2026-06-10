@@ -3,7 +3,7 @@ package app.devper.pharm.domain.usecase.inventory
 import app.devper.pharm.domain.usecase.BaseSyncUseCase
 
 import app.devper.pharm.domain.model.StockCountDraft
-import app.devper.pharm.domain.repository.StockCountDraftRepository
+import app.devper.pharm.domain.repository.inventory.StockCountDraftRepository
 
 class LoadStockCountDraftUseCase(
     private val draftRepo: StockCountDraftRepository,

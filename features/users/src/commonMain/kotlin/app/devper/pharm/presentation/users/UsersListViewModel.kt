@@ -4,9 +4,9 @@ import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.SetUserPasswordParam
-import app.devper.pharm.domain.param.SetUserRoleParam
-import app.devper.pharm.domain.param.SetUserStatusParam
+import app.devper.pharm.domain.param.users.SetUserPasswordParam
+import app.devper.pharm.domain.param.users.SetUserRoleParam
+import app.devper.pharm.domain.param.users.SetUserStatusParam
 import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase

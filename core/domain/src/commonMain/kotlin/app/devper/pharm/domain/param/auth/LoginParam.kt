@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.auth
 
 data class LoginParam(
     val username: String,

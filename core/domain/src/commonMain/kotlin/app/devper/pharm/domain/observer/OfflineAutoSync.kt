@@ -3,7 +3,7 @@ package app.devper.pharm.domain.observer
 import app.devper.pharm.common.Logger
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.domain.extension.looksLikeNetworkError
-import app.devper.pharm.domain.repository.OfflineSaleQueue
+import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged

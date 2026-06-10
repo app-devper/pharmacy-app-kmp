@@ -3,8 +3,8 @@ package app.devper.pharm.domain.usecase.sales
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.domain.param.SubmitReturnParam
-import app.devper.pharm.domain.repository.SaleHistoryRepository
+import app.devper.pharm.domain.param.sales.SubmitReturnParam
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 import app.devper.pharm.domain.validation.SaleValidationError
 
 class SubmitSaleReturnUseCase(private val repo: SaleHistoryRepository, dispatchers: AppDispatchers) :

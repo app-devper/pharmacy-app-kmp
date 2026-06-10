@@ -13,7 +13,7 @@ import app.devper.pharm.domain.model.ReceiptSettings
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StockSettings
 import app.devper.pharm.domain.model.StoreInfo
-import app.devper.pharm.domain.param.UpdateSettingsParam
+import app.devper.pharm.domain.param.settings.UpdateSettingsParam
 
 internal fun SettingsDto.toDomain(): Settings = Settings(
     store = store.toDomain(),

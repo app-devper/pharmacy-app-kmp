@@ -13,9 +13,9 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.StockMovementsPage
 import app.devper.pharm.domain.model.WriteoffResult
-import app.devper.pharm.domain.param.ExpiringLotsFilterParam
-import app.devper.pharm.domain.param.MovementsFilterParam
-import app.devper.pharm.domain.param.WriteoffLotsParam
+import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
+import app.devper.pharm.domain.param.reports.MovementsFilterParam
+import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeExpiringLotsRepository
 import app.devper.pharm.domain.repository.FakeMovementsRepository

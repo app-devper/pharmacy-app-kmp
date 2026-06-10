@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.inventory
 
 data class ReorderSuggestionsParam(
     val days: Int? = null,

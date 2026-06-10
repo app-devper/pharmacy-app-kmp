@@ -1,7 +1,9 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.reports.MovementsRepository
+
 import app.devper.pharm.domain.model.StockMovementsPage
-import app.devper.pharm.domain.param.MovementsFilterParam
+import app.devper.pharm.domain.param.reports.MovementsFilterParam
 
 class FakeMovementsRepository(
     private val page: StockMovementsPage = StockMovementsPage(items = emptyList(), total = 0),

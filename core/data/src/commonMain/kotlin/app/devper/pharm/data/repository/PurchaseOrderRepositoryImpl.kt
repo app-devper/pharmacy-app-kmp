@@ -6,9 +6,9 @@ import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderSummary
-import app.devper.pharm.domain.param.AddPurchaseOrderParam
-import app.devper.pharm.domain.param.UpdatePurchaseOrderParam
-import app.devper.pharm.domain.repository.PurchaseOrderRepository
+import app.devper.pharm.domain.param.purchasing.AddPurchaseOrderParam
+import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
+import app.devper.pharm.domain.repository.purchasing.PurchaseOrderRepository
 
 class PurchaseOrderRepositoryImpl(
     private val api: PurchaseOrderApi,

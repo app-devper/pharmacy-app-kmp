@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseSyncUseCase
 
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.param.AddCartItemParam
-import app.devper.pharm.domain.repository.CartRepository
+import app.devper.pharm.domain.param.sales.AddCartItemParam
+import app.devper.pharm.domain.repository.sales.CartRepository
 
 class AddToCartUseCase(private val cart: CartRepository) :
     BaseSyncUseCase<AddCartItemParam, Unit>() {

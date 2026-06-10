@@ -1,13 +1,15 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.users.UsersRepository
+
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.CreateUserParam
-import app.devper.pharm.domain.param.SetUserPasswordParam
-import app.devper.pharm.domain.param.SetUserRoleParam
-import app.devper.pharm.domain.param.SetUserStatusParam
-import app.devper.pharm.domain.param.UpdateUserParam
+import app.devper.pharm.domain.param.users.CreateUserParam
+import app.devper.pharm.domain.param.users.SetUserPasswordParam
+import app.devper.pharm.domain.param.users.SetUserRoleParam
+import app.devper.pharm.domain.param.users.SetUserStatusParam
+import app.devper.pharm.domain.param.users.UpdateUserParam
 
 class FakeUsersRepository(
     initial: List<UmUser> = sampleUsers,

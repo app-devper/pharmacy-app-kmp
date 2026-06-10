@@ -1,11 +1,11 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.inventory
 
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ReorderSuggestion
-import app.devper.pharm.domain.param.AddDrugParam
-import app.devper.pharm.domain.param.ReorderSuggestionsParam
-import app.devper.pharm.domain.param.UpdateDrugParam
+import app.devper.pharm.domain.param.inventory.AddDrugParam
+import app.devper.pharm.domain.param.inventory.ReorderSuggestionsParam
+import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 
 interface DrugRepository {
     suspend fun list(): List<Drug>

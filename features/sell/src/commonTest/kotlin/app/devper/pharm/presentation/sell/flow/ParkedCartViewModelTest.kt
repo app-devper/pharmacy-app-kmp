@@ -10,7 +10,7 @@ import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.ParkedCartsProvider
 import app.devper.pharm.domain.repository.FakeCartRepository
-import app.devper.pharm.domain.repository.PARK_SLOT_COUNT
+import app.devper.pharm.domain.repository.sales.PARK_SLOT_COUNT
 import app.devper.pharm.domain.usecase.sales.DiscardParkedCartUseCase
 import app.devper.pharm.domain.usecase.sales.ParkCartUseCase
 import app.devper.pharm.domain.usecase.sales.RestoreCartUseCase

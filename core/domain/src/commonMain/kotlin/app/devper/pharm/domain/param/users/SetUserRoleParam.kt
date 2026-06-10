@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.users
 
 import app.devper.pharm.domain.model.Role
 

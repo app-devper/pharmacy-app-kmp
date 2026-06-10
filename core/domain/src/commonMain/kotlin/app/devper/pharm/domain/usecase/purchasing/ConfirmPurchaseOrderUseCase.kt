@@ -4,7 +4,7 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.PurchaseOrder
-import app.devper.pharm.domain.repository.PurchaseOrderRepository
+import app.devper.pharm.domain.repository.purchasing.PurchaseOrderRepository
 
 class ConfirmPurchaseOrderUseCase(private val repo: PurchaseOrderRepository, dispatchers: AppDispatchers) :
     BaseUseCase<String, PurchaseOrder>(dispatchers) {

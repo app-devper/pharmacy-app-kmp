@@ -6,8 +6,8 @@ import app.devper.pharm.data.remote.dto.SaleRequest
 import app.devper.pharm.data.remote.dto.SaleResponse
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.StockUpdate
-import app.devper.pharm.domain.param.CheckoutLineParam
-import app.devper.pharm.domain.param.CheckoutParam
+import app.devper.pharm.domain.param.sales.CheckoutLineParam
+import app.devper.pharm.domain.param.sales.CheckoutParam
 
 internal fun SaleResponse.toDomain(): Sale = Sale(
     id = id,

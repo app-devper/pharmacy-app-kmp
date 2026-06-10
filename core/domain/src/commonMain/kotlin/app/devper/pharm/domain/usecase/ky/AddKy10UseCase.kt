@@ -4,7 +4,7 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.KyForm
-import app.devper.pharm.domain.repository.KyRepository
+import app.devper.pharm.domain.repository.ky.KyRepository
 
 class AddKy10UseCase(private val repo: KyRepository, dispatchers: AppDispatchers) : BaseUseCase<KyForm.Ky10, Unit>(dispatchers) {
     override suspend fun execute(param: KyForm.Ky10) = repo.submitKy10(param)

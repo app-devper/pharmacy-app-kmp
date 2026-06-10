@@ -1,7 +1,9 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.settings.SettingsRepository
+
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.param.UpdateSettingsParam
+import app.devper.pharm.domain.param.settings.UpdateSettingsParam
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

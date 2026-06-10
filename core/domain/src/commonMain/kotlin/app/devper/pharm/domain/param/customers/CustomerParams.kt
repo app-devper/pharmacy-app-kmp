@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.customers
 
 data class CustomerInput(
     val name: String,

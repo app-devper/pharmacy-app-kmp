@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.inventory.LotsRepository
+
 import app.devper.pharm.domain.model.DrugLot
-import app.devper.pharm.domain.param.AddLotParam
-import app.devper.pharm.domain.param.DeleteLotParam
+import app.devper.pharm.domain.param.inventory.AddLotParam
+import app.devper.pharm.domain.param.inventory.DeleteLotParam
 
 class FakeLotsRepository(
     seed: List<DrugLot> = emptyList(),

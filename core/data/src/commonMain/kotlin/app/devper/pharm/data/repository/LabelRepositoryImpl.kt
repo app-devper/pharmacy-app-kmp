@@ -5,8 +5,8 @@ import app.devper.pharm.common.platform.MimeType
 import app.devper.pharm.data.remote.api.LabelApi
 import app.devper.pharm.data.remote.dto.PrintLabelsRequest
 import app.devper.pharm.data.repository.internal.toDto
-import app.devper.pharm.domain.param.PrintLabelsParam
-import app.devper.pharm.domain.repository.LabelRepository
+import app.devper.pharm.domain.param.labels.PrintLabelsParam
+import app.devper.pharm.domain.repository.inventory.LabelRepository
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 

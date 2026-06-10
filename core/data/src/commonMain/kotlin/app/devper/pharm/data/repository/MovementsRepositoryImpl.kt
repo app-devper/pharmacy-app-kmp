@@ -4,8 +4,8 @@ import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.api.MovementsApi
 import app.devper.pharm.data.repository.internal.toDomainOrNull
 import app.devper.pharm.domain.model.StockMovementsPage
-import app.devper.pharm.domain.param.MovementsFilterParam
-import app.devper.pharm.domain.repository.MovementsRepository
+import app.devper.pharm.domain.param.reports.MovementsFilterParam
+import app.devper.pharm.domain.repository.reports.MovementsRepository
 
 class MovementsRepositoryImpl(
     private val api: MovementsApi,

@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.extension
 
-import app.devper.pharm.domain.param.AddKy9Param
+import app.devper.pharm.domain.param.ky.AddKy9Param
 import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.domain.validation.Field
 import app.devper.pharm.domain.validation.FieldLabel

@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.extension
 
-import app.devper.pharm.domain.param.StockCountInputLine
+import app.devper.pharm.domain.param.inventory.StockCountInputLine
 
 fun parsePendingStockCounts(counts: Map<String, String>): List<Pair<String, Int>> =
     counts.mapNotNull { (id, raw) ->

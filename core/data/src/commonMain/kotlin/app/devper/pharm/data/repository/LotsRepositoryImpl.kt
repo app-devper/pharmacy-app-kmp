@@ -5,9 +5,9 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.DrugLot
-import app.devper.pharm.domain.param.AddLotParam
-import app.devper.pharm.domain.param.DeleteLotParam
-import app.devper.pharm.domain.repository.LotsRepository
+import app.devper.pharm.domain.param.inventory.AddLotParam
+import app.devper.pharm.domain.param.inventory.DeleteLotParam
+import app.devper.pharm.domain.repository.inventory.LotsRepository
 
 class LotsRepositoryImpl(
     private val api: LotsApi,

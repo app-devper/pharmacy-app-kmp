@@ -2,8 +2,8 @@ package app.devper.pharm.domain.usecase.offlinesync
 
 import app.devper.pharm.domain.usecase.BaseSyncUseCase
 
-import app.devper.pharm.domain.param.EnqueueOfflineSaleParam
-import app.devper.pharm.domain.repository.OfflineSaleQueue
+import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
+import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 
 class EnqueueOfflineSaleUseCase(private val queue: OfflineSaleQueue) :
     BaseSyncUseCase<EnqueueOfflineSaleParam, String>() {

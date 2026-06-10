@@ -4,8 +4,8 @@ import app.devper.pharm.data.remote.api.SettingsApi
 import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.param.UpdateSettingsParam
-import app.devper.pharm.domain.repository.SettingsRepository
+import app.devper.pharm.domain.param.settings.UpdateSettingsParam
+import app.devper.pharm.domain.repository.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

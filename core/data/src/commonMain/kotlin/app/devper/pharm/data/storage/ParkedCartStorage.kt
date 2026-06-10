@@ -9,7 +9,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ParkedCart
-import app.devper.pharm.domain.repository.PARK_SLOT_COUNT
+import app.devper.pharm.domain.repository.sales.PARK_SLOT_COUNT
 import com.russhwolf.settings.Settings
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json

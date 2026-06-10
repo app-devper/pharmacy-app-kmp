@@ -1,8 +1,8 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.sales
 
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.CheckoutParam
-import app.devper.pharm.domain.param.VoidSaleParam
+import app.devper.pharm.domain.param.sales.CheckoutParam
+import app.devper.pharm.domain.param.sales.VoidSaleParam
 
 interface SaleRepository {
     suspend fun checkout(param: CheckoutParam): Sale

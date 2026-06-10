@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.inventory
 
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity

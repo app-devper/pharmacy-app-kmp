@@ -1,8 +1,8 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.inventory
 
 import app.devper.pharm.domain.model.DrugLot
-import app.devper.pharm.domain.param.AddLotParam
-import app.devper.pharm.domain.param.DeleteLotParam
+import app.devper.pharm.domain.param.inventory.AddLotParam
+import app.devper.pharm.domain.param.inventory.DeleteLotParam
 
 interface LotsRepository {
     suspend fun listLots(drugId: String): List<DrugLot>

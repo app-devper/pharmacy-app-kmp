@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.inventory.StockCountDraftRepository
+
 import app.devper.pharm.domain.model.StockCountDraft
 
 class FakeStockCountDraftRepository(

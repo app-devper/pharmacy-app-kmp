@@ -3,8 +3,8 @@ package app.devper.pharm.domain.usecase.inventory
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.domain.param.PrintLabelsParam
-import app.devper.pharm.domain.repository.LabelRepository
+import app.devper.pharm.domain.param.labels.PrintLabelsParam
+import app.devper.pharm.domain.repository.inventory.LabelRepository
 
 class PrintLabelsUseCase(
     private val labels: LabelRepository,

@@ -7,7 +7,7 @@ import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.dto.DrugLotDto
 import app.devper.pharm.data.remote.dto.DrugLotInputDto
 import app.devper.pharm.domain.model.DrugLot
-import app.devper.pharm.domain.param.AddLotParam
+import app.devper.pharm.domain.param.inventory.AddLotParam
 
 internal fun DrugLotDto.toDomain(): DrugLot = DrugLot(
     id = id,

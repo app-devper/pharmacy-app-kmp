@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.ky
 
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyRequired

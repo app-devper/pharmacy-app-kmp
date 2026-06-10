@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.EodCloseResult
-import app.devper.pharm.domain.param.CloseEodParam
-import app.devper.pharm.domain.repository.ReportsRepository
+import app.devper.pharm.domain.param.reports.CloseEodParam
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 
 class CloseEodUseCase(private val repo: ReportsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<CloseEodParam, EodCloseResult>(dispatchers) {

@@ -1,6 +1,8 @@
 package app.devper.pharm.domain.repository
 
-import app.devper.pharm.domain.param.ExportKyFormParam
+import app.devper.pharm.domain.repository.ky.ExportRepository
+
+import app.devper.pharm.domain.param.ky.ExportKyFormParam
 
 class FakeExportRepository(
     private val result: String = "saved",

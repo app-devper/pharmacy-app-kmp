@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.bulkimport
 
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.common.AppException
-import app.devper.pharm.domain.param.AddDrugParam
+import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class BulkImportUiState(

@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.inventory.StockCountsRepository
+
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
-import app.devper.pharm.domain.param.CreateStockCountParam
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
 
 class FakeStockCountsRepository(
     private val seed: List<StockCount> = emptyList(),

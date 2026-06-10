@@ -3,7 +3,7 @@ package app.devper.pharm.domain.extension
 import app.devper.pharm.domain.validation.BulkImportParseError
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
-import app.devper.pharm.domain.param.AddDrugParam
+import app.devper.pharm.domain.param.inventory.AddDrugParam
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject

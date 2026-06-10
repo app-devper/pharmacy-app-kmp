@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.settings
 
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.FontSizePreference

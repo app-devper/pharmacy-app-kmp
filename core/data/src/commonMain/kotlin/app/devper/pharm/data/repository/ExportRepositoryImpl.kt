@@ -3,8 +3,8 @@ package app.devper.pharm.data.repository
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.MimeType
 import app.devper.pharm.data.remote.api.ExportApi
-import app.devper.pharm.domain.param.ExportKyFormParam
-import app.devper.pharm.domain.repository.ExportRepository
+import app.devper.pharm.domain.param.ky.ExportKyFormParam
+import app.devper.pharm.domain.repository.ky.ExportRepository
 
 class ExportRepositoryImpl(
     private val api: ExportApi,

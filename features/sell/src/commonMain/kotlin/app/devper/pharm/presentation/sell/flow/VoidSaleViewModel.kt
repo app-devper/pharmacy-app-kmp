@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.sell.flow
 
-import app.devper.pharm.domain.param.VoidSaleParam
+import app.devper.pharm.domain.param.sales.VoidSaleParam
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.VoidSaleUseCase
 import app.devper.pharm.domain.validation.SaleValidationError

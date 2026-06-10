@@ -6,8 +6,8 @@ import app.devper.pharm.presentation.reports.exception.EodUiStateError
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.SettingsProvider
-import app.devper.pharm.domain.param.CloseEodParam
-import app.devper.pharm.domain.param.EodReportParam
+import app.devper.pharm.domain.param.reports.CloseEodParam
+import app.devper.pharm.domain.param.reports.EodReportParam
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
 import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase

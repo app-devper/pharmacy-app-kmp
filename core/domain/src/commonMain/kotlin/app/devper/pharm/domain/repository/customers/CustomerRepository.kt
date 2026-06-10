@@ -1,8 +1,8 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.customers
 
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.CustomerInput
+import app.devper.pharm.domain.param.customers.CustomerInput
 
 interface CustomerRepository {
     suspend fun list(): List<Customer>

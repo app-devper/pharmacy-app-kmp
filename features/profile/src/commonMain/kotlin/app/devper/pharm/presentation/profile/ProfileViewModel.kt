@@ -11,8 +11,8 @@ import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.observer.UiPreferencesProvider
-import app.devper.pharm.domain.param.ChangePasswordParam
-import app.devper.pharm.domain.param.UpdateProfileParam
+import app.devper.pharm.domain.param.profile.ChangePasswordParam
+import app.devper.pharm.domain.param.profile.UpdateProfileParam
 import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase

@@ -16,9 +16,9 @@ import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StoreInfo
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
-import app.devper.pharm.domain.param.ReceiptSettingsInput
-import app.devper.pharm.domain.param.StockSettingsInput
-import app.devper.pharm.domain.param.UpdateSettingsParam
+import app.devper.pharm.domain.param.settings.ReceiptSettingsInput
+import app.devper.pharm.domain.param.settings.StockSettingsInput
+import app.devper.pharm.domain.param.settings.UpdateSettingsParam
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
 import app.devper.pharm.domain.testDispatchers

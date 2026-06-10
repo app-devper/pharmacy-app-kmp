@@ -1,7 +1,9 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.suppliers.SupplierRepository
+
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.domain.param.SupplierInput
+import app.devper.pharm.domain.param.suppliers.SupplierInput
 
 class FakeSupplierRepository(
     private val seed: List<Supplier> = emptyList(),

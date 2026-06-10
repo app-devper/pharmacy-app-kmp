@@ -1,6 +1,8 @@
 package app.devper.pharm.domain.repository
 
-import app.devper.pharm.domain.param.PrintLabelsParam
+import app.devper.pharm.domain.repository.inventory.LabelRepository
+
+import app.devper.pharm.domain.param.labels.PrintLabelsParam
 
 class FakeLabelRepository(
     private val throws: Boolean = false,

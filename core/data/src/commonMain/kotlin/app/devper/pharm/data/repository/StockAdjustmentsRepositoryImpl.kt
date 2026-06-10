@@ -5,8 +5,8 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.StockAdjustment
-import app.devper.pharm.domain.param.AddStockAdjustmentParam
-import app.devper.pharm.domain.repository.StockAdjustmentsRepository
+import app.devper.pharm.domain.param.inventory.AddStockAdjustmentParam
+import app.devper.pharm.domain.repository.inventory.StockAdjustmentsRepository
 
 class StockAdjustmentsRepositoryImpl(
     private val api: StockAdjustmentApi,

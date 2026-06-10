@@ -1,8 +1,8 @@
 package app.devper.pharm.presentation.expiry
 
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.param.ExpiringLotsFilterParam
-import app.devper.pharm.domain.param.WriteoffLotsParam
+import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
+import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
 import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
 import app.devper.pharm.presentation.expiry.exception.ExpiryUiStateError

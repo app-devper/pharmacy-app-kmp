@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.WriteoffResult
-import app.devper.pharm.domain.param.WriteoffLotsParam
-import app.devper.pharm.domain.repository.ExpiringLotsRepository
+import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
 
 class WriteoffLotsUseCase(private val repo: ExpiringLotsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<WriteoffLotsParam, WriteoffResult>(dispatchers) {

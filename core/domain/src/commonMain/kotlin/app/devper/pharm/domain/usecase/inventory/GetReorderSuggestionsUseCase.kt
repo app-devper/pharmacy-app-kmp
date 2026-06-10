@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.ReorderSuggestion
-import app.devper.pharm.domain.param.ReorderSuggestionsParam
-import app.devper.pharm.domain.repository.DrugRepository
+import app.devper.pharm.domain.param.inventory.ReorderSuggestionsParam
+import app.devper.pharm.domain.repository.inventory.DrugRepository
 
 class GetReorderSuggestionsUseCase(private val drugs: DrugRepository, dispatchers: AppDispatchers) :
     BaseUseCase<ReorderSuggestionsParam, List<ReorderSuggestion>>(dispatchers) {

@@ -3,8 +3,8 @@ package app.devper.pharm.domain.usecase.profile
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.domain.param.ChangePasswordParam
-import app.devper.pharm.domain.repository.ProfileRepository
+import app.devper.pharm.domain.param.profile.ChangePasswordParam
+import app.devper.pharm.domain.repository.profile.ProfileRepository
 
 class ChangePasswordUseCase(
     private val profile: ProfileRepository,

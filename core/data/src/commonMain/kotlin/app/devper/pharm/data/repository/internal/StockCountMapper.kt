@@ -7,7 +7,7 @@ import app.devper.pharm.data.remote.dto.StockCountInputItemDto
 import app.devper.pharm.data.remote.dto.StockCountItemDto
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
-import app.devper.pharm.domain.param.CreateStockCountParam
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
 
 internal fun StockCountDto.toDomain(): StockCount = StockCount(
     id = id,

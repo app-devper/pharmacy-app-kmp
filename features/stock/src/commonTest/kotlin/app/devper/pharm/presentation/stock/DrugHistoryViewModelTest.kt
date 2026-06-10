@@ -4,8 +4,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.domain.model.StockMovementsPage
-import app.devper.pharm.domain.param.MovementsFilterParam
-import app.devper.pharm.domain.repository.MovementsRepository
+import app.devper.pharm.domain.param.reports.MovementsFilterParam
+import app.devper.pharm.domain.repository.reports.MovementsRepository
 import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

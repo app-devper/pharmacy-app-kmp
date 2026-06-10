@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.sales
 
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.CartLineKey

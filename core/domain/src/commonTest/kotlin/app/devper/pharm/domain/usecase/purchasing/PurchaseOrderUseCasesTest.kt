@@ -14,9 +14,9 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
-import app.devper.pharm.domain.param.AddPurchaseOrderParam
-import app.devper.pharm.domain.param.PurchaseOrderItemInput
-import app.devper.pharm.domain.param.UpdatePurchaseOrderParam
+import app.devper.pharm.domain.param.purchasing.AddPurchaseOrderParam
+import app.devper.pharm.domain.param.purchasing.PurchaseOrderItemInput
+import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
 import app.devper.pharm.domain.testDispatchers
 import kotlinx.coroutines.test.runTest

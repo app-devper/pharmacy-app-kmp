@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.ExpiringLot
-import app.devper.pharm.domain.param.ExpiringLotsFilterParam
-import app.devper.pharm.domain.repository.ExpiringLotsRepository
+import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
 
 class GetExpiringLotsUseCase(private val repo: ExpiringLotsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<ExpiringLotsFilterParam, List<ExpiringLot>>(dispatchers) {

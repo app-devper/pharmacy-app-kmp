@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.model.BulkImportRowError
-import app.devper.pharm.domain.param.AddDrugParam
+import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.presentation.bulkimport.i18n.localizeBulkImport
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton

@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.inventory
 
 import app.devper.pharm.domain.model.StockCountDraft
 

@@ -12,9 +12,9 @@ import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.domain.model.Ky9Entry
 import app.devper.pharm.domain.model.KyForm
-import app.devper.pharm.domain.param.AddKy9Param
-import app.devper.pharm.domain.param.KyMonthFilterParam
-import app.devper.pharm.domain.repository.KyRepository
+import app.devper.pharm.domain.param.ky.AddKy9Param
+import app.devper.pharm.domain.param.ky.KyMonthFilterParam
+import app.devper.pharm.domain.repository.ky.KyRepository
 
 class KyRepositoryImpl(private val api: KyApi) : KyRepository {
 

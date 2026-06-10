@@ -3,8 +3,8 @@ package app.devper.pharm.domain.usecase.inventory
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.domain.param.AddStockAdjustmentParam
-import app.devper.pharm.domain.repository.StockAdjustmentsRepository
+import app.devper.pharm.domain.param.inventory.AddStockAdjustmentParam
+import app.devper.pharm.domain.repository.inventory.StockAdjustmentsRepository
 
 class AddStockAdjustmentUseCase(private val repo: StockAdjustmentsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<AddStockAdjustmentParam, Unit>(dispatchers) {
