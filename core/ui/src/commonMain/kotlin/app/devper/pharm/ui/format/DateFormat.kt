@@ -62,6 +62,12 @@ fun millisToBuddhistDisplayWithTime(millis: Long, tz: TimeZone = DEFAULT_ZONE): 
 fun todayBuddhistDisplay(tz: TimeZone = DEFAULT_ZONE): String =
     toBuddhistEraDisplay(Clock.System.now().toLocalDateTime(tz).date)
 
+@OptIn(ExperimentalTime::class)
+fun todayDayMonth(tz: TimeZone = DEFAULT_ZONE): String {
+    val date = Clock.System.now().toLocalDateTime(tz).date
+    return "${date.day}/${date.month.number}"
+}
+
 fun isoDateToBuddhist(s: String): String {
     if (s.isBlank()) return ""
     val date = runCatching { LocalDate.parse(s) }.getOrNull()
