@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.TopDrug
-import app.devper.pharm.domain.param.TopOrSlowDrugsParam
-import app.devper.pharm.domain.repository.ReportsRepository
+import app.devper.pharm.domain.param.reports.TopOrSlowDrugsParam
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 
 class GetTopDrugsUseCase(private val repo: ReportsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<TopOrSlowDrugsParam, List<TopDrug>>(dispatchers) {

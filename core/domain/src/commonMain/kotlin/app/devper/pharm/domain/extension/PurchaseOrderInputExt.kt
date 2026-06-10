@@ -2,7 +2,7 @@ package app.devper.pharm.domain.extension
 
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
-import app.devper.pharm.domain.param.PurchaseOrderItemInput
+import app.devper.pharm.domain.param.purchasing.PurchaseOrderItemInput
 import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.domain.validation.Field
 import app.devper.pharm.domain.validation.FieldLabel

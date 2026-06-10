@@ -4,7 +4,7 @@ import app.devper.pharm.common.error.CommonUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.StockCountDraft
-import app.devper.pharm.domain.param.CreateStockCountParam
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
 import app.devper.pharm.domain.extension.buildStockCountInput
 import app.devper.pharm.domain.extension.parsePendingStockCounts
 import app.devper.pharm.domain.usecase.inventory.ClearStockCountDraftUseCase

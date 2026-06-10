@@ -1,9 +1,11 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
+
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
-import app.devper.pharm.domain.param.ExpiringLotsFilterParam
-import app.devper.pharm.domain.param.WriteoffLotsParam
+import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
+import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
 
 class FakeExpiringLotsRepository(
     private val seed: List<ExpiringLot> = emptyList(),

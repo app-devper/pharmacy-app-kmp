@@ -5,8 +5,8 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.StockCount
-import app.devper.pharm.domain.param.CreateStockCountParam
-import app.devper.pharm.domain.repository.StockCountsRepository
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
+import app.devper.pharm.domain.repository.inventory.StockCountsRepository
 
 class StockCountsRepositoryImpl(
     private val api: StockCountsApi,

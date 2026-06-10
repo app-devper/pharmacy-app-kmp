@@ -12,7 +12,7 @@ import app.devper.pharm.domain.model.CartState
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.observer.CartStateProvider
-import app.devper.pharm.domain.param.AddCartItemParam
+import app.devper.pharm.domain.param.sales.AddCartItemParam
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

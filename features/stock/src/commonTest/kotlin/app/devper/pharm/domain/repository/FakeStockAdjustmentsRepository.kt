@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.inventory.StockAdjustmentsRepository
+
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
-import app.devper.pharm.domain.param.AddStockAdjustmentParam
+import app.devper.pharm.domain.param.inventory.AddStockAdjustmentParam
 
 class FakeStockAdjustmentsRepository(
     private val seed: Map<String, List<StockAdjustment>> = emptyMap(),

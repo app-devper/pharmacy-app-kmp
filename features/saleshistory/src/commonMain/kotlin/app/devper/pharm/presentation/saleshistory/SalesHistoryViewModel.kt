@@ -1,9 +1,9 @@
 package app.devper.pharm.presentation.saleshistory
 
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.ReturnLineParam
-import app.devper.pharm.domain.param.SaleHistoryFilterParam
-import app.devper.pharm.domain.param.SubmitReturnParam
+import app.devper.pharm.domain.param.sales.ReturnLineParam
+import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
+import app.devper.pharm.domain.param.sales.SubmitReturnParam
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase

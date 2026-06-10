@@ -3,8 +3,8 @@ package app.devper.pharm.presentation.movements
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.observer.TimeZoneProvider
-import app.devper.pharm.domain.param.ExportMovementsCsvParam
-import app.devper.pharm.domain.param.MovementsFilterParam
+import app.devper.pharm.domain.param.reports.ExportMovementsCsvParam
+import app.devper.pharm.domain.param.reports.MovementsFilterParam
 import app.devper.pharm.domain.usecase.reports.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.presentation.movements.exception.MovementsUiStateError

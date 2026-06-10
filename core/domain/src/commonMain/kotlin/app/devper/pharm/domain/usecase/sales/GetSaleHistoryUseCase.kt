@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.SaleHistoryFilterParam
-import app.devper.pharm.domain.repository.SaleHistoryRepository
+import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 
 class GetSaleHistoryUseCase(private val repo: SaleHistoryRepository, dispatchers: AppDispatchers) :
     BaseUseCase<SaleHistoryFilterParam, List<SaleSummary>>(dispatchers) {

@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.param.UpdateSettingsParam
-import app.devper.pharm.domain.repository.SettingsRepository
+import app.devper.pharm.domain.param.settings.UpdateSettingsParam
+import app.devper.pharm.domain.repository.settings.SettingsRepository
 
 class UpdateSettingsUseCase(private val repo: SettingsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<UpdateSettingsParam, Settings>(dispatchers) {

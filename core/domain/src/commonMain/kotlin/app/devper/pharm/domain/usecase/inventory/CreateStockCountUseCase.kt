@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.StockCount
-import app.devper.pharm.domain.param.CreateStockCountParam
-import app.devper.pharm.domain.repository.StockCountsRepository
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
+import app.devper.pharm.domain.repository.inventory.StockCountsRepository
 
 class CreateStockCountUseCase(private val repo: StockCountsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<CreateStockCountParam, StockCount>(dispatchers) {

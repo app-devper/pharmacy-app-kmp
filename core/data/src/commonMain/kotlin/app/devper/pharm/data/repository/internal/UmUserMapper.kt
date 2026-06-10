@@ -9,10 +9,10 @@ import app.devper.pharm.data.remote.dto.UpdateUserRequest
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.ChangePasswordParam
-import app.devper.pharm.domain.param.CreateUserParam
-import app.devper.pharm.domain.param.UpdateProfileParam
-import app.devper.pharm.domain.param.UpdateUserParam
+import app.devper.pharm.domain.param.profile.ChangePasswordParam
+import app.devper.pharm.domain.param.users.CreateUserParam
+import app.devper.pharm.domain.param.profile.UpdateProfileParam
+import app.devper.pharm.domain.param.users.UpdateUserParam
 
 internal fun UmUserDto.toDomain(): UmUser = UmUser(
     id = id,

@@ -9,9 +9,9 @@ import app.devper.pharm.domain.model.PharmacistInfo
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StoreInfo
 import app.devper.pharm.domain.observer.SettingsProvider
-import app.devper.pharm.domain.param.ReceiptSettingsInput
-import app.devper.pharm.domain.param.StockSettingsInput
-import app.devper.pharm.domain.param.UpdateSettingsParam
+import app.devper.pharm.domain.param.settings.ReceiptSettingsInput
+import app.devper.pharm.domain.param.settings.StockSettingsInput
+import app.devper.pharm.domain.param.settings.UpdateSettingsParam
 import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
 import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel

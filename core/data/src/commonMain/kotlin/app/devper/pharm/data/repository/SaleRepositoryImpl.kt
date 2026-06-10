@@ -8,9 +8,9 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.CheckoutParam
-import app.devper.pharm.domain.param.VoidSaleParam
-import app.devper.pharm.domain.repository.SaleRepository
+import app.devper.pharm.domain.param.sales.CheckoutParam
+import app.devper.pharm.domain.param.sales.VoidSaleParam
+import app.devper.pharm.domain.repository.sales.SaleRepository
 
 class SaleRepositoryImpl(
     private val api: SaleApi,

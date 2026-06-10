@@ -7,8 +7,8 @@ import app.devper.pharm.domain.usecase.inventory.GetStockCountsUseCase
 
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
-import app.devper.pharm.domain.param.CreateStockCountParam
-import app.devper.pharm.domain.param.StockCountInputLine
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
+import app.devper.pharm.domain.param.inventory.StockCountInputLine
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
 import app.devper.pharm.domain.testDispatchers
 import kotlinx.coroutines.test.runTest

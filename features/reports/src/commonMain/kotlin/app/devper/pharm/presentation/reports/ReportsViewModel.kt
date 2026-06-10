@@ -4,7 +4,7 @@ import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
-import app.devper.pharm.domain.param.DashboardRangeParam
+import app.devper.pharm.domain.param.reports.DashboardRangeParam
 import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
 import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
 import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase

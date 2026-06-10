@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.UpdateUserParam
-import app.devper.pharm.domain.repository.UsersRepository
+import app.devper.pharm.domain.param.users.UpdateUserParam
+import app.devper.pharm.domain.repository.users.UsersRepository
 
 class UpdateUserUseCase(
     private val users: UsersRepository,

@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.ProfitReport
-import app.devper.pharm.domain.param.ReportRangeParam
-import app.devper.pharm.domain.repository.ReportsRepository
+import app.devper.pharm.domain.param.reports.ReportRangeParam
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 
 class GetProfitReportUseCase(private val repo: ReportsRepository, dispatchers: AppDispatchers) :
     BaseUseCase<ReportRangeParam, ProfitReport>(dispatchers) {

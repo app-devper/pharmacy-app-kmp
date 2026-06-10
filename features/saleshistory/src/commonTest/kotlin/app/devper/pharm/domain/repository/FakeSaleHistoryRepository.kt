@@ -1,9 +1,11 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
+
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.SaleHistoryFilterParam
-import app.devper.pharm.domain.param.SubmitReturnParam
+import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
+import app.devper.pharm.domain.param.sales.SubmitReturnParam
 
 class FakeSaleHistoryRepository(
     private val seed: List<SaleSummary> = emptyList(),

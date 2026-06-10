@@ -1,12 +1,14 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.profile.ProfileRepository
+
 import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.ChangePasswordParam
-import app.devper.pharm.domain.param.UpdateProfileParam
+import app.devper.pharm.domain.param.profile.ChangePasswordParam
+import app.devper.pharm.domain.param.profile.UpdateProfileParam
 
 class FakeProfileRepository(
     initial: UmUser = sampleUser,

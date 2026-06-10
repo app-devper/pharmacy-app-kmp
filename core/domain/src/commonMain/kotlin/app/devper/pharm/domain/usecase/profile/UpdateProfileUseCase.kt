@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.UpdateProfileParam
-import app.devper.pharm.domain.repository.ProfileRepository
+import app.devper.pharm.domain.param.profile.UpdateProfileParam
+import app.devper.pharm.domain.repository.profile.ProfileRepository
 
 class UpdateProfileUseCase(
     private val profile: ProfileRepository,

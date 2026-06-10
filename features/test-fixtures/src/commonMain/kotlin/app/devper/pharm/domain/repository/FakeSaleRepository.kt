@@ -1,11 +1,13 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.sales.SaleRepository
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.CheckoutParam
-import app.devper.pharm.domain.param.VoidSaleParam
+import app.devper.pharm.domain.param.sales.CheckoutParam
+import app.devper.pharm.domain.param.sales.VoidSaleParam
 
 class FakeSaleRepository(
     private val successResult: Sale = Sale(

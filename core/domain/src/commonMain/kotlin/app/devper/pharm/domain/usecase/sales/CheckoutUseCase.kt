@@ -10,11 +10,11 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
 import app.devper.pharm.domain.model.OversellShortfall
-import app.devper.pharm.domain.param.CheckoutLineParam
-import app.devper.pharm.domain.param.CheckoutParam
-import app.devper.pharm.domain.param.RunCheckoutParam
-import app.devper.pharm.domain.repository.CartRepository
-import app.devper.pharm.domain.repository.SaleRepository
+import app.devper.pharm.domain.param.sales.CheckoutLineParam
+import app.devper.pharm.domain.param.sales.CheckoutParam
+import app.devper.pharm.domain.param.sales.RunCheckoutParam
+import app.devper.pharm.domain.repository.sales.CartRepository
+import app.devper.pharm.domain.repository.sales.SaleRepository
 
 class CheckoutUseCase(
     private val cart: CartRepository,

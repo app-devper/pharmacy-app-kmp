@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.settings
 
 import app.devper.pharm.domain.model.KySettings
 import app.devper.pharm.domain.model.PharmacistInfo

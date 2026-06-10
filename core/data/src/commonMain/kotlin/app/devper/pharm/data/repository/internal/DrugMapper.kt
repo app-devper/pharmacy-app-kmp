@@ -16,9 +16,9 @@ import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.model.BulkImportRowError
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ReorderSuggestion
-import app.devper.pharm.domain.param.AddDrugParam
-import app.devper.pharm.domain.param.CreateLotPayload
-import app.devper.pharm.domain.param.UpdateDrugParam
+import app.devper.pharm.domain.param.inventory.AddDrugParam
+import app.devper.pharm.domain.param.inventory.CreateLotPayload
+import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 
 internal fun DrugDto.toDomain(): Drug = Drug(
     id = id,

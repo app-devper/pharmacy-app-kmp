@@ -1,7 +1,7 @@
 package app.devper.pharm.data.storage
 
 import app.devper.pharm.domain.model.StockCountDraft
-import app.devper.pharm.domain.repository.StockCountDraftRepository
+import app.devper.pharm.domain.repository.inventory.StockCountDraftRepository
 import com.russhwolf.settings.Settings
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json

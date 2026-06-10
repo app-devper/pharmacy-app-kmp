@@ -62,15 +62,15 @@ class CustomerPickerViewModelTest {
     fun open_second_time_skips_reload_when_customers_already_populated() = runVmTest { dispatchers ->
         val seed = listOf(customer("c1", "Alice"))
 
-        val countingRepo = object : app.devper.pharm.domain.repository.CustomerRepository {
+        val countingRepo = object : app.devper.pharm.domain.repository.customers.CustomerRepository {
             var listCalls = 0; private set
             override suspend fun list(): List<Customer> {
                 listCalls++
                 return seed
             }
-            override suspend fun add(input: app.devper.pharm.domain.param.CustomerInput) =
+            override suspend fun add(input: app.devper.pharm.domain.param.customers.CustomerInput) =
                 throw NotImplementedError("not under test")
-            override suspend fun update(id: String, input: app.devper.pharm.domain.param.CustomerInput) =
+            override suspend fun update(id: String, input: app.devper.pharm.domain.param.customers.CustomerInput) =
                 throw NotImplementedError("not under test")
             override suspend fun getCustomerSales(customerId: String) =
                 throw NotImplementedError("not under test")
@@ -119,11 +119,11 @@ class CustomerPickerViewModelTest {
 
     @Test
     fun open_failure_routes_to_error_and_clears_loading() = runVmTest { dispatchers ->
-        val throwingRepo = object : app.devper.pharm.domain.repository.CustomerRepository {
+        val throwingRepo = object : app.devper.pharm.domain.repository.customers.CustomerRepository {
             override suspend fun list(): List<Customer> = throw RuntimeException("offline")
-            override suspend fun add(input: app.devper.pharm.domain.param.CustomerInput) =
+            override suspend fun add(input: app.devper.pharm.domain.param.customers.CustomerInput) =
                 throw NotImplementedError()
-            override suspend fun update(id: String, input: app.devper.pharm.domain.param.CustomerInput) =
+            override suspend fun update(id: String, input: app.devper.pharm.domain.param.customers.CustomerInput) =
                 throw NotImplementedError()
             override suspend fun getCustomerSales(customerId: String) =
                 throw NotImplementedError()

@@ -1,7 +1,7 @@
 package app.devper.pharm.data.storage
 
-import app.devper.pharm.domain.param.EnqueueOfflineSaleParam
-import app.devper.pharm.domain.param.MarkOfflineSaleFailedParam
+import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
+import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

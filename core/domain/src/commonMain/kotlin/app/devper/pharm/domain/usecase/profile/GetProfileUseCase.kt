@@ -4,7 +4,7 @@ import app.devper.pharm.domain.usecase.BaseQueryUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.repository.ProfileRepository
+import app.devper.pharm.domain.repository.profile.ProfileRepository
 
 class GetProfileUseCase(
     private val profile: ProfileRepository,

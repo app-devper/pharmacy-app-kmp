@@ -3,8 +3,8 @@ package app.devper.pharm.presentation.users
 import app.devper.pharm.common.error.CommonUiStateError
 
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.CreateUserParam
-import app.devper.pharm.domain.param.UpdateUserParam
+import app.devper.pharm.domain.param.users.CreateUserParam
+import app.devper.pharm.domain.param.users.UpdateUserParam
 import app.devper.pharm.domain.usecase.users.CreateUserUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.UpdateUserUseCase

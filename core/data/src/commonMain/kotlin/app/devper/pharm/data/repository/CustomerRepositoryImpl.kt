@@ -5,8 +5,8 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.CustomerInput
-import app.devper.pharm.domain.repository.CustomerRepository
+import app.devper.pharm.domain.param.customers.CustomerInput
+import app.devper.pharm.domain.repository.customers.CustomerRepository
 
 class CustomerRepositoryImpl(private val api: CustomerApi) : CustomerRepository {
 

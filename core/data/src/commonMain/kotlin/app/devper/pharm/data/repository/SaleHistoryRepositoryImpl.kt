@@ -8,9 +8,9 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.SaleHistoryFilterParam
-import app.devper.pharm.domain.param.SubmitReturnParam
-import app.devper.pharm.domain.repository.SaleHistoryRepository
+import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
+import app.devper.pharm.domain.param.sales.SubmitReturnParam
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 
 class SaleHistoryRepositoryImpl(
     private val api: SaleHistoryApi,

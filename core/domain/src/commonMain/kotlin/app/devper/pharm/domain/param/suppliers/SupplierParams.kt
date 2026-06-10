@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.suppliers
 
 data class SupplierInput(
     val name: String,

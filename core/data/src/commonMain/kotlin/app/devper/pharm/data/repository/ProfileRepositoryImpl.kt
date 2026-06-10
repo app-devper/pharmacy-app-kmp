@@ -4,9 +4,9 @@ import app.devper.pharm.data.remote.api.ProfileApi
 import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.ChangePasswordParam
-import app.devper.pharm.domain.param.UpdateProfileParam
-import app.devper.pharm.domain.repository.ProfileRepository
+import app.devper.pharm.domain.param.profile.ChangePasswordParam
+import app.devper.pharm.domain.param.profile.UpdateProfileParam
+import app.devper.pharm.domain.repository.profile.ProfileRepository
 
 class ProfileRepositoryImpl(
     private val api: ProfileApi,

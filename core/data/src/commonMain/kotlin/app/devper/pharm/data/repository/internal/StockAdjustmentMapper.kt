@@ -4,7 +4,7 @@ import app.devper.pharm.data.remote.dto.StockAdjustmentDto
 import app.devper.pharm.data.remote.dto.StockAdjustmentInputDto
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
-import app.devper.pharm.domain.param.AddStockAdjustmentParam
+import app.devper.pharm.domain.param.inventory.AddStockAdjustmentParam
 
 internal fun StockAdjustmentDto.toDomain(): StockAdjustment = StockAdjustment(
     id = id,

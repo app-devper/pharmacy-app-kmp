@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.stock
 
-import app.devper.pharm.domain.param.MovementsFilterParam
+import app.devper.pharm.domain.param.reports.MovementsFilterParam
 import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.presentation.stock.exception.StockUiStateError
 import app.devper.pharm.ui.common.BaseViewModel

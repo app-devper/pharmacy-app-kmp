@@ -21,9 +21,9 @@ import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.AddKy9Param
-import app.devper.pharm.domain.param.ExportKyFormParam
-import app.devper.pharm.domain.param.KyMonthFilterParam
+import app.devper.pharm.domain.param.ky.AddKy9Param
+import app.devper.pharm.domain.param.ky.ExportKyFormParam
+import app.devper.pharm.domain.param.ky.KyMonthFilterParam
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.testDispatchers

@@ -1,7 +1,7 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.inventory
 
 import app.devper.pharm.domain.model.StockAdjustment
-import app.devper.pharm.domain.param.AddStockAdjustmentParam
+import app.devper.pharm.domain.param.inventory.AddStockAdjustmentParam
 
 interface StockAdjustmentsRepository {
 

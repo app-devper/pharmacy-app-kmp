@@ -5,9 +5,9 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.MarkOfflineSaleFailedParam
-import app.devper.pharm.domain.repository.OfflineSaleQueue
-import app.devper.pharm.domain.repository.SaleRepository
+import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
+import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
+import app.devper.pharm.domain.repository.sales.SaleRepository
 
 class RetryOfflineSaleUseCase(
     private val queue: OfflineSaleQueue,

@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.offlinesync
 
 data class EnqueueOfflineSaleParam(
     val clientRequestId: String,

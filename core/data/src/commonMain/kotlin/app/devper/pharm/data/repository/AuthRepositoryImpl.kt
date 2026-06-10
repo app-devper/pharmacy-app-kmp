@@ -5,8 +5,8 @@ import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.User
-import app.devper.pharm.domain.param.LoginParam
-import app.devper.pharm.domain.repository.AuthRepository
+import app.devper.pharm.domain.param.auth.LoginParam
+import app.devper.pharm.domain.repository.auth.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

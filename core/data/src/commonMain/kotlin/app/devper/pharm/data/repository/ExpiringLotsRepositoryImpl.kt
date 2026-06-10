@@ -6,9 +6,9 @@ import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
-import app.devper.pharm.domain.param.ExpiringLotsFilterParam
-import app.devper.pharm.domain.param.WriteoffLotsParam
-import app.devper.pharm.domain.repository.ExpiringLotsRepository
+import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
+import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
 
 class ExpiringLotsRepositoryImpl(
     private val api: ExpiringLotsApi,

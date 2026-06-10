@@ -8,8 +8,8 @@ import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.model.KySubmissionResult
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.SubmitKyFormsParam
-import app.devper.pharm.domain.repository.KyRepository
+import app.devper.pharm.domain.param.ky.SubmitKyFormsParam
+import app.devper.pharm.domain.repository.ky.KyRepository
 import kotlinx.datetime.LocalDate
 
 class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatchers) :

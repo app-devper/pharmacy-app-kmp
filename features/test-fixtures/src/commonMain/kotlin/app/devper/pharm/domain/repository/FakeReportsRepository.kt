@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.reports.ReportsRepository
+
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.EodReport
@@ -8,11 +10,11 @@ import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.domain.model.ReportSummary
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
-import app.devper.pharm.domain.param.CloseEodParam
-import app.devper.pharm.domain.param.DashboardRangeParam
-import app.devper.pharm.domain.param.EodReportParam
-import app.devper.pharm.domain.param.ReportRangeParam
-import app.devper.pharm.domain.param.TopOrSlowDrugsParam
+import app.devper.pharm.domain.param.reports.CloseEodParam
+import app.devper.pharm.domain.param.reports.DashboardRangeParam
+import app.devper.pharm.domain.param.reports.EodReportParam
+import app.devper.pharm.domain.param.reports.ReportRangeParam
+import app.devper.pharm.domain.param.reports.TopOrSlowDrugsParam
 
 class FakeReportsRepository(
     private val eodResult: EodReport = EodReport(

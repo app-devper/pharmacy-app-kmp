@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.labels
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
-import app.devper.pharm.domain.param.PrintLabelsParam
+import app.devper.pharm.domain.param.labels.PrintLabelsParam
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase

@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Ky9Entry
-import app.devper.pharm.domain.param.KyMonthFilterParam
-import app.devper.pharm.domain.repository.KyRepository
+import app.devper.pharm.domain.param.ky.KyMonthFilterParam
+import app.devper.pharm.domain.repository.ky.KyRepository
 
 class GetKy9EntriesUseCase(private val repo: KyRepository, dispatchers: AppDispatchers) :
     BaseUseCase<KyMonthFilterParam, List<Ky9Entry>>(dispatchers) {

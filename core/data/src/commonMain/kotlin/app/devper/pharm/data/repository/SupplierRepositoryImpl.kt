@@ -4,8 +4,8 @@ import app.devper.pharm.data.remote.api.SupplierApi
 import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toDto
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.domain.param.SupplierInput
-import app.devper.pharm.domain.repository.SupplierRepository
+import app.devper.pharm.domain.param.suppliers.SupplierInput
+import app.devper.pharm.domain.repository.suppliers.SupplierRepository
 
 class SupplierRepositoryImpl(private val api: SupplierApi) : SupplierRepository {
 

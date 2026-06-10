@@ -4,7 +4,7 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.SaleItemSnapshot
-import app.devper.pharm.domain.repository.SaleHistoryRepository
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 
 class GetSaleItemsUseCase(private val repo: SaleHistoryRepository, dispatchers: AppDispatchers) :
     BaseUseCase<String, List<SaleItemSnapshot>>(dispatchers) {

@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.customers.CustomerRepository
+
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.domain.param.CustomerInput
+import app.devper.pharm.domain.param.customers.CustomerInput
 
 class FakeCustomerRepository(
     private val seed: List<Customer> = emptyList(),

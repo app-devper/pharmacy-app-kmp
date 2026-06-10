@@ -6,7 +6,7 @@ import app.devper.pharm.domain.usecase.auth.LoginUseCase
 import app.devper.pharm.domain.usecase.auth.LogoutUseCase
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.domain.param.LoginParam
+import app.devper.pharm.domain.param.auth.LoginParam
 import app.devper.pharm.domain.repository.FakeAuthRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

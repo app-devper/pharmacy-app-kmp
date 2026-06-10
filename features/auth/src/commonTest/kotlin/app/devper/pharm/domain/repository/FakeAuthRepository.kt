@@ -1,8 +1,10 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.domain.repository.auth.AuthRepository
+
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.User
-import app.devper.pharm.domain.param.LoginParam
+import app.devper.pharm.domain.param.auth.LoginParam
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

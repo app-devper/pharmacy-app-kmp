@@ -5,7 +5,7 @@ import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UiPreferences
-import app.devper.pharm.domain.repository.UiPreferencesRepository
+import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

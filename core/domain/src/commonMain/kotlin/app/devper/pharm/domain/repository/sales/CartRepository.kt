@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.sales
 
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLineKey
@@ -6,9 +6,9 @@ import app.devper.pharm.domain.model.CartState
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.AddCartItemParam
-import app.devper.pharm.domain.param.SetCartQtyParam
-import app.devper.pharm.domain.param.SetLineDiscountParam
+import app.devper.pharm.domain.param.sales.AddCartItemParam
+import app.devper.pharm.domain.param.sales.SetCartQtyParam
+import app.devper.pharm.domain.param.sales.SetLineDiscountParam
 import kotlinx.coroutines.flow.StateFlow
 
 interface CartRepository {

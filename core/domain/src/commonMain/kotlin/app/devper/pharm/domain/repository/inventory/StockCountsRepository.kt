@@ -1,7 +1,7 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.inventory
 
 import app.devper.pharm.domain.model.StockCount
-import app.devper.pharm.domain.param.CreateStockCountParam
+import app.devper.pharm.domain.param.inventory.CreateStockCountParam
 
 interface StockCountsRepository {
 

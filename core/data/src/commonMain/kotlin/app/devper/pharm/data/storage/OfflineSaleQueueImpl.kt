@@ -1,9 +1,9 @@
 package app.devper.pharm.data.storage
 
 import app.devper.pharm.domain.model.PendingSale
-import app.devper.pharm.domain.param.EnqueueOfflineSaleParam
-import app.devper.pharm.domain.param.MarkOfflineSaleFailedParam
-import app.devper.pharm.domain.repository.OfflineSaleQueue
+import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
+import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
+import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 import app.devper.pharm.domain.extension.newClientRequestId
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow

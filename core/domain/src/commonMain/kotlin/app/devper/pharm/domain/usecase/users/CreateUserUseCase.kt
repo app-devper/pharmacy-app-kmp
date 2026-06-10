@@ -4,8 +4,8 @@ import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.CreateUserParam
-import app.devper.pharm.domain.repository.UsersRepository
+import app.devper.pharm.domain.param.users.CreateUserParam
+import app.devper.pharm.domain.repository.users.UsersRepository
 
 class CreateUserUseCase(
     private val users: UsersRepository,

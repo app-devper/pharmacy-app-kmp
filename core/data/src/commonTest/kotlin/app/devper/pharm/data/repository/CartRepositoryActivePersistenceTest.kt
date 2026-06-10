@@ -7,7 +7,7 @@ import app.devper.pharm.data.storage.MemorySettings
 import app.devper.pharm.data.storage.ParkedCartStorage
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.AddCartItemParam
+import app.devper.pharm.domain.param.sales.AddCartItemParam
 import com.russhwolf.settings.Settings
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -1,11 +1,11 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.users
 
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.CreateUserParam
-import app.devper.pharm.domain.param.SetUserPasswordParam
-import app.devper.pharm.domain.param.SetUserRoleParam
-import app.devper.pharm.domain.param.SetUserStatusParam
-import app.devper.pharm.domain.param.UpdateUserParam
+import app.devper.pharm.domain.param.users.CreateUserParam
+import app.devper.pharm.domain.param.users.SetUserPasswordParam
+import app.devper.pharm.domain.param.users.SetUserRoleParam
+import app.devper.pharm.domain.param.users.SetUserStatusParam
+import app.devper.pharm.domain.param.users.UpdateUserParam
 
 interface UsersRepository {
     suspend fun list(): List<UmUser>

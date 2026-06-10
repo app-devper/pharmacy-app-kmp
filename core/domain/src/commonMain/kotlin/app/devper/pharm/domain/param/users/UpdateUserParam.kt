@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.param
+package app.devper.pharm.domain.param.users
 
 data class UpdateUserParam(
     val id: String,

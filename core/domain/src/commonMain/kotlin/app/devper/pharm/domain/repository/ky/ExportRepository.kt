@@ -1,6 +1,6 @@
-package app.devper.pharm.domain.repository
+package app.devper.pharm.domain.repository.ky
 
-import app.devper.pharm.domain.param.ExportKyFormParam
+import app.devper.pharm.domain.param.ky.ExportKyFormParam
 
 interface ExportRepository {
 

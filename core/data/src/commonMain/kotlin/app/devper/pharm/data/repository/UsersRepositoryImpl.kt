@@ -7,12 +7,12 @@ import app.devper.pharm.data.remote.dto.SetStatusRequest
 import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.param.CreateUserParam
-import app.devper.pharm.domain.param.SetUserPasswordParam
-import app.devper.pharm.domain.param.SetUserRoleParam
-import app.devper.pharm.domain.param.SetUserStatusParam
-import app.devper.pharm.domain.param.UpdateUserParam
-import app.devper.pharm.domain.repository.UsersRepository
+import app.devper.pharm.domain.param.users.CreateUserParam
+import app.devper.pharm.domain.param.users.SetUserPasswordParam
+import app.devper.pharm.domain.param.users.SetUserRoleParam
+import app.devper.pharm.domain.param.users.SetUserStatusParam
+import app.devper.pharm.domain.param.users.UpdateUserParam
+import app.devper.pharm.domain.repository.users.UsersRepository
 
 class UsersRepositoryImpl(
     private val api: UsersApi,

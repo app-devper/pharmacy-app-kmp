@@ -4,7 +4,7 @@ package app.devper.pharm.domain.usecase
 
 import app.devper.pharm.domain.usecase.sales.VoidSaleUseCase
 
-import app.devper.pharm.domain.param.VoidSaleParam
+import app.devper.pharm.domain.param.sales.VoidSaleParam
 import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.testDispatchers
 import kotlinx.coroutines.test.runTest
