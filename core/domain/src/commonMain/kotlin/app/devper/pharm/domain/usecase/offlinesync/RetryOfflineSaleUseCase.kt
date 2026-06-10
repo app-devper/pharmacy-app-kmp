@@ -15,7 +15,7 @@ class RetryOfflineSaleUseCase(
 
     override suspend fun execute(param: String): Sale {
         val pending = queue.pending.value.firstOrNull { it.id == param }
-            ?: throw NotFoundException("ไม่พบบิลค้าง")
+            ?: throw NotFoundException("Pending sale not found")
         return try {
             val sale = sales.replayCheckout(pending.payloadJson)
             queue.markSynced(param)

@@ -9,6 +9,7 @@ import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
+import app.devper.pharm.domain.validation.SaleValidationError
 import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
@@ -141,7 +142,7 @@ class SalesHistoryViewModel(
                 }
                 onSelectSale(sale)
             },
-            onFailure = { e -> setState { copy(submittingReturn = false, errorState = SalesHistoryUiStateError.SubmitReturnFailed(e)) } },
+            onFailure = { e -> setState { copy(submittingReturn = false, errorState = (e as? SaleValidationError) ?: SalesHistoryUiStateError.SubmitReturnFailed(e)) } },
         )
     }
 }

@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.saleshistory
 import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
 import app.devper.pharm.ui.common.LoadableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 
@@ -23,10 +22,10 @@ data class SalesHistoryUiState(
     val returnDraft: Map<String, Int> = emptyMap(),
     val returnReason: String = "",
     val submittingReturn: Boolean = false,
-    val errorState: SalesHistoryUiStateError? = null,
+    val errorState: AppException? = null,
 ) : LoadableUiState<SalesHistoryUiState> {
 
-    override val domainError: SalesHistoryUiStateError? get() = errorState
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withDomainError(error: AppException?) = copy(errorState = error as? SalesHistoryUiStateError)
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 }

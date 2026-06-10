@@ -3,14 +3,13 @@ package app.devper.pharm.presentation.bulkimport
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.param.AddDrugParam
-import app.devper.pharm.presentation.bulkimport.exception.BulkImportUiStateError
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class BulkImportUiState(
     val text: String = "",
     val parsed: List<AddDrugParam> = emptyList(),
     val previewCount: Int? = null,
-    val parseErrorState: BulkImportUiStateError? = null,
+    val parseErrorState: AppException? = null,
     val submitting: Boolean = false,
     val result: BulkImportResult? = null,
     val errorState: AppException? = null,

@@ -10,6 +10,7 @@ import app.devper.pharm.ui.i18n.localizeCommon
 fun AppException.localizeStock(s: PharmStrings): String = when (this) {
     is StockUiStateError.LoadHistoryFailed -> s.stockLoadHistoryFailed
     is DrugFormUiStateError.NotFound -> s.stockDrugFormNotFound
+    is DrugFormUiStateError.InvalidInitialLotExpiry -> s.stockDrugFormLotExpiryInvalid
     is DrugLotsUiStateError.LoadLotsFailed -> s.stockLoadLotsFailed
     is DrugLotsUiStateError.InvalidExpiry -> s.stockInvalidExpiry
     is DrugLotsUiStateError.AddLotFailed -> s.stockAddLotFailed

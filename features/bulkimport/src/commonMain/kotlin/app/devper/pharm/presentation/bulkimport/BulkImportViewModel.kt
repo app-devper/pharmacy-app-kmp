@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.bulkimport
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.extension.parseBulkImportJson
 import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
@@ -44,14 +45,14 @@ class BulkImportViewModel(
                 }
             },
             onFailure = { e ->
-                setState { copy(parsed = emptyList(), previewCount = null, parseErrorState = BulkImportUiStateError.InvalidJson(e)) }
+                setState { copy(parsed = emptyList(), previewCount = null, parseErrorState = (e as? AppException) ?: BulkImportUiStateError.InvalidJson(e)) }
             },
         )
     }
 
     fun submit() {
         val parsed = parseBulkImportJson(current.text).getOrElse { e ->
-            setState { copy(parsed = emptyList(), parseErrorState = BulkImportUiStateError.InvalidJson(e)) }
+            setState { copy(parsed = emptyList(), parseErrorState = (e as? AppException) ?: BulkImportUiStateError.InvalidJson(e)) }
             return
         }
         if (parsed.isEmpty()) {

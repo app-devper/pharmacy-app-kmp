@@ -1,7 +1,8 @@
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.validation.SaleValidationError
+
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.ValidationException
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CheckoutFailure
@@ -32,7 +33,7 @@ class CheckoutUseCase(
         val snapshot = cart.state.value.active
         val lines = snapshot.items
         if (lines.isEmpty()) {
-            throw CheckoutFailure(ValidationException("ตะกร้าว่างเปล่า"))
+            throw CheckoutFailure(SaleValidationError.EmptyCart())
         }
 
         if (!param.allowOversell) {

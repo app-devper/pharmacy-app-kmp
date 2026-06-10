@@ -5,6 +5,7 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.param.PurchaseOrderItemInput
 import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.domain.validation.Field
+import app.devper.pharm.domain.validation.FieldLabel
 
 fun buildPurchaseOrderItemInput(
     drugId: String,
@@ -15,9 +16,9 @@ fun buildPurchaseOrderItemInput(
     costPrice: String,
     sellPrice: String,
 ): Result<PurchaseOrderItemInput> = runCatching {
-    val parsedDrugId = Field.notBlank(drugId, "ยา")
-    val parsedLotNumber = Field.notBlank(lotNumber, "lot number")
-    val parsedExpiry = Field.localDate(expiryDate, label = "วันหมดอายุ")
+    val parsedDrugId = Field.notBlank(drugId, FieldLabel.Drug)
+    val parsedLotNumber = Field.notBlank(lotNumber, FieldLabel.LotNumber)
+    val parsedExpiry = Field.localDate(expiryDate, label = FieldLabel.ExpiryDate)
     val parsedQty = Field.positiveInt(qty)
     PurchaseOrderItemInput(
         drugId = parsedDrugId,

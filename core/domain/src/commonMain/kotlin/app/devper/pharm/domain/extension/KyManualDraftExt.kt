@@ -3,6 +3,7 @@ package app.devper.pharm.domain.extension
 import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.domain.validation.Field
+import app.devper.pharm.domain.validation.FieldLabel
 import kotlinx.datetime.LocalDate
 
 fun buildKy10Draft(
@@ -19,7 +20,7 @@ fun buildKy10Draft(
 ): Result<KyForm.Ky10> = runCatching {
     val parsedDate = validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
     val parsedQty = qty.toInt()
-    val parsedBalance = Field.nonNegativeIntOrDefault(balance, default = 0, label = "ยอดคงเหลือ")
+    val parsedBalance = Field.nonNegativeIntOrDefault(balance, default = 0, label = FieldLabel.Balance)
     KyForm.Ky10(
         saleId = "",
         date = parsedDate,
@@ -79,7 +80,7 @@ fun buildKy12Draft(
     status: String,
 ): Result<KyForm.Ky12> = runCatching {
     val parsedDate = validateKyManualCommon(date = date, drugName = drugName, unit = unit, qty = qty)
-    val parsedValue = Field.nonNegativeDoubleOrDefault(totalValue, default = 0.0, label = "มูลค่ารวม")
+    val parsedValue = Field.nonNegativeDoubleOrDefault(totalValue, default = 0.0, label = FieldLabel.TotalValue)
     KyForm.Ky12(
         saleId = "",
         date = parsedDate,
@@ -101,8 +102,8 @@ fun isKy12DraftValid(date: String, drugName: String, unit: String, qty: String):
 
 private fun validateKyManualCommon(date: String, drugName: String, unit: String, qty: String): LocalDate {
     val parsedDate = Field.localDate(date)
-    Field.notBlank(drugName, "ชื่อยา")
-    Field.notBlank(unit, "หน่วย")
+    Field.notBlank(drugName, FieldLabel.DrugName)
+    Field.notBlank(unit, FieldLabel.Unit)
     Field.positiveInt(qty)
     return parsedDate
 }
