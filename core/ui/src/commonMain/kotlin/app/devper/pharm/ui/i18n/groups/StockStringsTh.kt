@@ -1,6 +1,12 @@
 package app.devper.pharm.ui.i18n.groups
 
 object StockStringsTh : StockStrings {
+    override val stockReasonRecount = "นับสต็อก"
+    override val stockReasonDamaged = "ยาเสียหาย"
+    override val stockReasonExpired = "ยาหมดอายุ"
+    override val stockReasonLost = "สูญหาย"
+    override val stockReasonOther = "อื่นๆ"
+
     override val stockLowThresholdLabel = "threshold ใกล้หมด"
 
     override val stockHistoryCountNoun = "รายการ"

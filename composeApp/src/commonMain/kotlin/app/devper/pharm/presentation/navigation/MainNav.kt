@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.navigation
 
+import app.devper.pharm.ui.i18n.navTitle
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -162,14 +164,14 @@ private val DEST_INFO: Map<String, DestInfo> = buildMap {
     add(Reports::class, { it.navReports }, Reports::class)
     add(Eod::class, { it.navReports }, Reports::class)
     add(Profit::class, { it.navProfit }, Profit::class)
-    add(Ky9::class, { KyFormType.Ky9.label }, Ky9::class)
-    add(Ky9Add::class, { KyFormType.Ky9.label }, Ky9::class)
-    add(Ky10::class, { KyFormType.Ky10.label }, Ky9::class)
-    add(Ky10Add::class, { KyFormType.Ky10.label }, Ky9::class)
-    add(Ky11::class, { KyFormType.Ky11.label }, Ky9::class)
-    add(Ky11Add::class, { KyFormType.Ky11.label }, Ky9::class)
-    add(Ky12::class, { KyFormType.Ky12.label }, Ky9::class)
-    add(Ky12Add::class, { KyFormType.Ky12.label }, Ky9::class)
+    add(Ky9::class, { KyFormType.Ky9.navTitle(it) }, Ky9::class)
+    add(Ky9Add::class, { KyFormType.Ky9.navTitle(it) }, Ky9::class)
+    add(Ky10::class, { KyFormType.Ky10.navTitle(it) }, Ky9::class)
+    add(Ky10Add::class, { KyFormType.Ky10.navTitle(it) }, Ky9::class)
+    add(Ky11::class, { KyFormType.Ky11.navTitle(it) }, Ky9::class)
+    add(Ky11Add::class, { KyFormType.Ky11.navTitle(it) }, Ky9::class)
+    add(Ky12::class, { KyFormType.Ky12.navTitle(it) }, Ky9::class)
+    add(Ky12Add::class, { KyFormType.Ky12.navTitle(it) }, Ky9::class)
     add(Users::class, { it.navUsers }, Users::class)
     add(UserAdd::class, { it.navUsers }, Users::class)
     add(UserEdit::class, { it.navUsers }, Users::class)

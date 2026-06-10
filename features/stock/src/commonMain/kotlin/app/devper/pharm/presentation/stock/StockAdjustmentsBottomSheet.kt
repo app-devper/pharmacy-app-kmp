@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.i18n.label
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -225,7 +227,7 @@ private fun ReasonBadge(reason: AdjustmentReason) {
             .padding(horizontal = 8.dp, vertical = 2.dp),
     ) {
         Text(
-            text = reason.wire,
+            text = reason.label(pharmStrings),
             style = PharmText.micro.copy(color = t.colors.fg1),
         )
     }
@@ -268,7 +270,7 @@ private fun AddAdjustmentForm(state: StockAdjustmentsUiState, callbacks: StockAd
         FormField(label = pharmStrings.stockHeaderReason) {
             PharmSingleSelectChips(
                 chips = AdjustmentReason.pickerOrder.map {
-                    PharmFilterChip(id = it.name, label = it.wire)
+                    PharmFilterChip(id = it.name, label = it.label(pharmStrings))
                 },
                 activeId = state.draft.reason.name,
                 onSelect = { callbacks.onReason(AdjustmentReason.valueOf(it)) },

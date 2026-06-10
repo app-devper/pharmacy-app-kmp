@@ -1,6 +1,12 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface StockStrings {
+    val stockReasonRecount: String
+    val stockReasonDamaged: String
+    val stockReasonExpired: String
+    val stockReasonLost: String
+    val stockReasonOther: String
+
     val stockLowThresholdLabel: String
 
     val stockHistoryCountNoun: String

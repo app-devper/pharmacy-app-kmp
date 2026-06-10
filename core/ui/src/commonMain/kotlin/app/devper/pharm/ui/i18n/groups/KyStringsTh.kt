@@ -1,6 +1,11 @@
 package app.devper.pharm.ui.i18n.groups
 
 object KyStringsTh : KyStrings {
+    override val kyNavTitle9 = "ขย.9 (ซื้อยา)"
+    override val kyNavTitle10 = "ขย.10 (ยาควบคุมพิเศษ)"
+    override val kyNavTitle11 = "ขย.11 (ยาอันตราย)"
+    override val kyNavTitle12 = "ขย.12 (ใบสั่งแพทย์)"
+
     override val kyTabLabel: (Int) -> String = { n -> "ขย.$n" }
 
     override val kyToolbarSubtitle = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข"

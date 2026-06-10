@@ -1,6 +1,12 @@
 package app.devper.pharm.ui.i18n.groups
 
 object StockStringsEn : StockStrings {
+    override val stockReasonRecount = "Recount"
+    override val stockReasonDamaged = "Damaged"
+    override val stockReasonExpired = "Expired"
+    override val stockReasonLost = "Lost"
+    override val stockReasonOther = "Other"
+
     override val stockLowThresholdLabel = "Low-stock threshold"
 
     override val stockHistoryCountNoun = "items"
