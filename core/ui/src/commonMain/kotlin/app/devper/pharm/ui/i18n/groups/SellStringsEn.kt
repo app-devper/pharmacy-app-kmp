@@ -1,7 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SellStringsEn : SellStrings {
-    override val sellParkedSummary: (Int, String) -> String = { n, total -> "$n pc · $total" }
+    override val sellParkedSummary: (Int, String) -> String = { n, total -> "$n pcs · $total" }
     override val sellDiscountPercentSeg = "% Percent"
 
     override val sellRemoveLineTitle = "Remove from cart?"
@@ -115,19 +115,19 @@ object SellStringsEn : SellStrings {
     override val sellPurpose = "Purpose"
     override val sellAllergies = "Allergies / chronic conditions"
     override val sellSaveKyBeforeBill = "Save KY before checkout"
-    override val sellControlledRx: (Int) -> String = { forms -> "Controlled drug — must log KY-$forms" }
-    override val sellControlledNote = "Controlled drugs (KY-10–13) require pharmacist info, license no., prescriber and buyer/patient before bill issuance per regulations"
+    override val sellControlledRx: (Int) -> String = { forms -> "Controlled drug — must log KY $forms" }
+    override val sellControlledNote = "Controlled drugs (KY 10–13) require pharmacist info, license no., prescriber and buyer/patient before bill issuance per regulations"
     override val sellSkipKyTitle = "Skip KY logging?"
     override val sellSkipKyConfirmCta = "Confirm skip"
     override val sellSkipKyConfirm = "The sale will be recorded without prescriber/buyer info and may be flagged for compliance"
     override val sellPark = "Park bill"
     override val sellParked = "Parked bills"
     override val sellNewBill = "New bill"
-    override val sellCancelBillTitle = "Confirm cancel bill"
-    override val sellCancelBillConfirm: (String) -> String = { billNo -> "Cancel bill $billNo" }
+    override val sellCancelBillTitle = "Confirm void bill"
+    override val sellCancelBillConfirm: (String) -> String = { billNo -> "Void bill $billNo" }
     override val sellCancelBillReason = "Reason"
-    override val sellCancelBillReasonExample = "e.g. customer cancelled, wrong product etc."
-    override val sellCancelBillCta = "Cancel bill"
+    override val sellCancelBillReasonExample = "e.g. customer cancelled, wrong item, etc."
+    override val sellCancelBillCta = "Void bill"
     override val sellShortcuts = "Shortcuts"
     override val sellPriceOriginal = "Original price"
     override val sellPriceAfterDiscount = "After discount"
@@ -142,7 +142,7 @@ object SellStringsEn : SellStrings {
     override val sellPrintCta = "Print"
     override val sellScannerOn = "Scanner is on"
     override val sellOfflineQueueHint = "Network disconnected — bill saved for later sync"
-    override val sellVoidMissingBillId = "Cannot void this bill: bill id not found"
+    override val sellVoidMissingBillId = "Cannot void this bill: bill ID not found"
     override val sellVoidReasonRequired = "Please provide a void reason"
     override val sellVoidFailed = "Failed to void the bill"
     override val sellBarcodeNotFound: (String) -> String = { code -> "No drug found for barcode $code" }

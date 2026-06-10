@@ -47,8 +47,8 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsProfitSetCostHint = "Set cost price"
     override val reportsProfitMissingCostBanner: (Int) -> String = { count -> "$count items have revenue but no cost — profit may be off; click \"Set cost price\" in the stock page" }
     override val reportsProfitLossExample = "Loss example"
-    override val reportsRevenueMinusCost = "Revenue - Cost"
-    override val reportsCostBasis = "From cut lots"
+    override val reportsRevenueMinusCost = "Revenue − Cost"
+    override val reportsCostBasis = "From deducted lots"
     override val reportsDrugWord = "drug"
     override val reportsSortBy = "Sort by"
     override val reportsDatePlaceholder = "YYYY-MM-DD (blank = today)"

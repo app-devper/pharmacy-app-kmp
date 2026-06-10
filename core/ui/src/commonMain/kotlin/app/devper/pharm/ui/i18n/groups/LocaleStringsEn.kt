@@ -5,5 +5,5 @@ object LocaleStringsEn : LocaleStrings {
     override val settingsLocaleTh = "ไทย"
     override val settingsLocaleEn = "English"
     override val settingsLocaleAppliedInline = "Language updated"
-    override val settingsLocaleRestartHint = "Some parts (e.g. calendar) update after restarting the app"
+    override val settingsLocaleRestartHint = "Applies immediately across the app"
 }
