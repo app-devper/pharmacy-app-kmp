@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,7 +79,7 @@ fun BillDetailSheet(
             BillTotals(sale = sale, items = items)
 
             PharmButton(
-                label = "ปิด",
+                label = pharmStrings.commonClose,
                 onClick = onDismiss,
                 variant = PharmButtonVariant.Outline,
                 modifier = Modifier.fillMaxWidth(),
@@ -94,9 +96,9 @@ private fun BillHeader(sale: SaleSummary) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(text = "บิล ${sale.billNo}", style = PharmText.h1)
+            Text(text = pharmStrings.salesHistoryBillTitle(sale.billNo), style = PharmText.h1)
             if (sale.voided) {
-                PharmBadge(text = "ยกเลิกแล้ว", tone = PharmBadgeTone.Red)
+                PharmBadge(text = pharmStrings.salesHistoryVoidedBadge, tone = PharmBadgeTone.Red)
             }
         }
         Text(
@@ -122,7 +124,7 @@ private fun BillItemRow(item: SaleItemSnapshot) {
             )
             if (item.returnedQty > 0) {
                 Text(
-                    text = "คืนแล้ว ${item.returnedQty}",
+                    text = pharmStrings.salesHistoryReturnedQty(item.returnedQty),
                     style = PharmText.micro.copy(color = t.colors.dangerFg),
                 )
             }
@@ -137,11 +139,11 @@ private fun BillItemRow(item: SaleItemSnapshot) {
 @Composable
 private fun BillTotals(sale: SaleSummary, items: List<SaleItemSnapshot>) {
     val subtotal = items.sumOf { it.price.amount * it.qty }
-    TotalRow(label = "รวม", value = subtotal)
+    TotalRow(label = pharmStrings.salesHistoryTotalRow, value = subtotal)
     if (sale.discount.amount > 0) {
-        TotalRow(label = "ส่วนลด", value = -sale.discount.amount)
+        TotalRow(label = pharmStrings.salesHistoryDiscountRow, value = -sale.discount.amount)
     }
-    TotalRow(label = "สุทธิ", value = sale.total.amount, emphasize = true)
+    TotalRow(label = pharmStrings.salesHistoryNetRow, value = sale.total.amount, emphasize = true)
 }
 
 @Composable

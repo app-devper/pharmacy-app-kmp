@@ -1,6 +1,13 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface MovementsStrings {
+    val movementsSpecImport: String
+    val movementsSpecSale: String
+    val movementsSpecReturn: String
+    val movementsSpecAdjustment: String
+    val movementsSpecWriteoff: String
+    val movementsSpecVoided: String
+
     val movementsSubtitle: String
     val movementsSearchPlaceholder: String
     val movementsCountNoun: String

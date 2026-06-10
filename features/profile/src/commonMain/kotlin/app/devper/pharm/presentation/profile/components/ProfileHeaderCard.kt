@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.profile.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +43,7 @@ internal fun ProfileHeaderCard(user: UmUser) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PharmBadge(text = user.role.label(), tone = user.role.tone())
                 PharmBadge(
-                    text = if (user.status.isActive) "ใช้งาน" else "ปิดใช้งาน",
+                    text = if (user.status.isActive) pharmStrings.commonStatusActive else pharmStrings.commonStatusInactive,
                     tone = if (user.status.isActive) PharmBadgeTone.Green else PharmBadgeTone.Gray,
                 )
             }

@@ -115,6 +115,6 @@ private fun BulkImportStatusBadge(status: BulkImportRowStatus) {
     when (status) {
         BulkImportRowStatus.Done    -> PharmStatusBadge(PharmStatus.Done, size = PharmBadgeSize.Sm)
         BulkImportRowStatus.Failed  -> PharmStatusBadge(PharmStatus.Failed, size = PharmBadgeSize.Sm)
-        BulkImportRowStatus.Pending -> PharmStatusBadge(PharmStatus.Pending, label = "พร้อมนำเข้า", size = PharmBadgeSize.Sm)
+        BulkImportRowStatus.Pending -> PharmStatusBadge(PharmStatus.Pending, label = pharmStrings.bulkImportReadyBadge, size = PharmBadgeSize.Sm)
     }
 }

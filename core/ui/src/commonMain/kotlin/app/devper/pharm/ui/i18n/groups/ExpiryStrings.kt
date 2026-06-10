@@ -1,6 +1,12 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface ExpiryStrings {
+    val expiryWindow30: String
+    val expiryWindow60: String
+    val expiryWindow90: String
+    val expiryWindow180: String
+    val expiryWindowExpired: String
+
     val expirySubtitle: String
     val expirySelectAll: String
     val expirySelectPartial: String

@@ -5,12 +5,12 @@ import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.ui.common.LoadableUiState
 
-enum class ExpiryWindow(val label: String, val daysAhead: Int?, val expiredOnly: Boolean) {
-    Within30("30 วัน", 30, false),
-    Within60("60 วัน", 60, false),
-    Within90("90 วัน", 90, false),
-    Within180("180 วัน", 180, false),
-    ExpiredOnly("หมดอายุแล้ว", null, true),
+enum class ExpiryWindow(val daysAhead: Int?, val expiredOnly: Boolean) {
+    Within30(30, false),
+    Within60(60, false),
+    Within90(90, false),
+    Within180(180, false),
+    ExpiredOnly(null, true),
 }
 
 data class ExpiryUiState(

@@ -1,6 +1,20 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SalesHistoryStringsEn : SalesHistoryStrings {
+    override val salesHistoryReturnTitle: (String) -> String = { bill -> "Return items from bill $bill" }
+    override val salesHistoryReturnSubtitle = "Pick quantities to return — the refund is calculated automatically"
+    override val salesHistoryReasonLabel = "Reason"
+    override val salesHistoryReturnReasonPlaceholder = "Return reason, e.g. customer changed mind, defective"
+    override val salesHistoryReturnConfirmCta = "Confirm return"
+    override val salesHistorySoldRemaining: (Int, String, Int) -> String = { q, u, r -> "Sold $q $u · returnable $r" }
+    override val salesHistoryRefund: (String) -> String = { v -> "Refund $v" }
+    override val salesHistoryBillTitle: (String) -> String = { bill -> "Bill $bill" }
+    override val salesHistoryVoidedBadge = "Voided"
+    override val salesHistoryReturnedQty: (Int) -> String = { n -> "Returned $n" }
+    override val salesHistoryTotalRow = "Subtotal"
+    override val salesHistoryDiscountRow = "Discount"
+    override val salesHistoryNetRow = "Net"
+
     override val salesHistorySubtitle = "Past sales, returns, and voids"
     override val salesHistorySearchPlaceholder = "Bill number or customer name…"
     override val salesHistoryCountNoun = "bills"
