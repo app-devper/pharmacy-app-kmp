@@ -10,14 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +37,6 @@ data class PharmDateQuickPeriod(
     val toMillis: Long,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PharmDateRangeField(
     range: PharmDateRange,
@@ -159,33 +153,10 @@ private fun QuickPeriodChip(label: String, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerSheet(
     initialMillis: Long?,
     onPick: (Long?) -> Unit,
 ) {
-    val state = key(initialMillis) {
-        rememberDatePickerState(initialSelectedDateMillis = initialMillis)
-    }
-    DatePickerDialog(
-        onDismissRequest = { onPick(null) },
-        confirmButton = {
-            PharmButton(
-                label = pharmStrings.commonConfirm,
-                onClick = { onPick(state.selectedDateMillis) },
-                size = PharmButtonSize.Sm,
-            )
-        },
-        dismissButton = {
-            PharmButton(
-                label = pharmStrings.commonCancel,
-                onClick = { onPick(null) },
-                size = PharmButtonSize.Sm,
-                variant = PharmButtonVariant.Ghost,
-            )
-        },
-    ) {
-        DatePicker(state = state)
-    }
+    PharmDatePicker(initialMillis = initialMillis, onPick = onPick)
 }
