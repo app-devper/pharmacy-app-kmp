@@ -1,6 +1,11 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface KyStrings {
+    val kyNavTitle9: String
+    val kyNavTitle10: String
+    val kyNavTitle11: String
+    val kyNavTitle12: String
+
     val kyTabLabel: (Int) -> String
 
     val kyDownloadPdfFailed: String

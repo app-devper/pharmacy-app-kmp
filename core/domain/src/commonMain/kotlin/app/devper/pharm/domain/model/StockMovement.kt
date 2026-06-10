@@ -13,12 +13,12 @@ data class StockMovement(
     val at: String,
 )
 
-enum class MovementType(val wire: String, val label: String) {
-    Import("import", "นำเข้า"),
-    Sale("sale", "ขาย"),
-    Return("return", "คืน"),
-    Adjustment("adjustment", "ปรับสต็อก"),
-    Writeoff("writeoff", "ตัดจำหน่าย");
+enum class MovementType(val wire: String) {
+    Import("import"),
+    Sale("sale"),
+    Return("return"),
+    Adjustment("adjustment"),
+    Writeoff("writeoff");
 
     companion object {
         fun fromWire(s: String): MovementType? = values().firstOrNull { it.wire == s }

@@ -64,9 +64,9 @@ data class Ky12Entry(
     val createdAt: LocalDateTime?,
 )
 
-enum class KyFormType(val wire: String, val label: String) {
-    Ky9("ky9", "ขย.9 (ซื้อยา)"),
-    Ky10("ky10", "ขย.10 (ยาควบคุมพิเศษ)"),
-    Ky11("ky11", "ขย.11 (ยาอันตราย)"),
-    Ky12("ky12", "ขย.12 (ใบสั่งแพทย์)");
+enum class KyFormType(val wire: String) {
+    Ky9("ky9"),
+    Ky10("ky10"),
+    Ky11("ky11"),
+    Ky12("ky12");
 }
