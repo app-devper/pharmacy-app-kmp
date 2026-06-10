@@ -1,6 +1,6 @@
 tasks.register("auditArchitecture") {
     group = "verification"
-    description = "Audits inward-only module rules (A10/A17/A19/A20/A23) + DTO conventions (A24 @SerialName, A25 camelCase) + platform-folder ownership (A26 only :composeApp) + no expect/actual (A27 interfaces only) + typed errors (A28 no generic exceptions in production)."
+    description = "Audits inward-only module rules (A10/A17/A19/A20/A23) + DTO conventions (A24 @SerialName, A25 camelCase) + platform-folder ownership (A26 only :composeApp) + no expect/actual (A27 interfaces only) + typed errors (A28 no generic exceptions in production) + localized UI copy (A29 no Thai literals in production UI code)."
 
     val projectRoot = rootProject.projectDir
     val outputFile = layout.buildDirectory.file("reports/architecture-audit.txt")
@@ -166,6 +166,41 @@ tasks.register("auditArchitecture") {
                             if (genericExceptionRe.containsMatchIn(line)) {
                                 violations += "A28 generic exception in production    ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
                             }
+                        }
+                    }
+                }
+        }
+
+
+        val thaiLiteralRe = Regex("\"[^\"]*[\\u0E01-\\u0E3A\\u0E40-\\u0E5B][^\"]*\"")
+        val previewMarkerRe = Regex("""@Preview|^\s*private (val|fun) (sample|preview)""")
+        val a29AllowedFiles = setOf(
+            "BulkImportJsonInput.kt",
+            "DrugFormViewModel.kt",
+            "DrugFormUiState.kt",
+            "Ky12AddUiState.kt",
+            "ImportFormViewModel.kt",
+        )
+        listOf("core/ui", "features", "composeApp").forEach { topDir ->
+            val root = projectRoot.resolve(topDir)
+            if (!root.exists()) return@forEach
+            root.walkTopDown()
+                .filter { it.isFile && it.name.endsWith(".kt") && !it.absolutePath.contains("/build/") }
+                .filter { it.absolutePath.contains("/commonMain/") }
+                .filter { !it.absolutePath.contains("/i18n/groups/") }
+                .filter { !it.absolutePath.contains("/ui/print/") }
+                .filter { !it.name.contains("Preview") }
+                .filter { !it.absolutePath.contains("/features/test-fixtures/") }
+                .filter { it.name !in a29AllowedFiles }
+                .forEach { f ->
+                    val lines = f.readLines()
+                    val previewStart = lines.indexOfFirst { previewMarkerRe.containsMatchIn(it) }
+                        .let { if (it < 0) lines.size else it }
+                    for (i in 0 until previewStart) {
+                        val line = lines[i]
+                        if (line.contains(".contains(")) continue
+                        if (thaiLiteralRe.containsMatchIn(line)) {
+                            violations += "A29 Thai literal in production UI    ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
                         }
                     }
                 }

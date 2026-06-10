@@ -1,6 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 object NavStringsEn : NavStrings {
+    override val navBulkImport = "Bulk import via JSON"
+    override val navLowStock = "Low stock"
+
     override val navSell = "Sell"
     override val navSalesHistory = "Sales history"
     override val navStock = "Stock"

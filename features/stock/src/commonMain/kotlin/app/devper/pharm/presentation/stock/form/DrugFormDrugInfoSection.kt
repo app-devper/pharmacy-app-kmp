@@ -212,7 +212,7 @@ private fun SellPriceField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
 
 @Composable
 private fun MinStockField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = "threshold ใกล้หมด") {
+    FormField(label = pharmStrings.stockLowThresholdLabel) {
         PharmTextField(
             value = form.minStock,
             onValueChange = callbacks.onMinStock,

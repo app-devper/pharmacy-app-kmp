@@ -97,7 +97,7 @@ fun CartDiscountSheet(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 SegItem(pharmStrings.sellDiscountFlatSeg, active = kind == Kind.Flat) { kind = Kind.Flat }
-                SegItem("% เปอร์เซ็นต์", active = kind == Kind.Percent) { kind = Kind.Percent }
+                SegItem(pharmStrings.sellDiscountPercentSeg, active = kind == Kind.Percent) { kind = Kind.Percent }
             }
 
             FormField(

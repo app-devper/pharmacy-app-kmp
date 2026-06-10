@@ -123,7 +123,7 @@ private fun TimeCell(sale: SaleSummary) {
 private fun BillNoCell(sale: SaleSummary) {
     val t = pharmTokens
     Text(
-        text = sale.billNo.ifBlank { "(ไม่มีเลขบิล)" },
+        text = sale.billNo.ifBlank { pharmStrings.commonNoBillNo },
         style = PharmText.micro.copy(
             color = t.colors.fg2,
             fontFamily = FontFamily.Monospace,

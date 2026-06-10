@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SuppliersStringsEn : SuppliersStrings {
+    override val suppliersTaxIdPlaceholder = "13 digits"
+
     override val suppliersListSubtitle = "Manage suppliers and partner companies"
     override val suppliersSearchPlaceholder = "Search name / contact / phone…"
     override val suppliersAddCta = "Add supplier"

@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +24,7 @@ fun PharmListResultLine(
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val t = pharmTokens
-    val text = if (searching) "พบ $visible $noun จากทั้งหมด $total" else "ทั้งหมด $total $noun"
+    val text = if (searching) pharmStrings.commonResultFound(visible, noun, total) else pharmStrings.commonResultTotal(total, noun)
     Row(
         modifier = modifier
             .fillMaxWidth()

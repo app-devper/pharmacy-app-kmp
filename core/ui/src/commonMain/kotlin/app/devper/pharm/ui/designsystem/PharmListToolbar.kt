@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,7 +67,7 @@ fun PharmListToolbar(
                     ) {
                         Icon(
                             imageVector = PharmIcons.ReturnArrow,
-                            contentDescription = "กลับ",
+                            contentDescription = pharmStrings.commonBack,
                             tint = t.colors.fg1,
                             modifier = Modifier.size(20.dp),
                         )

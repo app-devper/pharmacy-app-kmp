@@ -55,7 +55,7 @@ internal fun BulkImportResultTable(
             cell = { row ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
-                        text = row.name.ifBlank { "(ไม่ระบุชื่อ)" },
+                        text = row.name.ifBlank { pharmStrings.commonUnnamed },
                         style = PharmText.bodySm.copy(fontWeight = FontWeight.Medium),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

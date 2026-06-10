@@ -136,7 +136,7 @@ private fun TypeCell(m: StockMovement) {
 private fun DrugCell(m: StockMovement) {
     val t = pharmTokens
     Text(
-        text = m.drugName.ifBlank { "(ไม่ระบุยา)" },
+        text = m.drugName.ifBlank { pharmStrings.commonNoDrugName },
         style = PharmText.bodySm.copy(color = t.colors.fg1),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ImportsStringsTh : ImportsStrings {
+    override val importsQtyPieces: (Int) -> String = { n -> "$n ชิ้น" }
+
     override val importsTitle = "นำเข้าสินค้า"
     override val importsSubtitle = "จัดการใบนำเข้า / รับสินค้าเข้าสต็อก"
     override val importsSearchPlaceholder = "ค้นหาเลขที่ / ผู้ขาย…"

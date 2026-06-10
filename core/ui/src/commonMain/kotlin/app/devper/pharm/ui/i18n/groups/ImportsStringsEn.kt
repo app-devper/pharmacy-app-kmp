@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ImportsStringsEn : ImportsStrings {
+    override val importsQtyPieces: (Int) -> String = { n -> "$n pc" }
+
     override val importsTitle = "Imports"
     override val importsSubtitle = "Manage import documents / receive into stock"
     override val importsSearchPlaceholder = "Search doc no. / supplier…"

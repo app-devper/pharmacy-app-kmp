@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object StockStringsEn : StockStrings {
+    override val stockLowThresholdLabel = "Low-stock threshold"
+
     override val stockHistoryCountNoun = "items"
     override val stockHistoryHeaderTime = "Time"
     override val stockHistoryHeaderType = "Type"

@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,7 +34,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 fun PharmHelpHint(
     text: String,
     modifier: Modifier = Modifier,
-    label: String = "ช่วยเหลือ",
+    label: String = pharmStrings.commonHelp,
 ) {
     val t = pharmTokens
     var open by remember { mutableStateOf(false) }

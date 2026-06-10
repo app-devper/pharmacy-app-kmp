@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ReportsStringsTh : ReportsStrings {
+    override val reportsAvgMargin = "Margin เฉลี่ย"
+
     override val reportsSubtitle = "ภาพรวมยอดขาย สต็อก และสินค้าขายดี"
     override val reportsTabSummary = "รายงานสรุป"
     override val reportsTabProfit = "กำไร"

@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface ReportsStrings {
+    val reportsAvgMargin: String
+
     val reportsLoadSummaryFailed: String
     val reportsLoadReportFailed: String
     val reportsEodCloseFailed: String

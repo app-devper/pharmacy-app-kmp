@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -100,6 +102,7 @@ fun PharmModal(
                             Text(subtitle, style = PharmText.meta)
                         }
                     }
+                    val closeDesc = pharmStrings.commonClose
                     Box(contentAlignment = Alignment.TopEnd) {
 
                         Box(
@@ -108,7 +111,7 @@ fun PharmModal(
                                 .clip(t.shapes.sm)
                                 .clickable(onClick = onDismiss)
                                 .semantics(mergeDescendants = true) {
-                                    contentDescription = "ปิด"
+                                    contentDescription = closeDesc
                                     role = Role.Button
                                 },
                             contentAlignment = Alignment.Center,

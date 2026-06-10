@@ -175,8 +175,8 @@ private val DEST_INFO: Map<String, DestInfo> = buildMap {
     add(UserEdit::class, { it.navUsers }, Users::class)
     add(SettingsRoute::class, { it.navSettings }, SettingsRoute::class)
     add(Help::class, { it.navHelp }, Help::class)
-    add(BulkImport::class, { "นำเข้ายาด้วย JSON" }, null)
-    add(LowStock::class, { "ยาใกล้หมด" }, null)
+    add(BulkImport::class, { it.navBulkImport }, null)
+    add(LowStock::class, { it.navLowStock }, null)
     add(Profile::class, { it.profileSectionPersonal }, null)
 }
 

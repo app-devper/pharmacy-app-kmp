@@ -137,7 +137,7 @@ private fun DocNoCell(row: PurchaseOrderSummary) {
 @Composable
 private fun SupplierCell(row: PurchaseOrderSummary) {
     Text(
-        text = row.supplier.ifBlank { "(ไม่ระบุผู้ขาย)" },
+        text = row.supplier.ifBlank { pharmStrings.commonNoSupplier },
         style = PharmText.bodySm,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
@@ -84,7 +86,7 @@ fun KyBadge(
     val shape = pharmTokens.shapes.sm
 
     Text(
-        text = "ขย.$form",
+        text = pharmStrings.kyTabLabel(form),
         style = PharmText.badgeSm.copy(color = fg),
         modifier = modifier
             .clip(shape)

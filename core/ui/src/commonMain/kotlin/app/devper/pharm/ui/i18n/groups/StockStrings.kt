@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface StockStrings {
+    val stockLowThresholdLabel: String
+
     val stockHistoryCountNoun: String
     val stockHistoryHeaderTime: String
     val stockHistoryHeaderType: String
