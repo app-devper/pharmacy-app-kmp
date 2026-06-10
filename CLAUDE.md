@@ -69,9 +69,19 @@ license headers required by upstream libraries.
             :core:{common,domain,ui,data}:jvmTest \
             :features:{auth,bulkimport,customers,expiry,help,imports,ky,labels,movements,offlinesync,planning,profile,reports,saleshistory,sell,settings,stock,stockcount,suppliers,users}:jvmTest
   ```
-  Quick smoke: `./gradlew :composeApp:check`. Current test count: **941
-  `@Test` functions across 119 commonTest files** (re-measure with
+  Quick smoke: `./gradlew :composeApp:check`. Current test count: **960
+  `@Test` functions across 126 commonTest files** (re-measure with
   `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`).
+
+- **Coverage (Kover)**: `./gradlew koverVerify` enforces a **line-coverage
+  floor** (`COVERAGE_FLOOR` in root `build.gradle.kts`, currently **50%** —
+  a ratchet to raise over time toward the 80% target, not a one-shot gate;
+  measured ~55% today). `koverHtmlReport` → `build/reports/kover/html/`.
+  Filters exclude UI composables (`@Composable`, `*Screen`/`*Content`),
+  the i18n string tables (`i18n.groups`), `ui.print`, and DTOs — the
+  measured layers are domain / use-case / VM / mappers / localizers. CI
+  runs `koverVerify` after the test sweep; **raise the floor in the same PR
+  whenever you add tests that push coverage up.**
 
 - **Forbidden imports** (enforced by `auditArchitecture` — A10 / A17 /
   A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28 / A29). Full rule list in

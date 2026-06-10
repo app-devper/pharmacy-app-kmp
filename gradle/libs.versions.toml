@@ -22,6 +22,7 @@ koin = "4.2.1"
 ktor = "3.5.0"
 
 kotlin = "2.3.21"
+kover = "0.9.1"
 kotlinx-serialization-json = "1.11.0"
 kotlinx-datetime = "0.7.1"
 coroutines = "1.11.0"
@@ -107,4 +108,5 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-multip
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

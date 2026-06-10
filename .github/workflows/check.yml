@@ -77,7 +77,14 @@ jobs:
       - name: Compile WasmJs test target
         run: ./gradlew :composeApp:compileTestKotlinWasmJs --stacktrace
 
-      - name: Upload test reports on failure
+      - name: Coverage verify (Kover line floor)
+        run: ./gradlew koverVerify --stacktrace
+
+      - name: Coverage report (XML + HTML)
+        if: always()
+        run: ./gradlew koverXmlReport koverHtmlReport --stacktrace
+
+      - name: Upload test + coverage reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -86,4 +93,5 @@ jobs:
             **/build/reports/tests/
             **/build/reports/architecture-audit.txt
             **/build/test-results/
+            build/reports/kover/
           retention-days: 7
