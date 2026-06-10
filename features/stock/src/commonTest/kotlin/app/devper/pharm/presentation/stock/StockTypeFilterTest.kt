@@ -1,5 +1,11 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.i18n.PharmStringsTh
+
+import app.devper.pharm.ui.i18n.PharmStringsEn
+
+import app.devper.pharm.presentation.stock.i18n.label
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -80,7 +86,8 @@ class StockTypeFilterTest {
     fun enum_has_expected_four_entries_with_labels() {
         assertEquals(4, StockTypeFilter.entries.size)
         StockTypeFilter.entries.forEach {
-            assertTrue(it.label.isNotBlank(), "${it.name} must have a non-blank label")
+            assertTrue(it.label(PharmStringsTh).isNotBlank(), "${it.name} must have a non-blank label")
+            assertTrue(it.label(PharmStringsEn).isNotBlank(), "${it.name} must have a non-blank en label")
         }
     }
 }

@@ -148,7 +148,7 @@ private fun UnitField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
         PharmTextField(
             value = form.unit,
             onValueChange = callbacks.onUnit,
-            placeholder = "เม็ด / แคปซูล / ขวด",
+            placeholder = pharmStrings.stockUnitPlaceholder,
         )
     }
 }

@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,10 +28,11 @@ fun DrugFormScreen(
     LaunchedEffect(drugId) {
         viewModel.init(if (drugId.isNullOrBlank()) DrugFormMode.Add else DrugFormMode.Edit(drugId))
     }
+    val s = pharmStrings
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
-            snackbar.showToast(PharmToast.Success("บันทึกข้อมูลยาเรียบร้อย"))
+            snackbar.showToast(PharmToast.Success(s.stockDrugSavedToast))
             onBack()
         }
     }

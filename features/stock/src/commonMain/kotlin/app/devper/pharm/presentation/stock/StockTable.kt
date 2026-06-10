@@ -126,7 +126,7 @@ internal fun StockTable(
             },
         ),
         PharmTableColumn(
-            header = "สต็อก",
+            header = s.stockHeaderStock,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { drug -> StockQtyCell(drug) },
@@ -188,7 +188,7 @@ internal fun StockTable(
 private fun TypeBadge(drug: Drug) {
     val type = drug.type?.trim()?.lowercase().orEmpty()
     val (tone, label) = when {
-        type.contains("herb") || type.contains("สมุนไพร")    -> PharmBadgeTone.Emerald to "สมุนไพร"
+        type.contains("herb") || type.contains("สมุนไพร")    -> PharmBadgeTone.Emerald to pharmStrings.stockBadgeHerb
         type.contains("supp") || type.contains(pharmStrings.stockTypeSupplement) -> PharmBadgeTone.Orange  to pharmStrings.stockTypeSupplement
         else                                                  -> PharmBadgeTone.Purple  to pharmStrings.stockTypeAbbrev
     }

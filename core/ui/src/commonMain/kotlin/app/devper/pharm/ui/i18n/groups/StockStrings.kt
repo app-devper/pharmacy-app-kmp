@@ -1,6 +1,31 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface StockStrings {
+    val stockHistoryCountNoun: String
+    val stockHistoryHeaderTime: String
+    val stockHistoryHeaderType: String
+    val stockHistoryHeaderQty: String
+    val stockHistoryHeaderRef: String
+    val stockTypeFilterAll: String
+    val stockTypeFilterCurrent: String
+    val stockTypeFilterHerb: String
+    val stockTypeFilterSupplement: String
+    val stockLotDeleteBody: (String, Int) -> String
+    val stockLotExpiryRemaining: (String, Int, Int) -> String
+    val stockLotDeleteDesc: String
+    val stockLotSaveCta: String
+    val stockHeaderStock: String
+    val stockBadgeHerb: String
+    val stockUnitPlaceholder: String
+    val stockDrugSavedToast: String
+    val stockFormTitleEdit: String
+    val stockFormTitleAdd: String
+    val movementTypeImport: String
+    val movementTypeSale: String
+    val movementTypeReturn: String
+    val movementTypeAdjustment: String
+    val movementTypeWriteoff: String
+
     val stockDrugFormLotExpiryInvalid: String
 
     val stockDrugFormNotFound: String

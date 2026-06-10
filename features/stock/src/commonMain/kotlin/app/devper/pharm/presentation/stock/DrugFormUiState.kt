@@ -60,9 +60,6 @@ data class DrugFormUiState(
                 .let { names -> names.all { it.isNotEmpty() } && names.size == names.toSet().size } &&
             form.altUnits.none { it.name.trim().equals(form.unit.trim(), ignoreCase = true) }
 
-    val titleLabel: String
-        get() = if (mode is DrugFormMode.Edit) "แก้ไขยา" else "เพิ่มยา"
-
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState

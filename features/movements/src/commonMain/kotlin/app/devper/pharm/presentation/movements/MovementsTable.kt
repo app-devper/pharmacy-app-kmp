@@ -28,6 +28,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.localizedLabel
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -112,7 +113,7 @@ private fun TimeCell(m: StockMovement) {
 @Composable
 private fun TypeCell(m: StockMovement) {
     val spec = MovementsTypeCatalog.byMovementType[m.type]
-    val label = spec?.label ?: m.type.label
+    val label = spec?.label ?: m.type.localizedLabel(pharmStrings)
     val tone = spec?.tone ?: PharmBadgeTone.Gray
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
