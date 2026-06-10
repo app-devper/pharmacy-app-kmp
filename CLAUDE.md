@@ -69,25 +69,58 @@ license headers required by upstream libraries.
             :core:{common,domain,ui,data}:jvmTest \
             :features:{auth,bulkimport,customers,expiry,help,imports,ky,labels,movements,offlinesync,planning,profile,reports,saleshistory,sell,settings,stock,stockcount,suppliers,users}:jvmTest
   ```
-  Quick smoke: `./gradlew :composeApp:check`. Current test count: **759
-  `@Test` functions across 111 commonTest files** (re-measure with
+  Quick smoke: `./gradlew :composeApp:check`. Current test count: **941
+  `@Test` functions across 119 commonTest files** (re-measure with
   `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`).
 
 - **Forbidden imports** (enforced by `auditArchitecture` — A10 / A17 /
-  A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28). Full rule list in
+  A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28 / A29). Full rule list in
   [MODULE_GRAPH.md § Forbidden imports](./MODULE_GRAPH.md#forbidden-imports-p0).
   Headline: `:core:*` ห้าม import จาก `:features:*`; `:features:<x>` ห้าม
   import จาก `:core:data` หรือ feature `<y>` อื่น; platform source folders
   อยู่ใน `:composeApp` เท่านั้น; ห้าม `expect`/`actual` ที่ไหนเลย; ห้าม
-  throw generic exceptions in production.
+  throw generic exceptions in production; ห้าม Thai string literal ใน
+  production UI code (A29 — ทุก copy ต้องผ่าน `PharmStrings`).
 
-- **Typed errors (A28)**: production code throws typed `AppException`
-  subclasses (Auth / Forbidden / NotFound / Conflict / Network / Server /
-  Validation / Storage / UnsupportedPlatform), never raw
-  `IllegalStateException` / `RuntimeException` / `Exception`.
-  `BaseUseCase.invoke()` wraps via `runCatching` → `Result<R>`.
-  `:features:test-fixtures` is exempted (fakes throw `RuntimeException`
-  as a deliberate test signal).
+- **Typed errors (A28) — end-to-end, no String errors anywhere**:
+  production code throws typed `AppException` subclasses (abstract base in
+  `:core:common`; transport subclasses Auth / Forbidden / NotFound /
+  Conflict / Network / Server / Validation / Storage /
+  UnsupportedPlatform), never raw `IllegalStateException` /
+  `RuntimeException` / `Exception`. `BaseUseCase.invoke()` wraps via
+  `runCatching` → `Result<R>`. `:features:test-fixtures` is exempted.
+  - **VM error state is typed**: every UiState carries
+    `errorState: AppException?` (+ `domainError` override on
+    `BaseUiState`); there is NO `error: String?` field anywhere. Info
+    toasts use a parallel plain-sealed `messageState`
+    (`CommonUiStateMessage.{Saved, ExportEmpty}` or feature-specific).
+  - **Feature errors**: per-UiState sealed classes in
+    `presentation/<x>/exception/` (e.g.
+    `SalesHistoryUiStateError.LoadBillsFailed(cause)`), wrapping the
+    cause for logs. Generic ops reuse
+    `CommonUiStateError.{Load,Save,Delete,Export}Failed`
+    (`:core:common/error/`).
+  - **Localization happens at render, never in the VM**: each feature
+    ships `presentation/<x>/i18n/<X>ErrorLocalize.kt` —
+    `fun AppException.localize<X>(s: PharmStrings)` mapping its own
+    cases then delegating `else -> localizeCommon(s)`
+    (`:core:ui/i18n/CommonErrorLocalize.kt` — covers CommonUiStateError,
+    all 9 transport types, `FieldValidationError`, and passes
+    `ValidationException.message` through verbatim because those
+    messages are domain-authored and user-facing). Render:
+    `ErrorBottomSheet(message = state.errorState?.localize<X>(pharmStrings))`.
+  - **Form base** (`BaseFormViewModel`): `submit()` routes failures
+    through `mapSaveError(cause)` — passes `AppException`s through,
+    wraps unknowns in `CommonUiStateError.SaveFailed`; state mutates via
+    `withDomainError(AppException?)` on `BaseFormUiState`. Loadable base
+    (`BaseLoadableViewModel`) only provides `dismissError()`.
+  - **Domain validation is structured, not stringly**:
+    `:core:domain/validation/` — `FieldValidationError(field: FieldLabel,
+    rule)` thrown by `Field.*` validators, plus `SaleValidationError`
+    (EmptyCart / Return* / VoidReasonRequired) and `BulkImportParseError`
+    (EmptyInput / NotArrayOrObject / RowNotObject(row) / RowMissingName).
+    `:core:ui` localizes them (`ValidationStrings` group composes
+    rule × field label).
 
 - **Money / Quantity value classes** (`:core:common/value/`): every
   monetary field on a domain model / param is `Money` (wraps `Double`),
@@ -124,10 +157,16 @@ license headers required by upstream libraries.
     `isoDateToBuddhist` / `localDateToBuddhist`
     (`:core:ui/ui/format/DateFormat.kt`) for Thai display
     (`DD/MM/YYYY+543`).
-  - **M3 `DatePicker` uses UTC** per its public contract. `ymdToMillis` /
-    `millisToYmd` / `LocalDate.toStartOfDayMillis` use `TimeZone.UTC`
-    internally regardless of the `tz` param. YMD strings round-trip
-    through M3 without an off-by-one day shift.
+  - **Date picking is `PharmDatePicker`** (`:core:ui/designsystem/` —
+    custom calendar; M3 `DatePicker` is fully removed). It keeps M3's
+    **UTC-millis contract**: `ymdToMillis` / `millisToYmd` /
+    `utcMillisToLocalDate` / `LocalDate.toUtcStartOfDayMillis` use
+    `TimeZone.UTC`, so YMD strings round-trip without off-by-one shifts.
+    Month/weekday names come from the `CalendarStrings` group
+    (live-localized); the Thai header renders Buddhist era
+    ('มิถุนายน 2569'), English renders CE ('June 2026'). Grid logic is
+    pure (`CalendarMonth.weeks()`, Sunday-first) and unit-tested.
+    'Today' resolves in Asia/Bangkok.
   - Default `TimeZone` is `TimeZone.of("Asia/Bangkok")` (`DEFAULT_ZONE` /
     `BANGKOK` / `FALLBACK` constants).
 
@@ -181,48 +220,48 @@ license headers required by upstream libraries.
   `pharmacy-kmp-screen-split` (Screen↔Content + responsive),
   `pharmacy-kmp-review` (audit a diff against the build-enforced rules).
 
-- **Localization** (`compose.resources` strings.xml; default ภาษาไทย, English fallback).
-  Source files live at `:core:ui/src/commonMain/composeResources/values{,-en}/strings.xml`
-  and generate `Res.string.<key>` accessors in `app.devper.pharm.ui.resources`. Use
-  `stringResource(Res.string.common_save)` from `org.jetbrains.compose.resources` inside
-  Composables; for non-Composable code use `getString(Res.string.x)` (suspend).
-  - **Key convention**: `<scope>_<token>` snake_case — `common_*` for shared, `<feature>_*`
-    for feature-local. Common keys live in `:core:ui`; add feature-specific keys to a
-    `composeResources/values/strings.xml` in the feature module (each `pharmacy.kmp.compose.library`
-    module already enables the plugin).
-  - **Locale storage**: `UiPreferences.locale: LocalePreference = System` (System/Th/En),
-    persisted via `UiPreferencesRepository.setLocale(...)` → `SetLocalePreferenceUseCase`.
-    Picker UI: `ProfileScreen` → 'ภาษา' chip group.
-  - **Cold-start bootstrap** — each platform's entry point reads `ui.locale` before
-    `startKoin` + before Compose initialises and applies the override:
-    - **JVM Desktop** (`composeApp/jvmMain/Main.kt`) → `java.util.Locale.setDefault(...)`
-    - **Android** (`composeApp/androidMain/PharmacyApplication.onCreate`) → `Locale.setDefault(...)`
-    - **iOS** (`composeApp/iosMain/MainViewController.kt`) → `NSUserDefaults["AppleLanguages"] = [tag]`
-      (effective on next app launch — iOS standard for app-level locale override)
-    - **wasmJs** (`composeApp/wasmJsMain/Main.kt`) → JS-defined `Object.defineProperty(navigator, 'language', ...)`
-      shim before `ComposeViewport` (effective on page reload — `getLanguage()` reads
-      `navigator.language`, so the shim sticks for the session)
-  - **Live in-app switching** — done via a Kotlin-typed string table
-    (`:core:ui/.../i18n/PharmStrings.kt`) instead of `compose.resources` because
-    CMP 1.11's `LocalComposeEnvironment` is package-private and ResourceEnvironment's
-    constructor is `internal`, blocking a CompositionLocal-based env override of the
-    generated `Res.string.X` lookups. The Kotlin table sidesteps this:
-    `PharmStrings` data class + `PharmStringsTh` / `PharmStringsEn` instances +
-    `LocalPharmStrings` `staticCompositionLocalOf`. `App {}` wraps content in
-    `AppLocaleProvider(localeWire = uiPreferences.locale.wire)` which picks the
-    right table from the user's chip (system → resolve via Compose
-    `androidx.compose.ui.text.intl.Locale.current`). Read in Composables via
-    `pharmStrings.commonSave` (the `@ReadOnlyComposable` getter on top of the
-    CompositionLocal). The chip change triggers an instant recomposition — no
-    restart needed for our migrated UI strings. The `strings.xml` + Cold-start
-    bootstrap is still in place for Compose built-ins that read `Locale.current`
-    directly (DatePicker month names, M3 widgets); the inline hint after a chip
-    change still mentions 'บางส่วน (เช่น ปฏิทิน) จะเปลี่ยนหลังจากเปิดแอปใหม่'.
-  - **Migration playbook** (incremental): for each Thai literal, grep
-    `"<thai-text>"` → add a `<string name="..."/>` entry to both `values/` and
-    `values-en/` → replace the literal with `stringResource(Res.string.<key>)`.
-    No need to migrate everything at once — the auto-locale-fallback means any
-    un-migrated literal still shows in Thai for Thai users.
+- **Localization — COMPLETE & build-enforced** (default ภาษาไทย, English
+  switchable live; **A29** fails the build on any new Thai literal in
+  production UI code).
+  - **The system is the Kotlin-typed string table** —
+    `:core:ui/.../i18n/PharmStrings.kt`: a composite interface built by
+    **delegation over ~25 per-module group interfaces**
+    (`i18n/groups/<G>Strings.kt` + `Th`/`En` objects; ~990 keys). Read in
+    Composables via `pharmStrings.<key>` (a `@ReadOnlyComposable` getter
+    on `LocalPharmStrings`); interpolated copy uses lambda keys
+    (`sellKyIncomplete: (String, String) -> String`). `App {}` wraps
+    content in `AppLocaleProvider(localeWire = uiPreferences.locale.wire)`
+    so the Profile 'ภาษา' chip recomposes everything instantly — no
+    restart for anything, including the calendar (`PharmDatePicker`).
+    (Background: `compose.resources` couldn't live-switch because CMP
+    1.11's `LocalComposeEnvironment` is package-private; the
+    `strings.xml` files + per-platform cold-start locale bootstrap in
+    each `Main*.kt` remain only as a safety net for minor M3 built-ins
+    that read `Locale.current`.)
+  - **Locale storage**: `UiPreferences.locale: LocalePreference = System`
+    (System/Th/En), persisted via `UiPreferencesRepository.setLocale(...)`
+    → `SetLocalePreferenceUseCase`. Picker UI: `ProfileScreen` → 'ภาษา'
+    chip group.
+  - **Adding copy** (the only supported path): add the key to the right
+    group interface + `Th` + `En` objects (feature keys in
+    `<Feature>Strings.kt`, shared in `CommonStrings.kt`), then read via
+    `pharmStrings`. Never hardcode — A29 will fail the build.
+  - **Composable-scope recipes** (the patterns that earlier sweeps broke
+    on): `semantics {}` / `remember {}` / `LaunchedEffect` bodies can't
+    call `pharmStrings` → capture `val s = pharmStrings` at composable
+    scope first (and key caches with it: `remember(s) { ... }` so tables
+    rebuild on locale switch); non-composable helpers take an
+    `s: PharmStrings` parameter; enum display labels are `label(s)` /
+    `localizedLabel(s)` extension functions, never a `label: String`
+    field on the enum; default parameter values of `@Composable`
+    functions MAY call `pharmStrings` (defaults evaluate in
+    composition).
+  - **Intentionally still Thai** (A29-exempt): the `PharmStringsTh`
+    table itself, `@Preview` sample data and `private val sample*/preview*`
+    blocks, `.contains(...)` data-matching tokens, stored-data defaults
+    (e.g. `unit = "ชิ้น"`), printed receipts (`ui/print/` — customer
+    documents), bulk-import example JSON, and KY official form copy in
+    `:core:domain` reports.
 
 ## Cross-cutting reminders
 

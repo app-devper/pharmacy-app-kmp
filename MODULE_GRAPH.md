@@ -73,7 +73,7 @@ cross-feature imports inside `:features` (e.g.
 warning. After the split, the Kotlin compiler refuses any foreign-module
 symbol without an explicit `project(":features:<x>")` dep — the audit
 check became redundant for cross-feature rules (it still enforces
-A26/A27/A28 for platform folders, expect declarations, generic
+A26/A27/A28/A29 for platform folders, expect declarations, generic
 exceptions).
 
 **`:features` decoupling**: no per-feature module can reach `:core:data`
@@ -138,7 +138,7 @@ bound via Koin in each Main*.kt's platform module.
 |---|---|---|
 | `common/AppDispatchers.kt` | `app.devper.pharm.common` | `data class AppDispatchers(main, io, default)` — constructed per-platform |
 | `common/Logger.kt` | `app.devper.pharm.common` | `Logger` interface + `PrintlnLogger` impl |
-| `common/AppException.kt` | `app.devper.pharm.common` | Sealed `AppException` + 9 typed subclasses (Auth, Forbidden, NotFound, Conflict, Network, Server, Validation, Storage, UnsupportedPlatform) — domain error language; enforced by A28 |
+| `common/AppException.kt` | `app.devper.pharm.common` | Abstract `AppException` + 9 typed transport subclasses (Auth, Forbidden, NotFound, Conflict, Network, Server, Validation, Storage, UnsupportedPlatform); feature modules subclass it per-UiState in `presentation/<x>/exception/` — enforced by A28 |
 | `common/value/{Money,Quantity}.kt` | `app.devper.pharm.common.value` | `@JvmInline value class Money(val amount: Double)` + `Quantity(val value: Int)` — every monetary / counted-stock field on a domain model is one of these (DTOs stay raw, mappers wrap at boundary). Operators `+ - * /`, `coerceAtLeast/AtMost`, `isPositive` / `isZero`, `Money.Zero` / `Quantity.Zero`. |
 | `domain/usecase/BaseUseCase.kt` | `app.devper.pharm.domain.usecase` | `BaseUseCase<P,R>` + `BaseSyncUseCase<P,R>` framework |
 | `common/print/{ReceiptTemplate,ReceiptPrinter}.kt` | `app.devper.pharm.common.print` | `ReceiptTemplate` data + `ReceiptPrinter` interface |
@@ -280,6 +280,7 @@ to check them.
 | Any module other than `:composeApp` | `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` source folder | ❌ A26 |
 | Anywhere in the repo | `expect class` / `expect fun` / `expect val` declarations | ❌ A27 |
 | Production code | `throw IllegalStateException` / `RuntimeException` / etc. | ❌ A28 (excludes `:features:test-fixtures/`) |
+| Production UI code (`:core:ui` / `:features` / `:composeApp` commonMain) | Thai string literal (must go through `PharmStrings`) | ❌ A29 (excludes i18n tables, `ui/print/`, previews/sample blocks, `.contains(` data tokens, small allow-list) |
 
 ## Test layout
 
