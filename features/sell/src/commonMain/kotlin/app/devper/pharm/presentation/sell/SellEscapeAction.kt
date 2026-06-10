@@ -1,0 +1,54 @@
+package app.devper.pharm.presentation.sell
+
+enum class SellEscapeAction {
+    HideShortcuts,
+    DismissErrors,
+    CancelOverwrite,
+    CancelSwap,
+    CancelClearCart,
+    CancelSkipKy,
+    DismissOversell,
+    DismissKyCapture,
+    CloseLineDiscount,
+    CloseCartDiscount,
+    CloseAltUnitPicker,
+    CloseVoidSheet,
+    CloseCustomer,
+    CloseParkedSheet,
+    DismissReceipt,
+}
+
+fun resolveSellEscapeAction(
+    shortcutsVisible: Boolean,
+    hasError: Boolean,
+    overwriteSlotPending: Boolean,
+    swapSlotPending: Boolean,
+    clearConfirmVisible: Boolean,
+    skipKyConfirmVisible: Boolean,
+    oversellPending: Boolean,
+    kyCapturePending: Boolean,
+    lineDiscountOpen: Boolean,
+    cartDiscountOpen: Boolean,
+    altUnitPickerOpen: Boolean,
+    voidSheetOpen: Boolean,
+    customerOpen: Boolean,
+    parkedSheetOpen: Boolean,
+    receiptVisible: Boolean,
+): SellEscapeAction? = when {
+    shortcutsVisible -> SellEscapeAction.HideShortcuts
+    hasError -> SellEscapeAction.DismissErrors
+    overwriteSlotPending -> SellEscapeAction.CancelOverwrite
+    swapSlotPending -> SellEscapeAction.CancelSwap
+    clearConfirmVisible -> SellEscapeAction.CancelClearCart
+    skipKyConfirmVisible -> SellEscapeAction.CancelSkipKy
+    oversellPending -> SellEscapeAction.DismissOversell
+    kyCapturePending -> SellEscapeAction.DismissKyCapture
+    lineDiscountOpen -> SellEscapeAction.CloseLineDiscount
+    cartDiscountOpen -> SellEscapeAction.CloseCartDiscount
+    altUnitPickerOpen -> SellEscapeAction.CloseAltUnitPicker
+    voidSheetOpen -> SellEscapeAction.CloseVoidSheet
+    customerOpen -> SellEscapeAction.CloseCustomer
+    parkedSheetOpen -> SellEscapeAction.CloseParkedSheet
+    receiptVisible -> SellEscapeAction.DismissReceipt
+    else -> null
+}

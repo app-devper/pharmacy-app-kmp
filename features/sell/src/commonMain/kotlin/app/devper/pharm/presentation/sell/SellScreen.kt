@@ -22,12 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.ui.common.LocalPharmSnackbar
-import app.devper.pharm.ui.common.PharmShortcut
 import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.common.pharmShortcuts
@@ -111,87 +109,26 @@ fun SellScreen(
         voidSaleVM.dismissError()
     }
 
-    val onShortcutParkCart: () -> Unit = {
-        if (!parkedState.activeCartIsEmpty) {
-            val firstEmpty = parkedState.parkedSlots.indexOfFirst { it == null }
-            if (firstEmpty >= 0) onTapParkSlot(firstEmpty) else parkedCartVM.openSheet()
-        }
-    }
-
-    val onShortcutEscape: () -> Unit = {
-        when {
-            showShortcuts                          -> showShortcuts = false
-            combinedError != null                  -> dismissAllErrors()
-            parkedState.overwriteSlot != null      -> parkedCartVM.cancelOverwrite()
-            parkedState.swapSlot != null           -> parkedCartVM.cancelSwap()
-            sellState.showClearConfirm             -> sellVM.cancelClearCart()
-            checkoutState.showSkipKyConfirm        -> checkoutVM.cancelSkipKy()
-            checkoutState.oversellPending != null  -> checkoutVM.dismissOversell()
-            checkoutState.kyCapturePending != null -> checkoutVM.dismissKyCapture()
-            sellState.lineDiscountFor != null      -> sellVM.onCloseLineDiscount()
-            sellState.cartDiscountSheetOpen        -> sellVM.onCloseCartDiscount()
-            drugState.altUnitPickerFor != null     -> drugPickerVM.onCloseAltUnitPicker()
-            voidState.sheetOpen                    -> voidSaleVM.closeSheet()
-            customerState.open                     -> customerPickerVM.close()
-            parkedState.sheetOpen                  -> parkedCartVM.closeSheet()
-            sellState.receipt != null              -> checkoutVM.dismissReceipt()
-        }
-    }
-
-    val sellShortcuts = arrayOf(
-        PharmShortcut(
-            key = Key.F1,
-            label = "F1",
-            action = { showShortcuts = true },
-        ),
-        PharmShortcut(
-            key = Key.F2,
-            label = "F2",
-            action = { runCatching { searchFocus.requestFocus() } },
-        ),
-        PharmShortcut(
-            key = Key.F3,
-            label = "F3",
-            action = customerPickerVM::open,
-        ),
-        PharmShortcut(
-            key = Key.F4,
-            label = "F4",
-            action = sellVM::onOpenCartDiscount,
-        ),
-        PharmShortcut(
-            key = Key.F6,
-            label = "F6",
-            action = onShortcutParkCart,
-        ),
-        PharmShortcut(
-            key = Key.F8,
-            label = "F8",
-            action = parkedCartVM::openSheet,
-        ),
-        PharmShortcut(
-            key = Key.F9,
-            label = "F9",
-            action = { if (checkoutState.canCheckout) checkoutVM.submit() },
-        ),
-        PharmShortcut(
-            key = Key.Escape,
-            label = "Esc",
-            action = onShortcutEscape,
-        ),
-        PharmShortcut(
-            key = Key.N,
-            ctrl = true,
-            label = "Ctrl+N",
-            action = onShortcutParkCart,
-        ),
-        PharmShortcut(
-            key = Key.P,
-            ctrl = true,
-            shift = true,
-            label = "Ctrl+Shift+P",
-            action = parkedCartVM::openSheet,
-        ),
+    val sellShortcuts = rememberSellShortcuts(
+        sellVM = sellVM,
+        checkoutVM = checkoutVM,
+        drugPickerVM = drugPickerVM,
+        customerPickerVM = customerPickerVM,
+        parkedCartVM = parkedCartVM,
+        voidSaleVM = voidSaleVM,
+        sellState = sellState,
+        checkoutState = checkoutState,
+        drugState = drugState,
+        customerState = customerState,
+        parkedState = parkedState,
+        voidState = voidState,
+        shortcutsVisible = showShortcuts,
+        onShowShortcuts = { showShortcuts = true },
+        onHideShortcuts = { showShortcuts = false },
+        hasError = combinedError != null,
+        onDismissAllErrors = dismissAllErrors,
+        searchFocus = searchFocus,
+        onTapParkSlot = onTapParkSlot,
     )
 
     Surface(
