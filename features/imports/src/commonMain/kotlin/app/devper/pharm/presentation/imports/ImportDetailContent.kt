@@ -245,7 +245,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = item.drugName.ifBlank { "(ไม่ระบุยา)" },
+                text = item.drugName.ifBlank { pharmStrings.commonNoDrugName },
                 style = PharmText.body,
             )
             Text(
@@ -255,7 +255,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = "${item.qty} ชิ้น",
+                text = pharmStrings.importsQtyPieces(item.qty.value),
                 style = PharmText.h3.tabular(),
             )
             Text(

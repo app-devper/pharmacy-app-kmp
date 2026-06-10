@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,13 +53,14 @@ fun PharmActionMenu(
     val t = pharmTokens
     var expanded by remember { mutableStateOf(false) }
 
+    val openMenuDesc = pharmStrings.commonOpenMenu
     Box(modifier = modifier) {
         Box(
             modifier = Modifier
                 .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                 .clip(t.shapes.pill)
                 .semantics(mergeDescendants = true) {
-                    contentDescription = "เปิดเมนู"
+                    contentDescription = openMenuDesc
                     role = Role.Button
                 }
                 .clickable(role = Role.Button) { expanded = true },

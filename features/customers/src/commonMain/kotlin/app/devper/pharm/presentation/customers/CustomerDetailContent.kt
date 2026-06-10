@@ -215,7 +215,7 @@ private fun SaleRow(sale: SaleSummary) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = sale.billNo.ifBlank { "(ไม่มีเลขบิล)" },
+                    text = sale.billNo.ifBlank { pharmStrings.commonNoBillNo },
                     style = PharmText.h3.tabular(),
                 )
                 if (sale.voided) {

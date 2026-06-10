@@ -1,6 +1,23 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface CommonStrings {
+    val commonAppBrand: String
+    val commonAppTagline: String
+    val commonExpandMenu: String
+    val commonCollapseMenu: String
+    val commonOffline: String
+    val commonErrorIconDesc: String
+    val commonOpenMenu: String
+    val commonHelp: String
+    val commonResultFound: (Int, String, Int) -> String
+    val commonResultTotal: (Int, String) -> String
+    val commonPendingSyncBadge: (Int) -> String
+    val commonItemsCount: (Int) -> String
+    val commonNoBillNo: String
+    val commonUnnamed: String
+    val commonNoDrugName: String
+    val commonNoSupplier: String
+
     val commonUnitDefault: String
 
     val commonStatusPending: String

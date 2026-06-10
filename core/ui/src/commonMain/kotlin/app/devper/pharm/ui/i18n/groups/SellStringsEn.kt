@@ -1,6 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SellStringsEn : SellStrings {
+    override val sellParkedSummary: (Int, String) -> String = { n, total -> "$n pc · $total" }
+    override val sellDiscountPercentSeg = "% Percent"
+
     override val sellRemoveLineTitle = "Remove from cart?"
     override val sellLineDetailsDesc = "Details"
     override val sellRemoveLineDesc = "Remove item"

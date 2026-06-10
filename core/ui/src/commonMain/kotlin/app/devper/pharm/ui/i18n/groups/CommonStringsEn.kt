@@ -1,6 +1,23 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CommonStringsEn : CommonStrings {
+    override val commonAppBrand = "Healthy Pharm"
+    override val commonAppTagline = "Pharmacy POS"
+    override val commonExpandMenu = "Expand menu"
+    override val commonCollapseMenu = "Collapse menu"
+    override val commonOffline = "Offline"
+    override val commonErrorIconDesc = "Error"
+    override val commonOpenMenu = "Open menu"
+    override val commonHelp = "Help"
+    override val commonResultFound: (Int, String, Int) -> String = { visible, noun, total -> "Found $visible $noun of $total" }
+    override val commonResultTotal: (Int, String) -> String = { total, noun -> "All $total $noun" }
+    override val commonPendingSyncBadge: (Int) -> String = { n -> "$n pending sync" }
+    override val commonItemsCount: (Int) -> String = { n -> "$n item(s)" }
+    override val commonNoBillNo = "(no bill no.)"
+    override val commonUnnamed = "(unnamed)"
+    override val commonNoDrugName = "(unnamed drug)"
+    override val commonNoSupplier = "(no supplier)"
+
     override val commonUnitDefault = "unit"
 
     override val commonStatusPending = "Pending"

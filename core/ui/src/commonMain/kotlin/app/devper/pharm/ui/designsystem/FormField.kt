@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -179,7 +181,7 @@ fun PharmTextField(
             if (isError) {
                 Icon(
                     imageVector = PharmIcons.AlertCircle,
-                    contentDescription = "ข้อผิดพลาด",
+                    contentDescription = pharmStrings.commonErrorIconDesc,
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(18.dp),
                 )

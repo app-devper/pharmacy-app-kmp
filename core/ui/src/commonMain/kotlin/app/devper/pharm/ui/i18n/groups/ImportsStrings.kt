@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface ImportsStrings {
+    val importsQtyPieces: (Int) -> String
+
     val importsFormLoadSuppliersFailed: String
     val importsFormLoadDrugsFailed: String
     val importsConfirmFailed: String

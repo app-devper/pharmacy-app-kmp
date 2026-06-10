@@ -1,6 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SellStrings {
+    val sellParkedSummary: (Int, String) -> String
+    val sellDiscountPercentSeg: String
+
     val sellRemoveLineTitle: String
     val sellLineDetailsDesc: String
     val sellRemoveLineDesc: String

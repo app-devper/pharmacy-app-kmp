@@ -42,7 +42,7 @@ internal fun ProfitMetricsRow(summary: ProfitSummary?, modifier: Modifier = Modi
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = "Margin เฉลี่ย",
+            label = pharmStrings.reportsAvgMargin,
             value = marginText,
             sub = "weighted by revenue",
             tint = MetricTint.Indigo,

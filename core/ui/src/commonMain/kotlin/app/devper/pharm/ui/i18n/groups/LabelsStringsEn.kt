@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object LabelsStringsEn : LabelsStrings {
+    override val labelsAddCta = "+ Add"
+
     override val labelsSubtitle = "Design and print drug labels"
     override val labelsSearchPlaceholder = "Search drugs (add one per line)…"
     override val labelsEmpty = "No items yet — pick drugs on the left to add"

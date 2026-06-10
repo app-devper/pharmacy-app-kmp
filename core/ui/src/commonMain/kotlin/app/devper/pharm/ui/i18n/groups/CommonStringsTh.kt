@@ -1,6 +1,23 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CommonStringsTh : CommonStrings {
+    override val commonAppBrand = "ร้านยา เฮลท์ตี้ฟาร์ม"
+    override val commonAppTagline = "ระบบ POS ร้านขายยา"
+    override val commonExpandMenu = "ขยายเมนู"
+    override val commonCollapseMenu = "ย่อเมนู"
+    override val commonOffline = "ออฟไลน์"
+    override val commonErrorIconDesc = "ข้อผิดพลาด"
+    override val commonOpenMenu = "เปิดเมนู"
+    override val commonHelp = "ช่วยเหลือ"
+    override val commonResultFound: (Int, String, Int) -> String = { visible, noun, total -> "พบ $visible $noun จากทั้งหมด $total" }
+    override val commonResultTotal: (Int, String) -> String = { total, noun -> "ทั้งหมด $total $noun" }
+    override val commonPendingSyncBadge: (Int) -> String = { n -> "บิลค้างซิงค์ $n" }
+    override val commonItemsCount: (Int) -> String = { n -> "$n รายการ" }
+    override val commonNoBillNo = "(ไม่มีเลขบิล)"
+    override val commonUnnamed = "(ไม่ระบุชื่อ)"
+    override val commonNoDrugName = "(ไม่ระบุยา)"
+    override val commonNoSupplier = "(ไม่ระบุผู้ขาย)"
+
     override val commonUnitDefault = "หน่วย"
 
     override val commonStatusPending = "รอดำเนินการ"

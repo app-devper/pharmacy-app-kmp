@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface LabelsStrings {
+    val labelsAddCta: String
+
     val labelsPrintFailed: String
     val labelsSubtitle: String
     val labelsSearchPlaceholder: String

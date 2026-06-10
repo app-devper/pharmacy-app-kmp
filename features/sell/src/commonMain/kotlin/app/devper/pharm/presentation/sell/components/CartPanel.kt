@@ -207,7 +207,7 @@ private fun CartPanelHeader(
         ) {
             Text(pharmStrings.sellCart, style = PharmText.h3)
             Text(
-                text = "· $cartCount รายการ",
+                text = "· " + pharmStrings.commonItemsCount(cartCount),
                 style = PharmText.meta,
             )
         }

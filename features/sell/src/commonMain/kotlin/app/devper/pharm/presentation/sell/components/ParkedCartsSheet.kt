@@ -164,7 +164,7 @@ private fun FilledSlotRow(
                 ),
             )
             Text(
-                text = "${parked.itemCount} ชิ้น · ${fmtBaht(parked.total.amount)}",
+                text = pharmStrings.sellParkedSummary(parked.itemCount, fmtBaht(parked.total.amount)),
                 style = PharmText.meta.tabular(),
             )
         }

@@ -1,6 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ExpiryStringsTh : ExpiryStrings {
+    override val expiryWriteoffFailures: (Int) -> String = { n -> "$n ล็อตล้มเหลว — กรุณาลองใหม่" }
+    override val expiryMoreFailures: (Int) -> String = { n -> "(+$n อื่นๆ)" }
+
     override val expiryWindow30 = "30 วัน"
     override val expiryWindow60 = "60 วัน"
     override val expiryWindow90 = "90 วัน"

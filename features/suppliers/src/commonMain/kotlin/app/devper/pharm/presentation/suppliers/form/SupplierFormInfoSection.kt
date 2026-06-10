@@ -120,7 +120,7 @@ private fun TaxIdField(form: SupplierFormFields, callbacks: SupplierFormCallback
         PharmTextField(
             value = form.taxId,
             onValueChange = callbacks.onTaxId,
-            placeholder = "13 หลัก",
+            placeholder = pharmStrings.suppliersTaxIdPlaceholder,
             keyboardType = KeyboardType.Number,
         )
     }

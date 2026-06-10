@@ -160,7 +160,7 @@ private fun WriteoffResultDialog(result: WriteoffResult, onDismiss: () -> Unit) 
             )
             if (result.hasFailures) {
                 Text(
-                    text = "${result.failures.size} ล็อตล้มเหลว — กรุณาลองใหม่",
+                    text = pharmStrings.expiryWriteoffFailures(result.failures.size),
                     style = PharmText.meta.copy(color = t.colors.dangerFg),
                 )
                 result.failures.take(3).forEach { f ->
@@ -171,7 +171,7 @@ private fun WriteoffResultDialog(result: WriteoffResult, onDismiss: () -> Unit) 
                 }
                 if (result.failures.size > 3) {
                     Text(
-                        text = "(+${result.failures.size - 3} อื่นๆ)",
+                        text = pharmStrings.expiryMoreFailures(result.failures.size - 3),
                         style = PharmText.micro.copy(color = t.colors.fg3),
                     )
                 }

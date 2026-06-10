@@ -147,7 +147,7 @@ private fun HistoryRow(entry: StockCountHistoryEntry) {
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(
-                text = "${entry.at} · ${entry.itemsCount} รายการ",
+                text = "${entry.at} · " + pharmStrings.commonItemsCount(entry.itemsCount),
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
             val deltaColor = if (entry.totalDelta == 0) t.colors.fgMuted else t.colors.warningFg

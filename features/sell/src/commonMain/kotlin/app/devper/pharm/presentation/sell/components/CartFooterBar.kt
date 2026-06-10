@@ -86,7 +86,7 @@ fun CartFooterBar(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = when {
-                    !empty    -> "$itemCount รายการ"
+                    !empty    -> pharmStrings.commonItemsCount(itemCount)
                     hasParked -> pharmStrings.sellParkedWaiting(parkedFilledCount)
                     else      -> pharmStrings.sellEmptyCart
                 },

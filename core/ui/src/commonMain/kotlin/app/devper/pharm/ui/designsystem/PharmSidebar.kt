@@ -45,7 +45,6 @@ private val SidebarRailWidth: Dp = 64.dp
 data class SidebarNavItem(
     val id: String,
     val icon: ImageVector,
-    val label: String,
     val admin: Boolean = false,
 )
 
@@ -67,26 +66,26 @@ fun SidebarNavItem.localizedLabel(s: PharmStrings): String = when (id) {
     "users" -> s.navUsers
     "settings" -> s.navSettings
     "help" -> s.navHelp
-    else -> label
+    else -> id
 }
 
 val DefaultPharmNav: List<SidebarNavItem> = listOf(
-    SidebarNavItem("sell",         PharmIcons.Sell,         "หน้าขายยา"),
-    SidebarNavItem("salesHistory", PharmIcons.SalesHistory, "ประวัติการขาย"),
-    SidebarNavItem("stock",        PharmIcons.Stock,        "สต็อกยา"),
-    SidebarNavItem("stockCount",   PharmIcons.StockCount,   "ตรวจนับสต็อก",      admin = true),
-    SidebarNavItem("expiry",       PharmIcons.Expiry,       "จัดการวันหมดอายุ",  admin = true),
-    SidebarNavItem("movements",    PharmIcons.Movements,    "ความเคลื่อนไหวสต็อก"),
-    SidebarNavItem("offlineSync",  PharmIcons.OfflineSync,  "รายการค้างซิงค์"),
-    SidebarNavItem("imports",      PharmIcons.Imports,      "นำเข้าสินค้า",      admin = true),
-    SidebarNavItem("suppliers",    PharmIcons.Suppliers,    "ซัพพลายเออร์",      admin = true),
-    SidebarNavItem("customers",    PharmIcons.Customers,    "ลูกค้า"),
-    SidebarNavItem("reports",      PharmIcons.Reports,      "รายงาน"),
-    SidebarNavItem("profit",       PharmIcons.Profit,       "กำไร",              admin = true),
-    SidebarNavItem("kyforms",      PharmIcons.KyForms,      "แบบฟอร์ม ขย. 9–12", admin = true),
-    SidebarNavItem("users",        PharmIcons.Users,        "จัดการผู้ใช้งาน",   admin = true),
-    SidebarNavItem("settings",     PharmIcons.Settings,     "ตั้งค่าระบบ",       admin = true),
-    SidebarNavItem("help",         PharmIcons.Help,         "คู่มือการใช้งาน"),
+    SidebarNavItem("sell",         PharmIcons.Sell),
+    SidebarNavItem("salesHistory", PharmIcons.SalesHistory),
+    SidebarNavItem("stock",        PharmIcons.Stock),
+    SidebarNavItem("stockCount",   PharmIcons.StockCount,      admin = true),
+    SidebarNavItem("expiry",       PharmIcons.Expiry,  admin = true),
+    SidebarNavItem("movements",    PharmIcons.Movements),
+    SidebarNavItem("offlineSync",  PharmIcons.OfflineSync),
+    SidebarNavItem("imports",      PharmIcons.Imports,      admin = true),
+    SidebarNavItem("suppliers",    PharmIcons.Suppliers,      admin = true),
+    SidebarNavItem("customers",    PharmIcons.Customers),
+    SidebarNavItem("reports",      PharmIcons.Reports),
+    SidebarNavItem("profit",       PharmIcons.Profit,              admin = true),
+    SidebarNavItem("kyforms",      PharmIcons.KyForms, admin = true),
+    SidebarNavItem("users",        PharmIcons.Users,   admin = true),
+    SidebarNavItem("settings",     PharmIcons.Settings,       admin = true),
+    SidebarNavItem("help",         PharmIcons.Help),
 )
 
 @Composable
@@ -167,7 +166,7 @@ private fun BrandHeader(collapsed: Boolean) {
         if (!collapsed) {
             Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                 Text(
-                    text = "ร้านยา เฮลท์ตี้ฟาร์ม",
+                    text = pharmStrings.commonAppBrand,
                     style = PharmText.body.copy(
                         color = t.colors.sidebarFg,
                         fontWeight = FontWeight.Bold,
@@ -175,7 +174,7 @@ private fun BrandHeader(collapsed: Boolean) {
                     ),
                 )
                 Text(
-                    text = "ระบบ POS ร้านขายยา",
+                    text = pharmStrings.commonAppTagline,
                     style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
                 )
             }
@@ -271,13 +270,13 @@ private fun SidebarFooter(
         ) {
             Icon(
                 imageVector = PharmIcons.Hamburger,
-                contentDescription = if (collapsed) "ขยายเมนู" else "ย่อเมนู",
+                contentDescription = if (collapsed) pharmStrings.commonExpandMenu else pharmStrings.commonCollapseMenu,
                 tint = t.colors.sidebarFgMuted,
                 modifier = Modifier.size(18.dp),
             )
             if (!collapsed) {
                 Text(
-                    text = "ย่อเมนู",
+                    text = pharmStrings.commonCollapseMenu,
                     style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
                 )
             }
@@ -297,7 +296,7 @@ private fun SidebarFooter(
                     .background(if (online) t.colors.successFg else t.colors.fgMuted),
             )
             Text(
-                text = if (online) "ออนไลน์ · $versionLabel" else "ออฟไลน์ · $versionLabel",
+                text = (if (online) pharmStrings.commonOnline else pharmStrings.commonOffline) + " · $versionLabel",
                 style = PharmText.micro.copy(color = t.colors.sidebarFgMuted),
             )
         }

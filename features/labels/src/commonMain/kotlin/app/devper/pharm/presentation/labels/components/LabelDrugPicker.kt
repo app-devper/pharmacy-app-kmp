@@ -83,7 +83,7 @@ private fun LabelDrugRow(drug: Drug, onAdd: () -> Unit) {
             maxLines = 1,
         )
         Text(
-            text = "+ เพิ่ม",
+            text = pharmStrings.labelsAddCta,
             style = PharmText.micro.copy(color = t.colors.accent, fontWeight = FontWeight.SemiBold),
         )
     }

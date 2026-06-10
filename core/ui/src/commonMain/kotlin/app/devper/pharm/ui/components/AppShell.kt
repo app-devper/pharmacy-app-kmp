@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -76,7 +78,7 @@ fun AppShell(
         val sidebarItems = remember(items, role) {
             items
                 .filter { !it.admin || role.canSeeAdminNav() }
-                .map { SidebarNavItem(id = it.route, icon = it.icon, label = it.label, admin = it.admin) }
+                .map { SidebarNavItem(id = it.route, icon = it.icon, admin = it.admin) }
         }
 
         if (size.isCompact) {
@@ -225,7 +227,7 @@ private fun PendingSyncBadge(count: Int) {
             modifier = Modifier.size(14.dp),
         )
         Text(
-            text = "บิลค้างซิงค์ $count",
+            text = pharmStrings.commonPendingSyncBadge(count),
             style = PharmText.badge.copy(color = t.colors.dangerFg),
         )
     }

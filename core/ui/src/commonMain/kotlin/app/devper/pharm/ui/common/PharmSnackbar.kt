@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.common
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -209,7 +211,7 @@ private fun ToastCard(
         ) {
             Icon(
                 imageVector = PharmIcons.Close,
-                contentDescription = "ปิด",
+                contentDescription = pharmStrings.commonClose,
                 tint = colors.fg.copy(alpha = 0.7f),
                 modifier = Modifier.size(18.dp),
             )
