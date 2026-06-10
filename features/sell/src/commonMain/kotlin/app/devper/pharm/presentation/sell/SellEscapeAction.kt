@@ -4,7 +4,6 @@ enum class SellEscapeAction {
     HideShortcuts,
     DismissErrors,
     CancelOverwrite,
-    CancelSwap,
     CancelClearCart,
     CancelSkipKy,
     DismissOversell,
@@ -22,7 +21,6 @@ fun resolveSellEscapeAction(
     shortcutsVisible: Boolean,
     hasError: Boolean,
     overwriteSlotPending: Boolean,
-    swapSlotPending: Boolean,
     clearConfirmVisible: Boolean,
     skipKyConfirmVisible: Boolean,
     oversellPending: Boolean,
@@ -38,7 +36,6 @@ fun resolveSellEscapeAction(
     shortcutsVisible -> SellEscapeAction.HideShortcuts
     hasError -> SellEscapeAction.DismissErrors
     overwriteSlotPending -> SellEscapeAction.CancelOverwrite
-    swapSlotPending -> SellEscapeAction.CancelSwap
     clearConfirmVisible -> SellEscapeAction.CancelClearCart
     skipKyConfirmVisible -> SellEscapeAction.CancelSkipKy
     oversellPending -> SellEscapeAction.DismissOversell

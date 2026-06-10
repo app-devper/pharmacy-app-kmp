@@ -29,8 +29,6 @@ interface SellStrings {
     val sellParkedDeleteBody: (Int) -> String
     val sellParkedOverwriteTitle: (Int) -> String
     val sellParkedOverwriteBody: String
-    val sellParkedSwapTitle: (Int) -> String
-    val sellParkedSwapBody: String
     val sellClearCartCta: String
     val sellClearCartBody: (Int) -> String
     val sellIssueReceipt: String
