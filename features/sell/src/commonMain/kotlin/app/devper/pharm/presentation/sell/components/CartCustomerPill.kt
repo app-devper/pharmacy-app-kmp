@@ -4,20 +4,24 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.common.ShortcutHint
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -39,7 +44,8 @@ fun CartCustomerPill(
 ) {
     val t = pharmTokens
     val name = customer?.name ?: pharmStrings.sellCustomerWalkIn
-    Row(
+    val allergy = customer?.allergyNote?.takeIf { it.isNotBlank() }
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -47,49 +53,78 @@ fun CartCustomerPill(
             .background(t.colors.accentBgSoft)
             .clickable(role = Role.Button, onClick = onPick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                pharmStrings.sellCustomer,
-                style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
-            )
-            Text(
-                name,
-                style = PharmText.bodySm.copy(
-                    color = t.colors.accent,
-                    fontWeight = FontWeight.Medium,
-                ),
-            )
-        }
-        val clearCustomerDesc = pharmStrings.sellCustomerClear
-        if (customer != null) {
-            Box(
-                modifier = Modifier
-                    .clip(t.shapes.sm)
-                    .clickable(role = Role.Button, onClick = onClear)
-                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                    .semantics { contentDescription = clearCustomerDesc }
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("×", style = PharmText.h2.copy(color = t.colors.accent))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    pharmStrings.sellCustomer,
+                    style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
+                )
+                Text(
+                    name,
+                    style = PharmText.bodySm.copy(
+                        color = t.colors.accent,
+                        fontWeight = FontWeight.Medium,
+                    ),
+                )
             }
-        } else {
-            if (showShortcutHint) {
-                ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
+            val clearCustomerDesc = pharmStrings.sellCustomerClear
+            if (customer != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(t.shapes.sm)
+                        .clickable(role = Role.Button, onClick = onClear)
+                        .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                        .semantics { contentDescription = clearCustomerDesc }
+                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("×", style = PharmText.h2.copy(color = t.colors.accent))
+                }
+            } else {
+                if (showShortcutHint) {
+                    ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
+                }
+                Text(
+                    "›",
+                    style = PharmText.body.copy(color = t.colors.accent),
+                )
             }
-            Text(
-                "›",
-                style = PharmText.body.copy(color = t.colors.accent),
-            )
+
+            if (customer != null && activeTier.isNotBlank() && activeTier != Tier.Retail) {
+                Text(
+                    text = " · $activeTier",
+                    style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
+                )
+            }
         }
 
-        if (customer != null && activeTier.isNotBlank() && activeTier != Tier.Retail) {
-            Text(
-                text = " · $activeTier",
-                style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
-            )
+        if (allergy != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Icon(
+                    imageVector = PharmIcons.Warning,
+                    contentDescription = null,
+                    tint = t.colors.dangerFg,
+                    modifier = Modifier.size(16.dp),
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                    Text(
+                        text = pharmStrings.sellAllergyTitle,
+                        style = PharmText.micro.copy(color = t.colors.dangerFg, fontWeight = FontWeight.SemiBold),
+                    )
+                    Text(
+                        text = allergy,
+                        style = PharmText.bodySm.copy(color = t.colors.dangerFg),
+                    )
+                }
+            }
         }
     }
 }
@@ -109,6 +144,19 @@ private fun CartCustomerPill_WithCustomer_Preview() {
         CartCustomerPill(
             customer = Customer(id = "c1", name = "คุณสมชาย", phone = null, priceTier = "WHOLESALE", allergyNote = null),
             activeTier = "WHOLESALE",
+            onPick = {},
+            onClear = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CartCustomerPill_WithAllergy_Preview() {
+    PharmacyTheme {
+        CartCustomerPill(
+            customer = Customer(id = "c2", name = "คุณสมหญิง", phone = null, priceTier = "RETAIL", allergyNote = "แพ้ Penicillin, ความดันสูง"),
+            activeTier = "RETAIL",
             onPick = {},
             onClear = {},
         )
