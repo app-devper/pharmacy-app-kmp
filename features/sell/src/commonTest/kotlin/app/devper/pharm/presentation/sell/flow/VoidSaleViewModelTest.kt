@@ -9,8 +9,8 @@ import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.repository.FakeCartRepository
 import app.devper.pharm.domain.repository.FakeSaleRepository
-import app.devper.pharm.domain.usecase.DismissReceiptUseCase
-import app.devper.pharm.domain.usecase.VoidSaleUseCase
+import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
+import app.devper.pharm.domain.usecase.sales.VoidSaleUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch

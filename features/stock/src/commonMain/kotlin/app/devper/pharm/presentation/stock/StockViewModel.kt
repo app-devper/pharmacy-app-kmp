@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class StockViewModel(

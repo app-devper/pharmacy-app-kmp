@@ -5,9 +5,9 @@ import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.param.DashboardRangeParam
-import app.devper.pharm.domain.usecase.GetDashboardUseCase
-import app.devper.pharm.domain.usecase.GetSlowDrugsUseCase
-import app.devper.pharm.domain.usecase.GetTopDrugsUseCase
+import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
+import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
+import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.FlowPreview

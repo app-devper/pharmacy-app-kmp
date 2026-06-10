@@ -8,8 +8,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.repository.FakeCustomerRepository
-import app.devper.pharm.domain.usecase.GetCustomerSalesUseCase
-import app.devper.pharm.domain.usecase.GetCustomersUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomerSalesUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

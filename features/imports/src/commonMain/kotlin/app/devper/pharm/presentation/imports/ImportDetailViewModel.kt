@@ -1,9 +1,9 @@
 package app.devper.pharm.presentation.imports
 
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.usecase.ConfirmPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.DeletePurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.ConfirmPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.DeletePurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.presentation.imports.exception.ImportsUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 

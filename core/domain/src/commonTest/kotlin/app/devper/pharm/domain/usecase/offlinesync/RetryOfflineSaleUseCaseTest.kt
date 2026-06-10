@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
+
 import app.devper.pharm.common.value.Money
 
 import app.devper.pharm.domain.testDispatchers

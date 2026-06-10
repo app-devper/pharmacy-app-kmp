@@ -2,8 +2,8 @@ package app.devper.pharm.presentation.suppliers
 
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.repository.FakeSupplierRepository
-import app.devper.pharm.domain.usecase.DeleteSupplierUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

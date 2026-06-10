@@ -5,8 +5,8 @@ import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.domain.model.StockMovementsPage
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeMovementsRepository
-import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
-import app.devper.pharm.domain.usecase.GetMovementsUseCase
+import app.devper.pharm.domain.usecase.reports.ExportMovementsCsvUseCase
+import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

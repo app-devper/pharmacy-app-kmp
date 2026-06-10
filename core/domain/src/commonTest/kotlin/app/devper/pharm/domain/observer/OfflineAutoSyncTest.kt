@@ -15,7 +15,7 @@ import app.devper.pharm.domain.param.VoidSaleParam
 import app.devper.pharm.domain.repository.OfflineSaleQueue
 import app.devper.pharm.domain.repository.SaleRepository
 import app.devper.pharm.domain.testDispatchers
-import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
+import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow

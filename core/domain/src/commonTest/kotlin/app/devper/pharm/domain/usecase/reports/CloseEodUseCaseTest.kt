@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
+
 import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.ConflictException

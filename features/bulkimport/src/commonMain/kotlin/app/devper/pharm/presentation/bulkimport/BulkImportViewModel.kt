@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.bulkimport
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.extension.parseBulkImportJson
-import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
+import app.devper.pharm.domain.usecase.purchasing.BulkImportDrugsUseCase
 import app.devper.pharm.presentation.bulkimport.exception.BulkImportUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 

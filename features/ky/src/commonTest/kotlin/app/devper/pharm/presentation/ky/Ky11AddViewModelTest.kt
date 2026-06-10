@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.repository.FakeKyRepository
-import app.devper.pharm.domain.usecase.AddKy11UseCase
+import app.devper.pharm.domain.usecase.ky.AddKy11UseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

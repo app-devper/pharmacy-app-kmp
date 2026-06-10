@@ -5,9 +5,9 @@ package app.devper.pharm.presentation.users
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.repository.FakeUsersRepository
-import app.devper.pharm.domain.usecase.CreateUserUseCase
-import app.devper.pharm.domain.usecase.GetUsersUseCase
-import app.devper.pharm.domain.usecase.UpdateUserUseCase
+import app.devper.pharm.domain.usecase.users.CreateUserUseCase
+import app.devper.pharm.domain.usecase.users.GetUsersUseCase
+import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test

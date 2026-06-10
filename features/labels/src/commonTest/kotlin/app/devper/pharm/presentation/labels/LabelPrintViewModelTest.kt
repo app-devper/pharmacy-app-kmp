@@ -10,8 +10,8 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeLabelRepository
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.PrintLabelsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase
 import app.devper.pharm.presentation.labels.exception.LabelPrintUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle

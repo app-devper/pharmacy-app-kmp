@@ -8,9 +8,9 @@ import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.CloseEodParam
 import app.devper.pharm.domain.param.EodReportParam
-import app.devper.pharm.domain.usecase.CloseEodUseCase
-import app.devper.pharm.domain.usecase.GetEodReportUseCase
-import app.devper.pharm.domain.usecase.PrintReceiptUseCase
+import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
+import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
+import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 import app.devper.pharm.ui.print.buildEodReceiptTemplate

@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.planning
 
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.usecase.GetReorderSuggestionsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetReorderSuggestionsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class ReorderSuggestionsViewModel(

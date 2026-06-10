@@ -2,8 +2,8 @@ package app.devper.pharm.presentation.settings
 
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.UpdateSettingsUseCase
+import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
+import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

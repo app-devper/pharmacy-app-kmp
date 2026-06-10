@@ -6,8 +6,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.repository.FakeAuthRepository
 import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
-import app.devper.pharm.domain.usecase.LoginUseCase
-import app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase
+import app.devper.pharm.domain.usecase.auth.LoginUseCase
+import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

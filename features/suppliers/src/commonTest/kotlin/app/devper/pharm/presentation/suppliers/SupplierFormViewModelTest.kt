@@ -5,9 +5,9 @@ import app.devper.pharm.presentation.suppliers.exception.SupplierFormUiStateErro
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.repository.FakeSupplierRepository
-import app.devper.pharm.domain.usecase.AddSupplierUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.UpdateSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.suppliers.UpdateSupplierUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

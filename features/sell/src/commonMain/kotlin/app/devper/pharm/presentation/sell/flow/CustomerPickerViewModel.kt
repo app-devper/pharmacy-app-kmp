@@ -1,9 +1,9 @@
 package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.usecase.ClearCustomerUseCase
-import app.devper.pharm.domain.usecase.GetCustomersUseCase
-import app.devper.pharm.domain.usecase.SelectCustomerUseCase
+import app.devper.pharm.domain.usecase.sales.ClearCustomerUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
+import app.devper.pharm.domain.usecase.sales.SelectCustomerUseCase
 import app.devper.pharm.presentation.sell.exception.CustomerPickerUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 

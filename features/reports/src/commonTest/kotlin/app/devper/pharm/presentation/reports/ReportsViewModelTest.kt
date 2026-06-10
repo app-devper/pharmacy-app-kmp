@@ -2,9 +2,9 @@ package app.devper.pharm.presentation.reports
 
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.repository.FakeReportsRepository
-import app.devper.pharm.domain.usecase.GetDashboardUseCase
-import app.devper.pharm.domain.usecase.GetSlowDrugsUseCase
-import app.devper.pharm.domain.usecase.GetTopDrugsUseCase
+import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
+import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
+import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

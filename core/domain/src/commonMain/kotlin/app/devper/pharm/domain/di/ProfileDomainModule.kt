@@ -1,8 +1,8 @@
 package app.devper.pharm.domain.di
 
-import app.devper.pharm.domain.usecase.ChangePasswordUseCase
-import app.devper.pharm.domain.usecase.GetProfileUseCase
-import app.devper.pharm.domain.usecase.UpdateProfileUseCase
+import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
+import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

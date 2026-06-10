@@ -11,9 +11,9 @@ import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.ParkedCartsProvider
 import app.devper.pharm.domain.repository.FakeCartRepository
 import app.devper.pharm.domain.repository.PARK_SLOT_COUNT
-import app.devper.pharm.domain.usecase.DiscardParkedCartUseCase
-import app.devper.pharm.domain.usecase.ParkCartUseCase
-import app.devper.pharm.domain.usecase.RestoreCartUseCase
+import app.devper.pharm.domain.usecase.sales.DiscardParkedCartUseCase
+import app.devper.pharm.domain.usecase.sales.ParkCartUseCase
+import app.devper.pharm.domain.usecase.sales.RestoreCartUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test

@@ -7,11 +7,11 @@ import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.param.CreateStockCountParam
 import app.devper.pharm.domain.extension.buildStockCountInput
 import app.devper.pharm.domain.extension.parsePendingStockCounts
-import app.devper.pharm.domain.usecase.ClearStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.CreateStockCountUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.LoadStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.SaveStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.inventory.ClearStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.inventory.CreateStockCountUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.LoadStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.inventory.SaveStockCountDraftUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds

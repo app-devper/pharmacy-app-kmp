@@ -3,8 +3,8 @@ package app.devper.pharm.presentation.auth
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.observer.UiPreferencesProvider
-import app.devper.pharm.domain.usecase.LoginUseCase
-import app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase
+import app.devper.pharm.domain.usecase.auth.LoginUseCase
+import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.presentation.auth.exception.LoginUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn

@@ -3,9 +3,9 @@ package app.devper.pharm.presentation.suppliers
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.SupplierInput
 import app.devper.pharm.domain.param.UpdateSupplierParam
-import app.devper.pharm.domain.usecase.AddSupplierUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.UpdateSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.suppliers.UpdateSupplierUseCase
 import app.devper.pharm.presentation.suppliers.exception.SupplierFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 

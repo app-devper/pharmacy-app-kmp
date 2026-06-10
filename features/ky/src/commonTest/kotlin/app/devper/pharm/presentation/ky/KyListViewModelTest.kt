@@ -3,10 +3,10 @@ package app.devper.pharm.presentation.ky
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
-import app.devper.pharm.domain.usecase.ExportKyFormUseCase
-import app.devper.pharm.domain.usecase.GetKy10EntriesUseCase
-import app.devper.pharm.domain.usecase.GetKy11EntriesUseCase
-import app.devper.pharm.domain.usecase.GetKy12EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

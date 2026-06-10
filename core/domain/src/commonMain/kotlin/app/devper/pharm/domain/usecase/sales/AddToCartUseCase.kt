@@ -1,4 +1,6 @@
-package app.devper.pharm.domain.usecase
+package app.devper.pharm.domain.usecase.sales
+
+import app.devper.pharm.domain.usecase.BaseSyncUseCase
 
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug

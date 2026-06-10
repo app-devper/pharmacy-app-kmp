@@ -5,8 +5,8 @@ import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.param.PrintLabelsParam
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.PrintLabelsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase
 import app.devper.pharm.presentation.labels.exception.LabelPrintUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 

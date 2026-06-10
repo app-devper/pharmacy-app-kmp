@@ -3,9 +3,9 @@ package app.devper.pharm.presentation.sell.flow
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.ParkedCartsProvider
-import app.devper.pharm.domain.usecase.DiscardParkedCartUseCase
-import app.devper.pharm.domain.usecase.ParkCartUseCase
-import app.devper.pharm.domain.usecase.RestoreCartUseCase
+import app.devper.pharm.domain.usecase.sales.DiscardParkedCartUseCase
+import app.devper.pharm.domain.usecase.sales.ParkCartUseCase
+import app.devper.pharm.domain.usecase.sales.RestoreCartUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

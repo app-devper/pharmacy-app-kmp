@@ -14,11 +14,11 @@ import app.devper.pharm.domain.param.AddPurchaseOrderParam
 import app.devper.pharm.domain.param.UpdatePurchaseOrderParam
 import app.devper.pharm.domain.extension.buildPurchaseOrderItemInput
 import app.devper.pharm.domain.extension.isPurchaseOrderLineValid
-import app.devper.pharm.domain.usecase.AddPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.UpdatePurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 

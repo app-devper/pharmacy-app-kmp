@@ -16,11 +16,11 @@ import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.observer.TimeZoneProvider
-import app.devper.pharm.domain.usecase.CheckoutUseCase
-import app.devper.pharm.domain.usecase.ClearCartUseCase
-import app.devper.pharm.domain.usecase.DismissReceiptUseCase
-import app.devper.pharm.domain.usecase.EnqueueOfflineSaleUseCase
-import app.devper.pharm.domain.usecase.SubmitKyFormsUseCase
+import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
+import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
+import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
+import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
+import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.domain.extension.looksLikeNetworkError
 import app.devper.pharm.domain.extension.newClientRequestId

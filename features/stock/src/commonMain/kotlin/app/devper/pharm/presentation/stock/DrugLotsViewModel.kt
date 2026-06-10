@@ -8,9 +8,9 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.param.AddLotParam
 import app.devper.pharm.domain.param.DeleteLotParam
-import app.devper.pharm.domain.usecase.AddLotUseCase
-import app.devper.pharm.domain.usecase.DeleteLotUseCase
-import app.devper.pharm.domain.usecase.ListLotsUseCase
+import app.devper.pharm.domain.usecase.inventory.AddLotUseCase
+import app.devper.pharm.domain.usecase.inventory.DeleteLotUseCase
+import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 

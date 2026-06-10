@@ -9,9 +9,9 @@ import app.devper.pharm.domain.observer.AuthStateProvider
 import app.devper.pharm.domain.observer.OfflineAutoSync
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.UiPreferencesProvider
-import app.devper.pharm.domain.usecase.GetProfileUseCase
-import app.devper.pharm.domain.usecase.LogoutUseCase
-import app.devper.pharm.domain.usecase.SetThemePreferenceUseCase
+import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.usecase.auth.LogoutUseCase
+import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

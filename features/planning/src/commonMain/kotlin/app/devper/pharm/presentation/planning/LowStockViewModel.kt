@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.planning
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.event.StockChangeBus
-import app.devper.pharm.domain.usecase.GetLowStockDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetLowStockDrugsUseCase
 import app.devper.pharm.presentation.planning.exception.LowStockUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.catch

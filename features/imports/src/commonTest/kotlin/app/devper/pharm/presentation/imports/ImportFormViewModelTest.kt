@@ -11,11 +11,11 @@ import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
 import app.devper.pharm.domain.repository.FakeSupplierRepository
-import app.devper.pharm.domain.usecase.AddPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.UpdatePurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
