@@ -78,7 +78,7 @@ fun AppShell(
         val sidebarItems = remember(items, role) {
             items
                 .filter { !it.admin || role.canSeeAdminNav() }
-                .map { SidebarNavItem(id = it.route, icon = it.icon, admin = it.admin) }
+                .map { SidebarNavItem(id = it.route, icon = it.icon, admin = it.admin, label = it.label) }
         }
 
         if (size.isCompact) {
