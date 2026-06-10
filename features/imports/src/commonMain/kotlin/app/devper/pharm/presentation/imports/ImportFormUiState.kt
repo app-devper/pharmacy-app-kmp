@@ -2,8 +2,8 @@ package app.devper.pharm.presentation.imports
 
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.domain.extension.buildPurchaseOrderItemInput
-import app.devper.pharm.domain.extension.isPurchaseOrderLineValid
+import app.devper.pharm.domain.validation.buildPurchaseOrderItemInput
+import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
 import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
 

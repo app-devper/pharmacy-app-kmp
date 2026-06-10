@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.domain.validation.buildKy9Draft
+import app.devper.pharm.domain.validation.isKy9DraftValid
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

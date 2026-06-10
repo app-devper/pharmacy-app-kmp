@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.domain.validation.parseBulkImportJson
+
 import app.devper.pharm.common.value.Money
 import kotlin.test.Test
 import kotlin.test.assertEquals

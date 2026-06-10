@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.extension
+package app.devper.pharm.domain.validation
 
 import app.devper.pharm.domain.param.ky.AddKy9Param
 import app.devper.pharm.domain.validation.Check
