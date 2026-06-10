@@ -1,5 +1,8 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.PharmStrings
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -37,28 +40,28 @@ fun PharmStatus.tone(): PharmBadgeTone = when (this) {
     PharmStatus.Returned    -> PharmBadgeTone.Blue
 }
 
-fun PharmStatus.defaultLabel(): String = when (this) {
-    PharmStatus.Pending     -> "รอดำเนินการ"
-    PharmStatus.Done        -> "เสร็จสิ้น"
-    PharmStatus.Voided      -> "ยกเลิก"
-    PharmStatus.Active      -> "ใช้งาน"
-    PharmStatus.Inactive    -> "ปิดใช้งาน"
-    PharmStatus.Draft       -> "ร่าง"
-    PharmStatus.Confirmed   -> "ยืนยันแล้ว"
-    PharmStatus.Failed      -> "ล้มเหลว"
-    PharmStatus.LowStock    -> "ใกล้หมด"
-    PharmStatus.OutOfStock  -> "หมด"
-    PharmStatus.Normal      -> "ปกติ"
-    PharmStatus.Backordered -> "ค้างส่ง"
-    PharmStatus.Vip         -> "VIP"
-    PharmStatus.Returned    -> "คืนสินค้า"
+fun PharmStatus.label(s: PharmStrings): String = when (this) {
+    PharmStatus.Pending     -> s.commonStatusPending
+    PharmStatus.Done        -> s.commonStatusDone
+    PharmStatus.Voided      -> s.commonStatusVoided
+    PharmStatus.Active      -> s.commonStatusActive
+    PharmStatus.Inactive    -> s.commonStatusInactive
+    PharmStatus.Draft       -> s.commonStatusDraft
+    PharmStatus.Confirmed   -> s.commonStatusConfirmed
+    PharmStatus.Failed      -> s.commonStatusFailed
+    PharmStatus.LowStock    -> s.commonStatusLowStock
+    PharmStatus.OutOfStock  -> s.commonStatusOutOfStock
+    PharmStatus.Normal      -> s.commonStatusNormal
+    PharmStatus.Backordered -> s.commonStatusBackordered
+    PharmStatus.Vip         -> s.commonStatusVip
+    PharmStatus.Returned    -> s.commonStatusReturned
 }
 
 @Composable
 fun PharmStatusBadge(
     status: PharmStatus,
     modifier: Modifier = Modifier,
-    label: String = status.defaultLabel(),
+    label: String = status.label(pharmStrings),
     size: PharmBadgeSize = PharmBadgeSize.Md,
 ) {
     PharmBadge(

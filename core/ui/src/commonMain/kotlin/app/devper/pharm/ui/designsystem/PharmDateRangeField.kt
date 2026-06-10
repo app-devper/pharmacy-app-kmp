@@ -49,8 +49,8 @@ fun PharmDateRangeField(
     onRangeChange: (PharmDateRange) -> Unit,
     formatDate: (Long) -> String,
     modifier: Modifier = Modifier,
-    fromLabel: String = "จาก",
-    toLabel: String = "ถึง",
+    fromLabel: String = pharmStrings.commonFrom,
+    toLabel: String = pharmStrings.commonTo,
     quickPeriods: List<PharmDateQuickPeriod> = emptyList(),
 ) {
     var pickingFrom by remember { mutableStateOf(false) }

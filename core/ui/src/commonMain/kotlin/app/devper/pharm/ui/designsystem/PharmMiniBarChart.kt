@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -130,8 +132,8 @@ fun PharmGroupedBarChart(
     barGap: Dp = 4.dp,
     pairGap: Dp = 8.dp,
     valueFormatter: (Double) -> String = { it.toString() },
-    revenueLegend: String = "รายได้",
-    costLegend: String = "ต้นทุน",
+    revenueLegend: String = pharmStrings.commonRevenue,
+    costLegend: String = pharmStrings.commonCost,
 ) {
     val t = pharmTokens
     val revenueColor = t.colors.accent

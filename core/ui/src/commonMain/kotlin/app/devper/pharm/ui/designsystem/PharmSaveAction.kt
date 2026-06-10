@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,7 +13,7 @@ fun PharmSaveAction(
     saving: Boolean,
     canSubmit: Boolean,
     onSubmit: () -> Unit,
-    label: String = "บันทึก",
+    label: String = pharmStrings.commonSave,
 ) {
     if (saving) {
         PharmCircularProgress(

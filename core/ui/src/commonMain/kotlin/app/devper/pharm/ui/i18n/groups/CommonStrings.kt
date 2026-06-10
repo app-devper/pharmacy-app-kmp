@@ -1,6 +1,36 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface CommonStrings {
+    val commonStatusPending: String
+    val commonStatusDone: String
+    val commonStatusVoided: String
+    val commonStatusActive: String
+    val commonStatusInactive: String
+    val commonStatusDraft: String
+    val commonStatusConfirmed: String
+    val commonStatusFailed: String
+    val commonStatusLowStock: String
+    val commonStatusOutOfStock: String
+    val commonStatusNormal: String
+    val commonStatusBackordered: String
+    val commonStatusVip: String
+    val commonStatusReturned: String
+    val commonDrugTypeHerb: String
+    val commonDrugTypeSupplement: String
+    val commonDrugTypeRx: String
+    val commonOversoldBadge: (Int) -> String
+    val commonPresellBadge: String
+    val commonStockRemaining: (Int, String) -> String
+    val commonOnline: String
+    val commonMenu: String
+    val commonLogout: String
+    val commonSwitchToLightTheme: String
+    val commonSwitchToDarkTheme: String
+    val commonFrom: String
+    val commonTo: String
+    val commonRevenue: String
+    val commonCost: String
+
     val commonCancel: String
     val commonSave: String
     val commonDelete: String

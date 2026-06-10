@@ -1,5 +1,8 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.PharmStringsEn
+import app.devper.pharm.ui.i18n.PharmStringsTh
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -37,7 +40,8 @@ class PharmStatusBadgeTest {
     @Test
     fun every_status_has_default_label() {
         PharmStatus.values().forEach { status ->
-            assertNotEquals("", status.defaultLabel(), "$status must have non-empty label")
+            assertNotEquals("", status.label(PharmStringsTh), "$status must have non-empty label")
+            assertNotEquals("", status.label(PharmStringsEn), "$status must have non-empty en label")
         }
     }
 
