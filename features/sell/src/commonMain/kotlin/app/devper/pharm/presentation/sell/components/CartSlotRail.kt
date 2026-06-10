@@ -37,6 +37,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 @Composable
 internal fun CartSlotRail(
     slots: List<ParkedCart?>,
+    selectedSlot: Int,
     onTapSlot: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -52,6 +53,7 @@ internal fun CartSlotRail(
             SlotChip(
                 number = index + 1,
                 filled = parked != null,
+                selected = index == selectedSlot,
                 onClick = { onTapSlot(index) },
             )
         }
@@ -62,6 +64,7 @@ internal fun CartSlotRail(
 private fun SlotChip(
     number: Int,
     filled: Boolean,
+    selected: Boolean,
     onClick: () -> Unit,
 ) {
     val t = pharmTokens
@@ -75,7 +78,7 @@ private fun SlotChip(
                 .width(3.dp)
                 .height(16.dp)
                 .background(
-                    color = if (filled) t.colors.accent else Color.Transparent,
+                    color = if (selected) t.colors.accent else Color.Transparent,
                     shape = RoundedCornerShape(2.dp),
                 ),
         )
@@ -109,6 +112,7 @@ private fun CartSlotRail_MixedSlots_Preview() {
     PharmacyTheme {
         CartSlotRail(
             slots = listOf(sampleParkedCart, null, sampleParkedCart, null, null),
+            selectedSlot = 0,
             onTapSlot = {},
         )
     }

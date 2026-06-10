@@ -31,8 +31,11 @@ class ParkedCartViewModel(
     fun openSheet() = setState { copy(sheetOpen = true) }
     fun closeSheet() = setState { copy(sheetOpen = false) }
 
+    fun selectSlot(slot: Int) = setState { copy(selectedSlot = slot) }
+
     fun tapSlot(slot: Int) {
         val s = current
+        setState { copy(selectedSlot = slot) }
         val slotContent = s.parkedSlots.getOrNull(slot)
         if (slotContent != null) {
             if (!s.activeCartIsEmpty) {
@@ -44,6 +47,18 @@ class ParkedCartViewModel(
             return
         }
         if (s.activeCartIsEmpty) return
+        parkCart(slot)
+        setState { copy(sheetOpen = false) }
+    }
+
+    fun parkToSelected() {
+        val s = current
+        if (s.activeCartIsEmpty) return
+        val slot = s.selectedSlot
+        if (s.parkedSlots.getOrNull(slot) != null) {
+            setState { copy(overwriteSlot = slot) }
+            return
+        }
         parkCart(slot)
         setState { copy(sheetOpen = false) }
     }
