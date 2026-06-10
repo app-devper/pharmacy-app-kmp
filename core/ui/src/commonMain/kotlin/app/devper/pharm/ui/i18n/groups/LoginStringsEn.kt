@@ -9,7 +9,7 @@ object LoginStringsEn : LoginStrings {
     override val loginSubmitting = "Signing in…"
     override val loginBrandName = "Healthy Pharm"
     override val loginBrandTagline = "Pharmacy POS"
-    override val loginVersionPrefix = "Connected to Um-Api"
+    override val loginVersionPrefix = "Connected to UM API"
     override val loginRequiredFields = "Please enter username and password"
-    override val loginFailed = "Login failed"
+    override val loginFailed = "Sign-in failed"
 }

@@ -1,7 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ImportsStringsEn : ImportsStrings {
-    override val importsQtyPieces: (Int) -> String = { n -> "$n pc" }
+    override val importsQtyPieces: (Int) -> String = { n -> "$n pcs" }
 
     override val importsTitle = "Imports"
     override val importsSubtitle = "Manage import documents / receive into stock"
@@ -54,7 +54,7 @@ object ImportsStringsEn : ImportsStrings {
     override val importsFormReceivedConfirmedHint = "This doc is confirmed — cannot be edited"
     override val importsConfirmReceiveTitle = "Confirm receipt?"
     override val importsConfirmReceiveSubtitle = "Confirm receiving the items in this import into stock — lot records will be saved and cannot be reverted"
-    override val importsConfirmReceiveMessage = "Once confirmed, the system will add lots + update stock + log KY-9 — cannot be undone"
+    override val importsConfirmReceiveMessage = "Once confirmed, the system will add lots + update stock + log KY 9 — cannot be undone"
     override val importsConfirmReceiveCta = "Confirm receipt"
     override val importsConfirmDeleteDraftTitle = "Delete import?"
     override val importsConfirmDeleteDraftMessage = "This doc is not yet confirmed — deleting it cannot be undone"

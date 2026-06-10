@@ -53,7 +53,7 @@ object StockStringsEn : StockStrings {
     override val stockHistoryDrugEmpty = "No history for this drug yet"
     override val stockHeaderReason = "Reason"
     override val stockTypeAll = "All categories"
-    override val stockTypeRegular = "Modern drug"
+    override val stockTypeRegular = "Modern medicine"
     override val stockTypeHerbal = "Herbal"
     override val stockTypeSupplement = "Supplement"
     override val stockTypeBoth = "Modern / Herbal"

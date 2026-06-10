@@ -14,7 +14,7 @@ object ExpiryStringsEn : ExpiryStrings {
     override val expirySelectAll = "Select all"
     override val expirySelectPartial = "Partial selection · tap to clear"
     override val expiryWriteoffCta = "Write off"
-    override val expiryWriteoffSelectedLabel: (Int) -> String = { count -> "Write off $count item(s)" }
+    override val expiryWriteoffSelectedLabel: (Int) -> String = { count -> "Write off $count lot(s)" }
     override val expiryCountNoun = "lots"
     override val expiryTotalRemaining = "Total remaining"
     override val expiryHeaderDrugName = "Drug name"
