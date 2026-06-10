@@ -1,5 +1,8 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.domain.validation.buildStockCountInput
+import app.devper.pharm.domain.validation.parsePendingStockCounts
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

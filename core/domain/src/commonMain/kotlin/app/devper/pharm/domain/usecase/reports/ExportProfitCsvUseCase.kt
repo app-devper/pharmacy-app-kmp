@@ -6,8 +6,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.param.reports.ExportProfitCsvParam
 import app.devper.pharm.domain.repository.ky.ExportRepository
-import app.devper.pharm.domain.extension.buildCsv
-import app.devper.pharm.domain.extension.buildCsvBytes
+import app.devper.pharm.domain.export.buildCsv
+import app.devper.pharm.domain.export.buildCsvBytes
 import kotlinx.datetime.LocalDate
 
 class ExportProfitCsvUseCase(

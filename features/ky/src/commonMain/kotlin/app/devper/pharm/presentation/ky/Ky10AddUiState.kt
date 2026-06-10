@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.domain.extension.isKy10DraftValid
+import app.devper.pharm.domain.validation.isKy10DraftValid
 import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
 

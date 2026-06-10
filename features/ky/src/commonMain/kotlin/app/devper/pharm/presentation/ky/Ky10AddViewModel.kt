@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.ky
 
-import app.devper.pharm.domain.extension.buildKy10Draft
+import app.devper.pharm.domain.validation.buildKy10Draft
 import app.devper.pharm.domain.usecase.ky.AddKy10UseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 

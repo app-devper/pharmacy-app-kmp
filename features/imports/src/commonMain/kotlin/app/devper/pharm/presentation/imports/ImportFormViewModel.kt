@@ -12,8 +12,8 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.param.purchasing.AddPurchaseOrderParam
 import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
-import app.devper.pharm.domain.extension.buildPurchaseOrderItemInput
-import app.devper.pharm.domain.extension.isPurchaseOrderLineValid
+import app.devper.pharm.domain.validation.buildPurchaseOrderItemInput
+import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
 import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase

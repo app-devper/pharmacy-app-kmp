@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.extension
+package app.devper.pharm.domain.export
 
 private const val UTF8_BOM = "﻿"
 private const val LINE_END = "\r\n"

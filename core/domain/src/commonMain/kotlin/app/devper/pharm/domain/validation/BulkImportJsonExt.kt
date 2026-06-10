@@ -1,4 +1,4 @@
-package app.devper.pharm.domain.extension
+package app.devper.pharm.domain.validation
 
 import app.devper.pharm.domain.validation.BulkImportParseError
 import app.devper.pharm.common.value.Money

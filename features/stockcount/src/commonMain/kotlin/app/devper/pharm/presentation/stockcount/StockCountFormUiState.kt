@@ -1,8 +1,8 @@
 package app.devper.pharm.presentation.stockcount
 
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.extension.buildStockCountInput
-import app.devper.pharm.domain.extension.parsePendingStockCounts
+import app.devper.pharm.domain.validation.buildStockCountInput
+import app.devper.pharm.domain.validation.parsePendingStockCounts
 import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
