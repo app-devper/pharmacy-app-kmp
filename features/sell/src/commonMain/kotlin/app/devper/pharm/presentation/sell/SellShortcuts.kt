@@ -35,14 +35,8 @@ fun rememberSellShortcuts(
     hasError: Boolean,
     onDismissAllErrors: () -> Unit,
     searchFocus: FocusRequester,
-    onTapParkSlot: (Int) -> Unit,
 ): Array<PharmShortcut> {
-    val onShortcutParkCart: () -> Unit = {
-        if (!parkedState.activeCartIsEmpty) {
-            val firstEmpty = parkedState.parkedSlots.indexOfFirst { it == null }
-            if (firstEmpty >= 0) onTapParkSlot(firstEmpty) else parkedCartVM.openSheet()
-        }
-    }
+    val onShortcutParkCart: () -> Unit = { parkedCartVM.parkToSelected() }
 
     val onShortcutEscape: () -> Unit = {
         when (

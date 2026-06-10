@@ -128,7 +128,6 @@ fun SellScreen(
         hasError = combinedError != null,
         onDismissAllErrors = dismissAllErrors,
         searchFocus = searchFocus,
-        onTapParkSlot = onTapParkSlot,
     )
 
     Surface(
@@ -176,6 +175,7 @@ fun SellScreen(
 
                     CartSlotRail(
                         slots = parkedState.parkedSlots,
+                        selectedSlot = parkedState.selectedSlot,
                         onTapSlot = onTapParkSlot,
                     )
                 }
