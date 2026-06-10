@@ -69,8 +69,8 @@ fun LineDiscountSheet(
             }
 
             FormField(
-                label = "ส่วนลด (บาท)",
-                error = if (invalid) "0 ≤ ส่วนลด ≤ $unitPriceDouble" else null,
+                label = pharmStrings.sellLineDiscountField,
+                error = if (invalid) pharmStrings.sellLineDiscountInvalid(unitPriceDouble.toString()) else null,
             ) {
                 PharmTextField(
                     value = draft,

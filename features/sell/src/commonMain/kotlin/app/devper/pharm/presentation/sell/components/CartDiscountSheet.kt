@@ -96,15 +96,15 @@ fun CartDiscountSheet(
                     .padding(2.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                SegItem("฿ จำนวน", active = kind == Kind.Flat) { kind = Kind.Flat }
+                SegItem(pharmStrings.sellDiscountFlatSeg, active = kind == Kind.Flat) { kind = Kind.Flat }
                 SegItem("% เปอร์เซ็นต์", active = kind == Kind.Percent) { kind = Kind.Percent }
             }
 
             FormField(
-                label = if (kind == Kind.Percent) "เปอร์เซ็นต์ (0–100)" else "จำนวน (บาท)",
+                label = if (kind == Kind.Percent) pharmStrings.sellDiscountPercentField else pharmStrings.sellDiscountFlatField,
                 error = when {
-                    invalid && kind == Kind.Percent -> "เปอร์เซ็นต์ต้องอยู่ระหว่าง 0–100"
-                    invalid                          -> "จำนวนต้องอยู่ระหว่าง 0–${subtotal}"
+                    invalid && kind == Kind.Percent -> pharmStrings.sellDiscountPercentInvalid
+                    invalid                          -> pharmStrings.sellDiscountFlatInvalid(subtotal.toString())
                     else -> null
                 },
             ) {
@@ -118,7 +118,7 @@ fun CartDiscountSheet(
             }
 
             DiscountSummary(pharmStrings.sellSubtotal, fmtBaht(subtotal))
-            DiscountSummary("หักส่วนลด", "−${fmtBaht(applied)}", emphasis = true, discount = true)
+            DiscountSummary(pharmStrings.sellDiscountDeducted, "−${fmtBaht(applied)}", emphasis = true, discount = true)
             DiscountSummary(pharmStrings.sellNetTotal, fmtBaht(net), emphasis = true)
 
             Row(

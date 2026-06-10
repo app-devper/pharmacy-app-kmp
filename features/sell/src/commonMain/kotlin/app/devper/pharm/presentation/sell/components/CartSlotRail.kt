@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,6 +59,7 @@ private fun SlotChip(
     onClick: () -> Unit,
 ) {
     val t = pharmTokens
+    val parkSlotDesc = pharmStrings.sellParkSlotDesc(number)
     Box(modifier = Modifier.size(32.dp)) {
         Surface(
             color = if (filled) t.colors.accentBgSoft
@@ -69,7 +72,7 @@ private fun SlotChip(
             modifier = Modifier
                 .size(32.dp)
                 .clickable(role = Role.Button, onClick = onClick)
-                .semantics { contentDescription = "พักบิลช่อง $number" },
+                .semantics { contentDescription = parkSlotDesc },
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(

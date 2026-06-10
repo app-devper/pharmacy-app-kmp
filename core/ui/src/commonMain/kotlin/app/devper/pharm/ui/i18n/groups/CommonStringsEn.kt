@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CommonStringsEn : CommonStrings {
+    override val commonUnitDefault = "unit"
+
     override val commonStatusPending = "Pending"
     override val commonStatusDone = "Done"
     override val commonStatusVoided = "Voided"

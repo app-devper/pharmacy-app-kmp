@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -116,7 +118,7 @@ fun DrugPickerColumn(
                             generic = drug.genericName,
                             price = resolvePrice(drug.sellPrice, drug.prices, activeTier).amount,
                             stock = drug.stock.value,
-                            unit = drug.unit ?: "หน่วย",
+                            unit = drug.unit ?: pharmStrings.commonUnitDefault,
                             type = inferType(drug),
                             altUnitCount = drug.altUnits.count { !it.hidden },
                             kyForm = inferKyForm(drug),
@@ -146,7 +148,7 @@ private fun SearchBar(
         PharmTextField(
             value = query,
             onValueChange = onChange,
-            placeholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)",
+            placeholder = pharmStrings.sellSearchPlaceholder,
             modifier = Modifier.weight(1f),
             imeAction = ImeAction.Search,
             onImeAction = onSubmit,
@@ -176,7 +178,7 @@ private fun ScannerActivePill() {
                 .background(t.colors.successFg),
         )
         Text(
-            text = "สแกนเนอร์เปิดอยู่",
+            text = pharmStrings.sellScannerOn,
             style = PharmText.badge.copy(color = t.colors.accent),
         )
     }
@@ -184,7 +186,7 @@ private fun ScannerActivePill() {
 
 @Composable
 private fun ResultLine(query: String, total: Int, visibleCount: Int) {
-    val text = if (query.isBlank()) "ทั้งหมด $total รายการ" else "พบ $visibleCount จาก $total"
+    val text = if (query.isBlank()) pharmStrings.sellPickerCountAll(total) else pharmStrings.sellPickerCountFound(visibleCount, total)
     Text(
         text = text,
         style = PharmText.micro,
@@ -196,7 +198,7 @@ private fun ResultLine(query: String, total: Int, visibleCount: Int) {
 private fun EmptyState(searching: Boolean) {
     PharmEmptyState(
         icon = if (searching) PharmIcons.Search else PharmIcons.Imports,
-        title = if (searching) "ไม่พบยาที่ค้นหา" else "ยังไม่มีรายการยาในคลัง",
+        title = if (searching) pharmStrings.sellNoResults else pharmStrings.sellPickerEmptyStock,
     )
 }
 

@@ -32,7 +32,7 @@ fun ReceiptDialog(
         open = true,
         onDismiss = onDismiss,
         title = pharmStrings.sellReceiptDone,
-        subtitle = "เลขที่ ${template.billNo}",
+        subtitle = pharmStrings.sellReceiptNo(template.billNo),
         size = PharmModalSize.Md,
         footer = {
             if (onVoid != null) {

@@ -95,7 +95,7 @@ fun CartCashReceivedRow(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             PharmButton(
-                label = "พอดี",
+                label = pharmStrings.sellExactAmount,
                 onClick = { onReceivedChange(plainAmount(total)) },
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
@@ -139,7 +139,7 @@ fun CartCashReceivedRow(
             val shortfall = short.coerceAtLeast(0.0)
             val changeColor = if (isShort) t.colors.dangerFg else t.colors.successFg
             Text(
-                text = if (isShort) "ขาด ${fmtBaht(shortfall)}" else fmtBaht(change),
+                text = if (isShort) pharmStrings.sellShortBy(fmtBaht(shortfall)) else fmtBaht(change),
                 style = PharmText.bodySm.copy(
                     color = changeColor,
                     fontWeight = FontWeight.SemiBold,

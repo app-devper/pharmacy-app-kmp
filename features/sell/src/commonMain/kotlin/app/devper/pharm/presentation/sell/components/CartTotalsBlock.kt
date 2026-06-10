@@ -74,7 +74,7 @@ fun CartTotalsBlock(
                     text = if (cartDiscountAmount > 0.0) {
                         "${cartDiscountLabel(cartDiscount)} −${fmtBaht(cartDiscountAmount)}"
                     } else {
-                        "เพิ่มส่วนลด ›"
+                        pharmStrings.sellAddDiscount
                     },
                     style = PharmText.micro.copy(
                         color = if (cartDiscountAmount > 0.0) t.colors.discount else t.colors.accent,
@@ -97,10 +97,11 @@ fun CartTotalsBlock(
     }
 }
 
+@Composable
 private fun cartDiscountLabel(cartDiscount: CartDiscount): String = when (cartDiscount) {
-    is CartDiscount.None -> "ส่วนลดบิล"
-    is CartDiscount.Flat -> "ส่วนลดบิล"
-    is CartDiscount.Percent -> "ส่วนลดบิล ${cartDiscount.percent.toInt()}%"
+    is CartDiscount.None -> pharmStrings.sellCartDiscountShort
+    is CartDiscount.Flat -> pharmStrings.sellCartDiscountShort
+    is CartDiscount.Percent -> pharmStrings.sellCartDiscountPercentLabel(cartDiscount.percent.toInt())
 }
 
 @Composable

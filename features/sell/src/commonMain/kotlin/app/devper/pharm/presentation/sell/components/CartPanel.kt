@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
@@ -203,7 +205,7 @@ private fun CartPanelHeader(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("ตะกร้า", style = PharmText.h3)
+            Text(pharmStrings.sellCart, style = PharmText.h3)
             Text(
                 text = "· $cartCount รายการ",
                 style = PharmText.meta,
@@ -219,7 +221,7 @@ private fun CartPanelHeader(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                "ล้าง",
+                pharmStrings.sellClearCartCta,
                 style = PharmText.micro.copy(
                     color = if (canClear) t.colors.dangerFg else t.colors.fgMuted,
                 ),
@@ -230,17 +232,17 @@ private fun CartPanelHeader(
     PharmModal(
         open = showClearConfirm,
         onDismiss = onCancelClearCart,
-        title = "ลบรายการในตะกร้า?",
+        title = pharmStrings.sellRemoveCart,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = pharmStrings.commonCancel,
                 onClick = onCancelClearCart,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = "ล้าง",
+                label = pharmStrings.sellClearCartCta,
                 onClick = onConfirmClearCart,
                 variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Sm,
@@ -248,7 +250,7 @@ private fun CartPanelHeader(
         },
     ) {
         Text(
-            "ลบรายการในตะกร้าทั้งหมด $cartCount รายการ? การกระทำนี้ย้อนกลับไม่ได้",
+            pharmStrings.sellClearCartBody(cartCount),
             style = PharmText.body,
         )
     }
@@ -288,7 +290,7 @@ private fun CartCheckoutButton(
                             ShortcutHint(label = "F9")
                         }
                         Text(
-                            "ออกใบเสร็จ",
+                            pharmStrings.sellIssueReceipt,
                             style = PharmText.buttonMd.copy(
                                 color = t.colors.surface,
                                 fontWeight = FontWeight.SemiBold,
@@ -337,7 +339,7 @@ private fun CartAllergyBanner(note: String) {
         )
         Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
             Text(
-                text = "แพ้ยา / โรคประจำตัว",
+                text = pharmStrings.sellAllergyTitle,
                 style = PharmText.micro.copy(color = t.colors.dangerFg, fontWeight = FontWeight.SemiBold),
             )
             Text(
@@ -375,11 +377,11 @@ private fun CartComplianceBanner(required: KyRequired) {
         )
         Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
             Text(
-                text = "ยาควบคุม — ต้องบันทึก ขย.$forms",
+                text = pharmStrings.sellControlledKy(forms),
                 style = PharmText.micro.copy(color = t.colors.warningFg, fontWeight = FontWeight.SemiBold),
             )
             Text(
-                text = "ระบบจะให้กรอกข้อมูลผู้ซื้อตอนชำระเงิน",
+                text = pharmStrings.sellKyCaptureHint,
                 style = PharmText.bodySm.copy(color = t.colors.warningFg),
             )
         }
