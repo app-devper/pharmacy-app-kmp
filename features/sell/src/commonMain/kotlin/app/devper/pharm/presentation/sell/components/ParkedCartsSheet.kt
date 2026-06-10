@@ -73,9 +73,9 @@ fun ParkedCartsSheet(
             )
             Text(
                 text = if (canParkActiveCart) {
-                    "เลือกช่องว่างเพื่อพักบิลปัจจุบัน หรือกดบิลที่พักไว้เพื่อเรียกคืน"
+                    pharmStrings.sellParkedHintCanPark
                 } else {
-                    "กดบิลที่พักไว้เพื่อเรียกคืน — ตะกร้าตอนนี้ว่าง"
+                    pharmStrings.sellParkedHintEmpty
                 },
                 style = PharmText.meta,
             )
@@ -123,7 +123,7 @@ private fun EmptySlotRow(
         SlotBadge(slotNumber, dimmed = !canPark)
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = if (canPark) "พักบิลที่ช่องนี้" else pharmStrings.bulkImportEmptyDefault,
+                text = if (canPark) pharmStrings.sellParkSlotHere else pharmStrings.bulkImportEmptyDefault,
                 style = PharmText.body.copy(
                     fontWeight = FontWeight.Medium,
                     color = if (canPark) t.colors.fg1 else t.colors.fgMuted,
@@ -180,7 +180,7 @@ private fun FilledSlotRow(
         IconButton(onClick = { confirmingDiscard = true }) {
             Icon(
                 imageVector = PharmIcons.Close,
-                contentDescription = "ลบบิลที่พัก",
+                contentDescription = pharmStrings.sellParkedDeleteDesc,
                 tint = t.colors.fg2,
                 modifier = Modifier.size(20.dp),
             )
@@ -190,7 +190,7 @@ private fun FilledSlotRow(
     PharmModal(
         open = confirmingDiscard,
         onDismiss = { confirmingDiscard = false },
-        title = "ลบบิลที่พักช่อง $slotNumber?",
+        title = pharmStrings.sellParkedDeleteTitle(slotNumber),
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
@@ -211,7 +211,7 @@ private fun FilledSlotRow(
         },
     ) {
         Text(
-            "รายการ ${parked.itemCount} ชิ้นจะถูกลบ ไม่สามารถกู้คืนได้",
+            pharmStrings.sellParkedDeleteBody(parked.itemCount),
             style = PharmText.body,
         )
     }
@@ -246,7 +246,7 @@ fun ParkOverwriteDialog(
     PharmModal(
         open = true,
         onDismiss = onCancel,
-        title = "ทับบิลที่พักช่อง $slotNumber?",
+        title = pharmStrings.sellParkedOverwriteTitle(slotNumber),
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
@@ -262,7 +262,7 @@ fun ParkOverwriteDialog(
             )
         },
     ) {
-        Text("บิลที่พักไว้เดิมจะถูกแทนที่ด้วยบิลปัจจุบัน", style = PharmText.body)
+        Text(pharmStrings.sellParkedOverwriteBody, style = PharmText.body)
     }
 }
 
@@ -275,7 +275,7 @@ fun SwapToParkedDialog(
     PharmModal(
         open = true,
         onDismiss = onCancel,
-        title = "เปลี่ยนไปใช้บิลที่พักช่อง $slotNumber?",
+        title = pharmStrings.sellParkedSwapTitle(slotNumber),
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
@@ -292,7 +292,7 @@ fun SwapToParkedDialog(
         },
     ) {
         Text(
-            "ตะกร้าปัจจุบันจะถูกแทนที่ด้วยบิลที่พัก รายการในตะกร้าเดิมจะหายไป",
+            pharmStrings.sellParkedSwapBody,
             style = PharmText.body,
         )
     }

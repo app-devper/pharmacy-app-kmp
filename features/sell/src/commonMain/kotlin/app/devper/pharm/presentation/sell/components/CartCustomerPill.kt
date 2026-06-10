@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,7 +38,7 @@ fun CartCustomerPill(
     showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
-    val name = customer?.name ?: "ลูกค้าทั่วไป"
+    val name = customer?.name ?: pharmStrings.sellCustomerWalkIn
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -49,7 +51,7 @@ fun CartCustomerPill(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                "ลูกค้า",
+                pharmStrings.sellCustomer,
                 style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
             )
             Text(
@@ -60,13 +62,14 @@ fun CartCustomerPill(
                 ),
             )
         }
+        val clearCustomerDesc = pharmStrings.sellCustomerClear
         if (customer != null) {
             Box(
                 modifier = Modifier
                     .clip(t.shapes.sm)
                     .clickable(role = Role.Button, onClick = onClear)
                     .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                    .semantics { contentDescription = "ล้างลูกค้า" }
+                    .semantics { contentDescription = clearCustomerDesc }
                     .padding(horizontal = 8.dp, vertical = 2.dp),
                 contentAlignment = Alignment.Center,
             ) {

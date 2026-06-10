@@ -84,7 +84,7 @@ fun KyCaptureSheet(
                 )
             }
             Text(
-                text = "ระบบจะออกบิลแล้วบันทึก ขย. ตามรายการต่อไปนี้",
+                text = pharmStrings.sellKySheetIntro,
                 style = PharmText.body.copy(color = t.colors.fg2),
             )
 
@@ -123,7 +123,7 @@ fun KyCaptureSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 PharmButton(
-                    label = "ข้ามบันทึก ขย.",
+                    label = pharmStrings.sellKySkipCta,
                     onClick = onSkip,
                     enabled = !submitting,
                     variant = PharmButtonVariant.Ghost,
@@ -183,7 +183,7 @@ private fun Ky11Section(
     val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
-            label = "ขย.11 — ยาอันตราย",
+            label = pharmStrings.sellKy11Label,
             sublabel = lines.joinToString(", ") { it.drug.name },
             bgColor = t.colors.ky11Bg,
             fgColor = t.colors.ky11Fg,
@@ -222,7 +222,7 @@ private fun Ky10Section(
     val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
-            label = "ขย.10 — ยาควบคุมพิเศษ",
+            label = pharmStrings.sellKy10Label,
             sublabel = lines.joinToString(", ") { it.drug.name },
             bgColor = t.colors.ky10Bg,
             fgColor = t.colors.ky10Fg,
@@ -279,7 +279,7 @@ private fun Ky12Section(
     val t = pharmTokens
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(
-            label = "ขย.12 — ใบสั่งแพทย์",
+            label = pharmStrings.sellKy12Label,
             sublabel = lines.joinToString(", ") { it.drug.name },
             bgColor = t.colors.ky12Bg,
             fgColor = t.colors.ky12Fg,

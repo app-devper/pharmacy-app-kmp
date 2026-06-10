@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.i18n.PharmStrings
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -112,17 +115,17 @@ fun CartLineRow(
     PharmModal(
         open = showRemoveConfirm,
         onDismiss = { showRemoveConfirm = false },
-        title = "ลบออกจากตะกร้า?",
+        title = pharmStrings.sellRemoveLineTitle,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = "ยกเลิก",
+                label = pharmStrings.commonCancel,
                 onClick = { showRemoveConfirm = false },
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = "ลบ",
+                label = pharmStrings.commonDelete,
                 onClick = {
                     showRemoveConfirm = false
                     onRemove()
@@ -144,7 +147,7 @@ private fun CartLineInfoIcon() {
     val t = pharmTokens
     Icon(
         imageVector = Icons.Outlined.Info,
-        contentDescription = "รายละเอียด",
+        contentDescription = pharmStrings.sellLineDetailsDesc,
         tint = t.colors.accent,
         modifier = Modifier.size(18.dp),
     )
@@ -175,7 +178,7 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
         }
         if (line.selectedUnit == null) {
             Text(
-                text = line.drug.unit ?: "ชิ้น",
+                text = line.drug.unit ?: pharmStrings.commonUnitPiece,
                 style = PharmText.micro,
                 color = t.colors.fg2,
             )
@@ -200,7 +203,7 @@ private fun CartLinePrice(line: CartLine) {
             textAlign = TextAlign.End,
         )
         Text(
-            text = priceMetaLabel(line),
+            text = priceMetaLabel(line, pharmStrings),
             style = PharmText.micro.tabular(),
             color = if (line.discount.isPositive) t.colors.dangerFg
                     else t.colors.fg2,
@@ -216,23 +219,22 @@ private fun CartLineRemoveButton(onClick: () -> Unit) {
     IconButton(onClick = onClick, modifier = Modifier.size(44.dp)) {
         Icon(
             imageVector = Icons.Rounded.Close,
-            contentDescription = "ลบรายการ",
+            contentDescription = pharmStrings.sellRemoveLineDesc,
             tint = t.colors.fg2,
             modifier = Modifier.size(20.dp),
         )
     }
 }
 
-private fun priceMetaLabel(line: CartLine): String {
+private fun priceMetaLabel(line: CartLine, s: PharmStrings): String {
     if (line.discount.isPositive) {
         val saved = line.discount * line.qty
         return "−${formatBahtCurrency(saved.amount)}"
     }
     return when (line.tier) {
-        "wholesale" -> "ราคาส่ง"
-        "regular"   -> "ราคาทั่วไป"
-        "retail"    -> "ราคาหน้าร้าน"
-        else        -> "ราคาหน้าร้าน"
+        "wholesale" -> s.sellTierWholesale
+        "regular"   -> s.sellTierRegular
+        else        -> s.sellTierRetail
     }
 }
 
@@ -265,7 +267,7 @@ private fun QtyStepper(
             container = t.colors.dangerBg,
             iconTint = t.colors.dangerFg,
             icon = Icons.Outlined.Remove,
-            description = "ลด",
+            description = pharmStrings.sellQtyDecrease,
             enabled = qty > 1,
         )
         Box(
@@ -308,7 +310,7 @@ private fun QtyStepper(
             container = t.colors.accent,
             iconTint = t.colors.surface,
             icon = Icons.Outlined.Add,
-            description = "เพิ่ม",
+            description = pharmStrings.sellQtyIncrease,
             enabled = qty < MAX_QTY,
         )
     }

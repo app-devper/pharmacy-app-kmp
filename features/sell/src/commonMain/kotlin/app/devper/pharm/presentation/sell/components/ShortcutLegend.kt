@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,24 +18,25 @@ import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
-private val SHORTCUTS = listOf(
-    "F1" to "คีย์ลัดทั้งหมด",
-    "F2" to "ค้นหายา",
-    "F3" to "เลือกลูกค้า",
-    "F4" to "ส่วนลดบิล",
-    "F6" to "พักบิล",
-    "F8" to "บิลที่พักไว้",
-    "F9" to "ชำระเงิน",
-    "Esc" to "ปิด / ยกเลิก",
-)
 
 @Composable
 fun ShortcutLegend(open: Boolean, onClose: () -> Unit) {
+    val s = pharmStrings
+    val shortcuts = listOf(
+        "F1" to s.sellShortcutAll,
+        "F2" to s.sellShortcutSearch,
+        "F3" to s.sellShortcutCustomer,
+        "F4" to s.sellShortcutCartDiscount,
+        "F6" to s.sellShortcutPark,
+        "F8" to s.sellShortcutParked,
+        "F9" to s.sellShortcutPay,
+        "Esc" to s.sellShortcutClose,
+    )
     PharmModal(
         open = open,
         onDismiss = onClose,
-        title = "คีย์ลัด",
-        subtitle = "ทางลัดแป้นพิมพ์สำหรับหน้าขาย",
+        title = s.sellShortcuts,
+        subtitle = s.sellShortcutSubtitle,
     ) {
         Column(
             modifier = Modifier
@@ -41,7 +44,7 @@ fun ShortcutLegend(open: Boolean, onClose: () -> Unit) {
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            SHORTCUTS.forEach { (keys, description) ->
+            shortcuts.forEach { (keys, description) ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,

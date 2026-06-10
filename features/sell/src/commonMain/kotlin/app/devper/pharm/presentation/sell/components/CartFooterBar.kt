@@ -87,7 +87,7 @@ fun CartFooterBar(
             Text(
                 text = when {
                     !empty    -> "$itemCount รายการ"
-                    hasParked -> "บิลที่พัก $parkedFilledCount รอเปิด"
+                    hasParked -> pharmStrings.sellParkedWaiting(parkedFilledCount)
                     else      -> pharmStrings.sellEmptyCart
                 },
                 style = PharmText.micro.copy(color = contentColor.copy(alpha = 0.8f)),
@@ -102,7 +102,7 @@ fun CartFooterBar(
 
         if (tappable) {
             Text(
-                text = if (!empty) "ดูตะกร้า ›" else "เปิดบิลที่พัก ›",
+                text = if (!empty) pharmStrings.sellViewCart else pharmStrings.sellOpenParked,
                 style = PharmText.buttonMd.copy(
                     color = contentColor,
                     fontWeight = FontWeight.SemiBold,

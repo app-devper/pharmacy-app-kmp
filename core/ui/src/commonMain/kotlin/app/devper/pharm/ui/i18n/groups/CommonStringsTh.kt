@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CommonStringsTh : CommonStrings {
+    override val commonUnitDefault = "หน่วย"
+
     override val commonStatusPending = "รอดำเนินการ"
     override val commonStatusDone = "เสร็จสิ้น"
     override val commonStatusVoided = "ยกเลิก"

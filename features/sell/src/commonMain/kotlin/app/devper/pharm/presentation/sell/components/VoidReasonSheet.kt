@@ -53,9 +53,9 @@ fun VoidReasonSheet(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(text = "ยกเลิกบิล $billNo", style = PharmText.h1)
+            Text(text = pharmStrings.sellVoidBillTitle(billNo), style = PharmText.h1)
             Text(
-                text = "ระบุเหตุผลของการยกเลิก ระบบจะคืนสต็อกอัตโนมัติ",
+                text = pharmStrings.sellVoidBillSubtitle,
                 style = PharmText.meta,
             )
 

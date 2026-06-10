@@ -76,10 +76,11 @@ fun SellScreen(
     val searchFocus = remember { FocusRequester() }
     var showShortcuts by remember { mutableStateOf(false) }
 
+    val s = pharmStrings
     val snackbar = LocalPharmSnackbar.current
     LaunchedEffect(Unit) {
         drugPickerVM.added.collect { name ->
-            snackbar.showToast(PharmToast.Success(message = "เพิ่ม $name"))
+            snackbar.showToast(PharmToast.Success(message = s.sellAddedToast(name)))
         }
     }
     val onTapParkSlot: (Int) -> Unit = { slot ->
@@ -88,8 +89,8 @@ fun SellScreen(
         if (willPark) {
             snackbar.showToast(
                 PharmToast.Info(
-                    message = "พักตะกร้าไว้ช่อง ${slot + 1} แล้ว",
-                    action = ToastAction("เปิดดู") { parkedCartVM.openSheet() },
+                    message = s.sellParkedToast(slot + 1),
+                    action = ToastAction(s.sellOpenViewCta) { parkedCartVM.openSheet() },
                 ),
             )
         }

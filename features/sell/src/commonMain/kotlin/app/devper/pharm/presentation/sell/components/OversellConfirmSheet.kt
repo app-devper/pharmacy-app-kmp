@@ -90,10 +90,10 @@ fun OversellConfirmSheet(
                         style = PharmText.h2,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Assertive },
                     )
-                    Text("ยา ${shortfalls.size} รายการเกินสต็อก", style = PharmText.meta)
+                    Text(pharmStrings.sellOversellCount(shortfalls.size), style = PharmText.meta)
                 }
                 PharmHelpHint(
-                    text = "ขายล่วงหน้า: ยอมขายเกินสต็อกที่มีได้ ระบบบันทึกจำนวนที่เกินไว้และจะกระทบยอดเมื่อรับเข้า/ปรับสต็อกครั้งถัดไป จำนวนที่ขายเกินยังคืนไม่ได้จนกว่าจะผูกกับล็อตจริง",
+                    text = pharmStrings.sellOversellExplain,
                 )
             }
 
@@ -104,7 +104,7 @@ fun OversellConfirmSheet(
             Divider()
 
             Text(
-                "ระบบจะบันทึกเป็น \"ขายล่วงหน้า\" และจะ reconcile อัตโนมัติเมื่อ import ล็อตถัดไป",
+                pharmStrings.sellOversellReconcileNote,
                 style = PharmText.micro,
             )
 
@@ -118,7 +118,7 @@ fun OversellConfirmSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 PharmCheckbox(checked = ack, onCheckedChange = null)
-                Text("ฉันยืนยันการขายล่วงหน้า", style = PharmText.body)
+                Text(pharmStrings.sellOversellConfirmCheck, style = PharmText.body)
             }
 
             Row(
@@ -161,11 +161,11 @@ private fun ShortfallRow(row: OversellShortfall) {
                 ),
             )
             Text(
-                text = "ต้องการ ${row.asked} · มี ${row.available}",
+                text = pharmStrings.sellOversellNeedHave(row.asked, row.available),
                 style = PharmText.micro,
             )
         }
-        PharmBadge(text = "ขาด ${row.shortfall}", tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
+        PharmBadge(text = pharmStrings.sellOversellShortBadge(row.shortfall), tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
     }
 }
 

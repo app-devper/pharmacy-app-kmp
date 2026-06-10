@@ -1,6 +1,77 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SellStrings {
+    val sellRemoveLineTitle: String
+    val sellLineDetailsDesc: String
+    val sellRemoveLineDesc: String
+    val sellTierWholesale: String
+    val sellTierRegular: String
+    val sellTierRetail: String
+    val sellQtyDecrease: String
+    val sellQtyIncrease: String
+    val sellShortcutSubtitle: String
+    val sellShortcutAll: String
+    val sellShortcutSearch: String
+    val sellShortcutCustomer: String
+    val sellShortcutCartDiscount: String
+    val sellShortcutPark: String
+    val sellShortcutParked: String
+    val sellShortcutPay: String
+    val sellShortcutClose: String
+    val sellParkedHintCanPark: String
+    val sellParkedHintEmpty: String
+    val sellParkSlotHere: String
+    val sellParkedDeleteDesc: String
+    val sellParkedDeleteTitle: (Int) -> String
+    val sellParkedDeleteBody: (Int) -> String
+    val sellParkedOverwriteTitle: (Int) -> String
+    val sellParkedOverwriteBody: String
+    val sellParkedSwapTitle: (Int) -> String
+    val sellParkedSwapBody: String
+    val sellClearCartCta: String
+    val sellClearCartBody: (Int) -> String
+    val sellIssueReceipt: String
+    val sellAllergyTitle: String
+    val sellControlledKy: (String) -> String
+    val sellKyCaptureHint: String
+    val sellPickerCountAll: (Int) -> String
+    val sellPickerCountFound: (Int, Int) -> String
+    val sellPickerEmptyStock: String
+    val sellOversellCount: (Int) -> String
+    val sellOversellExplain: String
+    val sellOversellReconcileNote: String
+    val sellOversellConfirmCheck: String
+    val sellOversellNeedHave: (Int, Int) -> String
+    val sellOversellShortBadge: (Int) -> String
+    val sellKySheetIntro: String
+    val sellKySkipCta: String
+    val sellKy11Label: String
+    val sellKy10Label: String
+    val sellKy12Label: String
+    val sellDiscountFlatSeg: String
+    val sellDiscountPercentField: String
+    val sellDiscountFlatField: String
+    val sellDiscountPercentInvalid: String
+    val sellDiscountFlatInvalid: (String) -> String
+    val sellDiscountDeducted: String
+    val sellAddDiscount: String
+    val sellCartDiscountShort: String
+    val sellCartDiscountPercentLabel: (Int) -> String
+    val sellVoidBillTitle: (String) -> String
+    val sellVoidBillSubtitle: String
+    val sellParkedWaiting: (Int) -> String
+    val sellViewCart: String
+    val sellOpenParked: String
+    val sellExactAmount: String
+    val sellShortBy: (String) -> String
+    val sellReceiptNo: (String) -> String
+    val sellLineDiscountField: String
+    val sellLineDiscountInvalid: (String) -> String
+    val sellParkSlotDesc: (Int) -> String
+    val sellParkedToast: (Int) -> String
+    val sellOpenViewCta: String
+    val sellAddedToast: (String) -> String
+
     val sellCheckoutEmptyCart: String
 
     val sellVoidMissingBillId: String

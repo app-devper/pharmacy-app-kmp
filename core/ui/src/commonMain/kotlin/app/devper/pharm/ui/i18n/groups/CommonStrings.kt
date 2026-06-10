@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface CommonStrings {
+    val commonUnitDefault: String
+
     val commonStatusPending: String
     val commonStatusDone: String
     val commonStatusVoided: String

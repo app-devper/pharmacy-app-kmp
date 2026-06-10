@@ -55,6 +55,7 @@ fun CartScreen(
     val voidState by voidSaleVM.state.collectAsStateWithLifecycle()
 
     val t = pharmTokens
+    val s = pharmStrings
     val snackbar = LocalPharmSnackbar.current
     val onTapParkSlot: (Int) -> Unit = { slot ->
         val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
@@ -62,8 +63,8 @@ fun CartScreen(
         if (willPark) {
             snackbar.showToast(
                 PharmToast.Info(
-                    message = "พักตะกร้าไว้ช่อง ${slot + 1} แล้ว",
-                    action = ToastAction("เปิดดู") { parkedCartVM.openSheet() },
+                    message = s.sellParkedToast(slot + 1),
+                    action = ToastAction(s.sellOpenViewCta) { parkedCartVM.openSheet() },
                 ),
             )
         }
@@ -71,7 +72,7 @@ fun CartScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = "ตะกร้า",
+            title = pharmStrings.sellCart,
             onBack = onBack,
         )
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
