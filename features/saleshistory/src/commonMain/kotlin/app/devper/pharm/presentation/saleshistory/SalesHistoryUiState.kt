@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
@@ -27,5 +28,5 @@ data class SalesHistoryUiState(
 
     override val domainError: SalesHistoryUiStateError? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error as? SalesHistoryUiStateError)
 }

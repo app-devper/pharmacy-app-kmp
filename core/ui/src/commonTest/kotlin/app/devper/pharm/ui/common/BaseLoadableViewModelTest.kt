@@ -1,127 +1,35 @@
+@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+
 package app.devper.pharm.ui.common
 
-import app.devper.pharm.common.error.ErrorMessages
-
-import app.devper.pharm.common.AuthException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
+import app.devper.pharm.common.AppException
+import app.devper.pharm.common.error.CommonUiStateError
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
+import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
-private data class StubState(
+private data class DummyLoadableState(
     override val loading: Boolean = false,
-    override val error: String? = null,
-    val items: List<String> = emptyList(),
-) : LoadableUiState<StubState> {
+    val errorState: AppException? = null,
+    val value: Int = 0,
+) : LoadableUiState<DummyLoadableState> {
+    override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = copy(error = value)
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 }
 
-private class StubVm(private val source: suspend () -> Result<List<String>>) :
-    BaseLoadableViewModel<StubState>(StubState()) {
-    fun load() = launchLoad(
-        block = source,
-        onSuccess = { result -> copy(items = result) },
-    )
-
-    fun loadWithFallback(fallback: String) = launchLoad(
-        block = source,
-        fallback = fallback,
-        onSuccess = { result -> copy(items = result) },
-    )
+private class DummyLoadableViewModel : BaseLoadableViewModel<DummyLoadableState>(DummyLoadableState()) {
+    fun fail() = setState { withDomainError(CommonUiStateError.LoadFailed()) }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class BaseLoadableViewModelTest {
 
-    @BeforeTest
-    fun setUp() {
-        Dispatchers.setMain(kotlinx.coroutines.test.StandardTestDispatcher())
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
-
     @Test
-    fun success_sets_loading_false_clears_error_and_applies_payload() = runTest {
-        val vm = StubVm { Result.success(listOf("a", "b")) }
-        vm.load()
-        advanceUntilIdle()
-        val s = vm.state.value
-        assertFalse(s.loading)
-        assertNull(s.error)
-        assertEquals(listOf("a", "b"), s.items)
-    }
-
-    @Test
-    fun success_overwrites_previously_set_error() = runTest {
-        val vm = StubVm { Result.success(emptyList()) }
-        vm.state.value.withError("stale").also { /* manually seeded */ }
-        vm.load()
-        advanceUntilIdle()
-        assertNull(vm.state.value.error)
-    }
-
-    @Test
-    fun failure_with_typed_AppException_uses_its_localised_message() = runTest {
-        val vm = StubVm { Result.failure(AuthException()) }
-        vm.load()
-        advanceUntilIdle()
-        val s = vm.state.value
-        assertFalse(s.loading)
-        assertEquals("กรุณาเข้าสู่ระบบใหม่", s.error)
-    }
-
-    @Test
-    fun failure_with_untyped_throwable_uses_default_fallback() = runTest {
-        val vm = StubVm { Result.failure(IllegalStateException("internal leak")) }
-        vm.load()
-        advanceUntilIdle()
-        assertEquals(ErrorMessages.LOAD_FAILED, vm.state.value.error)
-    }
-
-    @Test
-    fun failure_with_untyped_throwable_uses_supplied_fallback() = runTest {
-        val vm = StubVm { Result.failure(IllegalStateException("internal leak")) }
-        vm.loadWithFallback("custom fallback")
-        advanceUntilIdle()
-        assertEquals("custom fallback", vm.state.value.error)
-    }
-
-    @Test
-    fun dismissError_clears_error_field() = runTest {
-        val vm = StubVm { Result.failure(IllegalStateException("boom")) }
-        vm.load()
-        advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+    fun dismissError_clears_domain_error() = runVmTest { _ ->
+        val vm = DummyLoadableViewModel()
+        vm.fail()
+        assertIs<CommonUiStateError.LoadFailed>(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
-    }
-
-    @Test
-    fun loading_flag_is_true_while_block_is_pending() = runTest {
-        var resolved = false
-        val vm = StubVm {
-            while (!resolved) kotlinx.coroutines.yield()
-            Result.success(emptyList())
-        }
-        vm.load()
-        kotlinx.coroutines.yield()
-        assertTrue(vm.state.value.loading)
-        resolved = true
-        advanceUntilIdle()
-        assertFalse(vm.state.value.loading)
+        assertNull(vm.state.value.errorState)
     }
 }

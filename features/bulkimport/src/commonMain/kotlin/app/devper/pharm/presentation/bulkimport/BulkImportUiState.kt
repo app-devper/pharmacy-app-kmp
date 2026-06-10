@@ -21,7 +21,7 @@ data class BulkImportUiState(
     override val loading: Boolean get() = submitting
 
     override fun withLoading(value: Boolean) = copy(submitting = value)
-    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val canSubmit: Boolean get() = !submitting && text.isNotBlank()
 

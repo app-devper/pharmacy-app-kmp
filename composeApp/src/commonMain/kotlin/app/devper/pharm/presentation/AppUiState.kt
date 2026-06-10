@@ -2,6 +2,7 @@ package app.devper.pharm.presentation
 
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UiPreferences
+import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseUiState
 
 data class AppUiState(
@@ -12,5 +13,7 @@ data class AppUiState(
     val userInitial: String = "",
     val uiPreferences: UiPreferences = UiPreferences.Default,
     override val loading: Boolean = false,
-    override val error: String? = null,
-) : BaseUiState
+    val errorState: AppException? = null,
+) : BaseUiState {
+    override val domainError: AppException? get() = errorState
+}

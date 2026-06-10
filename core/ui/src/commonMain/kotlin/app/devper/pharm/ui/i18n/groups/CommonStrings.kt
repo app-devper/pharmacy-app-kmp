@@ -41,6 +41,8 @@ interface CommonStrings {
     val commonExportFailed: String
     val commonExportEmpty: String
     val commonSaved: String
+    val commonLogoutFailed: String
+    val commonThemeChangeFailed: String
     val commonErrorAuth: String
     val commonErrorForbidden: String
     val commonErrorNotFound: String

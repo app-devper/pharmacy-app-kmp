@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.offlinesync
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.presentation.offlinesync.exception.OfflineSyncUiStateError
 import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage

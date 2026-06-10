@@ -2,13 +2,13 @@
 
 package app.devper.pharm.ui.common
 
+import app.devper.pharm.common.AppException
 import app.devper.pharm.common.AuthException
-import app.devper.pharm.common.error.ErrorMessages
+import app.devper.pharm.common.error.CommonUiStateError
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -17,12 +17,13 @@ private data class DummyFormState(
     override val saving: Boolean = false,
     override val saved: Boolean = false,
     override val loading: Boolean = false,
-    override val error: String? = null,
+    val errorState: AppException? = null,
 ) : BaseFormUiState<DummyFormState> {
+    override val domainError: AppException? get() = errorState
     override val canSubmit: Boolean get() = name.isNotBlank() && !saving
     override fun withSaving(saving: Boolean): DummyFormState = copy(saving = saving)
     override fun withSaved(saved: Boolean): DummyFormState = copy(saved = saved)
-    override fun withError(error: String?): DummyFormState = copy(error = error)
+    override fun withDomainError(error: AppException?): DummyFormState = copy(errorState = error)
 }
 
 private class DummyFormViewModel(
@@ -51,31 +52,29 @@ class BaseFormViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.saving)
         assertTrue(vm.state.value.saved)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
-    fun submit_with_untyped_throwable_falls_back_to_default_save_failed_message() = runVmTest { _ ->
+    fun submit_with_untyped_throwable_maps_to_save_failed() = runVmTest { _ ->
         val vm = DummyFormViewModel(persistResult = { Result.failure(IllegalStateException("server down")) })
         vm.setName("น้ำเกลือ")
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saving)
         assertFalse(vm.state.value.saved)
-        assertEquals(ErrorMessages.SAVE_FAILED, vm.state.value.error)
+        assertIs<CommonUiStateError.SaveFailed>(vm.state.value.errorState)
     }
 
     @Test
-    fun submit_with_typed_AppException_surfaces_its_localised_message() = runVmTest { _ ->
+    fun submit_with_typed_AppException_passes_it_through() = runVmTest { _ ->
         val vm = DummyFormViewModel(persistResult = { Result.failure(AuthException()) })
         vm.setName("น้ำเกลือ")
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saving)
         assertFalse(vm.state.value.saved)
-        val err = vm.state.value.error
-        assertNotNull(err)
-        assertEquals("กรุณาเข้าสู่ระบบใหม่", err)
+        assertIs<AuthException>(vm.state.value.errorState)
     }
 
     @Test
@@ -84,9 +83,9 @@ class BaseFormViewModelTest {
         vm.setName("Foo")
         vm.submit()
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertIs<CommonUiStateError.SaveFailed>(vm.state.value.errorState)
         vm.dismissError()
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test

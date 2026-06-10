@@ -26,7 +26,7 @@ data class ExpiryUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withLoading(value: Boolean) = copy(loading = value)
-    override fun withError(value: String?) = if (value == null) copy(errorState = null) else this
+    override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val canWriteoff: Boolean get() = !writingOff && selected.isNotEmpty()
     val totalSelected: Int get() = selected.size

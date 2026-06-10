@@ -10,8 +10,6 @@ data class ParkedCartUiState(
     val overwriteSlot: Int? = null,
     val swapSlot: Int? = null,
     val activeCartIsEmpty: Boolean = true,
-
-    override val error: String? = null,
 ) : BaseUiState {
 
     override val loading: Boolean get() = false

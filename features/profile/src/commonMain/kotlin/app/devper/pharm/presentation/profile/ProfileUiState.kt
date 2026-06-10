@@ -52,6 +52,5 @@ data class ProfileUiState(
     override val domainError: AppException? get() = errorState
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
-    override fun withError(error: String?) = if (error == null) copy(errorState = null) else this
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 }
