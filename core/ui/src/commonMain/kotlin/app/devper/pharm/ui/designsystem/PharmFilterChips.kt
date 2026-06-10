@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,11 +37,12 @@ fun PharmFilterChips(
     onToggle: (String) -> Unit,
     modifier: Modifier = Modifier,
     scrollable: Boolean = true,
+    role: Role = Role.Checkbox,
 ) {
     val scrollState = rememberScrollState()
     val rowMod = if (scrollable) modifier.horizontalScroll(scrollState) else modifier
     Row(
-        modifier = rowMod,
+        modifier = rowMod.selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -49,6 +51,7 @@ fun PharmFilterChips(
                 chip = chip,
                 active = chip.id in activeIds,
                 onClick = { onToggle(chip.id) },
+                role = role,
             )
         }
     }
@@ -68,6 +71,7 @@ fun PharmSingleSelectChips(
         onToggle = onSelect,
         modifier = modifier,
         scrollable = scrollable,
+        role = Role.RadioButton,
     )
 }
 
@@ -76,6 +80,7 @@ private fun PharmFilterChipItem(
     chip: PharmFilterChip,
     active: Boolean,
     onClick: () -> Unit,
+    role: Role,
 ) {
     val t = pharmTokens
     val bg = if (active) t.colors.surface else t.colors.bgPage
@@ -88,7 +93,7 @@ private fun PharmFilterChipItem(
             .clip(t.shapes.pill)
             .background(bg)
             .border(1.dp, border, t.shapes.pill)
-            .selectable(selected = active, role = Role.Button, onClick = onClick)
+            .selectable(selected = active, role = role, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
