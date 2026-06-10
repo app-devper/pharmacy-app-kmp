@@ -1,6 +1,36 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CommonStringsTh : CommonStrings {
+    override val commonStatusPending = "รอดำเนินการ"
+    override val commonStatusDone = "เสร็จสิ้น"
+    override val commonStatusVoided = "ยกเลิก"
+    override val commonStatusActive = "ใช้งาน"
+    override val commonStatusInactive = "ปิดใช้งาน"
+    override val commonStatusDraft = "ร่าง"
+    override val commonStatusConfirmed = "ยืนยันแล้ว"
+    override val commonStatusFailed = "ล้มเหลว"
+    override val commonStatusLowStock = "ใกล้หมด"
+    override val commonStatusOutOfStock = "หมด"
+    override val commonStatusNormal = "ปกติ"
+    override val commonStatusBackordered = "ค้างส่ง"
+    override val commonStatusVip = "VIP"
+    override val commonStatusReturned = "คืนสินค้า"
+    override val commonDrugTypeHerb = "ยาสมุนไพร"
+    override val commonDrugTypeSupplement = "อาหารเสริม"
+    override val commonDrugTypeRx = "ยาแผนปัจจุบัน"
+    override val commonOversoldBadge: (Int) -> String = { n -> "ขายเกิน $n" }
+    override val commonPresellBadge = "ขายล่วงหน้า"
+    override val commonStockRemaining: (Int, String) -> String = { n, unit -> "คงเหลือ $n $unit" }
+    override val commonOnline = "ออนไลน์"
+    override val commonMenu = "เมนู"
+    override val commonLogout = "ออกจากระบบ"
+    override val commonSwitchToLightTheme = "สลับเป็นธีมสว่าง"
+    override val commonSwitchToDarkTheme = "สลับเป็นธีมมืด"
+    override val commonFrom = "จาก"
+    override val commonTo = "ถึง"
+    override val commonRevenue = "รายได้"
+    override val commonCost = "ต้นทุน"
+
     override val commonCancel = "ยกเลิก"
     override val commonSave = "บันทึก"
     override val commonDelete = "ลบ"

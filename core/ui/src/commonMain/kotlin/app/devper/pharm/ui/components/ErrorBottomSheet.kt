@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.components
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,8 +33,8 @@ import app.devper.pharm.ui.theme.pharmTokens
 fun ErrorBottomSheet(
     message: String?,
     onDismiss: () -> Unit,
-    title: String = "เกิดข้อผิดพลาด",
-    confirmLabel: String = "ปิด",
+    title: String = pharmStrings.commonErrorGeneric,
+    confirmLabel: String = pharmStrings.commonClose,
 ) {
     if (message.isNullOrBlank()) return
     val t = pharmTokens

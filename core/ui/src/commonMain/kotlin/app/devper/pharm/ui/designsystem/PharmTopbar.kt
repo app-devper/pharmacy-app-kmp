@@ -1,5 +1,7 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +73,7 @@ fun PharmTopbar(
                         .clip(t.shapes.pill)
                         .background(t.colors.successFg),
                 )
-                Text("ออนไลน์", style = PharmText.meta)
+                Text(pharmStrings.commonOnline, style = PharmText.meta)
             }
         }
         if (user != null) {
@@ -111,7 +113,7 @@ private fun ThemeToggleButton() {
     ) {
         Icon(
             imageVector = if (controller.isDark) PharmIcons.Sun else PharmIcons.Moon,
-            contentDescription = if (controller.isDark) "สลับเป็นธีมสว่าง" else "สลับเป็นธีมมืด",
+            contentDescription = if (controller.isDark) pharmStrings.commonSwitchToLightTheme else pharmStrings.commonSwitchToDarkTheme,
             tint = t.colors.fg2,
             modifier = Modifier.size(18.dp),
         )
@@ -130,7 +132,7 @@ private fun HamburgerButton(onClick: () -> Unit) {
     ) {
         Icon(
             imageVector = PharmIcons.Hamburger,
-            contentDescription = "เมนู",
+            contentDescription = pharmStrings.commonMenu,
             tint = t.colors.fg2,
             modifier = Modifier.size(20.dp),
         )
@@ -191,7 +193,7 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
             ) {
                 Icon(
                     imageVector = PharmIcons.Logout,
-                    contentDescription = "ออกจากระบบ",
+                    contentDescription = pharmStrings.commonLogout,
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(16.dp),
                 )

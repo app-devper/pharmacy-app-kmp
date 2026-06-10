@@ -2,6 +2,8 @@
 
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,10 +58,11 @@ fun DrugCard(
     }
     val ringColor: Color? = if (highlighted) t.colors.successFg.copy(alpha = 0.4f) else null
 
+    val s = pharmStrings
     val (typeTone, typeLabel) = when (type) {
-        DrugCardType.Herb       -> PharmBadgeTone.Emerald to "ยาสมุนไพร"
-        DrugCardType.Supplement -> PharmBadgeTone.Orange  to "อาหารเสริม"
-        DrugCardType.Rx         -> PharmBadgeTone.Purple  to "ยาแผนปัจจุบัน"
+        DrugCardType.Herb       -> PharmBadgeTone.Emerald to s.commonDrugTypeHerb
+        DrugCardType.Supplement -> PharmBadgeTone.Orange  to s.commonDrugTypeSupplement
+        DrugCardType.Rx         -> PharmBadgeTone.Purple  to s.commonDrugTypeRx
     }
 
     val shape = t.shapes.lg
@@ -120,8 +123,8 @@ fun DrugCard(
             PharmBadge(text = typeLabel, tone = typeTone, size = PharmBadgeSize.Sm)
             if (kyForm != null) KyBadge(form = kyForm)
             when {
-                oversold -> PharmBadge(text = "ขายเกิน ${-stock}", tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
-                empty    -> PharmBadge(text = "ขายล่วงหน้า", tone = PharmBadgeTone.Amber, size = PharmBadgeSize.Sm)
+                oversold -> PharmBadge(text = s.commonOversoldBadge(-stock), tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
+                empty    -> PharmBadge(text = s.commonPresellBadge, tone = PharmBadgeTone.Amber, size = PharmBadgeSize.Sm)
             }
         }
 
@@ -140,7 +143,7 @@ fun DrugCard(
                 else -> t.colors.fgMuted
             }
             Text(
-                text = "คงเหลือ $stock $unit",
+                text = s.commonStockRemaining(stock, unit),
                 style = PharmText.micro.copy(color = stockColor),
             )
         }

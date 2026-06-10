@@ -1,5 +1,8 @@
 package app.devper.pharm.ui.designsystem
 
+import app.devper.pharm.ui.i18n.PharmStrings
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +48,27 @@ data class SidebarNavItem(
     val label: String,
     val admin: Boolean = false,
 )
+
+
+fun SidebarNavItem.localizedLabel(s: PharmStrings): String = when (id) {
+    "sell" -> s.navSell
+    "salesHistory" -> s.navSalesHistory
+    "stock" -> s.navStock
+    "stockCount" -> s.navStockCounts
+    "expiry" -> s.navExpiry
+    "movements" -> s.navMovements
+    "offlineSync" -> s.navOfflineSync
+    "imports" -> s.navImports
+    "suppliers" -> s.navSuppliers
+    "customers" -> s.navCustomers
+    "reports" -> s.navReports
+    "profit" -> s.navProfit
+    "kyforms" -> s.navKyForms
+    "users" -> s.navUsers
+    "settings" -> s.navSettings
+    "help" -> s.navHelp
+    else -> label
+}
 
 val DefaultPharmNav: List<SidebarNavItem> = listOf(
     SidebarNavItem("sell",         PharmIcons.Sell,         "หน้าขายยา"),
@@ -192,13 +216,13 @@ private fun SidebarRow(
     ) {
         Icon(
             imageVector = item.icon,
-            contentDescription = if (collapsed) item.label else null,
+            contentDescription = if (collapsed) item.localizedLabel(pharmStrings) else null,
             tint = fg,
             modifier = Modifier.size(18.dp),
         )
         if (!collapsed) {
             Text(
-                text = item.label,
+                text = item.localizedLabel(pharmStrings),
                 style = PharmText.body.copy(color = fg),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

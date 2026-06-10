@@ -1,6 +1,36 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CommonStringsEn : CommonStrings {
+    override val commonStatusPending = "Pending"
+    override val commonStatusDone = "Done"
+    override val commonStatusVoided = "Voided"
+    override val commonStatusActive = "Active"
+    override val commonStatusInactive = "Inactive"
+    override val commonStatusDraft = "Draft"
+    override val commonStatusConfirmed = "Confirmed"
+    override val commonStatusFailed = "Failed"
+    override val commonStatusLowStock = "Low stock"
+    override val commonStatusOutOfStock = "Out of stock"
+    override val commonStatusNormal = "Normal"
+    override val commonStatusBackordered = "Backordered"
+    override val commonStatusVip = "VIP"
+    override val commonStatusReturned = "Returned"
+    override val commonDrugTypeHerb = "Herbal"
+    override val commonDrugTypeSupplement = "Supplement"
+    override val commonDrugTypeRx = "Modern medicine"
+    override val commonOversoldBadge: (Int) -> String = { n -> "Oversold $n" }
+    override val commonPresellBadge = "Pre-sell"
+    override val commonStockRemaining: (Int, String) -> String = { n, unit -> "In stock $n $unit" }
+    override val commonOnline = "Online"
+    override val commonMenu = "Menu"
+    override val commonLogout = "Sign out"
+    override val commonSwitchToLightTheme = "Switch to light theme"
+    override val commonSwitchToDarkTheme = "Switch to dark theme"
+    override val commonFrom = "From"
+    override val commonTo = "To"
+    override val commonRevenue = "Revenue"
+    override val commonCost = "Cost"
+
     override val commonCancel = "Cancel"
     override val commonSave = "Save"
     override val commonDelete = "Delete"
