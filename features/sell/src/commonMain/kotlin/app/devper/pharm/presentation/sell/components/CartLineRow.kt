@@ -71,13 +71,13 @@ fun CartLineRow(
     modifier: Modifier = Modifier,
 ) {
     var showRemoveConfirm by remember { mutableStateOf(false) }
-    val rowVerticalPadding = if (LocalPharmDensity.current == PharmDensity.Compact) 8.dp else 14.dp
+    val rowVerticalPadding = if (LocalPharmDensity.current == PharmDensity.Compact) 8.dp else 12.dp
 
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .clickable(role = Role.Button, onClick = onTapForDiscount)
-            .padding(horizontal = 16.dp, vertical = rowVerticalPadding),
+            .padding(horizontal = 12.dp, vertical = rowVerticalPadding),
     ) {
         if (maxWidth < 360.dp) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
