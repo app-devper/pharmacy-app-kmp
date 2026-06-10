@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.presentation.stock.i18n.localizeStock
+import app.devper.pharm.ui.i18n.localizedLabel
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmBadge
@@ -47,7 +48,7 @@ fun DrugHistoryContent(
     val t = pharmTokens
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(title = "ประวัติสต็อก", subtitle = state.drugName, onBack = onBack)
+        PharmListToolbar(title = pharmStrings.stockHistoryTitle, subtitle = state.drugName, onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -57,7 +58,7 @@ fun DrugHistoryContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            PharmListResultLine(total = state.items.size, noun = "รายการ")
+            PharmListResultLine(total = state.items.size, noun = pharmStrings.stockHistoryCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
             when {
@@ -72,27 +73,28 @@ fun DrugHistoryContent(
 
 @Composable
 private fun DrugHistoryTable(items: List<StockMovement>) {
-    val columns = remember {
+    val s = pharmStrings
+    val columns = remember(s) {
         listOf(
             PharmTableColumn<StockMovement>(
-                header = "เวลา",
+                header = s.stockHistoryHeaderTime,
                 weight = 1.4f,
                 cell = { m -> TimeCell(m) },
             ),
             PharmTableColumn(
-                header = "ประเภท",
+                header = s.stockHistoryHeaderType,
                 weight = 1.2f,
                 compactTitle = true,
                 cell = { m -> TypeCell(m) },
             ),
             PharmTableColumn(
-                header = "จำนวน",
+                header = s.stockHistoryHeaderQty,
                 weight = 0.8f,
                 align = PharmColumnAlign.End,
                 cell = { m -> QtyCell(m) },
             ),
             PharmTableColumn(
-                header = "อ้างอิง",
+                header = s.stockHistoryHeaderRef,
                 weight = 2.0f,
                 cell = { m -> ReferenceCell(m) },
             ),
@@ -104,7 +106,7 @@ private fun DrugHistoryTable(items: List<StockMovement>) {
         key = { "${it.type.wire}::${it.id}" },
         rowHeight = 52.dp,
         emptyContent = {
-            PharmEmptyState(icon = PharmIcons.Movements, title = "ยังไม่มีประวัติสต็อกของยานี้")
+            PharmEmptyState(icon = PharmIcons.Movements, title = pharmStrings.stockHistoryDrugEmpty)
         },
     )
 }
@@ -122,7 +124,7 @@ private fun TimeCell(m: StockMovement) {
 
 @Composable
 private fun TypeCell(m: StockMovement) {
-    PharmBadge(text = m.type.label, tone = m.type.tone(), size = PharmBadgeSize.Sm)
+    PharmBadge(text = m.type.localizedLabel(pharmStrings), tone = m.type.tone(), size = PharmBadgeSize.Sm)
 }
 
 private fun MovementType.tone(): PharmBadgeTone = when (this) {

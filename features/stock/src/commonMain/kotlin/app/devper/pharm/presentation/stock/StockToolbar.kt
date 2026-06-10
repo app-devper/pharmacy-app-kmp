@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.presentation.stock.i18n.label
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +35,7 @@ internal fun StockToolbar(
         searchPlaceholder = pharmStrings.stockSearchPlaceholder,
         filters = {
             PharmSingleSelectChips(
-                chips = StockTypeFilter.entries.map { PharmFilterChip(id = it.name, label = it.label) },
+                chips = StockTypeFilter.entries.map { PharmFilterChip(id = it.name, label = it.label(pharmStrings)) },
                 activeId = typeFilter.name,
                 onSelect = { id -> callbacks.onTypeFilterChange(StockTypeFilter.valueOf(id)) },
                 modifier = Modifier.fillMaxWidth(),

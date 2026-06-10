@@ -1,6 +1,31 @@
 package app.devper.pharm.ui.i18n.groups
 
 object StockStringsTh : StockStrings {
+    override val stockHistoryCountNoun = "รายการ"
+    override val stockHistoryHeaderTime = "เวลา"
+    override val stockHistoryHeaderType = "ประเภท"
+    override val stockHistoryHeaderQty = "จำนวน"
+    override val stockHistoryHeaderRef = "อ้างอิง"
+    override val stockTypeFilterAll = "ทุกประเภท"
+    override val stockTypeFilterCurrent = "ยาแผนปัจจุบัน"
+    override val stockTypeFilterHerb = "ยาสมุนไพร"
+    override val stockTypeFilterSupplement = "อาหารเสริม"
+    override val stockLotDeleteBody: (String, Int) -> String = { lot, remaining -> "ล็อต $lot จะถูกลบออก stock ของยาจะลดลง $remaining หน่วย (การเคลื่อนไหวจะถูกบันทึกไว้)" }
+    override val stockLotExpiryRemaining: (String, Int, Int) -> String = { d, a, b -> "หมดอายุ $d · เหลือ $a/$b" }
+    override val stockLotDeleteDesc = "ลบล็อต"
+    override val stockLotSaveCta = "บันทึกล็อต"
+    override val stockHeaderStock = "สต็อก"
+    override val stockBadgeHerb = "สมุนไพร"
+    override val stockUnitPlaceholder = "เม็ด / แคปซูล / ขวด"
+    override val stockDrugSavedToast = "บันทึกข้อมูลยาเรียบร้อย"
+    override val stockFormTitleEdit = "แก้ไขยา"
+    override val stockFormTitleAdd = "เพิ่มยา"
+    override val movementTypeImport = "นำเข้า"
+    override val movementTypeSale = "ขาย"
+    override val movementTypeReturn = "คืน"
+    override val movementTypeAdjustment = "ปรับสต็อก"
+    override val movementTypeWriteoff = "ตัดจำหน่าย"
+
     override val stockSubtitle = "จัดการรายการยาและสต็อกคงเหลือ"
     override val stockSearchPlaceholder = "ค้นหายา ชื่อสามัญ บาร์โค้ด…"
     override val stockAddDrugCta = "เพิ่มยา"

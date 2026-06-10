@@ -128,9 +128,7 @@ fun DrugLotsDialogs(
             },
         ) {
             Text(
-                text = "ล็อต ${lot.lotNumber} จะถูกลบออก " +
-                    "stock ของยาจะลดลง ${lot.remaining} หน่วย " +
-                    "(การเคลื่อนไหวจะถูกบันทึกไว้)",
+                text = pharmStrings.stockLotDeleteBody(lot.lotNumber, lot.remaining.value),
                 style = PharmText.body,
             )
         }
@@ -232,7 +230,7 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
                 style = PharmText.body.copy(color = t.colors.fg1),
             )
             Text(
-                text = "หมดอายุ ${localDateToBuddhist(lot.expiryDate)} · เหลือ ${lot.remaining}/${lot.quantity}",
+                text = pharmStrings.stockLotExpiryRemaining(localDateToBuddhist(lot.expiryDate), lot.remaining.value, lot.quantity.value),
                 style = PharmText.micro.tabular().copy(color = t.colors.fg2),
             )
         }
@@ -242,7 +240,7 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
         ) {
             Icon(
                 imageVector = PharmIcons.Trash,
-                contentDescription = "ลบล็อต",
+                contentDescription = pharmStrings.stockLotDeleteDesc,
                 tint = t.colors.dangerFg,
                 modifier = Modifier.size(20.dp),
             )
@@ -303,7 +301,7 @@ private fun AddLotForm(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
             )
         }
         PharmButton(
-            label = "บันทึกล็อต",
+            label = pharmStrings.stockLotSaveCta,
             onClick = callbacks.onSubmitAdd,
             enabled = state.canSubmitDraft,
             loading = state.saving,

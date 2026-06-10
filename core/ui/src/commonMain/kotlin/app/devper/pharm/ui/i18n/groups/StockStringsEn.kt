@@ -1,6 +1,31 @@
 package app.devper.pharm.ui.i18n.groups
 
 object StockStringsEn : StockStrings {
+    override val stockHistoryCountNoun = "items"
+    override val stockHistoryHeaderTime = "Time"
+    override val stockHistoryHeaderType = "Type"
+    override val stockHistoryHeaderQty = "Qty"
+    override val stockHistoryHeaderRef = "Reference"
+    override val stockTypeFilterAll = "All types"
+    override val stockTypeFilterCurrent = "Modern medicine"
+    override val stockTypeFilterHerb = "Herbal"
+    override val stockTypeFilterSupplement = "Supplements"
+    override val stockLotDeleteBody: (String, Int) -> String = { lot, remaining -> "Lot $lot will be removed; drug stock decreases by $remaining (the movement is recorded)" }
+    override val stockLotExpiryRemaining: (String, Int, Int) -> String = { d, a, b -> "Expires $d · $a/$b left" }
+    override val stockLotDeleteDesc = "Delete lot"
+    override val stockLotSaveCta = "Save lot"
+    override val stockHeaderStock = "Stock"
+    override val stockBadgeHerb = "Herbal"
+    override val stockUnitPlaceholder = "tablet / capsule / bottle"
+    override val stockDrugSavedToast = "Drug saved"
+    override val stockFormTitleEdit = "Edit drug"
+    override val stockFormTitleAdd = "Add drug"
+    override val movementTypeImport = "Import"
+    override val movementTypeSale = "Sale"
+    override val movementTypeReturn = "Return"
+    override val movementTypeAdjustment = "Adjustment"
+    override val movementTypeWriteoff = "Write-off"
+
     override val stockSubtitle = "Manage drug items and stock balance"
     override val stockSearchPlaceholder = "Search drug / generic / barcode…"
     override val stockAddDrugCta = "Add drug"

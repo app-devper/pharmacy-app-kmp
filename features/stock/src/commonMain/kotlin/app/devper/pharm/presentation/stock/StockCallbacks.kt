@@ -16,11 +16,11 @@ data class StockCallbacks(
     val onDismissError: () -> Unit = {},
 )
 
-enum class StockTypeFilter(val label: String) {
-    All("ทุกประเภท"),
-    Current("ยาแผนปัจจุบัน"),
-    Herb("ยาสมุนไพร"),
-    Supplement("อาหารเสริม");
+enum class StockTypeFilter {
+    All,
+    Current,
+    Herb,
+    Supplement;
 
     fun matches(rawType: String?): Boolean {
         if (this == All) return true

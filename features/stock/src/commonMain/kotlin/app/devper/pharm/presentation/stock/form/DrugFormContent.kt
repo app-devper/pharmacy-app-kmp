@@ -45,7 +45,7 @@ fun DrugFormContent(
     val t = pharmTokens
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.titleLabel,
+            title = if (state.mode is DrugFormMode.Edit) pharmStrings.stockFormTitleEdit else pharmStrings.stockFormTitleAdd,
             onBack = callbacks.onBack,
             actions = {
                 PharmSaveAction(

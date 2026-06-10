@@ -76,7 +76,6 @@ class DrugFormViewModelTest {
         val s = vm.state.value
         assertTrue(s.mode is DrugFormMode.Add)
         assertEquals("", s.form.name)
-        assertEquals("เพิ่มยา", s.titleLabel)
         assertFalse(s.canSubmit)
     }
 
@@ -95,7 +94,7 @@ class DrugFormViewModelTest {
         assertEquals("5", f.sellPrice)
         assertEquals("5", f.tierRetail)
         assertEquals("4", f.tierWholesale)
-        assertEquals("แก้ไขยา", vm.state.value.titleLabel)
+        assertIs<DrugFormMode.Edit>(vm.state.value.mode)
     }
 
     @Test
