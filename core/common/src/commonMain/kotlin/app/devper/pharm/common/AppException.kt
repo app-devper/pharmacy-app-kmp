@@ -3,49 +3,49 @@ package app.devper.pharm.common
 abstract class AppException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
 
 class AuthException(
-    message: String = "กรุณาเข้าสู่ระบบใหม่",
+    message: String = "Authentication required",
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class ForbiddenException(
-    message: String = "ไม่มีสิทธิ์ทำรายการนี้",
+    message: String = "Forbidden",
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class NotFoundException(
-    message: String = "ไม่พบข้อมูล",
+    message: String = "Not found",
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class ConflictException(
-    message: String = "เกิดข้อขัดแย้ง — ตรวจสอบข้อมูลและลองใหม่",
+    message: String = "Conflict",
     val payload: String? = null,
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class NetworkException(
-    message: String = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์",
+    message: String = "Network unavailable",
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class ServerException(
-    message: String = "เซิร์ฟเวอร์ขัดข้อง",
+    message: String = "Server error",
     val statusCode: Int? = null,
     val body: String? = null,
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class ValidationException(
-    message: String = "ตรวจสอบข้อมูลไม่ผ่าน",
+    message: String = "Validation failed",
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class StorageException(
-    message: String = "ไม่สามารถบันทึกไฟล์ได้",
+    message: String = "Storage error",
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
 class UnsupportedPlatformException(
-    message: String = "ยังไม่รองรับฟีเจอร์นี้บนแพลตฟอร์มนี้",
+    message: String = "Unsupported on this platform",
     cause: Throwable? = null,
 ) : AppException(message, cause)

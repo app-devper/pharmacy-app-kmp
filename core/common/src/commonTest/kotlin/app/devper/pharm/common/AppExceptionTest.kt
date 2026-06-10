@@ -11,7 +11,7 @@ class AppExceptionTest {
     @Test
     fun auth_exception_default_message_and_subclass() {
         val ex = AuthException()
-        assertEquals("กรุณาเข้าสู่ระบบใหม่", ex.message)
+        assertEquals("Authentication required", ex.message)
         val parent: AppException = ex
         assertEquals(ex, parent)
         assertNull(ex.cause)
@@ -19,24 +19,24 @@ class AppExceptionTest {
 
     @Test
     fun forbidden_exception_default_message() {
-        assertEquals("ไม่มีสิทธิ์ทำรายการนี้", ForbiddenException().message)
+        assertEquals("Forbidden", ForbiddenException().message)
     }
 
     @Test
     fun not_found_exception_default_message() {
-        assertEquals("ไม่พบข้อมูล", NotFoundException().message)
+        assertEquals("Not found", NotFoundException().message)
     }
 
     @Test
     fun network_exception_default_message() {
-        assertEquals("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์", NetworkException().message)
+        assertEquals("Network unavailable", NetworkException().message)
     }
 
     @Test
     fun conflict_exception_payload_round_trips() {
         val ex = ConflictException(payload = "drug_already_exists")
         assertEquals("drug_already_exists", ex.payload)
-        assertEquals("เกิดข้อขัดแย้ง — ตรวจสอบข้อมูลและลองใหม่", ex.message)
+        assertEquals("Conflict", ex.message)
     }
 
     @Test
@@ -55,7 +55,7 @@ class AppExceptionTest {
 
     @Test
     fun custom_message_overrides_default() {
-        val ex = NotFoundException(message = "ไม่พบรายการ id=42")
-        assertEquals("ไม่พบรายการ id=42", ex.message)
+        val ex = NotFoundException(message = "missing id=42")
+        assertEquals("missing id=42", ex.message)
     }
 }

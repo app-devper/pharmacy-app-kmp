@@ -84,8 +84,8 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
                 HttpStatusCode.NotFound      -> NotFoundException()
                 HttpStatusCode.Conflict      -> ConflictException(payload = body)
                 else -> ServerException(
-                    message = if (status.value in 500..599) "เซิร์ฟเวอร์ขัดข้อง (${status.value})"
-                              else "เกิดข้อผิดพลาด (${status.value})",
+                    message = if (status.value in 500..599) "Server error (${status.value})"
+                              else "HTTP error (${status.value})",
                     statusCode = status.value,
                     body = body,
                 )
