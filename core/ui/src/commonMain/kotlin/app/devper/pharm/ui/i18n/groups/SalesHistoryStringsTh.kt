@@ -1,6 +1,20 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SalesHistoryStringsTh : SalesHistoryStrings {
+    override val salesHistoryReturnTitle: (String) -> String = { bill -> "คืนสินค้าจากบิล $bill" }
+    override val salesHistoryReturnSubtitle = "เลือกจำนวนที่จะคืน — ระบบจะคำนวณยอดคืนให้เอง"
+    override val salesHistoryReasonLabel = "เหตุผล"
+    override val salesHistoryReturnReasonPlaceholder = "เหตุผลการคืน เช่น ลูกค้าเปลี่ยนใจ, สินค้าเสีย ฯลฯ"
+    override val salesHistoryReturnConfirmCta = "ยืนยันคืนสินค้า"
+    override val salesHistorySoldRemaining: (Int, String, Int) -> String = { q, u, r -> "ขายไป $q $u · เหลือคืน $r" }
+    override val salesHistoryRefund: (String) -> String = { v -> "คืนเงิน $v" }
+    override val salesHistoryBillTitle: (String) -> String = { bill -> "บิล $bill" }
+    override val salesHistoryVoidedBadge = "ยกเลิกแล้ว"
+    override val salesHistoryReturnedQty: (Int) -> String = { n -> "คืนแล้ว $n" }
+    override val salesHistoryTotalRow = "รวม"
+    override val salesHistoryDiscountRow = "ส่วนลด"
+    override val salesHistoryNetRow = "สุทธิ"
+
     override val salesHistorySubtitle = "บิลขายย้อนหลังและการคืน/ยกเลิก"
     override val salesHistorySearchPlaceholder = "เลขบิล หรือ ชื่อลูกค้า…"
     override val salesHistoryCountNoun = "บิล"

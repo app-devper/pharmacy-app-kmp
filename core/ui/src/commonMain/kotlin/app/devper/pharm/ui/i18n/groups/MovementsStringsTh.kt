@@ -1,6 +1,13 @@
 package app.devper.pharm.ui.i18n.groups
 
 object MovementsStringsTh : MovementsStrings {
+    override val movementsSpecImport = "นำเข้า"
+    override val movementsSpecSale = "ขาย"
+    override val movementsSpecReturn = "คืนยา"
+    override val movementsSpecAdjustment = "ปรับสต็อก"
+    override val movementsSpecWriteoff = "ตัดสต็อก"
+    override val movementsSpecVoided = "ยกเลิกบิล"
+
     override val movementsSubtitle = "ประวัติการเข้า-ออกของสต็อก"
     override val movementsSearchPlaceholder = "ค้นหาชื่อยา…"
     override val movementsCountNoun = "รายการ"

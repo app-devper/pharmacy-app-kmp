@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object BulkImportStringsEn : BulkImportStrings {
+    override val bulkImportReadyBadge = "Ready to import"
+
     override val bulkImportTitle = "Bulk import drugs (JSON)"
     override val bulkImportSubtitle = "Upload a JSON file or paste text to create many drugs at once"
     override val bulkImportDropZoneHint = "Drop a JSON file here or pick one"

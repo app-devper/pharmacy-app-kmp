@@ -1,6 +1,20 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SalesHistoryStrings {
+    val salesHistoryReturnTitle: (String) -> String
+    val salesHistoryReturnSubtitle: String
+    val salesHistoryReasonLabel: String
+    val salesHistoryReturnReasonPlaceholder: String
+    val salesHistoryReturnConfirmCta: String
+    val salesHistorySoldRemaining: (Int, String, Int) -> String
+    val salesHistoryRefund: (String) -> String
+    val salesHistoryBillTitle: (String) -> String
+    val salesHistoryVoidedBadge: String
+    val salesHistoryReturnedQty: (Int) -> String
+    val salesHistoryTotalRow: String
+    val salesHistoryDiscountRow: String
+    val salesHistoryNetRow: String
+
     val salesHistoryReturnReasonRequired: String
     val salesHistoryReturnItemsRequired: String
 

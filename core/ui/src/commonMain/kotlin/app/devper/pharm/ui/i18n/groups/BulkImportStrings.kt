@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface BulkImportStrings {
+    val bulkImportReadyBadge: String
+
     val bulkImportPasteFirst: String
     val bulkImportNotArray: String
     val bulkImportRowNotObject: (Int) -> String

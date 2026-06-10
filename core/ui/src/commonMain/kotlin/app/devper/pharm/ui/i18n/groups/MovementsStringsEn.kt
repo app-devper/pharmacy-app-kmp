@@ -1,6 +1,13 @@
 package app.devper.pharm.ui.i18n.groups
 
 object MovementsStringsEn : MovementsStrings {
+    override val movementsSpecImport = "Import"
+    override val movementsSpecSale = "Sale"
+    override val movementsSpecReturn = "Return"
+    override val movementsSpecAdjustment = "Adjustment"
+    override val movementsSpecWriteoff = "Write-off"
+    override val movementsSpecVoided = "Voided bill"
+
     override val movementsSubtitle = "Stock in/out history"
     override val movementsSearchPlaceholder = "Search drug name…"
     override val movementsCountNoun = "items"

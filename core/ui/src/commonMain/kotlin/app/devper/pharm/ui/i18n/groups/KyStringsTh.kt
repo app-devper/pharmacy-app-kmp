@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object KyStringsTh : KyStrings {
+    override val kyTabLabel: (Int) -> String = { n -> "ขย.$n" }
+
     override val kyToolbarSubtitle = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข"
     override val kyEmptyMonth = "ไม่มีรายการในเดือนนี้"
     override val kyCountNoun = "รายการ"

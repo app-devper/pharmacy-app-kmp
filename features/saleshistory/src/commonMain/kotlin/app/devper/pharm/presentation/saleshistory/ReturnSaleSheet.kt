@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.ui.i18n.pharmStrings
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,12 +68,12 @@ fun ReturnSaleSheet(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                text = "คืนสินค้าจากบิล ${sale.billNo}",
+                text = pharmStrings.salesHistoryReturnTitle(sale.billNo),
                 style = PharmText.h1,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "เลือกจำนวนที่จะคืน — ระบบจะคำนวณยอดคืนให้เอง",
+                text = pharmStrings.salesHistoryReturnSubtitle,
                 style = PharmText.bodySm,
                 color = t.colors.fg2,
             )
@@ -104,12 +106,12 @@ fun ReturnSaleSheet(
                     .background(pharmTokens.colors.border),
             )
 
-            FormField(label = "เหตุผล", required = true) {
+            FormField(label = pharmStrings.salesHistoryReasonLabel, required = true) {
                 Box(modifier = Modifier.heightIn(min = 96.dp)) {
                     PharmTextField(
                         value = reason,
                         onValueChange = onReasonChange,
-                        placeholder = "เหตุผลการคืน เช่น ลูกค้าเปลี่ยนใจ, สินค้าเสีย ฯลฯ",
+                        placeholder = pharmStrings.salesHistoryReturnReasonPlaceholder,
                         singleLine = false,
                     )
                 }
@@ -121,13 +123,13 @@ fun ReturnSaleSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 PharmButton(
-                    label = "ยกเลิก",
+                    label = pharmStrings.commonCancel,
                     onClick = onDismiss,
                     variant = PharmButtonVariant.Ghost,
                     enabled = !submitting,
                 )
                 PharmButton(
-                    label = "ยืนยันคืนสินค้า",
+                    label = pharmStrings.salesHistoryReturnConfirmCta,
                     onClick = onConfirm,
                     variant = PharmButtonVariant.Primary,
                     enabled = canSubmit,
@@ -164,13 +166,13 @@ private fun ReturnLineRow(
                 maxLines = 2,
             )
             Text(
-                text = "ขายไป ${item.displayQty} ${item.displayUnit} · เหลือคืน ${item.remainingDisplayQty}",
+                text = pharmStrings.salesHistorySoldRemaining(item.displayQty, item.displayUnit, item.remainingDisplayQty),
                 style = PharmText.micro.tabular(),
                 color = t.colors.fg2,
             )
             if (refund > 0) {
                 Text(
-                    text = "คืนเงิน ${app.devper.pharm.ui.format.formatBahtCurrency(refund)}",
+                    text = pharmStrings.salesHistoryRefund(app.devper.pharm.ui.format.formatBahtCurrency(refund)),
                     style = PharmText.meta.tabular(),
                     color = t.colors.accent,
                     fontWeight = FontWeight.SemiBold,
@@ -193,7 +195,7 @@ private fun ReturnLineRow(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Remove,
-                        contentDescription = "ลด",
+                        contentDescription = pharmStrings.sellQtyDecrease,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -208,7 +210,7 @@ private fun ReturnLineRow(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Add,
-                        contentDescription = "เพิ่ม",
+                        contentDescription = pharmStrings.sellQtyIncrease,
                         modifier = Modifier.size(18.dp),
                     )
                 }

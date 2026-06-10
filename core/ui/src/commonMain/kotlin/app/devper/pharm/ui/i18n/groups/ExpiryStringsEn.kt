@@ -1,6 +1,12 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ExpiryStringsEn : ExpiryStrings {
+    override val expiryWindow30 = "30 days"
+    override val expiryWindow60 = "60 days"
+    override val expiryWindow90 = "90 days"
+    override val expiryWindow180 = "180 days"
+    override val expiryWindowExpired = "Expired"
+
     override val expirySubtitle = "Check near-expiry lots and write off"
     override val expirySelectAll = "Select all"
     override val expirySelectPartial = "Partial selection · tap to clear"

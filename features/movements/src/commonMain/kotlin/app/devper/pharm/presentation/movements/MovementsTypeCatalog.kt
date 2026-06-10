@@ -7,7 +7,6 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 
 data class MovementsTypeSpec(
     val id: String,
-    val label: String,
     val icon: ImageVector,
     val tone: PharmBadgeTone,
     val type: MovementType? = null,
@@ -18,42 +17,36 @@ object MovementsTypeCatalog {
     val specs: List<MovementsTypeSpec> = listOf(
         MovementsTypeSpec(
             id = MovementType.Import.wire,
-            label = "นำเข้า",
             icon = PharmIcons.Imports,
             tone = PharmBadgeTone.Green,
             type = MovementType.Import,
         ),
         MovementsTypeSpec(
             id = MovementType.Sale.wire,
-            label = "ขาย",
             icon = PharmIcons.Sell,
             tone = PharmBadgeTone.Blue,
             type = MovementType.Sale,
         ),
         MovementsTypeSpec(
             id = MovementType.Return.wire,
-            label = "คืนยา",
             icon = PharmIcons.ReturnArrow,
             tone = PharmBadgeTone.Indigo,
             type = MovementType.Return,
         ),
         MovementsTypeSpec(
             id = MovementType.Adjustment.wire,
-            label = "ปรับสต็อก",
             icon = PharmIcons.Pencil,
             tone = PharmBadgeTone.Amber,
             type = MovementType.Adjustment,
         ),
         MovementsTypeSpec(
             id = MovementType.Writeoff.wire,
-            label = "ตัดสต็อก",
             icon = PharmIcons.Trash,
             tone = PharmBadgeTone.Red,
             type = MovementType.Writeoff,
         ),
         MovementsTypeSpec(
             id = "void",
-            label = "ยกเลิกบิล",
             icon = PharmIcons.Ban,
             tone = PharmBadgeTone.Gray,
             type = null,
