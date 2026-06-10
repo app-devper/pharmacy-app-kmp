@@ -63,10 +63,3 @@ data class Ky12Entry(
     val status: String,
     val createdAt: LocalDateTime?,
 )
-
-enum class KyFormType(val wire: String) {
-    Ky9("ky9"),
-    Ky10("ky10"),
-    Ky11("ky11"),
-    Ky12("ky12");
-}
