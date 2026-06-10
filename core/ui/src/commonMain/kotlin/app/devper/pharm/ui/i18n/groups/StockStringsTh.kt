@@ -82,4 +82,5 @@ object StockStringsTh : StockStrings {
     override val stockAddLotFailed = "เพิ่มล็อตไม่สำเร็จ"
     override val stockRemoveLotFailed = "ลบล็อตไม่สำเร็จ"
     override val stockDrugFormNotFound = "ไม่พบยา"
+    override val stockDrugFormLotExpiryInvalid = "วันหมดอายุของล็อตเริ่มต้นไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)"
 }

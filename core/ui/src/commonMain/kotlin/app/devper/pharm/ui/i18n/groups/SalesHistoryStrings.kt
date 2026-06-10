@@ -1,6 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SalesHistoryStrings {
+    val salesHistoryReturnReasonRequired: String
+    val salesHistoryReturnItemsRequired: String
+
     val salesHistorySubtitle: String
     val salesHistorySearchPlaceholder: String
     val salesHistoryCountNoun: String

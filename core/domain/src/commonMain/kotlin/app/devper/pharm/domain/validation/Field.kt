@@ -1,48 +1,47 @@
 package app.devper.pharm.domain.validation
 
-import app.devper.pharm.common.ValidationException
 import kotlinx.datetime.LocalDate
 
 object Field {
 
-    fun notBlank(value: String, label: String): String {
-        if (value.isBlank()) throw ValidationException("ต้องระบุ$label")
+    fun notBlank(value: String, label: FieldLabel): String {
+        if (value.isBlank()) throw FieldValidationError.Required(label)
         return value.trim()
     }
 
-    fun localDate(value: String, label: String = "วันที่"): LocalDate {
+    fun localDate(value: String, label: FieldLabel = FieldLabel.Date): LocalDate {
         val trimmed = notBlank(value, label)
         return runCatching { LocalDate.parse(trimmed) }.getOrNull()
-            ?: throw ValidationException("${label}ไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)")
+            ?: throw FieldValidationError.InvalidDate(label)
     }
 
-    fun positiveInt(value: String, label: String = "จำนวน"): Int {
+    fun positiveInt(value: String, label: FieldLabel = FieldLabel.Quantity): Int {
         val parsed = value.toIntOrNull()
-            ?: throw ValidationException("${label}ต้องเป็นตัวเลข")
-        if (parsed <= 0) throw ValidationException("${label}ต้องมากกว่า 0")
+            ?: throw FieldValidationError.NotANumber(label)
+        if (parsed <= 0) throw FieldValidationError.MustBePositive(label)
         return parsed
     }
 
-    fun nonNegativeIntOrDefault(value: String, default: Int = 0, label: String = "ยอด"): Int {
+    fun nonNegativeIntOrDefault(value: String, default: Int = 0, label: FieldLabel = FieldLabel.Amount): Int {
         if (value.isBlank()) return default
         val parsed = value.toIntOrNull()
-            ?: throw ValidationException("${label}ต้องเป็นตัวเลข")
-        if (parsed < 0) throw ValidationException("${label}ต้องไม่ติดลบ")
+            ?: throw FieldValidationError.NotANumber(label)
+        if (parsed < 0) throw FieldValidationError.MustBeNonNegative(label)
         return parsed
     }
 
-    fun nonNegativeDouble(value: String, label: String): Double {
+    fun nonNegativeDouble(value: String, label: FieldLabel): Double {
         val parsed = value.toDoubleOrNull()
-            ?: throw ValidationException("${label}ต้องเป็นตัวเลข")
-        if (parsed < 0.0) throw ValidationException("${label}ต้องไม่ติดลบ")
+            ?: throw FieldValidationError.NotANumber(label)
+        if (parsed < 0.0) throw FieldValidationError.MustBeNonNegative(label)
         return parsed
     }
 
-    fun nonNegativeDoubleOrDefault(value: String, default: Double = 0.0, label: String = "มูลค่า"): Double {
+    fun nonNegativeDoubleOrDefault(value: String, default: Double = 0.0, label: FieldLabel = FieldLabel.Value): Double {
         if (value.isBlank()) return default
         val parsed = value.toDoubleOrNull()
-            ?: throw ValidationException("${label}ต้องเป็นตัวเลข")
-        if (parsed < 0.0) throw ValidationException("${label}ต้องไม่ติดลบ")
+            ?: throw FieldValidationError.NotANumber(label)
+        if (parsed < 0.0) throw FieldValidationError.MustBeNonNegative(label)
         return parsed
     }
 }

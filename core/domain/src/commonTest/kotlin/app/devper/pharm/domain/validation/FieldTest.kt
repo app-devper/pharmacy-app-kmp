@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.validation
 
-import app.devper.pharm.common.ValidationException
+import kotlin.test.assertIs
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,18 +12,19 @@ class FieldTest {
 
     @Test
     fun notBlank_returns_trimmed_value() {
-        assertEquals("hello", Field.notBlank("  hello  ", "ชื่อ"))
+        assertEquals("hello", Field.notBlank("  hello  ", FieldLabel.DrugName))
     }
 
     @Test
     fun notBlank_throws_typed_ValidationException_with_thai_message() {
-        val e = assertFailsWith<ValidationException> { Field.notBlank("", "ชื่อยา") }
-        assertEquals("ต้องระบุชื่อยา", e.message)
+        val e = assertFailsWith<FieldValidationError> { Field.notBlank("", FieldLabel.DrugName) }
+        assertIs<FieldValidationError.Required>(e)
+        assertEquals(FieldLabel.DrugName, e.field)
     }
 
     @Test
     fun notBlank_throws_for_whitespace_only() {
-        assertFailsWith<ValidationException> { Field.notBlank("   ", "เลขที่") }
+        assertFailsWith<FieldValidationError> { Field.notBlank("   ", FieldLabel.LotNumber) }
     }
 
     @Test
@@ -38,14 +39,15 @@ class FieldTest {
 
     @Test
     fun localDate_throws_for_thai_dd_mm_yyyy() {
-        val e = assertFailsWith<ValidationException> { Field.localDate("07/06/2026", label = "วันหมดอายุ") }
-        assertEquals("วันหมดอายุไม่ถูกต้อง (รูปแบบ YYYY-MM-DD)", e.message)
+        val e = assertFailsWith<FieldValidationError> { Field.localDate("07/06/2026", label = FieldLabel.ExpiryDate) }
+        assertIs<FieldValidationError.InvalidDate>(e)
+        assertEquals(FieldLabel.ExpiryDate, e.field)
     }
 
     @Test
     fun localDate_throws_for_blank_with_label() {
-        val e = assertFailsWith<ValidationException> { Field.localDate("", label = "วันที่") }
-        assertEquals("ต้องระบุวันที่", e.message)
+        val e = assertFailsWith<FieldValidationError> { Field.localDate("", label = FieldLabel.Date) }
+        assertIs<FieldValidationError.Required>(e)
     }
 
     @Test
@@ -55,19 +57,20 @@ class FieldTest {
 
     @Test
     fun positiveInt_throws_for_zero_with_default_label() {
-        val e = assertFailsWith<ValidationException> { Field.positiveInt("0") }
-        assertEquals("จำนวนต้องมากกว่า 0", e.message)
+        val e = assertFailsWith<FieldValidationError> { Field.positiveInt("0") }
+        assertIs<FieldValidationError.MustBePositive>(e)
+        assertEquals(FieldLabel.Quantity, e.field)
     }
 
     @Test
     fun positiveInt_throws_for_non_numeric() {
-        val e = assertFailsWith<ValidationException> { Field.positiveInt("abc") }
-        assertEquals("จำนวนต้องเป็นตัวเลข", e.message)
+        val e = assertFailsWith<FieldValidationError> { Field.positiveInt("abc") }
+        assertIs<FieldValidationError.NotANumber>(e)
     }
 
     @Test
     fun positiveInt_throws_for_negative() {
-        assertFailsWith<ValidationException> { Field.positiveInt("-5") }
+        assertFailsWith<FieldValidationError> { Field.positiveInt("-5") }
     }
 
     @Test
@@ -83,23 +86,24 @@ class FieldTest {
 
     @Test
     fun nonNegativeIntOrDefault_throws_for_negative() {
-        assertFailsWith<ValidationException> { Field.nonNegativeIntOrDefault("-1") }
+        assertFailsWith<FieldValidationError> { Field.nonNegativeIntOrDefault("-1") }
     }
 
     @Test
     fun nonNegativeDouble_parses_zero() {
-        assertEquals(0.0, Field.nonNegativeDouble("0", label = "ราคา"))
+        assertEquals(0.0, Field.nonNegativeDouble("0", label = FieldLabel.PricePerUnit))
     }
 
     @Test
     fun nonNegativeDouble_parses_decimals() {
-        assertEquals(2.5, Field.nonNegativeDouble("2.5", label = "ราคา"))
+        assertEquals(2.5, Field.nonNegativeDouble("2.5", label = FieldLabel.PricePerUnit))
     }
 
     @Test
     fun nonNegativeDouble_throws_for_negative_with_label() {
-        val e = assertFailsWith<ValidationException> { Field.nonNegativeDouble("-1.5", label = "ราคาต่อหน่วย") }
-        assertEquals("ราคาต่อหน่วยต้องไม่ติดลบ", e.message)
+        val e = assertFailsWith<FieldValidationError> { Field.nonNegativeDouble("-1.5", label = FieldLabel.PricePerUnit) }
+        assertIs<FieldValidationError.MustBeNonNegative>(e)
+        assertEquals(FieldLabel.PricePerUnit, e.field)
     }
 
     @Test

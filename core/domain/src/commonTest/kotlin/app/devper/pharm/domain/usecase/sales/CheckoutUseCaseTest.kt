@@ -2,11 +2,12 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.validation.SaleValidationError
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.testDispatchers
-import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
@@ -54,7 +55,7 @@ class CheckoutUseCaseTest {
         assertTrue(result.isFailure)
         val failure = result.exceptionOrNull()
         assertTrue(failure is CheckoutFailure)
-        assertTrue(failure.cause is ValidationException)
+        assertTrue(failure.cause is SaleValidationError.EmptyCart)
     }
 
     @Test

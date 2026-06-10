@@ -1,6 +1,11 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface BulkImportStrings {
+    val bulkImportPasteFirst: String
+    val bulkImportNotArray: String
+    val bulkImportRowNotObject: (Int) -> String
+    val bulkImportRowMissingName: String
+
     val bulkImportPickFileFailed: String
     val bulkImportImportFailed: String
     val bulkImportNoRows: String

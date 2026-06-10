@@ -1,6 +1,6 @@
 package app.devper.pharm.domain.extension
 
-import app.devper.pharm.common.ValidationException
+import app.devper.pharm.domain.validation.BulkImportParseError
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.param.AddDrugParam
@@ -20,23 +20,23 @@ private val bulkImportJson = Json {
 
 fun parseBulkImportJson(raw: String): Result<List<AddDrugParam>> = runCatching {
     val trimmed = raw.trim()
-    require(trimmed.isNotEmpty()) { "วาง JSON ก่อนตรวจสอบ" }
+    if (trimmed.isEmpty()) throw BulkImportParseError.EmptyInput()
     val element = bulkImportJson.parseToJsonElement(trimmed)
     val array: JsonArray = when (element) {
         is JsonArray  -> element
         is JsonObject -> element["drugs"]?.takeIf { it is JsonArray }?.jsonArray
-            ?: throw ValidationException("ต้องเป็น array หรือ {drugs: [...]}")
-        else -> throw ValidationException("รูปแบบ JSON ไม่ถูกต้อง")
+            ?: throw BulkImportParseError.NotArrayOrObject()
+        else -> throw BulkImportParseError.NotArrayOrObject()
     }
     array.mapIndexed { idx, raw ->
         (raw as? JsonObject)?.toAddDrugParam()
-            ?: throw ValidationException("รายการที่ ${idx + 1}: ต้องเป็น JSON object")
+            ?: throw BulkImportParseError.RowNotObject(idx + 1)
     }
 }
 
 private fun JsonObject.toAddDrugParam(): AddDrugParam {
     val name = stringField("name")?.trim().orEmpty()
-    require(name.isNotEmpty()) { "ทุกแถวต้องมีฟิลด์ name" }
+    if (name.isEmpty()) throw BulkImportParseError.RowMissingName()
     return AddDrugParam(
         name = name,
         genericName = stringField("generic_name").orEmpty(),

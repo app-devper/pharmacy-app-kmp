@@ -29,4 +29,8 @@ object BulkImportStringsEn : BulkImportStrings {
     override val bulkImportImportFailed = "Import failed"
     override val bulkImportNoRows = "No items to import"
     override val bulkImportInvalidJson = "Invalid JSON format"
+    override val bulkImportPasteFirst = "Paste JSON before validating"
+    override val bulkImportNotArray = "Must be an array or {drugs: [...]}"
+    override val bulkImportRowNotObject: (Int) -> String = { row -> "Row $row: must be a JSON object" }
+    override val bulkImportRowMissingName = "Every row needs a name field"
 }

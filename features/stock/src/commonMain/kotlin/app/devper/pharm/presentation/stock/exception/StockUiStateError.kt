@@ -8,6 +8,7 @@ sealed class StockUiStateError(message: String, cause: Throwable? = null) : AppE
 
 sealed class DrugFormUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
     class NotFound : DrugFormUiStateError("stock.drug_not_found")
+    class InvalidInitialLotExpiry : DrugFormUiStateError("stock.drug_form_lot_expiry_invalid")
 }
 
 sealed class DrugLotsUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {

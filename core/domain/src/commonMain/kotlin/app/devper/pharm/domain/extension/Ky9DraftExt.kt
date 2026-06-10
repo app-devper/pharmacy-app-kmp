@@ -3,6 +3,7 @@ package app.devper.pharm.domain.extension
 import app.devper.pharm.domain.param.AddKy9Param
 import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.domain.validation.Field
+import app.devper.pharm.domain.validation.FieldLabel
 
 fun buildKy9Draft(
     date: String,
@@ -15,10 +16,10 @@ fun buildKy9Draft(
     invoiceNo: String,
 ): Result<AddKy9Param> = runCatching {
     val parsedDate = Field.localDate(date)
-    val parsedDrugName = Field.notBlank(drugName, "ชื่อยา")
-    val parsedUnit = Field.notBlank(unit, "หน่วย")
+    val parsedDrugName = Field.notBlank(drugName, FieldLabel.DrugName)
+    val parsedUnit = Field.notBlank(unit, FieldLabel.Unit)
     val parsedQty = Field.positiveInt(qty)
-    val parsedPrice = Field.nonNegativeDouble(pricePerUnit, label = "ราคาต่อหน่วย")
+    val parsedPrice = Field.nonNegativeDouble(pricePerUnit, label = FieldLabel.PricePerUnit)
     AddKy9Param(
         date = parsedDate,
         drugName = parsedDrugName,

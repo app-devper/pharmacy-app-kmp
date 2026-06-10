@@ -29,4 +29,8 @@ object BulkImportStringsTh : BulkImportStrings {
     override val bulkImportImportFailed = "นำเข้าไม่สำเร็จ"
     override val bulkImportNoRows = "ไม่มีรายการให้นำเข้า"
     override val bulkImportInvalidJson = "รูปแบบ JSON ไม่ถูกต้อง"
+    override val bulkImportPasteFirst = "วาง JSON ก่อนตรวจสอบ"
+    override val bulkImportNotArray = "ต้องเป็น array หรือ {drugs: [...]}"
+    override val bulkImportRowNotObject: (Int) -> String = { row -> "รายการที่ $row: ต้องเป็น JSON object" }
+    override val bulkImportRowMissingName = "ทุกแถวต้องมีฟิลด์ name"
 }

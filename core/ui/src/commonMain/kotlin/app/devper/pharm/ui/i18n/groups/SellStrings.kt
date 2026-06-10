@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface SellStrings {
+    val sellCheckoutEmptyCart: String
+
     val sellVoidMissingBillId: String
     val sellVoidReasonRequired: String
     val sellVoidFailed: String

@@ -78,4 +78,5 @@ object SellStringsTh : SellStrings {
     override val sellKyError: (String, String) -> String = { billNo, cause -> "บิล $billNo บันทึกแล้ว แต่บันทึก ขย. ผิดพลาด: $cause" }
     override val sellOfflineSaved = "เครือข่ายไม่ได้เชื่อมต่อ — บิลถูกเก็บไว้เพื่อซิงค์ภายหลัง"
     override val sellCheckoutFailed = "ออกใบเสร็จไม่สำเร็จ"
+    override val sellCheckoutEmptyCart = "ตะกร้าว่างเปล่า"
 }

@@ -43,6 +43,9 @@ import app.devper.pharm.ui.i18n.groups.LabelsStrings
 import app.devper.pharm.ui.i18n.groups.LabelsStringsTh
 import app.devper.pharm.ui.i18n.groups.LabelsStringsEn
 import app.devper.pharm.ui.i18n.groups.CommonStrings
+import app.devper.pharm.ui.i18n.groups.ValidationStrings
+import app.devper.pharm.ui.i18n.groups.ValidationStringsEn
+import app.devper.pharm.ui.i18n.groups.ValidationStringsTh
 import app.devper.pharm.ui.i18n.groups.CommonStringsTh
 import app.devper.pharm.ui.i18n.groups.CommonStringsEn
 import app.devper.pharm.ui.i18n.groups.LoginStrings
@@ -88,6 +91,7 @@ interface PharmStrings :
     ExpiryStrings,
     LabelsStrings,
     CommonStrings,
+    ValidationStrings,
     LoginStrings,
     ProfileStrings,
     SettingsStrings,
@@ -114,6 +118,7 @@ object PharmStringsTh :
     ExpiryStrings by ExpiryStringsTh,
     LabelsStrings by LabelsStringsTh,
     CommonStrings by CommonStringsTh,
+    ValidationStrings by ValidationStringsTh,
     LoginStrings by LoginStringsTh,
     ProfileStrings by ProfileStringsTh,
     SettingsStrings by SettingsStringsTh,
@@ -140,6 +145,7 @@ object PharmStringsEn :
     ExpiryStrings by ExpiryStringsEn,
     LabelsStrings by LabelsStringsEn,
     CommonStrings by CommonStringsEn,
+    ValidationStrings by ValidationStringsEn,
     LoginStrings by LoginStringsEn,
     ProfileStrings by ProfileStringsEn,
     SettingsStrings by SettingsStringsEn,
