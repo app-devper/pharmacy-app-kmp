@@ -2,7 +2,7 @@ package app.devper.pharm.presentation.stockcount
 
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
-import app.devper.pharm.domain.usecase.GetStockCountsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetStockCountsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

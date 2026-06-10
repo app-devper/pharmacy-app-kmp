@@ -6,8 +6,8 @@ import app.devper.pharm.presentation.reports.exception.ProfitUiStateError
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportProfitCsvParam
 import app.devper.pharm.domain.param.ReportRangeParam
-import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
-import app.devper.pharm.domain.usecase.GetProfitReportUseCase
+import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
+import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
 import app.devper.pharm.presentation.reports.internal.startOfMonth
 import app.devper.pharm.presentation.reports.internal.todayDate
 import app.devper.pharm.presentation.reports.internal.toYmd

@@ -5,9 +5,9 @@ import app.devper.pharm.domain.param.ReturnLineParam
 import app.devper.pharm.domain.param.SaleHistoryFilterParam
 import app.devper.pharm.domain.param.SubmitReturnParam
 import app.devper.pharm.domain.observer.TimeZoneProvider
-import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
-import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
-import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
+import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
+import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase
+import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
 import app.devper.pharm.domain.validation.SaleValidationError
 import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError

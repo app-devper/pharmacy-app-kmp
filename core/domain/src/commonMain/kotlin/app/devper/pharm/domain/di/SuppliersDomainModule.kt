@@ -1,9 +1,9 @@
 package app.devper.pharm.domain.di
 
-import app.devper.pharm.domain.usecase.AddSupplierUseCase
-import app.devper.pharm.domain.usecase.DeleteSupplierUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.UpdateSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.suppliers.UpdateSupplierUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

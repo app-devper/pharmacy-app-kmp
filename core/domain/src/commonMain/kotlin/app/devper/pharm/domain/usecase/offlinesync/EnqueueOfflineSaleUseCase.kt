@@ -1,4 +1,6 @@
-package app.devper.pharm.domain.usecase
+package app.devper.pharm.domain.usecase.offlinesync
+
+import app.devper.pharm.domain.usecase.BaseSyncUseCase
 
 import app.devper.pharm.domain.param.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.repository.OfflineSaleQueue

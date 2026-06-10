@@ -1,12 +1,12 @@
 package app.devper.pharm.domain.di
 
-import app.devper.pharm.domain.usecase.CreateUserUseCase
-import app.devper.pharm.domain.usecase.DeleteUserUseCase
-import app.devper.pharm.domain.usecase.GetUsersUseCase
-import app.devper.pharm.domain.usecase.SetUserPasswordUseCase
-import app.devper.pharm.domain.usecase.SetUserRoleUseCase
-import app.devper.pharm.domain.usecase.SetUserStatusUseCase
-import app.devper.pharm.domain.usecase.UpdateUserUseCase
+import app.devper.pharm.domain.usecase.users.CreateUserUseCase
+import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
+import app.devper.pharm.domain.usecase.users.GetUsersUseCase
+import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
+import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
+import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
+import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

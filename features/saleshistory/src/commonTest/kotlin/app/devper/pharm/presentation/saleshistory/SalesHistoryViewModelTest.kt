@@ -7,9 +7,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.repository.FakeSaleHistoryRepository
-import app.devper.pharm.domain.usecase.GetSaleHistoryUseCase
-import app.devper.pharm.domain.usecase.GetSaleItemsUseCase
-import app.devper.pharm.domain.usecase.SubmitSaleReturnUseCase
+import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
+import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase
+import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
 import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

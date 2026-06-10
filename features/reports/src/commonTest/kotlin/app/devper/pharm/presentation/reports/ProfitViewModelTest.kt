@@ -4,8 +4,8 @@ import app.devper.pharm.common.error.CommonUiStateMessage
 
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeReportsRepository
-import app.devper.pharm.domain.usecase.ExportProfitCsvUseCase
-import app.devper.pharm.domain.usecase.GetProfitReportUseCase
+import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
+import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

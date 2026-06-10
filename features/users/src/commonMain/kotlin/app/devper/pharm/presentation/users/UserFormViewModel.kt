@@ -5,9 +5,9 @@ import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.CreateUserParam
 import app.devper.pharm.domain.param.UpdateUserParam
-import app.devper.pharm.domain.usecase.CreateUserUseCase
-import app.devper.pharm.domain.usecase.GetUsersUseCase
-import app.devper.pharm.domain.usecase.UpdateUserUseCase
+import app.devper.pharm.domain.usecase.users.CreateUserUseCase
+import app.devper.pharm.domain.usecase.users.GetUsersUseCase
+import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
 import app.devper.pharm.presentation.users.exception.UserFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 

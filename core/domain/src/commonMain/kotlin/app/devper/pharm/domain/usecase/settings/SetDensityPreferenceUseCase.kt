@@ -1,4 +1,6 @@
-package app.devper.pharm.domain.usecase
+package app.devper.pharm.domain.usecase.settings
+
+import app.devper.pharm.domain.usecase.BaseSyncUseCase
 
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.repository.UiPreferencesRepository

@@ -4,8 +4,8 @@ import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.presentation.stock.exception.StockUiStateError
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.param.AddStockAdjustmentParam
-import app.devper.pharm.domain.usecase.AddStockAdjustmentUseCase
-import app.devper.pharm.domain.usecase.GetStockAdjustmentsUseCase
+import app.devper.pharm.domain.usecase.inventory.AddStockAdjustmentUseCase
+import app.devper.pharm.domain.usecase.inventory.GetStockAdjustmentsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 

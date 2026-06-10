@@ -2,6 +2,20 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.usecase.customers.AddCustomerUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomerSalesUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
+import app.devper.pharm.domain.usecase.customers.UpdateCustomerUseCase
+import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase
+import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
+import app.devper.pharm.domain.usecase.offlinesync.MarkOfflineSaleSyncedUseCase
+import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.suppliers.UpdateSupplierUseCase
+
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.Customer

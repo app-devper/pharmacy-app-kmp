@@ -4,7 +4,7 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.extension.buildKy9Draft
-import app.devper.pharm.domain.usecase.AddKy9UseCase
+import app.devper.pharm.domain.usecase.ky.AddKy9UseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class Ky9AddViewModel(

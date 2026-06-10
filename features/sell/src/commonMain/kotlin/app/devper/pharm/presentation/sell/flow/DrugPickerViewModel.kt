@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.usecase.AddToCartUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.sales.AddToCartUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.presentation.sell.exception.DrugPickerUiStateError
 import app.devper.pharm.domain.model.BarcodeMatch
 import app.devper.pharm.domain.extension.matchBarcode

@@ -7,7 +7,7 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.repository.FakeDrugRepositoryForBulk
-import app.devper.pharm.domain.usecase.BulkImportDrugsUseCase
+import app.devper.pharm.domain.usecase.purchasing.BulkImportDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

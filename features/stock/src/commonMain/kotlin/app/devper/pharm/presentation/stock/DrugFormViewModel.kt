@@ -11,9 +11,9 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.param.AddDrugParam
 import app.devper.pharm.domain.param.CreateLotPayload
 import app.devper.pharm.domain.param.UpdateDrugParam
-import app.devper.pharm.domain.usecase.AddDrugUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.UpdateDrugUseCase
+import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 

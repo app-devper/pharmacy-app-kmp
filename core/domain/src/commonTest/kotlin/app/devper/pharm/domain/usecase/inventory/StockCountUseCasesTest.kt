@@ -2,6 +2,9 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.usecase.inventory.CreateStockCountUseCase
+import app.devper.pharm.domain.usecase.inventory.GetStockCountsUseCase
+
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
 import app.devper.pharm.domain.param.CreateStockCountParam

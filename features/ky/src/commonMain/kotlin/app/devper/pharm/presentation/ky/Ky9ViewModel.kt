@@ -2,8 +2,8 @@ package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.param.ExportKyFormParam
 import app.devper.pharm.domain.param.KyMonthFilterParam
-import app.devper.pharm.domain.usecase.ExportKyFormUseCase
-import app.devper.pharm.domain.usecase.GetKy9EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel

@@ -10,9 +10,9 @@ import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.CloseEodUseCase
-import app.devper.pharm.domain.usecase.GetEodReportUseCase
-import app.devper.pharm.domain.usecase.PrintReceiptUseCase
+import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
+import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
+import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

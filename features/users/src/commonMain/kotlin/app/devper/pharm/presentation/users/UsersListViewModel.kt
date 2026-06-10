@@ -7,12 +7,12 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.SetUserPasswordParam
 import app.devper.pharm.domain.param.SetUserRoleParam
 import app.devper.pharm.domain.param.SetUserStatusParam
-import app.devper.pharm.domain.usecase.DeleteUserUseCase
-import app.devper.pharm.domain.usecase.GetProfileUseCase
-import app.devper.pharm.domain.usecase.GetUsersUseCase
-import app.devper.pharm.domain.usecase.SetUserPasswordUseCase
-import app.devper.pharm.domain.usecase.SetUserRoleUseCase
-import app.devper.pharm.domain.usecase.SetUserStatusUseCase
+import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
+import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.usecase.users.GetUsersUseCase
+import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
+import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
+import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 

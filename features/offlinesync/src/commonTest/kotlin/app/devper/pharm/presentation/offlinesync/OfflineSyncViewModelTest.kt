@@ -5,8 +5,8 @@ import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.FakeSaleRepository
-import app.devper.pharm.domain.usecase.MarkOfflineSaleSyncedUseCase
-import app.devper.pharm.domain.usecase.RetryOfflineSaleUseCase
+import app.devper.pharm.domain.usecase.offlinesync.MarkOfflineSaleSyncedUseCase
+import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
 import app.devper.pharm.presentation.offlinesync.exception.OfflineSyncUiStateError
 import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.common.runVmTest

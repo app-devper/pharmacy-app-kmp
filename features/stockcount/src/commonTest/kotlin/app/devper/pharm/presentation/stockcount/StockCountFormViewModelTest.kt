@@ -9,11 +9,11 @@ import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeStockCountDraftRepository
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
-import app.devper.pharm.domain.usecase.ClearStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.CreateStockCountUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.LoadStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.SaveStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.inventory.ClearStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.inventory.CreateStockCountUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.LoadStockCountDraftUseCase
+import app.devper.pharm.domain.usecase.inventory.SaveStockCountDraftUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy

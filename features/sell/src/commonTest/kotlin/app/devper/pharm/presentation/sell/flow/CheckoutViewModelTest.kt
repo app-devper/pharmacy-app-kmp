@@ -22,11 +22,11 @@ import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.CheckoutUseCase
-import app.devper.pharm.domain.usecase.ClearCartUseCase
-import app.devper.pharm.domain.usecase.DismissReceiptUseCase
-import app.devper.pharm.domain.usecase.EnqueueOfflineSaleUseCase
-import app.devper.pharm.domain.usecase.SubmitKyFormsUseCase
+import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
+import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
+import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
+import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
+import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch

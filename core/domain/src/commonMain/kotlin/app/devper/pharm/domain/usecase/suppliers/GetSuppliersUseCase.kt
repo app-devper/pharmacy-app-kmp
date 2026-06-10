@@ -1,4 +1,6 @@
-package app.devper.pharm.domain.usecase
+package app.devper.pharm.domain.usecase.suppliers
+
+import app.devper.pharm.domain.usecase.BaseQueryUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Supplier

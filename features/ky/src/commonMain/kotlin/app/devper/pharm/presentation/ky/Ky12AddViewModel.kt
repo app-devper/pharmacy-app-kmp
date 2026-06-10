@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.extension.buildKy12Draft
-import app.devper.pharm.domain.usecase.AddKy12UseCase
+import app.devper.pharm.domain.usecase.ky.AddKy12UseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class Ky12AddViewModel(

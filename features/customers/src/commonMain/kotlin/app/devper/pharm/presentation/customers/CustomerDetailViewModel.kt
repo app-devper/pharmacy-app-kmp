@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.customers
 
-import app.devper.pharm.domain.usecase.GetCustomerSalesUseCase
-import app.devper.pharm.domain.usecase.GetCustomersUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomerSalesUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.presentation.customers.exception.CustomerDetailUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 

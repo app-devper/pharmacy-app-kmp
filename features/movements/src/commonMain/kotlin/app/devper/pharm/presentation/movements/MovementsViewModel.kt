@@ -5,8 +5,8 @@ import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.MovementsFilterParam
-import app.devper.pharm.domain.usecase.ExportMovementsCsvUseCase
-import app.devper.pharm.domain.usecase.GetMovementsUseCase
+import app.devper.pharm.domain.usecase.reports.ExportMovementsCsvUseCase
+import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.presentation.movements.exception.MovementsUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter

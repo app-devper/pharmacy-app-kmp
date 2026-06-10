@@ -6,7 +6,7 @@ import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.domain.model.StockMovementsPage
 import app.devper.pharm.domain.param.MovementsFilterParam
 import app.devper.pharm.domain.repository.MovementsRepository
-import app.devper.pharm.domain.usecase.GetMovementsUseCase
+import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

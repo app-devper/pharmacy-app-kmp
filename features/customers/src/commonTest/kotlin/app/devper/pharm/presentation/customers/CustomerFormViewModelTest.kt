@@ -4,9 +4,9 @@ import app.devper.pharm.presentation.customers.exception.CustomerFormUiStateErro
 
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.repository.FakeCustomerRepository
-import app.devper.pharm.domain.usecase.AddCustomerUseCase
-import app.devper.pharm.domain.usecase.GetCustomersUseCase
-import app.devper.pharm.domain.usecase.UpdateCustomerUseCase
+import app.devper.pharm.domain.usecase.customers.AddCustomerUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
+import app.devper.pharm.domain.usecase.customers.UpdateCustomerUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

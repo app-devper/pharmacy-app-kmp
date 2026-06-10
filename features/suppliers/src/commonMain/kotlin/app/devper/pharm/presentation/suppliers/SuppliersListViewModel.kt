@@ -2,8 +2,8 @@ package app.devper.pharm.presentation.suppliers
 
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.domain.usecase.DeleteSupplierUseCase
-import app.devper.pharm.domain.usecase.GetSuppliersUseCase
+import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
+import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class SuppliersListViewModel(

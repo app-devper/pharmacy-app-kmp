@@ -3,8 +3,8 @@ package app.devper.pharm.presentation.expiry
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.domain.repository.FakeExpiringLotsRepository
-import app.devper.pharm.domain.usecase.GetExpiringLotsUseCase
-import app.devper.pharm.domain.usecase.WriteoffLotsUseCase
+import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
+import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

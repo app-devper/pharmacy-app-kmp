@@ -1,15 +1,15 @@
 package app.devper.pharm.domain.di
 
-import app.devper.pharm.domain.usecase.AddKy10UseCase
-import app.devper.pharm.domain.usecase.AddKy11UseCase
-import app.devper.pharm.domain.usecase.AddKy12UseCase
-import app.devper.pharm.domain.usecase.AddKy9UseCase
-import app.devper.pharm.domain.usecase.ExportKyFormUseCase
-import app.devper.pharm.domain.usecase.GetKy10EntriesUseCase
-import app.devper.pharm.domain.usecase.GetKy11EntriesUseCase
-import app.devper.pharm.domain.usecase.GetKy12EntriesUseCase
-import app.devper.pharm.domain.usecase.GetKy9EntriesUseCase
-import app.devper.pharm.domain.usecase.SubmitKyFormsUseCase
+import app.devper.pharm.domain.usecase.ky.AddKy10UseCase
+import app.devper.pharm.domain.usecase.ky.AddKy11UseCase
+import app.devper.pharm.domain.usecase.ky.AddKy12UseCase
+import app.devper.pharm.domain.usecase.ky.AddKy9UseCase
+import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
+import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

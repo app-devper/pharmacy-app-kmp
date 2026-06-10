@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
+
 import app.devper.pharm.domain.validation.SaleValidationError
 
 import app.devper.pharm.common.value.Money

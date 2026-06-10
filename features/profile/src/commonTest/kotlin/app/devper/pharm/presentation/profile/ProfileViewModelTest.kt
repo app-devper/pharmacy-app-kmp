@@ -7,9 +7,13 @@ import app.devper.pharm.presentation.profile.exception.ProfileUiStateError
 import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.repository.FakeProfileRepository
-import app.devper.pharm.domain.usecase.ChangePasswordUseCase
-import app.devper.pharm.domain.usecase.GetProfileUseCase
-import app.devper.pharm.domain.usecase.UpdateProfileUseCase
+import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
+import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
+import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -29,10 +33,10 @@ class ProfileViewModelTest {
             updateProfile = UpdateProfileUseCase(fake, dispatchers),
             changePassword = ChangePasswordUseCase(fake, dispatchers),
             uiPreferences = app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
-            setTheme = app.devper.pharm.domain.usecase.SetThemePreferenceUseCase(uiPrefs),
-            setFontSize = app.devper.pharm.domain.usecase.SetFontSizePreferenceUseCase(uiPrefs),
-            setDensity = app.devper.pharm.domain.usecase.SetDensityPreferenceUseCase(uiPrefs),
-            setLocale = app.devper.pharm.domain.usecase.SetLocalePreferenceUseCase(uiPrefs),
+            setTheme = SetThemePreferenceUseCase(uiPrefs),
+            setFontSize = SetFontSizePreferenceUseCase(uiPrefs),
+            setDensity = SetDensityPreferenceUseCase(uiPrefs),
+            setLocale = SetLocalePreferenceUseCase(uiPrefs),
         )
     }
 

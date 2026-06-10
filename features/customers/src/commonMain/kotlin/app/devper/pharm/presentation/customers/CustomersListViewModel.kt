@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.customers
 
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.usecase.GetCustomersUseCase
+import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class CustomersListViewModel(

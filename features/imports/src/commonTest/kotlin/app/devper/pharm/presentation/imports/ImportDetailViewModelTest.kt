@@ -6,9 +6,9 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
-import app.devper.pharm.domain.usecase.ConfirmPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.DeletePurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.GetPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.ConfirmPurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.DeletePurchaseOrderUseCase
+import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

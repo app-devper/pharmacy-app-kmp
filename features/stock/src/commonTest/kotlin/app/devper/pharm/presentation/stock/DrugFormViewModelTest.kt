@@ -9,9 +9,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.repository.FakeDrugRepository
-import app.devper.pharm.domain.usecase.AddDrugUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.UpdateDrugUseCase
+import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle

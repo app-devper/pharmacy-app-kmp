@@ -1,8 +1,8 @@
 package app.devper.pharm.domain.di
 
 import app.devper.pharm.domain.observer.AuthStateProvider
-import app.devper.pharm.domain.usecase.LoginUseCase
-import app.devper.pharm.domain.usecase.LogoutUseCase
+import app.devper.pharm.domain.usecase.auth.LoginUseCase
+import app.devper.pharm.domain.usecase.auth.LogoutUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

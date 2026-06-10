@@ -13,8 +13,8 @@ import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.repository.FakeCartRepository
 import app.devper.pharm.domain.repository.FakeDrugRepository
-import app.devper.pharm.domain.usecase.AddToCartUseCase
-import app.devper.pharm.domain.usecase.GetDrugsUseCase
+import app.devper.pharm.domain.usecase.sales.AddToCartUseCase
+import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

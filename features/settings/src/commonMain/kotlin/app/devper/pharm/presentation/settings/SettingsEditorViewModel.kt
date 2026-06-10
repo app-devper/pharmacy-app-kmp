@@ -12,8 +12,8 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.ReceiptSettingsInput
 import app.devper.pharm.domain.param.StockSettingsInput
 import app.devper.pharm.domain.param.UpdateSettingsParam
-import app.devper.pharm.domain.usecase.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.UpdateSettingsUseCase
+import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
+import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

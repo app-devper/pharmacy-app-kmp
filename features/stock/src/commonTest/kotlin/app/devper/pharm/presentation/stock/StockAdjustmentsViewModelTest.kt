@@ -4,8 +4,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
 import app.devper.pharm.domain.repository.FakeStockAdjustmentsRepository
-import app.devper.pharm.domain.usecase.AddStockAdjustmentUseCase
-import app.devper.pharm.domain.usecase.GetStockAdjustmentsUseCase
+import app.devper.pharm.domain.usecase.inventory.AddStockAdjustmentUseCase
+import app.devper.pharm.domain.usecase.inventory.GetStockAdjustmentsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
