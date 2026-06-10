@@ -46,10 +46,13 @@ data class SidebarNavItem(
     val id: String,
     val icon: ImageVector,
     val admin: Boolean = false,
+    val label: String = "",
 )
 
 
-fun SidebarNavItem.localizedLabel(s: PharmStrings): String = when (id) {
+fun SidebarNavItem.displayLabel(s: PharmStrings): String = label.ifBlank { fallbackLabel(s) }
+
+private fun SidebarNavItem.fallbackLabel(s: PharmStrings): String = when (id) {
     "sell" -> s.navSell
     "salesHistory" -> s.navSalesHistory
     "stock" -> s.navStock
@@ -215,13 +218,13 @@ private fun SidebarRow(
     ) {
         Icon(
             imageVector = item.icon,
-            contentDescription = if (collapsed) item.localizedLabel(pharmStrings) else null,
+            contentDescription = if (collapsed) item.displayLabel(pharmStrings) else null,
             tint = fg,
             modifier = Modifier.size(18.dp),
         )
         if (!collapsed) {
             Text(
-                text = item.localizedLabel(pharmStrings),
+                text = item.displayLabel(pharmStrings),
                 style = PharmText.body.copy(color = fg),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
