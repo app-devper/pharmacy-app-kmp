@@ -265,35 +265,3 @@ fun ParkOverwriteDialog(
         Text(pharmStrings.sellParkedOverwriteBody, style = PharmText.body)
     }
 }
-
-@Composable
-fun SwapToParkedDialog(
-    slotNumber: Int,
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-) {
-    PharmModal(
-        open = true,
-        onDismiss = onCancel,
-        title = pharmStrings.sellParkedSwapTitle(slotNumber),
-        size = PharmModalSize.Sm,
-        footer = {
-            PharmButton(
-                label = pharmStrings.commonCancel,
-                onClick = onCancel,
-                variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Sm,
-            )
-            PharmButton(
-                label = pharmStrings.commonEdit,
-                onClick = onConfirm,
-                size = PharmButtonSize.Sm,
-            )
-        },
-    ) {
-        Text(
-            pharmStrings.sellParkedSwapBody,
-            style = PharmText.body,
-        )
-    }
-}

@@ -10,7 +10,6 @@ class SellEscapeActionTest {
         shortcutsVisible: Boolean = false,
         hasError: Boolean = false,
         overwriteSlotPending: Boolean = false,
-        swapSlotPending: Boolean = false,
         clearConfirmVisible: Boolean = false,
         skipKyConfirmVisible: Boolean = false,
         oversellPending: Boolean = false,
@@ -23,7 +22,7 @@ class SellEscapeActionTest {
         parkedSheetOpen: Boolean = false,
         receiptVisible: Boolean = false,
     ) = resolveSellEscapeAction(
-        shortcutsVisible, hasError, overwriteSlotPending, swapSlotPending,
+        shortcutsVisible, hasError, overwriteSlotPending,
         clearConfirmVisible, skipKyConfirmVisible, oversellPending, kyCapturePending,
         lineDiscountOpen, cartDiscountOpen, altUnitPickerOpen, voidSheetOpen,
         customerOpen, parkedSheetOpen, receiptVisible,
@@ -39,7 +38,6 @@ class SellEscapeActionTest {
         assertEquals(SellEscapeAction.HideShortcuts, resolve(shortcutsVisible = true))
         assertEquals(SellEscapeAction.DismissErrors, resolve(hasError = true))
         assertEquals(SellEscapeAction.CancelOverwrite, resolve(overwriteSlotPending = true))
-        assertEquals(SellEscapeAction.CancelSwap, resolve(swapSlotPending = true))
         assertEquals(SellEscapeAction.CancelClearCart, resolve(clearConfirmVisible = true))
         assertEquals(SellEscapeAction.CancelSkipKy, resolve(skipKyConfirmVisible = true))
         assertEquals(SellEscapeAction.DismissOversell, resolve(oversellPending = true))
@@ -76,14 +74,10 @@ class SellEscapeActionTest {
     }
 
     @Test
-    fun slot_overwrite_and_swap_outrank_confirms_and_sheets() {
+    fun slot_overwrite_outranks_confirms_and_sheets() {
         assertEquals(
             SellEscapeAction.CancelOverwrite,
-            resolve(overwriteSlotPending = true, swapSlotPending = true, clearConfirmVisible = true),
-        )
-        assertEquals(
-            SellEscapeAction.CancelSwap,
-            resolve(swapSlotPending = true, clearConfirmVisible = true, parkedSheetOpen = true),
+            resolve(overwriteSlotPending = true, clearConfirmVisible = true, parkedSheetOpen = true),
         )
     }
 
@@ -102,7 +96,7 @@ class SellEscapeActionTest {
             SellEscapeAction.HideShortcuts,
             resolve(
                 shortcutsVisible = true, hasError = true, overwriteSlotPending = true,
-                swapSlotPending = true, clearConfirmVisible = true, skipKyConfirmVisible = true,
+                clearConfirmVisible = true, skipKyConfirmVisible = true,
                 oversellPending = true, kyCapturePending = true, lineDiscountOpen = true,
                 cartDiscountOpen = true, altUnitPickerOpen = true, voidSheetOpen = true,
                 customerOpen = true, parkedSheetOpen = true, receiptVisible = true,

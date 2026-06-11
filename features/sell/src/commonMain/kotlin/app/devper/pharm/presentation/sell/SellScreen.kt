@@ -45,7 +45,6 @@ import app.devper.pharm.presentation.sell.components.SkipKyConfirmSheet
 import app.devper.pharm.presentation.sell.components.LineDiscountSheet
 import app.devper.pharm.presentation.sell.components.OversellConfirmSheet
 import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
-import app.devper.pharm.presentation.sell.components.SwapToParkedDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.ShortcutLegend
@@ -175,7 +174,7 @@ fun SellScreen(
 
                     CartSlotRail(
                         slots = parkedState.parkedSlots,
-                        selectedSlot = parkedState.selectedSlot,
+                        selectedSlot = parkedState.activeSlot,
                         onTapSlot = onTapParkSlot,
                     )
                 }
@@ -225,13 +224,6 @@ fun SellScreen(
                     slotNumber = slot + 1,
                     onConfirm = parkedCartVM::confirmOverwrite,
                     onCancel = parkedCartVM::cancelOverwrite,
-                )
-            }
-            parkedState.swapSlot?.let { slot ->
-                SwapToParkedDialog(
-                    slotNumber = slot + 1,
-                    onConfirm = parkedCartVM::confirmSwap,
-                    onCancel = parkedCartVM::cancelSwap,
                 )
             }
 

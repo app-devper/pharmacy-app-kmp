@@ -29,8 +29,6 @@ object SellStringsTh : SellStrings {
     override val sellParkedDeleteBody: (Int) -> String = { n -> "รายการ $n ชิ้นจะถูกลบ ไม่สามารถกู้คืนได้" }
     override val sellParkedOverwriteTitle: (Int) -> String = { n -> "ทับบิลที่พักช่อง $n?" }
     override val sellParkedOverwriteBody = "บิลที่พักไว้เดิมจะถูกแทนที่ด้วยบิลปัจจุบัน"
-    override val sellParkedSwapTitle: (Int) -> String = { n -> "เปลี่ยนไปใช้บิลที่พักช่อง $n?" }
-    override val sellParkedSwapBody = "ตะกร้าปัจจุบันจะถูกแทนที่ด้วยบิลที่พัก รายการในตะกร้าเดิมจะหายไป"
     override val sellClearCartCta = "ล้าง"
     override val sellClearCartBody: (Int) -> String = { n -> "ลบรายการในตะกร้าทั้งหมด $n รายการ? การกระทำนี้ย้อนกลับไม่ได้" }
     override val sellIssueReceipt = "ออกใบเสร็จ"

@@ -29,8 +29,6 @@ object SellStringsEn : SellStrings {
     override val sellParkedDeleteBody: (Int) -> String = { n -> "$n item(s) will be deleted and cannot be recovered" }
     override val sellParkedOverwriteTitle: (Int) -> String = { n -> "Overwrite parked bill in slot $n?" }
     override val sellParkedOverwriteBody = "The existing parked bill will be replaced by the current one"
-    override val sellParkedSwapTitle: (Int) -> String = { n -> "Switch to the parked bill in slot $n?" }
-    override val sellParkedSwapBody = "The current cart will be replaced by the parked bill; its items will be lost"
     override val sellClearCartCta = "Clear"
     override val sellClearCartBody: (Int) -> String = { n -> "Remove all $n items from the cart? This cannot be undone" }
     override val sellIssueReceipt = "Issue receipt"

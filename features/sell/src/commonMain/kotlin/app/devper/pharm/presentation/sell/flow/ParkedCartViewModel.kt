@@ -31,36 +31,25 @@ class ParkedCartViewModel(
     fun openSheet() = setState { copy(sheetOpen = true) }
     fun closeSheet() = setState { copy(sheetOpen = false) }
 
-    fun selectSlot(slot: Int) = setState { copy(selectedSlot = slot) }
-
     fun tapSlot(slot: Int) {
         val s = current
-        setState { copy(selectedSlot = slot) }
-        val slotContent = s.parkedSlots.getOrNull(slot)
-        if (slotContent != null) {
-            if (!s.activeCartIsEmpty) {
-                setState { copy(swapSlot = slot) }
-                return
-            }
-            restoreCart(slot)
+        if (slot == s.activeSlot) {
             setState { copy(sheetOpen = false) }
             return
         }
-        if (s.activeCartIsEmpty) return
-        parkCart(slot)
-        setState { copy(sheetOpen = false) }
+        parkCart(s.activeSlot)
+        restoreCart(slot)
+        setState { copy(activeSlot = slot, sheetOpen = false) }
     }
 
-    fun parkToSelected() {
+    fun newBillOnNextTab() {
         val s = current
-        if (s.activeCartIsEmpty) return
-        val slot = s.selectedSlot
-        if (s.parkedSlots.getOrNull(slot) != null) {
-            setState { copy(overwriteSlot = slot) }
+        val target = s.parkedSlots.indices.firstOrNull { it != s.activeSlot && s.parkedSlots[it] == null }
+        if (target == null) {
+            setState { copy(sheetOpen = true) }
             return
         }
-        parkCart(slot)
-        setState { copy(sheetOpen = false) }
+        tapSlot(target)
     }
 
     fun requestOverwrite(slot: Int) {
@@ -74,14 +63,6 @@ class ParkedCartViewModel(
         val slot = current.overwriteSlot ?: return
         parkCart(slot)
         setState { copy(overwriteSlot = null, sheetOpen = false) }
-    }
-
-    fun cancelSwap() = setState { copy(swapSlot = null) }
-
-    fun confirmSwap() {
-        val slot = current.swapSlot ?: return
-        restoreCart(slot)
-        setState { copy(swapSlot = null, sheetOpen = false) }
     }
 
     fun discard(slot: Int) = discardParked(slot)
