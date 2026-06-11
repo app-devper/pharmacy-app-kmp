@@ -110,15 +110,6 @@ fun CartPanel(
             showShortcutHint = showShortcutHints,
         )
 
-        val allergyNote = customer?.allergyNote?.takeIf { it.isNotBlank() }
-        AnimatedVisibility(
-            visible = allergyNote != null,
-            enter = pharmBannerEnter(),
-            exit = ExitTransition.None,
-        ) {
-            CartAllergyBanner(note = allergyNote.orEmpty())
-        }
-
         val kyRequired = remember(cart) { cart.calculateKyRequired() }
         AnimatedVisibility(
             visible = !kyRequired.isEmpty,
@@ -315,39 +306,6 @@ private fun CartSectionDivider() {
             .height(1.dp)
             .background(pharmTokens.colors.divider),
     )
-}
-
-@Composable
-private fun CartAllergyBanner(note: String) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-            .clip(t.shapes.md)
-            .background(t.colors.dangerBg)
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Assertive },
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Icon(
-            imageVector = PharmIcons.Warning,
-            contentDescription = null,
-            tint = t.colors.dangerFg,
-            modifier = Modifier.size(16.dp),
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
-            Text(
-                text = pharmStrings.sellAllergyTitle,
-                style = PharmText.micro.copy(color = t.colors.dangerFg, fontWeight = FontWeight.SemiBold),
-            )
-            Text(
-                text = note,
-                style = PharmText.bodySm.copy(color = t.colors.dangerFg),
-            )
-        }
-    }
 }
 
 @Composable
