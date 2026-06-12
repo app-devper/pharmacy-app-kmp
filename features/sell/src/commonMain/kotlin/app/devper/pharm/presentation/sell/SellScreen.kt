@@ -38,6 +38,7 @@ import app.devper.pharm.presentation.sell.components.CartDiscountSheet
 import app.devper.pharm.presentation.sell.components.CartFooterBar
 import app.devper.pharm.presentation.sell.components.CartPanel
 import app.devper.pharm.presentation.sell.components.CartSlotRail
+import app.devper.pharm.presentation.sell.components.CartTabStrip
 import app.devper.pharm.presentation.sell.components.CustomerPickerSheet
 import app.devper.pharm.presentation.sell.components.DrugPickerColumn
 import app.devper.pharm.presentation.sell.components.KyCaptureSheet
@@ -137,7 +138,9 @@ fun SellScreen(
             .pharmShortcuts(*sellShortcuts),
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val isWide = maxWidth >= 720.dp
+            val isWide = maxWidth >= 640.dp
+            val showRail = maxWidth >= 840.dp
+            val cartWidth = if (showRail) 400.dp else 360.dp
             if (isWide) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     DrugPickerColumn(
@@ -148,35 +151,46 @@ fun SellScreen(
                         loading = drugState.drugsLoading,
                         activeTier = sellState.activeTier,
                         onAdd = drugPickerVM::onTapDrug,
-                        modifier = Modifier.weight(0.62f),
+                        modifier = Modifier.weight(1f),
                         searchFocusRequester = searchFocus,
                     )
                     VerticalDivider(color = t.colors.divider)
-                    SellCartPanel(
-                        sellState = sellState,
-                        canCheckout = checkoutState.canCheckout,
-                        checkingOut = checkoutState.checkingOut,
-                        onSetQty = sellVM::onSetQty,
-                        onRemove = sellVM::onRemove,
-                        onTapLineForDiscount = sellVM::onOpenLineDiscount,
-                        onOpenCartDiscount = sellVM::onOpenCartDiscount,
-                        onReceivedChange = sellVM::onReceivedChange,
-                        onRequestClearCart = sellVM::requestClearCart,
-                        onConfirmClearCart = sellVM::confirmClearCart,
-                        onCancelClearCart = sellVM::cancelClearCart,
-                        onSubmit = checkoutVM::submit,
-                        parkedFilledCount = parkedState.filledCount,
-                        onPickCustomer = customerPickerVM::open,
-                        onClearCustomer = customerPickerVM::clear,
-                        onOpenParkedSheet = parkedCartVM::openSheet,
-                        modifier = Modifier.width(400.dp),
-                    )
+                    Column(modifier = Modifier.width(cartWidth)) {
+                        if (!showRail) {
+                            CartTabStrip(
+                                slots = parkedState.parkedSlots,
+                                activeSlot = parkedState.activeSlot,
+                                onTapSlot = onTapParkSlot,
+                            )
+                        }
+                        SellCartPanel(
+                            sellState = sellState,
+                            canCheckout = checkoutState.canCheckout,
+                            checkingOut = checkoutState.checkingOut,
+                            onSetQty = sellVM::onSetQty,
+                            onRemove = sellVM::onRemove,
+                            onTapLineForDiscount = sellVM::onOpenLineDiscount,
+                            onOpenCartDiscount = sellVM::onOpenCartDiscount,
+                            onReceivedChange = sellVM::onReceivedChange,
+                            onRequestClearCart = sellVM::requestClearCart,
+                            onConfirmClearCart = sellVM::confirmClearCart,
+                            onCancelClearCart = sellVM::cancelClearCart,
+                            onSubmit = checkoutVM::submit,
+                            parkedFilledCount = parkedState.filledCount,
+                            onPickCustomer = customerPickerVM::open,
+                            onClearCustomer = customerPickerVM::clear,
+                            onOpenParkedSheet = parkedCartVM::openSheet,
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                        )
+                    }
 
-                    CartSlotRail(
-                        slots = parkedState.parkedSlots,
-                        selectedSlot = parkedState.activeSlot,
-                        onTapSlot = onTapParkSlot,
-                    )
+                    if (showRail) {
+                        CartSlotRail(
+                            slots = parkedState.parkedSlots,
+                            selectedSlot = parkedState.activeSlot,
+                            onTapSlot = onTapParkSlot,
+                        )
+                    }
                 }
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
