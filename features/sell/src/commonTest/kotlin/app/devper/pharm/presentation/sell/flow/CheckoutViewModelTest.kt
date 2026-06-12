@@ -25,6 +25,7 @@ import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
+import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
 import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
 import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.ui.common.runVmTest
@@ -100,6 +101,7 @@ class CheckoutViewModelTest {
             dismissReceiptUseCase = DismissReceiptUseCase(cart),
             submitKyForms = SubmitKyFormsUseCase(ky, dispatchers),
             enqueueOfflineSale = EnqueueOfflineSaleUseCase(offline),
+            setCashReceived = SetCashReceivedUseCase(cart),
             receiptPrinter = StubReceiptPrinter(),
         )
         return Bundle(vm, cart, sales, ky, offline, bus)
@@ -114,28 +116,105 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun canCheckout_false_when_tender_insufficient() = runVmTest { dispatchers ->
+    fun canCheckout_true_even_when_tender_insufficient() = runVmTest { dispatchers ->
         val (vm) = newVm(
             dispatchers,
             FakeCartRepository(initialItems = listOf(line(qty = 2)), initialReceived = "5"),
-
         )
         advanceUntilIdle()
         assertFalse(vm.state.value.cartIsEmpty)
-        assertFalse(vm.state.value.tenderOk)
-        assertFalse(vm.state.value.canCheckout)
+        assertTrue(vm.state.value.canCheckout)
     }
 
     @Test
-    fun canCheckout_true_when_cart_non_empty_and_tender_ok() = runVmTest { dispatchers ->
+    fun canCheckout_true_when_cart_non_empty() = runVmTest { dispatchers ->
         val (vm) = newVm(
             dispatchers,
             FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
         )
         advanceUntilIdle()
         assertFalse(vm.state.value.cartIsEmpty)
-        assertTrue(vm.state.value.tenderOk)
         assertTrue(vm.state.value.canCheckout)
+    }
+
+    @Test
+    fun submit_no_op_when_received_below_total() = runVmTest { dispatchers ->
+        val (vm, _, sales) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(qty = 2)), initialReceived = "5"),
+        )
+        advanceUntilIdle()
+        vm.submit()
+        advanceUntilIdle()
+        assertNull(sales.lastCheckout)
+        assertFalse(vm.state.value.checkingOut)
+    }
+
+    @Test
+    fun openPayment_sets_flag_when_cart_has_items() = runVmTest { dispatchers ->
+        val (vm) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        advanceUntilIdle()
+        vm.openPayment()
+        assertTrue(vm.state.value.paymentOpen)
+    }
+
+    @Test
+    fun openPayment_no_op_when_cart_empty() = runVmTest { dispatchers ->
+        val (vm) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.openPayment()
+        assertFalse(vm.state.value.paymentOpen)
+    }
+
+    @Test
+    fun closePayment_resets_flag() = runVmTest { dispatchers ->
+        val (vm) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        advanceUntilIdle()
+        vm.openPayment()
+        vm.closePayment()
+        assertFalse(vm.state.value.paymentOpen)
+    }
+
+    @Test
+    fun submitExact_sets_received_to_total_and_commits() = runVmTest { dispatchers ->
+        val cart = FakeCartRepository(initialItems = listOf(line(qty = 2)))
+        val (vm, _, sales) = newVm(dispatchers, cart = cart)
+        advanceUntilIdle()
+        vm.openPayment()
+        vm.submitExact()
+        assertEquals("10", cart.state.value.active.cashReceived)
+        advanceUntilIdle()
+
+        assertNotNull(sales.lastCheckout)
+        assertEquals(10.0, sales.lastCheckout!!.received.amount)
+        assertFalse(vm.state.value.paymentOpen)
+    }
+
+    @Test
+    fun submit_reads_fresh_received_from_cart_state() = runVmTest { dispatchers ->
+        val cart = FakeCartRepository(initialItems = listOf(line(qty = 2)))
+        val (vm, _, sales) = newVm(dispatchers, cart = cart)
+        advanceUntilIdle()
+        cart.setCashReceived("500")
+        vm.submit()
+        advanceUntilIdle()
+
+        assertNotNull(sales.lastCheckout)
+        assertEquals(500.0, sales.lastCheckout!!.received.amount)
+    }
+
+    @Test
+    fun checkout_success_closes_payment_dialog() = runVmTest { dispatchers ->
+        val (vm) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+        )
+        advanceUntilIdle()
+        vm.openPayment()
+        vm.submit()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.lastReceiptTemplate)
+        assertFalse(vm.state.value.paymentOpen)
     }
 
     @Test
@@ -446,6 +525,40 @@ class CheckoutViewModelTest {
         assertFalse(cart.clearCalled)
         assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
+    }
+
+    @Test
+    fun checkout_failure_keeps_payment_open() = runVmTest { dispatchers ->
+        val sales = FakeSaleRepository(checkoutThrows = RuntimeException("validation: missing field"))
+        val (vm) = newVm(
+            dispatchers,
+            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            sales = sales,
+        )
+        advanceUntilIdle()
+        vm.openPayment()
+        vm.submit()
+        advanceUntilIdle()
+
+        assertTrue(vm.state.value.paymentOpen)
+        assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
+    }
+
+    @Test
+    fun offline_saved_closes_payment_dialog() = runVmTest { dispatchers ->
+        val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
+        val (vm) = newVm(
+            dispatchers,
+            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            sales = sales,
+        )
+        advanceUntilIdle()
+        vm.openPayment()
+        vm.submit()
+        advanceUntilIdle()
+
+        assertFalse(vm.state.value.paymentOpen)
+        assertIs<CheckoutUiStateError.OfflineSaved>(vm.state.value.errorState)
     }
 
     @Test

@@ -32,6 +32,7 @@ import app.devper.pharm.presentation.sell.components.LineDiscountSheet
 import app.devper.pharm.presentation.sell.components.OversellConfirmSheet
 import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
+import app.devper.pharm.presentation.sell.components.PaymentDialog
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
 import app.devper.pharm.ui.theme.pharmTokens
@@ -86,12 +87,10 @@ fun CartScreen(
                 customer = sellState.customer,
                 activeTier = sellState.activeTier,
                 cartDiscount = sellState.cartDiscount,
-                received = sellState.received,
                 grossSubtotal = sellState.grossSubtotal.amount,
                 itemDiscountTotal = sellState.itemDiscountTotal.amount,
                 cartDiscountAmount = sellState.cartDiscountAmount.amount,
                 total = sellState.total.amount,
-                change = sellState.change.amount,
                 canCheckout = checkoutState.canCheckout,
                 checkingOut = checkoutState.checkingOut,
                 onSetQty = sellVM::onSetQty,
@@ -100,8 +99,7 @@ fun CartScreen(
                 onPickCustomer = customerPickerVM::open,
                 onClearCustomer = customerPickerVM::clear,
                 onOpenCartDiscount = sellVM::onOpenCartDiscount,
-                onReceivedChange = sellVM::onReceivedChange,
-                onSubmit = checkoutVM::submit,
+                onOpenPayment = checkoutVM::openPayment,
                 showClearConfirm = sellState.showClearConfirm,
                 onRequestClearCart = sellVM::requestClearCart,
                 onConfirmClearCart = sellVM::confirmClearCart,
@@ -163,6 +161,18 @@ fun CartScreen(
             onCancel = parkedCartVM::cancelOverwrite,
         )
     }
+    if (checkoutState.paymentOpen) {
+        PaymentDialog(
+            received = sellState.received,
+            total = sellState.total.amount,
+            checkingOut = checkoutState.checkingOut,
+            onReceivedChange = sellVM::onReceivedChange,
+            onSubmit = checkoutVM::submit,
+            onSubmitExact = checkoutVM::submitExact,
+            onDismiss = checkoutVM::closePayment,
+        )
+    }
+
     checkoutState.kyCapturePending?.let { required ->
         KyCaptureSheet(
             required = required,
