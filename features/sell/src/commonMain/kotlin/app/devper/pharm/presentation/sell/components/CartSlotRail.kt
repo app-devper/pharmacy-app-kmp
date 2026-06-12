@@ -88,7 +88,7 @@ private fun SlotChip(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(36.dp)
+            .height(44.dp)
             .clip(t.shapes.md)
             .background(if (selected) t.colors.accentBgSoft else Color.Transparent)
             .clickable(role = Role.Button, onClick = onClick)

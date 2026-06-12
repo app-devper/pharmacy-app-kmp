@@ -5,6 +5,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -15,6 +16,7 @@ fun PharmSaveAction(
     onSubmit: () -> Unit,
     label: String = pharmStrings.commonSave,
 ) {
+    val focusManager = LocalFocusManager.current
     if (saving) {
         PharmCircularProgress(
             color = pharmTokens.colors.accent,
@@ -24,7 +26,10 @@ fun PharmSaveAction(
     } else {
         PharmButton(
             label = label,
-            onClick = onSubmit,
+            onClick = {
+                focusManager.clearFocus()
+                onSubmit()
+            },
             enabled = canSubmit,
             size = PharmButtonSize.Sm,
         )
