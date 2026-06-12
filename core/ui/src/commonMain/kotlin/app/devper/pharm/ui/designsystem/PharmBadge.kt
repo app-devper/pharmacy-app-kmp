@@ -66,6 +66,8 @@ fun PharmBadge(
     Text(
         text = text,
         style = style.copy(color = c.fg),
+        softWrap = false,
+        maxLines = 1,
         modifier = withBorder.padding(padding),
     )
 }
@@ -88,6 +90,8 @@ fun KyBadge(
     Text(
         text = pharmStrings.kyTabLabel(form),
         style = PharmText.badgeSm.copy(color = fg),
+        softWrap = false,
+        maxLines = 1,
         modifier = modifier
             .clip(shape)
             .background(bg, shape)
