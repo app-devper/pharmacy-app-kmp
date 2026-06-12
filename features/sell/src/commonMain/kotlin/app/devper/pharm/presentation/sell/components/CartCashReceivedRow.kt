@@ -23,6 +23,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmKeypad
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -38,12 +39,18 @@ fun CartCashReceivedRow(
     change: Double,
     checkingOut: Boolean,
     onReceivedChange: (String) -> Unit,
+    showKeypad: Boolean = false,
 ) {
     val t = pharmTokens
     val receivedNum = received.toDoubleOrNull() ?: 0.0
     val short = total - receivedNum
     val isShort = receivedNum > 0.0 && short > 0.0
     val addCash = { amount: Int -> onReceivedChange(plainAmount(receivedNum + amount)) }
+    val onKeypadKey = { key: String ->
+        val base = if (received == "0") "" else received
+        onReceivedChange(base + key)
+    }
+    val onKeypadBackspace = { onReceivedChange(received.dropLast(1)) }
 
     Column(
         modifier = Modifier
@@ -127,6 +134,13 @@ fun CartCashReceivedRow(
                 modifier = Modifier.weight(1f),
             )
         }
+        if (showKeypad) {
+            PharmKeypad(
+                onKey = onKeypadKey,
+                onBackspace = onKeypadBackspace,
+                enabled = !checkingOut,
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -176,6 +190,21 @@ private fun CartCashReceivedRow_Short_Preview() {
             change = 0.0,
             checkingOut = false,
             onReceivedChange = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CartCashReceivedRow_Keypad_Preview() {
+    PharmacyTheme {
+        CartCashReceivedRow(
+            received = "500",
+            total = 446.5,
+            change = 53.5,
+            checkingOut = false,
+            onReceivedChange = {},
+            showKeypad = true,
         )
     }
 }

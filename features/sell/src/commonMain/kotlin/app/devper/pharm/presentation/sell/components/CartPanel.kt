@@ -160,6 +160,7 @@ fun CartPanel(
                 change = change,
                 checkingOut = checkingOut,
                 onReceivedChange = onReceivedChange,
+                showKeypad = compact,
             )
 
             CartCheckoutButton(
