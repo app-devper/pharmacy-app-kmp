@@ -36,7 +36,12 @@ fun rememberSellShortcuts(
     onDismissAllErrors: () -> Unit,
     searchFocus: FocusRequester,
 ): Array<PharmShortcut> {
-    val onShortcutNewBill: () -> Unit = { parkedCartVM.newBillOnNextTab() }
+    val onShortcutNewBill: () -> Unit = {
+        if (!checkoutState.paymentOpen) parkedCartVM.newBillOnNextTab()
+    }
+    val onShortcutOpenParked: () -> Unit = {
+        if (!checkoutState.paymentOpen) parkedCartVM.openSheet()
+    }
 
     val onShortcutEscape: () -> Unit = {
         when (
@@ -48,6 +53,7 @@ fun rememberSellShortcuts(
                 skipKyConfirmVisible = checkoutState.showSkipKyConfirm,
                 oversellPending = checkoutState.oversellPending != null,
                 kyCapturePending = checkoutState.kyCapturePending != null,
+                paymentOpen = checkoutState.paymentOpen,
                 lineDiscountOpen = sellState.lineDiscountFor != null,
                 cartDiscountOpen = sellState.cartDiscountSheetOpen,
                 altUnitPickerOpen = drugState.altUnitPickerFor != null,
@@ -64,6 +70,7 @@ fun rememberSellShortcuts(
             SellEscapeAction.CancelSkipKy -> checkoutVM.cancelSkipKy()
             SellEscapeAction.DismissOversell -> checkoutVM.dismissOversell()
             SellEscapeAction.DismissKyCapture -> checkoutVM.dismissKyCapture()
+            SellEscapeAction.ClosePayment -> checkoutVM.closePayment()
             SellEscapeAction.CloseLineDiscount -> sellVM.onCloseLineDiscount()
             SellEscapeAction.CloseCartDiscount -> sellVM.onCloseCartDiscount()
             SellEscapeAction.CloseAltUnitPicker -> drugPickerVM.onCloseAltUnitPicker()
@@ -81,10 +88,10 @@ fun rememberSellShortcuts(
         PharmShortcut(key = Key.F3, label = "F3", action = customerPickerVM::open),
         PharmShortcut(key = Key.F4, label = "F4", action = sellVM::onOpenCartDiscount),
         PharmShortcut(key = Key.F6, label = "F6", action = onShortcutNewBill),
-        PharmShortcut(key = Key.F8, label = "F8", action = parkedCartVM::openSheet),
-        PharmShortcut(key = Key.F9, label = "F9", action = { if (checkoutState.canCheckout) checkoutVM.submit() }),
+        PharmShortcut(key = Key.F8, label = "F8", action = onShortcutOpenParked),
+        PharmShortcut(key = Key.F9, label = "F9", action = { if (!checkoutState.paymentOpen && checkoutState.canCheckout) checkoutVM.openPayment() }),
         PharmShortcut(key = Key.Escape, label = "Esc", action = onShortcutEscape),
         PharmShortcut(key = Key.N, ctrl = true, label = "Ctrl+N", action = onShortcutNewBill),
-        PharmShortcut(key = Key.P, ctrl = true, shift = true, label = "Ctrl+Shift+P", action = parkedCartVM::openSheet),
+        PharmShortcut(key = Key.P, ctrl = true, shift = true, label = "Ctrl+Shift+P", action = onShortcutOpenParked),
     )
 }

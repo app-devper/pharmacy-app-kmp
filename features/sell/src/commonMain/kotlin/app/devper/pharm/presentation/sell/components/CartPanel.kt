@@ -57,12 +57,10 @@ fun CartPanel(
     customer: Customer?,
     activeTier: String,
     cartDiscount: CartDiscount,
-    received: String,
     grossSubtotal: Double,
     itemDiscountTotal: Double,
     cartDiscountAmount: Double,
     total: Double,
-    change: Double,
     canCheckout: Boolean,
     checkingOut: Boolean,
     onSetQty: (key: CartLineKey, displayQty: Int) -> Unit,
@@ -71,8 +69,7 @@ fun CartPanel(
     onPickCustomer: () -> Unit,
     onClearCustomer: () -> Unit,
     onOpenCartDiscount: () -> Unit,
-    onReceivedChange: (String) -> Unit,
-    onSubmit: () -> Unit,
+    onOpenPayment: () -> Unit,
     showClearConfirm: Boolean,
     onRequestClearCart: () -> Unit,
     onConfirmClearCart: () -> Unit,
@@ -154,20 +151,11 @@ fun CartPanel(
                 showShortcutHint = showShortcutHints,
             )
 
-            CartCashReceivedRow(
-                received = received,
-                total = total,
-                change = change,
-                checkingOut = checkingOut,
-                onReceivedChange = onReceivedChange,
-                showKeypad = compact,
-            )
-
-            CartCheckoutButton(
+            CartPayButton(
                 total = total,
                 canCheckout = canCheckout,
                 checkingOut = checkingOut,
-                onSubmit = onSubmit,
+                onOpenPayment = onOpenPayment,
                 showShortcutHint = showShortcutHints,
             )
         }
@@ -249,17 +237,17 @@ private fun CartPanelHeader(
 }
 
 @Composable
-private fun CartCheckoutButton(
+private fun CartPayButton(
     total: Double,
     canCheckout: Boolean,
     checkingOut: Boolean,
-    onSubmit: () -> Unit,
+    onOpenPayment: () -> Unit,
     showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
     Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         PharmButton(
-            onClick = onSubmit,
+            onClick = onOpenPayment,
             modifier = Modifier.fillMaxWidth(),
             size = PharmButtonSize.Lg,
             enabled = canCheckout && !checkingOut,
@@ -282,7 +270,7 @@ private fun CartCheckoutButton(
                             ShortcutHint(label = "F9")
                         }
                         Text(
-                            pharmStrings.sellIssueReceipt,
+                            pharmStrings.sellPayment,
                             style = PharmText.buttonMd.copy(
                                 color = t.colors.surface,
                                 fontWeight = FontWeight.SemiBold,

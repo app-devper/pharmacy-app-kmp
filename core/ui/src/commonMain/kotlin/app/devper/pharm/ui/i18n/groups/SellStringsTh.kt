@@ -31,7 +31,6 @@ object SellStringsTh : SellStrings {
     override val sellParkedOverwriteBody = "บิลที่พักไว้เดิมจะถูกแทนที่ด้วยบิลปัจจุบัน"
     override val sellClearCartCta = "ล้าง"
     override val sellClearCartBody: (Int) -> String = { n -> "ลบรายการในตะกร้าทั้งหมด $n รายการ? การกระทำนี้ย้อนกลับไม่ได้" }
-    override val sellIssueReceipt = "ออกใบเสร็จ"
     override val sellAllergyTitle = "แพ้ยา / โรคประจำตัว"
     override val sellControlledKy: (String) -> String = { v -> "ยาควบคุม — ต้องบันทึก ขย.$v" }
     override val sellKyCaptureHint = "ระบบจะให้กรอกข้อมูลผู้ซื้อตอนชำระเงิน"
@@ -63,7 +62,6 @@ object SellStringsTh : SellStrings {
     override val sellParkedWaiting: (Int) -> String = { n -> "บิลที่พัก $n รอเปิด" }
     override val sellViewCart = "ดูตะกร้า ›"
     override val sellOpenParked = "เปิดบิลที่พัก ›"
-    override val sellExactAmount = "พอดี"
     override val sellShortBy: (String) -> String = { v -> "ขาด $v" }
     override val sellReceiptNo: (String) -> String = { v -> "เลขที่ $v" }
     override val sellLineDiscountField = "ส่วนลด (บาท)"
@@ -89,9 +87,15 @@ object SellStringsTh : SellStrings {
     override val sellShowSubtotal = "ดูยอดย่อย"
     override val sellHideSubtotal = "ซ่อนยอดย่อย"
     override val sellPayment = "ชำระเงิน"
-    override val sellReceived = "รับเงิน"
-    override val sellChange = "ทอน"
     override val sellCheckout = "ออกใบเสร็จ"
+    override val sellPayDialogTitle = "ชำระสินค้า"
+    override val sellPayAmountDue = "ยอดที่ต้องชำระ"
+    override val sellPayCashEntered: (String) -> String = { v -> "ชำระด้วยเงินสด $v" }
+    override val sellPayTotalReceived = "ยอดรับเงินรวม"
+    override val sellPayChangeLabel = "เงินทอน"
+    override val sellPayExactTender = "รับชำระพอดี"
+    override val sellPayExactCta = "รับชำระพอดี (ไม่มีเงินทอน)"
+    override val sellPayChangeCta: (String) -> String = { v -> "เงินทอน $v" }
     override val sellCheckoutSave = "บันทึกและออกบิล"
     override val sellReceiptDone = "ออกใบเสร็จสำเร็จ"
     override val sellReceiptFailed = "ออกใบเสร็จไม่สำเร็จ"

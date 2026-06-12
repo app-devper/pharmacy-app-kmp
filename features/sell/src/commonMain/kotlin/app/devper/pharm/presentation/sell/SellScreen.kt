@@ -47,6 +47,7 @@ import app.devper.pharm.presentation.sell.components.LineDiscountSheet
 import app.devper.pharm.presentation.sell.components.OversellConfirmSheet
 import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
 import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
+import app.devper.pharm.presentation.sell.components.PaymentDialog
 import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.ShortcutLegend
 import app.devper.pharm.presentation.sell.components.VoidReasonSheet
@@ -171,11 +172,10 @@ fun SellScreen(
                             onRemove = sellVM::onRemove,
                             onTapLineForDiscount = sellVM::onOpenLineDiscount,
                             onOpenCartDiscount = sellVM::onOpenCartDiscount,
-                            onReceivedChange = sellVM::onReceivedChange,
                             onRequestClearCart = sellVM::requestClearCart,
                             onConfirmClearCart = sellVM::confirmClearCart,
                             onCancelClearCart = sellVM::cancelClearCart,
-                            onSubmit = checkoutVM::submit,
+                            onOpenPayment = checkoutVM::openPayment,
                             parkedFilledCount = parkedState.filledCount,
                             onPickCustomer = customerPickerVM::open,
                             onClearCustomer = customerPickerVM::clear,
@@ -238,6 +238,18 @@ fun SellScreen(
                     slotNumber = slot + 1,
                     onConfirm = parkedCartVM::confirmOverwrite,
                     onCancel = parkedCartVM::cancelOverwrite,
+                )
+            }
+
+            if (checkoutState.paymentOpen) {
+                PaymentDialog(
+                    received = sellState.received,
+                    total = sellState.total.amount,
+                    checkingOut = checkoutState.checkingOut,
+                    onReceivedChange = sellVM::onReceivedChange,
+                    onSubmit = checkoutVM::submit,
+                    onSubmitExact = checkoutVM::submitExact,
+                    onDismiss = checkoutVM::closePayment,
                 )
             }
 
@@ -331,11 +343,10 @@ private fun SellCartPanel(
     onRemove: (CartLineKey) -> Unit,
     onTapLineForDiscount: (CartLine) -> Unit,
     onOpenCartDiscount: () -> Unit,
-    onReceivedChange: (String) -> Unit,
     onRequestClearCart: () -> Unit,
     onConfirmClearCart: () -> Unit,
     onCancelClearCart: () -> Unit,
-    onSubmit: () -> Unit,
+    onOpenPayment: () -> Unit,
     parkedFilledCount: Int,
     onPickCustomer: () -> Unit,
     onClearCustomer: () -> Unit,
@@ -347,12 +358,10 @@ private fun SellCartPanel(
         customer = sellState.customer,
         activeTier = sellState.activeTier,
         cartDiscount = sellState.cartDiscount,
-        received = sellState.received,
         grossSubtotal = sellState.grossSubtotal.amount,
         itemDiscountTotal = sellState.itemDiscountTotal.amount,
         cartDiscountAmount = sellState.cartDiscountAmount.amount,
         total = sellState.total.amount,
-        change = sellState.change.amount,
         canCheckout = canCheckout,
         checkingOut = checkingOut,
         onSetQty = onSetQty,
@@ -361,8 +370,7 @@ private fun SellCartPanel(
         onPickCustomer = onPickCustomer,
         onClearCustomer = onClearCustomer,
         onOpenCartDiscount = onOpenCartDiscount,
-        onReceivedChange = onReceivedChange,
-        onSubmit = onSubmit,
+        onOpenPayment = onOpenPayment,
         showClearConfirm = sellState.showClearConfirm,
         onRequestClearCart = onRequestClearCart,
         onConfirmClearCart = onConfirmClearCart,

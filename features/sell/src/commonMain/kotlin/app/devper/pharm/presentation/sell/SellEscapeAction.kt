@@ -8,6 +8,7 @@ enum class SellEscapeAction {
     CancelSkipKy,
     DismissOversell,
     DismissKyCapture,
+    ClosePayment,
     CloseLineDiscount,
     CloseCartDiscount,
     CloseAltUnitPicker,
@@ -25,6 +26,7 @@ fun resolveSellEscapeAction(
     skipKyConfirmVisible: Boolean,
     oversellPending: Boolean,
     kyCapturePending: Boolean,
+    paymentOpen: Boolean,
     lineDiscountOpen: Boolean,
     cartDiscountOpen: Boolean,
     altUnitPickerOpen: Boolean,
@@ -40,6 +42,7 @@ fun resolveSellEscapeAction(
     skipKyConfirmVisible -> SellEscapeAction.CancelSkipKy
     oversellPending -> SellEscapeAction.DismissOversell
     kyCapturePending -> SellEscapeAction.DismissKyCapture
+    paymentOpen -> SellEscapeAction.ClosePayment
     lineDiscountOpen -> SellEscapeAction.CloseLineDiscount
     cartDiscountOpen -> SellEscapeAction.CloseCartDiscount
     altUnitPickerOpen -> SellEscapeAction.CloseAltUnitPicker

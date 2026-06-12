@@ -8,8 +8,14 @@ import kotlin.test.assertTrue
 class CheckoutUiStateTest {
 
     @Test
-    fun canCheckout_true_when_cart_non_empty_and_tender_ok_with_no_modals() {
-        val s = CheckoutUiState(cartIsEmpty = false, tenderOk = true)
+    fun canCheckout_true_when_cart_non_empty_with_no_modals() {
+        val s = CheckoutUiState(cartIsEmpty = false)
+        assertTrue(s.canCheckout)
+    }
+
+    @Test
+    fun canCheckout_unaffected_by_paymentOpen() {
+        val s = CheckoutUiState(cartIsEmpty = false, paymentOpen = true)
         assertTrue(s.canCheckout)
     }
 
@@ -17,7 +23,6 @@ class CheckoutUiStateTest {
     fun canCheckout_false_while_ky_capture_pending() {
         val s = CheckoutUiState(
             cartIsEmpty = false,
-            tenderOk = true,
             kyCapturePending = KyRequired(),
         )
         assertFalse(s.canCheckout)
@@ -27,7 +32,6 @@ class CheckoutUiStateTest {
     fun canCheckout_false_while_oversell_pending() {
         val s = CheckoutUiState(
             cartIsEmpty = false,
-            tenderOk = true,
             oversellPending = emptyList(),
         )
         assertFalse(s.canCheckout)
@@ -37,7 +41,6 @@ class CheckoutUiStateTest {
     fun canCheckout_false_while_checking_out() {
         val s = CheckoutUiState(
             cartIsEmpty = false,
-            tenderOk = true,
             checkingOut = true,
         )
         assertFalse(s.canCheckout)
