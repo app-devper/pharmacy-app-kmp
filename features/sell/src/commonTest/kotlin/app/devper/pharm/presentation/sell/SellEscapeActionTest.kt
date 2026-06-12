@@ -14,6 +14,7 @@ class SellEscapeActionTest {
         skipKyConfirmVisible: Boolean = false,
         oversellPending: Boolean = false,
         kyCapturePending: Boolean = false,
+        paymentOpen: Boolean = false,
         lineDiscountOpen: Boolean = false,
         cartDiscountOpen: Boolean = false,
         altUnitPickerOpen: Boolean = false,
@@ -24,7 +25,7 @@ class SellEscapeActionTest {
     ) = resolveSellEscapeAction(
         shortcutsVisible, hasError, overwriteSlotPending,
         clearConfirmVisible, skipKyConfirmVisible, oversellPending, kyCapturePending,
-        lineDiscountOpen, cartDiscountOpen, altUnitPickerOpen, voidSheetOpen,
+        paymentOpen, lineDiscountOpen, cartDiscountOpen, altUnitPickerOpen, voidSheetOpen,
         customerOpen, parkedSheetOpen, receiptVisible,
     )
 
@@ -42,6 +43,7 @@ class SellEscapeActionTest {
         assertEquals(SellEscapeAction.CancelSkipKy, resolve(skipKyConfirmVisible = true))
         assertEquals(SellEscapeAction.DismissOversell, resolve(oversellPending = true))
         assertEquals(SellEscapeAction.DismissKyCapture, resolve(kyCapturePending = true))
+        assertEquals(SellEscapeAction.ClosePayment, resolve(paymentOpen = true))
         assertEquals(SellEscapeAction.CloseLineDiscount, resolve(lineDiscountOpen = true))
         assertEquals(SellEscapeAction.CloseCartDiscount, resolve(cartDiscountOpen = true))
         assertEquals(SellEscapeAction.CloseAltUnitPicker, resolve(altUnitPickerOpen = true))
@@ -97,7 +99,7 @@ class SellEscapeActionTest {
             resolve(
                 shortcutsVisible = true, hasError = true, overwriteSlotPending = true,
                 clearConfirmVisible = true, skipKyConfirmVisible = true,
-                oversellPending = true, kyCapturePending = true, lineDiscountOpen = true,
+                oversellPending = true, kyCapturePending = true, paymentOpen = true, lineDiscountOpen = true,
                 cartDiscountOpen = true, altUnitPickerOpen = true, voidSheetOpen = true,
                 customerOpen = true, parkedSheetOpen = true, receiptVisible = true,
             ),
@@ -117,6 +119,18 @@ class SellEscapeActionTest {
         assertEquals(
             SellEscapeAction.DismissKyCapture,
             resolve(kyCapturePending = true, altUnitPickerOpen = true, voidSheetOpen = true),
+        )
+    }
+
+    @Test
+    fun ky_capture_outranks_payment_dialog_and_payment_outranks_discounts() {
+        assertEquals(
+            SellEscapeAction.DismissKyCapture,
+            resolve(kyCapturePending = true, paymentOpen = true),
+        )
+        assertEquals(
+            SellEscapeAction.ClosePayment,
+            resolve(paymentOpen = true, lineDiscountOpen = true, cartDiscountOpen = true),
         )
     }
 }

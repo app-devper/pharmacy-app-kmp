@@ -19,13 +19,13 @@ import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
+import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
 import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
 import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.domain.extension.looksLikeNetworkError
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
-import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.onEach
 
 
 class CheckoutViewModel(
-    cartState: CartStateProvider,
+    private val cartState: CartStateProvider,
     settings: SettingsProvider,
     private val timeZoneProvider: TimeZoneProvider,
     private val checkout: CheckoutUseCase,
@@ -43,6 +43,7 @@ class CheckoutViewModel(
     private val dismissReceiptUseCase: DismissReceiptUseCase,
     private val submitKyForms: SubmitKyFormsUseCase,
     private val enqueueOfflineSale: EnqueueOfflineSaleUseCase,
+    private val setCashReceived: SetCashReceivedUseCase,
     private val receiptPrinter: ReceiptPrinter,
 ) : BaseLoadableViewModel<CheckoutUiState>(CheckoutUiState()) {
 
@@ -58,36 +59,42 @@ class CheckoutViewModel(
     private var pendingKySkippedByCashier: Boolean = false
     private var receiptSnapshot: ReceiptSnapshot? = null
 
-    private var lastCart: List<CartLine> = emptyList()
-    private var lastCustomer: Customer? = null
-    private var lastReceivedNum: Double = 0.0
     private var lastSettings: Settings = Settings()
 
     init {
 
         cartState.state
-            .onEach { snap ->
-                lastCart = snap.items
-                lastCustomer = snap.selectedCustomer
-                val received = snap.cashReceived.toDoubleOrNull() ?: 0.0
-                lastReceivedNum = received
-                setState {
-                    copy(
-                        cartIsEmpty = snap.isEmpty,
-                        tenderOk = received >= snap.total.amount,
-                    )
-                }
-            }
+            .onEach { snap -> setState { copy(cartIsEmpty = snap.isEmpty) } }
             .launchIn(viewModelScope)
         settings.state
             .onEach { lastSettings = it }
             .launchIn(viewModelScope)
     }
 
+    fun openPayment() {
+        if (!current.canCheckout) return
+        setState { copy(paymentOpen = true) }
+    }
+
+    fun closePayment() {
+        if (current.checkingOut) return
+        setState { copy(paymentOpen = false) }
+    }
+
+    fun submitExact() {
+        if (!current.canCheckout) return
+        setCashReceived(plainAmount(cartState.current.total.amount))
+        submit()
+    }
+
     fun submit() {
         if (!current.canCheckout) return
 
-        val required = lastCart.calculateKyRequired()
+        val snap = cartState.current
+        val received = snap.cashReceived.toDoubleOrNull() ?: 0.0
+        if (received < snap.total.amount) return
+
+        val required = snap.items.calculateKyRequired()
         if (!required.isEmpty) {
             if (lastSettings.ky.skipAuto) {
                 pendingKyRequired = null
@@ -168,9 +175,10 @@ class CheckoutViewModel(
         val kyFieldsAtSubmit = pendingKyFields
         val kySkippedAtSubmit = pendingKySkippedByCashier
         val tzAtSubmit = timeZoneProvider.current
-        val cartSnapshot = lastCart
-        val customerSnapshot = lastCustomer
-        val receivedSnapshot = lastReceivedNum
+        val snap = cartState.current
+        val cartSnapshot = snap.items
+        val customerSnapshot = snap.selectedCustomer
+        val receivedSnapshot = snap.cashReceived.toDoubleOrNull() ?: 0.0
 
         setState { copy(checkingOut = true, errorState = null) }
         launchResult(
@@ -213,7 +221,7 @@ class CheckoutViewModel(
             received = received,
             soldAtFormatted = todayBuddhistDisplay(tz),
         )
-        setState { copy(checkingOut = false, lastReceiptTemplate = template) }
+        setState { copy(checkingOut = false, paymentOpen = false, lastReceiptTemplate = template) }
 
         if (kyRequired != null && kyFields != null) {
             submitKyForms(
@@ -250,7 +258,7 @@ class CheckoutViewModel(
             clearCart()
             clearPendingTokens()
             setState {
-                copy(checkingOut = false, errorState = CheckoutUiStateError.OfflineSaved())
+                copy(checkingOut = false, paymentOpen = false, errorState = CheckoutUiStateError.OfflineSaved())
             }
         } else {
             clearPendingTokens()
@@ -267,3 +275,6 @@ class CheckoutViewModel(
         pendingKySkippedByCashier = false
     }
 }
+
+internal fun plainAmount(value: Double): String =
+    if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()

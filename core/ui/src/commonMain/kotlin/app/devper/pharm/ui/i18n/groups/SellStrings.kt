@@ -31,7 +31,6 @@ interface SellStrings {
     val sellParkedOverwriteBody: String
     val sellClearCartCta: String
     val sellClearCartBody: (Int) -> String
-    val sellIssueReceipt: String
     val sellAllergyTitle: String
     val sellControlledKy: (String) -> String
     val sellKyCaptureHint: String
@@ -63,7 +62,6 @@ interface SellStrings {
     val sellParkedWaiting: (Int) -> String
     val sellViewCart: String
     val sellOpenParked: String
-    val sellExactAmount: String
     val sellShortBy: (String) -> String
     val sellReceiptNo: (String) -> String
     val sellLineDiscountField: String
@@ -102,9 +100,15 @@ interface SellStrings {
     val sellShowSubtotal: String
     val sellHideSubtotal: String
     val sellPayment: String
-    val sellReceived: String
-    val sellChange: String
     val sellCheckout: String
+    val sellPayDialogTitle: String
+    val sellPayAmountDue: String
+    val sellPayCashLabel: String
+    val sellPayTotalReceived: String
+    val sellPayChangeLabel: String
+    val sellPayExactTender: String
+    val sellPayExactCta: String
+    val sellPayChangeCta: (String) -> String
     val sellCheckoutSave: String
     val sellReceiptDone: String
     val sellReceiptFailed: String

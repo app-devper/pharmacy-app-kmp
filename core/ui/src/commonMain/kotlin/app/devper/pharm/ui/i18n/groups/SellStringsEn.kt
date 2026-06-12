@@ -31,7 +31,6 @@ object SellStringsEn : SellStrings {
     override val sellParkedOverwriteBody = "The existing parked bill will be replaced by the current one"
     override val sellClearCartCta = "Clear"
     override val sellClearCartBody: (Int) -> String = { n -> "Remove all $n items from the cart? This cannot be undone" }
-    override val sellIssueReceipt = "Issue receipt"
     override val sellAllergyTitle = "Allergies / conditions"
     override val sellControlledKy: (String) -> String = { v -> "Controlled drugs — KY $v records required" }
     override val sellKyCaptureHint = "Buyer details will be captured at checkout"
@@ -63,7 +62,6 @@ object SellStringsEn : SellStrings {
     override val sellParkedWaiting: (Int) -> String = { n -> "$n parked bill(s) waiting" }
     override val sellViewCart = "View cart ›"
     override val sellOpenParked = "Open parked bills ›"
-    override val sellExactAmount = "Exact"
     override val sellShortBy: (String) -> String = { v -> "Short $v" }
     override val sellReceiptNo: (String) -> String = { v -> "No. $v" }
     override val sellLineDiscountField = "Discount (THB)"
@@ -89,9 +87,15 @@ object SellStringsEn : SellStrings {
     override val sellShowSubtotal = "Show subtotal"
     override val sellHideSubtotal = "Hide subtotal"
     override val sellPayment = "Payment"
-    override val sellReceived = "Received"
-    override val sellChange = "Change"
     override val sellCheckout = "Checkout"
+    override val sellPayDialogTitle = "Take payment"
+    override val sellPayAmountDue = "Amount due"
+    override val sellPayCashLabel = "Cash tendered"
+    override val sellPayTotalReceived = "Total received"
+    override val sellPayChangeLabel = "Change"
+    override val sellPayExactTender = "Exact payment"
+    override val sellPayExactCta = "Exact payment (no change)"
+    override val sellPayChangeCta: (String) -> String = { v -> "Change $v" }
     override val sellCheckoutSave = "Save & checkout"
     override val sellReceiptDone = "Receipt issued"
     override val sellReceiptFailed = "Receipt failed"

@@ -16,7 +16,7 @@ data class CheckoutUiState(
 
     val cartIsEmpty: Boolean = true,
 
-    val tenderOk: Boolean = false,
+    val paymentOpen: Boolean = false,
 ) : LoadableUiState<CheckoutUiState> {
 
     override val loading: Boolean get() = checkingOut
@@ -27,7 +27,6 @@ data class CheckoutUiState(
 
     val canCheckout: Boolean get() =
         !cartIsEmpty &&
-            tenderOk &&
             !checkingOut &&
             kyCapturePending == null &&
             !showSkipKyConfirm &&

@@ -33,12 +33,13 @@ fun PharmKeypad(
     onBackspace: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    extraKey: String = ".",
 ) {
     val rows = listOf(
-        listOf("1", "2", "3"),
-        listOf("4", "5", "6"),
         listOf("7", "8", "9"),
-        listOf("00", "0", BACKSPACE_KEY),
+        listOf("4", "5", "6"),
+        listOf("1", "2", "3"),
+        listOf(extraKey, "0", BACKSPACE_KEY),
     )
     val backspaceLabel = pharmStrings.commonBackspace
     Column(
