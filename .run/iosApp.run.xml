@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="iosApp" type="KMM_RUN_CONFIGURATION" factoryName="KMM" project_path="$PROJECT_DIR$/iosApp/iosApp.xcodeproj" scheme="iosApp" configuration="Debug">
+    <method v="2" />
+  </configuration>
+</component>
