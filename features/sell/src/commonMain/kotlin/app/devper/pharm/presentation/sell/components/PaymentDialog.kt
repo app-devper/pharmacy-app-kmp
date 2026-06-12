@@ -44,7 +44,9 @@ fun PaymentDialog(
     val isShort = receivedNum > 0.0 && change < 0.0
 
     val onKeypadKey = { key: String ->
-        if (!(key == "." && received.contains("."))) {
+        val hasDot = received.contains(".")
+        val decimalsFull = hasDot && received.substringAfter('.').length >= 2
+        if (!(key == "." && hasDot) && !decimalsFull) {
             val base = if (received == "0" && key != ".") "" else received
             onReceivedChange((base + key).filter { c -> c.isDigit() || c == '.' })
         }
