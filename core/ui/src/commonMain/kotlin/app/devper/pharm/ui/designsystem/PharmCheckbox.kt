@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,22 +29,29 @@ fun PharmCheckbox(
     enabled: Boolean = true,
     contentDescription: String? = null,
 ) {
-    val toggleModifier = if (onCheckedChange != null) {
-        Modifier.toggleable(
-            value = checked,
-            enabled = enabled,
-            role = Role.Checkbox,
-            onValueChange = onCheckedChange,
-        )
+    val state = if (checked) ToggleableState.On else ToggleableState.Off
+    if (onCheckedChange != null) {
+        Box(
+            modifier = modifier
+                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                .toggleable(
+                    value = checked,
+                    enabled = enabled,
+                    role = Role.Checkbox,
+                    onValueChange = onCheckedChange,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            PharmCheckboxBox(state = state, enabled = enabled, contentDescription = contentDescription)
+        }
     } else {
-        Modifier
+        PharmCheckboxBox(
+            state = state,
+            enabled = enabled,
+            contentDescription = contentDescription,
+            modifier = modifier,
+        )
     }
-    PharmCheckboxBox(
-        state = if (checked) ToggleableState.On else ToggleableState.Off,
-        enabled = enabled,
-        contentDescription = contentDescription,
-        modifier = modifier.then(toggleModifier),
-    )
 }
 
 @Composable
@@ -54,22 +62,28 @@ fun PharmTriStateCheckbox(
     enabled: Boolean = true,
     contentDescription: String? = null,
 ) {
-    val toggleModifier = if (onClick != null) {
-        Modifier.triStateToggleable(
+    if (onClick != null) {
+        Box(
+            modifier = modifier
+                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                .triStateToggleable(
+                    state = state,
+                    enabled = enabled,
+                    role = Role.Checkbox,
+                    onClick = onClick,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            PharmCheckboxBox(state = state, enabled = enabled, contentDescription = contentDescription)
+        }
+    } else {
+        PharmCheckboxBox(
             state = state,
             enabled = enabled,
-            role = Role.Checkbox,
-            onClick = onClick,
+            contentDescription = contentDescription,
+            modifier = modifier,
         )
-    } else {
-        Modifier
     }
-    PharmCheckboxBox(
-        state = state,
-        enabled = enabled,
-        contentDescription = contentDescription,
-        modifier = modifier.then(toggleModifier),
-    )
 }
 
 @Composable

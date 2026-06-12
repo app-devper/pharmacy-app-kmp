@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -153,7 +154,10 @@ fun PharmTextField(
                     readOnly = readOnly,
                     singleLine = singleLine,
                     textStyle = style,
-                    keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = keyboardType,
+                        imeAction = if (imeAction == ImeAction.Default && singleLine) ImeAction.Next else imeAction,
+                    ),
                     keyboardActions = if (onImeAction != null) KeyboardActions(
                         onDone = { onImeAction() },
                         onSearch = { onImeAction() },
@@ -189,11 +193,11 @@ fun PharmTextField(
         }
         if (onClear != null) {
             val showClear = value.isNotEmpty() && enabled && !readOnly
-            Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(width = 24.dp, height = 24.dp), contentAlignment = Alignment.Center) {
                 if (showClear) {
                     Box(
                         modifier = Modifier
-                            .size(24.dp)
+                            .sizeIn(minWidth = 40.dp, minHeight = 40.dp)
                             .clip(t.shapes.sm)
                             .clickable(role = Role.Button, onClick = onClear),
                         contentAlignment = Alignment.Center,
