@@ -58,6 +58,7 @@ object CommonStringsTh : CommonStrings {
     override val commonSearch = "ค้นหา"
     override val commonConfirm = "ยืนยัน"
     override val commonClose = "ปิด"
+    override val commonBackspace = "ลบหลัง"
     override val commonBack = "กลับ"
     override val commonLoading = "กำลังโหลด"
     override val commonRetry = "ลองอีกครั้ง"
