@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +25,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
-private const val BACKSPACE_KEY = "⌫"
+private const val BACKSPACE_KEY = "backspace"
 
 @Composable
 fun PharmKeypad(
@@ -49,11 +51,12 @@ fun PharmKeypad(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 row.forEach { key ->
+                    val isBackspace = key == BACKSPACE_KEY
                     KeypadKey(
-                        label = key,
-                        accessibleLabel = if (key == BACKSPACE_KEY) backspaceLabel else key,
+                        label = if (isBackspace) null else key,
+                        accessibleLabel = if (isBackspace) backspaceLabel else key,
                         enabled = enabled,
-                        onClick = { if (key == BACKSPACE_KEY) onBackspace() else onKey(key) },
+                        onClick = { if (isBackspace) onBackspace() else onKey(key) },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -64,13 +67,14 @@ fun PharmKeypad(
 
 @Composable
 private fun KeypadKey(
-    label: String,
+    label: String?,
     accessibleLabel: String,
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
+    val fg = if (enabled) t.colors.fg1 else t.colors.fgMuted
     Box(
         modifier = modifier
             .height(52.dp)
@@ -81,12 +85,18 @@ private fun KeypadKey(
             .semantics { contentDescription = accessibleLabel },
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = label,
-            style = PharmText.h2.copy(
-                color = if (enabled) t.colors.fg1 else t.colors.fgMuted,
-                fontWeight = FontWeight.Medium,
-            ),
-        )
+        if (label != null) {
+            Text(
+                text = label,
+                style = PharmText.h2.copy(color = fg, fontWeight = FontWeight.Medium),
+            )
+        } else {
+            Icon(
+                imageVector = PharmIcons.Backspace,
+                contentDescription = null,
+                tint = fg,
+                modifier = Modifier.size(24.dp),
+            )
+        }
     }
 }

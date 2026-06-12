@@ -272,6 +272,12 @@ object PharmIcons {
         "M6 6 l12 12 M18 6 L6 18",
     )
 
+    val Backspace: ImageVector = strokeIcon(
+        name = "Backspace",
+        "M20 6 H10 L4 12 L10 18 H20 Z",
+        "M16 9.5 L12 14.5 M12 9.5 L16 14.5",
+    )
+
     val Check: ImageVector = strokeIcon(
         name = "Check",
         "M5 12 l5 5 L20 7",
