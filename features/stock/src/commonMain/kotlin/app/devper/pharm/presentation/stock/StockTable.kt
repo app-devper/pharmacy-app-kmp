@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.stock
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -210,7 +211,10 @@ private fun KyBadgesCell(drug: Drug) {
     if (forms.isEmpty()) {
         Text("—", style = PharmText.micro.copy(color = t.colors.fgMuted))
     } else {
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             forms.forEach { KyBadge(form = it) }
         }
     }
