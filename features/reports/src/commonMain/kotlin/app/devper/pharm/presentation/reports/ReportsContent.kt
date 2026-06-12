@@ -73,7 +73,7 @@ fun ReportsContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     state.dashboard?.summary?.let {
-                        item("metrics") { ReportsMetricsRow(summary = it) }
+                        item("metrics") { ReportsMetricsRow(summary = it, monthProfit = state.monthProfit) }
                     }
                     item("window") {
                         ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)

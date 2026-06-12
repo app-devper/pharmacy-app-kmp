@@ -4,10 +4,15 @@ import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
+import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.DashboardRangeParam
+import app.devper.pharm.domain.param.reports.ReportRangeParam
 import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
+import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
 import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
 import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
+import app.devper.pharm.presentation.reports.internal.startOfMonth
+import app.devper.pharm.presentation.reports.internal.todayDate
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.FlowPreview
@@ -25,6 +30,8 @@ class ReportsViewModel(
     private val getDashboard: GetDashboardUseCase,
     private val getTopDrugs: GetTopDrugsUseCase,
     private val getSlowDrugs: GetSlowDrugsUseCase,
+    private val getProfitReport: GetProfitReportUseCase,
+    private val timeZoneProvider: TimeZoneProvider,
     stockChangeBus: StockChangeBus,
 ) : BaseLoadableViewModel<ReportsUiState>(ReportsUiState()) {
 
@@ -47,23 +54,30 @@ class ReportsViewModel(
         val days = current.window.days
         reloadJob?.cancel()
         setState { copy(loading = true, errorState = null) }
+        val today = todayDate(timeZoneProvider.current)
+        val monthRange = ReportRangeParam(from = today.startOfMonth(), to = today)
         reloadJob = viewModelScope.launch {
-            val (dashboard, top, slow) = coroutineScope {
+            coroutineScope {
                 val d = async { getDashboard(DashboardRangeParam(days)) }
                 val t = async { getTopDrugs(days) }
                 val s = async { getSlowDrugs(90) }
-                Triple(d.await(), t.await(), s.await())
-            }
-            ensureActive()
-            val dashboardError = dashboard.exceptionOrNull()
-            setState {
-                copy(
-                    loading = false,
-                    dashboard = dashboard.getOrNull() ?: this.dashboard,
-                    topDrugs = top.getOrNull() ?: this.topDrugs,
-                    slowDrugs = slow.getOrNull() ?: this.slowDrugs,
-                    errorState = dashboardError?.let { ReportsUiStateError.LoadSummaryFailed(it) },
-                )
+                val p = async { getProfitReport(monthRange) }
+                val dashboard = d.await()
+                val top = t.await()
+                val slow = s.await()
+                val profit = p.await()
+                ensureActive()
+                val dashboardError = dashboard.exceptionOrNull()
+                setState {
+                    copy(
+                        loading = false,
+                        dashboard = dashboard.getOrNull() ?: this.dashboard,
+                        monthProfit = profit.getOrNull()?.summary?.profit ?: this.monthProfit,
+                        topDrugs = top.getOrNull() ?: this.topDrugs,
+                        slowDrugs = slow.getOrNull() ?: this.slowDrugs,
+                        errorState = dashboardError?.let { ReportsUiStateError.LoadSummaryFailed(it) },
+                    )
+                }
             }
         }
     }

@@ -10,7 +10,11 @@ import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
-internal fun ReportsMetricsRow(summary: ReportSummary, modifier: Modifier = Modifier) {
+internal fun ReportsMetricsRow(
+    summary: ReportSummary,
+    monthProfit: Double?,
+    modifier: Modifier = Modifier,
+) {
     val s = pharmStrings
     MetricCardRow(modifier = modifier) {
         MetricCard(
@@ -28,8 +32,8 @@ internal fun ReportsMetricsRow(summary: ReportSummary, modifier: Modifier = Modi
             modifier = Modifier.weight(1f),
         )
         MetricCard(
-            label = s.reportsMetricProfitMonthApprox,
-            value = formatBahtCurrency(estimatedMonthProfit(summary)),
+            label = s.reportsMetricProfitMonth,
+            value = monthProfit?.let { formatBahtCurrency(it) } ?: "—",
             sub = s.reportsMetricProfitMonthHint,
             tint = MetricTint.Green,
             modifier = Modifier.weight(1f),
@@ -43,8 +47,3 @@ internal fun ReportsMetricsRow(summary: ReportSummary, modifier: Modifier = Modi
         )
     }
 }
-
-private fun estimatedMonthProfit(summary: ReportSummary): Double =
-    summary.monthSales * MONTH_PROFIT_RATIO
-
-private const val MONTH_PROFIT_RATIO = 0.30
