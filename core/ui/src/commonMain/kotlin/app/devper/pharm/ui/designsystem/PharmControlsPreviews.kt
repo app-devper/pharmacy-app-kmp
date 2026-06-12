@@ -216,3 +216,26 @@ private fun PharmTextField_States_Preview() {
 private fun PharmTextField_States_Dark_Preview() {
     PharmDarkPreview { PharmTextField_States_Body() }
 }
+
+@Composable
+private fun PharmKeypad_Body() {
+    Column(
+        modifier = Modifier
+            .background(pharmTokens.colors.bgPage)
+            .padding(16.dp),
+    ) {
+        PharmKeypad(onKey = {}, onBackspace = {})
+    }
+}
+
+@Preview
+@Composable
+private fun PharmKeypad_Preview() {
+    PharmLightPreview { PharmKeypad_Body() }
+}
+
+@Preview(name = "dark")
+@Composable
+private fun PharmKeypad_Dark_Preview() {
+    PharmDarkPreview { PharmKeypad_Body() }
+}
