@@ -3,6 +3,7 @@ package app.devper.pharm.ui.designsystem
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -98,6 +100,7 @@ fun PharmTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     leadingSlot: (@Composable () -> Unit)? = null,
     trailingSlot: (@Composable () -> Unit)? = null,
+    onClear: (() -> Unit)? = null,
 ) {
     val t = pharmTokens
     val interaction = remember { MutableInteractionSource() }
@@ -181,6 +184,27 @@ fun PharmTextField(
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(18.dp),
                 )
+            }
+        }
+        if (onClear != null) {
+            val showClear = value.isNotEmpty() && enabled && !readOnly
+            Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+                if (showClear) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(t.shapes.sm)
+                            .clickable(role = Role.Button, onClick = onClear),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = PharmIcons.Close,
+                            contentDescription = pharmStrings.commonClearInput,
+                            tint = t.colors.fgMuted,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
             }
         }
         if (trailingSlot != null) {

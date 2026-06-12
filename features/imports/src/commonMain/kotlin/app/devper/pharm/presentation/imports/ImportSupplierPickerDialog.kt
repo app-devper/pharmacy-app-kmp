@@ -83,24 +83,7 @@ fun ImportSupplierPickerDialog(
                         modifier = Modifier.size(18.dp),
                     )
                 },
-                trailingSlot = if (query.isNotEmpty()) {
-                    {
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(t.shapes.sm)
-                                .clickable(role = Role.Button) { query = "" },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                PharmIcons.Close,
-                                contentDescription = s.bulkImportClearCta,
-                                tint = t.colors.fgMuted,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        }
-                    }
-                } else null,
+                onClear = { query = "" },
                 modifier = Modifier.fillMaxWidth(),
             )
             Box(modifier = Modifier.fillMaxWidth().heightIn(max = 320.dp)) {

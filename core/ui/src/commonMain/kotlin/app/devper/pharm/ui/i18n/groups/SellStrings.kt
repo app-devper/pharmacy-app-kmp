@@ -104,7 +104,6 @@ interface SellStrings {
     val sellPayment: String
     val sellReceived: String
     val sellChange: String
-    val sellClearReceived: String
     val sellCheckout: String
     val sellCheckoutSave: String
     val sellReceiptDone: String
