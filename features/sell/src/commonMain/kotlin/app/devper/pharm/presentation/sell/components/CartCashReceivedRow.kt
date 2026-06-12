@@ -1,28 +1,23 @@
 package app.devper.pharm.presentation.sell.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmKeypad
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -38,12 +33,18 @@ fun CartCashReceivedRow(
     change: Double,
     checkingOut: Boolean,
     onReceivedChange: (String) -> Unit,
+    showKeypad: Boolean = false,
 ) {
     val t = pharmTokens
     val receivedNum = received.toDoubleOrNull() ?: 0.0
     val short = total - receivedNum
     val isShort = receivedNum > 0.0 && short > 0.0
     val addCash = { amount: Int -> onReceivedChange(plainAmount(receivedNum + amount)) }
+    val onKeypadKey = { key: String ->
+        val base = if (received == "0") "" else received
+        onReceivedChange(base + key)
+    }
+    val onKeypadBackspace = { onReceivedChange(received.dropLast(1)) }
 
     Column(
         modifier = Modifier
@@ -69,24 +70,7 @@ fun CartCashReceivedRow(
                     keyboardType = KeyboardType.Decimal,
                     enabled = !checkingOut,
                     isWarning = isShort,
-                    trailingSlot = if (received.isNotEmpty() && !checkingOut) {
-                        {
-                            Box(
-                                modifier = Modifier
-                                    .clip(t.shapes.sm)
-                                    .clickable(role = Role.Button) { onReceivedChange("") }
-                                    .padding(2.dp),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Icon(
-                                    imageVector = PharmIcons.Close,
-                                    contentDescription = pharmStrings.sellClearReceived,
-                                    tint = t.colors.fgMuted,
-                                    modifier = Modifier.size(16.dp),
-                                )
-                            }
-                        }
-                    } else null,
+                    onClear = { onReceivedChange("") },
                 )
             }
         }
@@ -125,6 +109,13 @@ fun CartCashReceivedRow(
                 size = PharmButtonSize.Sm,
                 enabled = !checkingOut,
                 modifier = Modifier.weight(1f),
+            )
+        }
+        if (showKeypad) {
+            PharmKeypad(
+                onKey = onKeypadKey,
+                onBackspace = onKeypadBackspace,
+                enabled = !checkingOut,
             )
         }
         Row(
@@ -176,6 +167,21 @@ private fun CartCashReceivedRow_Short_Preview() {
             change = 0.0,
             checkingOut = false,
             onReceivedChange = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CartCashReceivedRow_Keypad_Preview() {
+    PharmacyTheme {
+        CartCashReceivedRow(
+            received = "500",
+            total = 446.5,
+            change = 53.5,
+            checkingOut = false,
+            onReceivedChange = {},
+            showKeypad = true,
         )
     }
 }

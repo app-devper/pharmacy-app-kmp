@@ -3,6 +3,7 @@ package app.devper.pharm.ui.designsystem
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -100,18 +100,17 @@ fun PharmTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     leadingSlot: (@Composable () -> Unit)? = null,
     trailingSlot: (@Composable () -> Unit)? = null,
+    onClear: (() -> Unit)? = null,
 ) {
     val t = pharmTokens
     val interaction = remember { MutableInteractionSource() }
-    val isFocused by interaction.collectIsFocusedAsState()
     val borderColor = when {
         !enabled   -> t.colors.borderSubtle
         isError    -> t.colors.dangerFg
         isWarning  -> t.colors.warningFg
-        isFocused  -> t.colors.accent
         else       -> t.colors.border
     }
-    val borderThickness = if (isFocused && enabled) 1.5.dp else 1.dp
+    val borderThickness = 1.dp
     val bg = when {
         !enabled  -> t.colors.bgPage
         isWarning -> t.colors.warningBg.copy(alpha = 0.6f)
@@ -185,6 +184,27 @@ fun PharmTextField(
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(18.dp),
                 )
+            }
+        }
+        if (onClear != null) {
+            val showClear = value.isNotEmpty() && enabled && !readOnly
+            Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+                if (showClear) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(t.shapes.sm)
+                            .clickable(role = Role.Button, onClick = onClear),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = PharmIcons.Close,
+                            contentDescription = pharmStrings.commonClearInput,
+                            tint = t.colors.fgMuted,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
             }
         }
         if (trailingSlot != null) {

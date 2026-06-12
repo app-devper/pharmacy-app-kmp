@@ -58,6 +58,8 @@ interface CommonStrings {
     val commonSearch: String
     val commonConfirm: String
     val commonClose: String
+    val commonBackspace: String
+    val commonClearInput: String
     val commonBack: String
     val commonLoading: String
     val commonRetry: String

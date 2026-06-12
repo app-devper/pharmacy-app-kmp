@@ -91,7 +91,6 @@ object SellStringsTh : SellStrings {
     override val sellPayment = "ชำระเงิน"
     override val sellReceived = "รับเงิน"
     override val sellChange = "ทอน"
-    override val sellClearReceived = "ล้างยอดรับเงิน"
     override val sellCheckout = "ออกใบเสร็จ"
     override val sellCheckoutSave = "บันทึกและออกบิล"
     override val sellReceiptDone = "ออกใบเสร็จสำเร็จ"
