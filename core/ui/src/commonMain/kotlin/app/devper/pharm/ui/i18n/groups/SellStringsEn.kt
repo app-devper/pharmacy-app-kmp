@@ -90,7 +90,7 @@ object SellStringsEn : SellStrings {
     override val sellCheckout = "Checkout"
     override val sellPayDialogTitle = "Take payment"
     override val sellPayAmountDue = "Amount due"
-    override val sellPayCashEntered: (String) -> String = { v -> "Cash tendered $v" }
+    override val sellPayCashLabel = "Cash tendered"
     override val sellPayTotalReceived = "Total received"
     override val sellPayChangeLabel = "Change"
     override val sellPayExactTender = "Exact payment"

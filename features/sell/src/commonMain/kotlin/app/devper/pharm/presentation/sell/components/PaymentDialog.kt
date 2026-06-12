@@ -75,13 +75,16 @@ fun PaymentDialog(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = s.sellPayCashEntered(fmtBaht(if (isExactOrEmpty) total else receivedNum)),
-                    style = PharmText.bodySm.copy(
-                        color = if (isExactOrEmpty) pharmTokens.colors.fgMuted else pharmTokens.colors.fg2,
-                    ),
-                    modifier = Modifier.weight(1f),
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = s.sellPayCashLabel,
+                        style = PharmText.micro.copy(color = pharmTokens.colors.fgMuted),
+                    )
+                    Text(
+                        text = fmtBaht(if (isExactOrEmpty) total else receivedNum),
+                        style = PharmText.h2.tabular(),
+                    )
+                }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = s.sellPayTotalReceived,

@@ -103,7 +103,7 @@ interface SellStrings {
     val sellCheckout: String
     val sellPayDialogTitle: String
     val sellPayAmountDue: String
-    val sellPayCashEntered: (String) -> String
+    val sellPayCashLabel: String
     val sellPayTotalReceived: String
     val sellPayChangeLabel: String
     val sellPayExactTender: String

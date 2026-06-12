@@ -90,7 +90,7 @@ object SellStringsTh : SellStrings {
     override val sellCheckout = "ออกใบเสร็จ"
     override val sellPayDialogTitle = "ชำระสินค้า"
     override val sellPayAmountDue = "ยอดที่ต้องชำระ"
-    override val sellPayCashEntered: (String) -> String = { v -> "ชำระด้วยเงินสด $v" }
+    override val sellPayCashLabel = "ชำระด้วยเงินสด"
     override val sellPayTotalReceived = "ยอดรับเงินรวม"
     override val sellPayChangeLabel = "เงินทอน"
     override val sellPayExactTender = "รับชำระพอดี"
