@@ -91,7 +91,6 @@ object SellStringsEn : SellStrings {
     override val sellPayment = "Payment"
     override val sellReceived = "Received"
     override val sellChange = "Change"
-    override val sellClearReceived = "Clear received"
     override val sellCheckout = "Checkout"
     override val sellCheckoutSave = "Save & checkout"
     override val sellReceiptDone = "Receipt issued"
