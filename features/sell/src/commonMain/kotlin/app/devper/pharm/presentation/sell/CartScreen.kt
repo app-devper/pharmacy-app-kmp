@@ -24,6 +24,7 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
 import app.devper.pharm.presentation.sell.components.CartDiscountSheet
 import app.devper.pharm.presentation.sell.components.CartPanel
+import app.devper.pharm.presentation.sell.components.CartTabStrip
 import app.devper.pharm.presentation.sell.components.CustomerPickerSheet
 import app.devper.pharm.presentation.sell.components.KyCaptureSheet
 import app.devper.pharm.presentation.sell.components.SkipKyConfirmSheet
@@ -73,6 +74,11 @@ fun CartScreen(
         PharmListToolbar(
             title = pharmStrings.sellCart,
             onBack = onBack,
+        )
+        CartTabStrip(
+            slots = parkedState.parkedSlots,
+            activeSlot = parkedState.activeSlot,
+            onTapSlot = parkedCartVM::tapSlot,
         )
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             CartPanel(
