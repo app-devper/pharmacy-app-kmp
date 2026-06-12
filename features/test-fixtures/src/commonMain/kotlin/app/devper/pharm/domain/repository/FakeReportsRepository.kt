@@ -56,10 +56,16 @@ class FakeReportsRepository(
 
     override suspend fun slowDrugs(param: TopOrSlowDrugsParam): List<SlowDrug> = emptyList()
 
-    override suspend fun profit(param: ReportRangeParam): ProfitReport = ProfitReport(
+    var profitReport: ProfitReport = ProfitReport(
         summary = ProfitSummary(0.0, 0.0, 0.0, 0.0, 0),
         byDrug = emptyList(),
     )
+    var lastProfitParam: ReportRangeParam? = null
+
+    override suspend fun profit(param: ReportRangeParam): ProfitReport {
+        lastProfitParam = param
+        return profitReport
+    }
 
     override suspend fun eod(param: EodReportParam): EodReport {
         lastEodParam = param

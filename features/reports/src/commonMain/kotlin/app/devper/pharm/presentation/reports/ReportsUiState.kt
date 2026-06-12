@@ -22,6 +22,7 @@ data class ReportsUiState(
     val window: DashboardWindow = DashboardWindow.Last7,
     override val loading: Boolean = false,
     val dashboard: Dashboard? = null,
+    val monthProfit: Double? = null,
     val topDrugs: List<TopDrug> = emptyList(),
     val slowDrugs: List<SlowDrug> = emptyList(),
     val errorState: AppException? = null,

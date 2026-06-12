@@ -13,7 +13,7 @@ interface ReportsStrings {
     val reportsTabEod: String
     val reportsMetricSalesToday: String
     val reportsMetricSalesMonth: String
-    val reportsMetricProfitMonthApprox: String
+    val reportsMetricProfitMonth: String
     val reportsMetricProfitMonthHint: String
     val reportsMetricStockValue: String
     val reportsMetricStockHint: (Int, Int) -> String

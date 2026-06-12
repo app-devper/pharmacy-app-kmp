@@ -9,8 +9,8 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsTabEod = "EOD close"
     override val reportsMetricSalesToday = "Sales today"
     override val reportsMetricSalesMonth = "Sales this month"
-    override val reportsMetricProfitMonthApprox = "Profit this month (est.)"
-    override val reportsMetricProfitMonthHint = "Estimated ~30% of sales"
+    override val reportsMetricProfitMonth = "Profit this month"
+    override val reportsMetricProfitMonthHint = "From actual cost"
     override val reportsMetricStockValue = "Stock value"
     override val reportsMetricStockHint: (Int, Int) -> String = { out, low -> "Out $out / Low $low" }
     override val reportsRangeToday = "Today"

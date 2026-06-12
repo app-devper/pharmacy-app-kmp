@@ -9,8 +9,8 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsTabEod = "ปิดรอบ EOD"
     override val reportsMetricSalesToday = "ยอดขายวันนี้"
     override val reportsMetricSalesMonth = "ยอดขายเดือนนี้"
-    override val reportsMetricProfitMonthApprox = "กำไรเดือนนี้ (ประมาณ)"
-    override val reportsMetricProfitMonthHint = "ประเมิน ~30% ของยอดขาย"
+    override val reportsMetricProfitMonth = "กำไรเดือนนี้"
+    override val reportsMetricProfitMonthHint = "จากต้นทุนจริง"
     override val reportsMetricStockValue = "มูลค่าสต็อก"
     override val reportsMetricStockHint: (Int, Int) -> String = { out, low -> "หมด $out / ใกล้หมด $low" }
     override val reportsRangeToday = "วันนี้"
