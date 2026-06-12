@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,7 +43,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.ui.common.pharmFocusRing
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -104,13 +105,15 @@ fun PharmTextField(
 ) {
     val t = pharmTokens
     val interaction = remember { MutableInteractionSource() }
+    val isFocused by interaction.collectIsFocusedAsState()
     val borderColor = when {
         !enabled   -> t.colors.borderSubtle
         isError    -> t.colors.dangerFg
         isWarning  -> t.colors.warningFg
+        isFocused  -> t.colors.accent
         else       -> t.colors.border
     }
-    val borderThickness = 1.dp
+    val borderThickness = if (isFocused && enabled) 1.5.dp else 1.dp
     val bg = when {
         !enabled  -> t.colors.bgPage
         isWarning -> t.colors.warningBg.copy(alpha = 0.6f)
@@ -128,8 +131,6 @@ fun PharmTextField(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = t.dimens.controlHeight)
-            .pharmFocusRing(interactionSource = interaction, shape = shape)
-            .padding(2.dp)
             .clip(shape)
             .background(bg, shape)
             .border(borderThickness, borderColor, shape)
