@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,82 +68,90 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundBrush)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center,
+            .background(backgroundBrush),
     ) {
         val strings = pharmStrings
         Column(
             modifier = Modifier
-                .widthIn(max = 384.dp)
-                .fillMaxWidth()
-                .clip(t.shapes.xl)
-                .background(t.colors.surface, t.shapes.xl)
-                .padding(32.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+                .fillMaxSize()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            LocaleSwitcherRow(
-                strings = strings,
-                activeLocale = state.locale,
-                onLocaleChange = viewModel::onLocaleChange,
-            )
-            BrandHeader(strings = strings)
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                FormField(label = strings.loginUsernameLabel) {
-                    PharmTextField(
-                        value = state.username,
-                        onValueChange = viewModel::onUsernameChange,
-                        placeholder = strings.loginUsernamePlaceholder,
-                        enabled = !state.loading,
-                        keyboardType = KeyboardType.Email,
-                    )
-                }
-                FormField(label = strings.loginPasswordLabel) {
-                    PharmTextField(
-                        value = state.password,
-                        onValueChange = viewModel::onPasswordChange,
-                        placeholder = strings.loginPasswordPlaceholder,
-                        enabled = !state.loading,
-                        keyboardType = KeyboardType.Password,
-                        visualTransformation = PasswordVisualTransformation(),
-                    )
-                }
-            }
-            PharmButton(
-                onClick = viewModel::submit,
-                modifier = Modifier.fillMaxWidth(),
-                size = PharmButtonSize.Lg,
-                enabled = !state.loading,
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 384.dp)
+                    .fillMaxWidth()
+                    .clip(t.shapes.xl)
+                    .background(t.colors.surface, t.shapes.xl)
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                if (state.loading) {
-                    Box(
-                        modifier = Modifier.size(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        PharmCircularProgress(
-                            color = t.colors.surface,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(14.dp),
+                LocaleSwitcherRow(
+                    strings = strings,
+                    activeLocale = state.locale,
+                    onLocaleChange = viewModel::onLocaleChange,
+                )
+                BrandHeader(strings = strings)
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    FormField(label = strings.loginUsernameLabel) {
+                        PharmTextField(
+                            value = state.username,
+                            onValueChange = viewModel::onUsernameChange,
+                            placeholder = strings.loginUsernamePlaceholder,
+                            enabled = !state.loading,
+                            keyboardType = KeyboardType.Email,
                         )
                     }
-                    Text(
-                        text = strings.loginSubmitting,
-                        style = PharmText.buttonMd.copy(color = t.colors.surface),
-                    )
-                } else {
-                    Text(
-                        text = strings.loginSubmit,
-                        style = PharmText.buttonMd.copy(color = t.colors.surface),
-                    )
+                    FormField(label = strings.loginPasswordLabel) {
+                        PharmTextField(
+                            value = state.password,
+                            onValueChange = viewModel::onPasswordChange,
+                            placeholder = strings.loginPasswordPlaceholder,
+                            enabled = !state.loading,
+                            keyboardType = KeyboardType.Password,
+                            visualTransformation = PasswordVisualTransformation(),
+                        )
+                    }
                 }
+                PharmButton(
+                    onClick = viewModel::submit,
+                    modifier = Modifier.fillMaxWidth(),
+                    size = PharmButtonSize.Lg,
+                    enabled = !state.loading,
+                ) {
+                    if (state.loading) {
+                        Box(
+                            modifier = Modifier.size(16.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            PharmCircularProgress(
+                                color = t.colors.surface,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(14.dp),
+                            )
+                        }
+                        Text(
+                            text = strings.loginSubmitting,
+                            style = PharmText.buttonMd.copy(color = t.colors.surface),
+                        )
+                    } else {
+                        Text(
+                            text = strings.loginSubmit,
+                            style = PharmText.buttonMd.copy(color = t.colors.surface),
+                        )
+                    }
+                }
+                Text(
+                    text = "v${AppVersion.name} · ${strings.loginVersionPrefix}",
+                    style = PharmText.micro.copy(color = t.colors.fgMuted),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                )
             }
-            Text(
-                text = "v${AppVersion.name} · ${strings.loginVersionPrefix}",
-                style = PharmText.micro.copy(color = t.colors.fgMuted),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-            )
         }
     }
 
