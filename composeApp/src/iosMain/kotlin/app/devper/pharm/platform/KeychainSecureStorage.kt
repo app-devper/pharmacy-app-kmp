@@ -9,10 +9,12 @@ import kotlinx.cinterop.interpretObjCPointer
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.rawValue
+import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.value
 import platform.CoreFoundation.CFDictionaryRef
 import platform.CoreFoundation.CFTypeRefVar
 import platform.Foundation.CFBridgingRelease
+import platform.Foundation.CFBridgingRetain
 import platform.Foundation.NSData
 import platform.Foundation.NSMutableDictionary
 import platform.Foundation.NSString
@@ -43,7 +45,7 @@ private const val SERVICE = "app.devper.pharm.secure"
 class KeychainSecureStorage : SecureStorage {
 
     override fun put(key: String, value: String) {
-        SecItemDelete(baseQuery(key).cast())
+        baseQuery(key).useCFDictionary { SecItemDelete(it) }
         val data = (NSString.create(string = value) as NSString)
             .dataUsingEncoding(NSUTF8StringEncoding)
             ?: throw StorageException("Failed to encode keychain value")
@@ -54,7 +56,7 @@ class KeychainSecureStorage : SecureStorage {
                 forKey = kSecAttrAccessible.bridgeKey(),
             )
         }
-        val status: OSStatus = SecItemAdd(query.cast(), null)
+        val status: OSStatus = query.useCFDictionary { SecItemAdd(it, null) }
         if (status != errSecSuccess) {
             throw StorageException("Keychain SecItemAdd failed: $status")
         }
@@ -66,7 +68,7 @@ class KeychainSecureStorage : SecureStorage {
             setObject(true, forKey = kSecReturnData.bridgeKey())
         }
         val result = alloc<CFTypeRefVar>()
-        val status = SecItemCopyMatching(query.cast(), result.ptr)
+        val status = query.useCFDictionary { SecItemCopyMatching(it, result.ptr) }
         if (status != errSecSuccess) return@memScoped null
         val data = CFBridgingRelease(result.value) as? NSData ?: return@memScoped null
         val nsString = NSString.create(data = data, encoding = NSUTF8StringEncoding) ?: return@memScoped null
@@ -74,7 +76,7 @@ class KeychainSecureStorage : SecureStorage {
     }
 
     override fun remove(key: String) {
-        SecItemDelete(baseQuery(key).cast())
+        baseQuery(key).useCFDictionary { SecItemDelete(it) }
     }
 
     private fun baseQuery(key: String): NSMutableDictionary {
@@ -85,8 +87,14 @@ class KeychainSecureStorage : SecureStorage {
         return dict
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun NSMutableDictionary.cast(): CFDictionaryRef? = this as CFDictionaryRef?
+    private inline fun <R> NSMutableDictionary.useCFDictionary(block: (CFDictionaryRef?) -> R): R {
+        val cf = CFBridgingRetain(this)
+        try {
+            return block(cf?.reinterpret())
+        } finally {
+            CFBridgingRelease(cf)
+        }
+    }
 
     private fun Any?.bridgeKey(): NSCopyingProtocol =
         interpretObjCPointer<NSString>(this.rawCFPointer())
