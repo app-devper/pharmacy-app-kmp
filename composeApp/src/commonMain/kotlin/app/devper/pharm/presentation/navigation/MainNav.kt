@@ -78,10 +78,7 @@ import app.devper.pharm.presentation.users.Users
 import app.devper.pharm.presentation.users.usersNav
 import app.devper.pharm.ui.components.AppShell
 import app.devper.pharm.ui.components.NavItem
-import app.devper.pharm.ui.designsystem.LOCALE_WIRE_EN
-import app.devper.pharm.ui.designsystem.LOCALE_WIRE_TH
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmLocaleToggle
 import app.devper.pharm.ui.designsystem.TopbarUser
 import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -214,7 +211,6 @@ fun MainShell(appViewModel: AppViewModel) {
     val (title, sectionKey) = destInfoFor(backEntry?.destination?.route)
     val navItems = rememberMainNavItems()
     val bottomNavItems = rememberBottomNavItems()
-    val localeActive = if (state.uiPreferences.locale.wire == LOCALE_WIRE_EN) LOCALE_WIRE_EN else LOCALE_WIRE_TH
 
     val user: TopbarUser? = if (state.userDisplayName.isNotBlank()) {
         TopbarUser(
@@ -247,9 +243,6 @@ fun MainShell(appViewModel: AppViewModel) {
         user = user,
         onProfileClick = { nestedNav.navigate(Profile) { launchSingleTop = true } },
         bottomNavItems = bottomNavItems,
-        localeSwitch = {
-            PharmLocaleToggle(activeWire = localeActive, onSelect = appViewModel::onLocaleChange)
-        },
     ) {
         NavHost(navController = nestedNav, startDestination = Sell) {
             sellNav(nestedNav)

@@ -43,7 +43,7 @@ fun PharmTopbar(
     showHamburger: Boolean = false,
     showThemeToggle: Boolean = true,
     showStatus: Boolean = true,
-    localeSwitch: (@Composable () -> Unit)? = null,
+    compactUserMenu: Boolean = false,
     onHamburger: () -> Unit = {},
     onLogout: (() -> Unit)? = null,
     onProfileClick: (() -> Unit)? = null,
@@ -64,7 +64,6 @@ fun PharmTopbar(
         }
         Text(text = title, style = PharmText.h1)
         Box(modifier = Modifier.weight(1f))
-        localeSwitch?.invoke()
         if (showThemeToggle) {
             ThemeToggleButton()
         }
@@ -83,16 +82,41 @@ fun PharmTopbar(
             }
         }
         if (user != null) {
-
-            Box(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .width(1.dp)
-                    .fillMaxHeight()
-                    .padding(vertical = 12.dp)
-                    .background(t.colors.border),
-            )
-            UserChip(user = user, onLogout = onLogout, onProfileClick = onProfileClick)
+            if (compactUserMenu) {
+                PharmActionMenu(
+                    actions = buildList {
+                        if (onProfileClick != null) {
+                            add(
+                                PharmAction(
+                                    label = pharmStrings.profileTitle,
+                                    icon = PharmIcons.Person,
+                                    onClick = onProfileClick,
+                                ),
+                            )
+                        }
+                        if (onLogout != null) {
+                            add(
+                                PharmAction(
+                                    label = pharmStrings.commonLogout,
+                                    icon = PharmIcons.Logout,
+                                    tone = PharmActionTone.Danger,
+                                    onClick = onLogout,
+                                ),
+                            )
+                        }
+                    },
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .width(1.dp)
+                        .fillMaxHeight()
+                        .padding(vertical = 12.dp)
+                        .background(t.colors.border),
+                )
+                UserChip(user = user, onLogout = onLogout, onProfileClick = onProfileClick)
+            }
         }
         trailing?.invoke()
     }
