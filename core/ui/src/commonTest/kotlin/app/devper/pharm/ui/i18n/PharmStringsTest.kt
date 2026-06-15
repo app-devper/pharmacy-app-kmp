@@ -289,6 +289,8 @@ class PharmStringsTablesTest {
         assertEquals("ไทย", PharmStringsEn.settingsLocaleTh)
         assertEquals("English", PharmStringsTh.settingsLocaleEn)
         assertEquals("English", PharmStringsEn.settingsLocaleEn)
+        assertEquals("Eng", PharmStringsTh.settingsLocaleEnShort)
+        assertEquals("Eng", PharmStringsEn.settingsLocaleEnShort)
     }
 
     @Test

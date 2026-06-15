@@ -41,6 +41,9 @@ fun PharmTopbar(
     user: TopbarUser? = null,
     online: Boolean = true,
     showHamburger: Boolean = false,
+    showThemeToggle: Boolean = true,
+    showStatus: Boolean = true,
+    localeSwitch: (@Composable () -> Unit)? = null,
     onHamburger: () -> Unit = {},
     onLogout: (() -> Unit)? = null,
     onProfileClick: (() -> Unit)? = null,
@@ -61,8 +64,11 @@ fun PharmTopbar(
         }
         Text(text = title, style = PharmText.h1)
         Box(modifier = Modifier.weight(1f))
-        ThemeToggleButton()
-        if (online) {
+        localeSwitch?.invoke()
+        if (showThemeToggle) {
+            ThemeToggleButton()
+        }
+        if (showStatus && online) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically,

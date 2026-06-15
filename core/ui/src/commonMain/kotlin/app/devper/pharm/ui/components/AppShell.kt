@@ -79,6 +79,7 @@ fun AppShell(
     role: Role = Role.UNKNOWN,
     onProfileClick: (() -> Unit)? = null,
     bottomNavItems: List<NavItem> = emptyList(),
+    localeSwitch: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -107,6 +108,7 @@ fun AppShell(
                 pendingSyncCount = pendingSyncCount,
                 user = user,
                 onProfileClick = onProfileClick,
+                localeSwitch = localeSwitch,
                 content = content,
             )
         } else {
@@ -136,6 +138,7 @@ private fun CompactShell(
     pendingSyncCount: Int,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
+    localeSwitch: (@Composable () -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
@@ -154,6 +157,9 @@ private fun CompactShell(
                 title = title,
                 user = user,
                 showHamburger = true,
+                showThemeToggle = false,
+                showStatus = false,
+                localeSwitch = localeSwitch,
                 onHamburger = { drawerOpen = true },
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
