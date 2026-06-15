@@ -53,8 +53,6 @@ fun ReportsContent(
         Column(modifier = contentModifier) {
             val s = pharmStrings
             PharmListToolbar(
-                title = s.reportsTabSummary,
-                subtitle = s.reportsSubtitle,
                 actions = {
                     PharmButton(
                         label = s.reportsTabEod,

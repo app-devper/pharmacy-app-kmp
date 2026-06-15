@@ -20,7 +20,6 @@ import app.devper.pharm.presentation.labels.components.LabelPreviewPane
 import app.devper.pharm.presentation.labels.components.LabelPrintToolbar
 import app.devper.pharm.presentation.labels.i18n.localizeLabels
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -39,10 +38,6 @@ fun LabelPrintContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        PharmListToolbar(
-            title = s.navLabelPrint,
-            subtitle = s.labelsSubtitle,
-        )
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()

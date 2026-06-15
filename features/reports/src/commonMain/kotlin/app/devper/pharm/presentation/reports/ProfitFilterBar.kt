@@ -61,8 +61,6 @@ internal fun ProfitFilterBar(
     }
 
     PharmListToolbar(
-        title = s.reportsProfitTitle,
-        subtitle = s.reportsProfitSubtitle,
         modifier = modifier,
         actions = {
             PharmButton(

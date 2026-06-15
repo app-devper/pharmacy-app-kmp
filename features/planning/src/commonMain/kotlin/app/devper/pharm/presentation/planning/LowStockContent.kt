@@ -78,8 +78,6 @@ fun LowStockContent(
 private fun LowStockToolbar(onReload: () -> Unit) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.planningLowStockTitle,
-        subtitle = s.planningBelowMinTitle,
         actions = {
             PharmButton(
                 label = s.planningRefreshCta,

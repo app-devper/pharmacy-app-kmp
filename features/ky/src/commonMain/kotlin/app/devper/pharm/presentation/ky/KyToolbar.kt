@@ -42,9 +42,7 @@ internal fun KyToolbar(
 ) {
     val meta = kyFormMeta(currentForm, pharmStrings)
     PharmListToolbar(
-        title = meta.title,
         modifier = modifier,
-        subtitle = meta.subtitle,
         filters = {
             KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
             KyMonthField(month = month, onMonthChange = onMonthChange, onApply = onApply)

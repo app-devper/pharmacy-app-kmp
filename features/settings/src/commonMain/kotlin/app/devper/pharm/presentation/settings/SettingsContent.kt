@@ -51,8 +51,6 @@ fun SettingsContent(
     val tabs = SettingsTab.entries.map { PharmTab(id = it.name, label = labelFor(it, strings)) }
     Column(modifier = Modifier.fillMaxSize()) {
         PharmListToolbar(
-            title = strings.navSettings,
-            subtitle = if (state.dirty) strings.settingsDirtySubtitle else strings.settingsToolbarSubtitle,
             actions = {
                 PharmSaveAction(
                     saving = state.saving,

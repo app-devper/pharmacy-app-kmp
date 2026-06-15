@@ -34,8 +34,6 @@ internal fun ExpiryToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.navExpiry,
-        subtitle = s.expirySubtitle,
         modifier = modifier,
         filters = {
             PharmSingleSelectChips(

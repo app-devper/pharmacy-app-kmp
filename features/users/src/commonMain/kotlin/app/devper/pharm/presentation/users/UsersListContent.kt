@@ -123,8 +123,6 @@ private fun UsersListToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.navUsers,
-        subtitle = s.usersListSubtitle,
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,

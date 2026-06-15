@@ -30,7 +30,6 @@ import app.devper.pharm.presentation.profile.components.ProfilePasswordSection
 import app.devper.pharm.presentation.profile.i18n.localizeProfile
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
-import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -44,9 +43,6 @@ fun ProfileContent(
     val strings = pharmStrings
     val loadingEmpty = state.loading && state.user == null
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
-            title = strings.profileTitle,
-        )
         Column(
             modifier = Modifier
                 .weight(1f)

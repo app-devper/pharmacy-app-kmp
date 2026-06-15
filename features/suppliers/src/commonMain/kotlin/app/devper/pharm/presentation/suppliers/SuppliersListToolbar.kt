@@ -17,8 +17,6 @@ internal fun SuppliersListToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.navSuppliers,
-        subtitle = s.suppliersListSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.suppliersSearchPlaceholder,
