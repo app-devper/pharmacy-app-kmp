@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -162,16 +163,16 @@ private fun BackButton(onClick: () -> Unit) {
     val t = pharmTokens
     Box(
         modifier = Modifier
-            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-            .clip(t.shapes.sm)
+            .size(44.dp)
+            .clip(CircleShape)
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = PharmIcons.ReturnArrow,
+            imageVector = PharmIcons.ChevronLeft,
             contentDescription = pharmStrings.commonBack,
             tint = t.colors.fg1,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(22.dp),
         )
     }
 }

@@ -194,6 +194,16 @@ private val DEST_INFO: Map<String, DestInfo> = buildMap {
     add(Profile::class, { it.profileSectionPersonal }, null)
 }
 
+private val SUB_PAGE_ROUTE_KEYS: Set<String> = setOf(
+    k(Cart::class), k(CustomerAdd::class), k(CustomerEdit::class), k(CustomerDetail::class),
+    k(ImportNew::class), k(ImportEdit::class), k(ImportDetail::class),
+    k(Ky9Add::class), k(Ky10Add::class), k(Ky11Add::class), k(Ky12Add::class),
+    k(ReorderSuggestions::class), k(Eod::class),
+    k(DrugAdd::class), k(DrugEdit::class), k(DrugLots::class), k(DrugAdjust::class), k(DrugHistory::class),
+    k(StockCountNew::class), k(SupplierAdd::class), k(SupplierEdit::class),
+    k(UserAdd::class), k(UserEdit::class),
+)
+
 @Composable
 private fun destInfoFor(route: String?): Pair<String, String?> {
     val strings = pharmStrings
@@ -209,6 +219,8 @@ fun MainShell(appViewModel: AppViewModel) {
     val nestedNav = rememberNavController()
     val backEntry by nestedNav.currentBackStackEntryAsState()
     val (title, sectionKey) = destInfoFor(backEntry?.destination?.route)
+    val currentRouteBase = backEntry?.destination?.route?.substringBefore('/')?.substringBefore('?')
+    val isSubPage = currentRouteBase in SUB_PAGE_ROUTE_KEYS
     val navItems = rememberMainNavItems()
     val bottomNavItems = rememberBottomNavItems()
 
@@ -243,6 +255,8 @@ fun MainShell(appViewModel: AppViewModel) {
         user = user,
         onProfileClick = { nestedNav.navigate(Profile) { launchSingleTop = true } },
         bottomNavItems = bottomNavItems,
+        isSubPage = isSubPage,
+        onSubPageBack = { nestedNav.popBackStack() },
     ) {
         NavHost(navController = nestedNav, startDestination = Sell) {
             sellNav(nestedNav)
