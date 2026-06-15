@@ -31,7 +31,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.theme.PharmText
@@ -48,7 +48,7 @@ fun DrugHistoryContent(
     val t = pharmTokens
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(title = pharmStrings.stockHistoryTitle, subtitle = state.drugName, onBack = onBack)
+        SubPageBar(title = pharmStrings.stockHistoryTitle, onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)

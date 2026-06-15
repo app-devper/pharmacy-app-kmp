@@ -17,7 +17,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.localizeCommon
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmFormCard
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -48,7 +48,7 @@ fun Ky10AddContent(
 ) {
     val t = pharmTokens
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = pharmStrings.kyAddCtaWithNumber(10),
             onBack = callbacks.onBack,
             actions = {

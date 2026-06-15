@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -96,31 +97,34 @@ fun AppShell(
                 .map { BottomNavItem(id = it.route, label = it.label, icon = it.icon) }
         }
 
-        if (size.isCompact) {
-            CompactShell(
-                title = title,
-                sidebarItems = sidebarItems,
-                bottomItems = bottomItems,
-                currentRoute = currentRoute,
-                onNavigate = onNavigate,
-                onLogout = onLogout,
-                pendingSyncCount = pendingSyncCount,
-                user = user,
-                onProfileClick = onProfileClick,
-                content = content,
-            )
-        } else {
-            ExpandedShell(
-                title = title,
-                sidebarItems = sidebarItems,
-                currentRoute = currentRoute,
-                onNavigate = onNavigate,
-                onLogout = onLogout,
-                pendingSyncCount = pendingSyncCount,
-                user = user,
-                onProfileClick = onProfileClick,
-                content = content,
-            )
+        val subPageController = remember { SubPageBarController() }
+        CompositionLocalProvider(LocalSubPageBarController provides subPageController) {
+            if (size.isCompact) {
+                CompactShell(
+                    title = title,
+                    sidebarItems = sidebarItems,
+                    bottomItems = bottomItems,
+                    currentRoute = currentRoute,
+                    onNavigate = onNavigate,
+                    onLogout = onLogout,
+                    pendingSyncCount = pendingSyncCount,
+                    user = user,
+                    onProfileClick = onProfileClick,
+                    content = content,
+                )
+            } else {
+                ExpandedShell(
+                    title = title,
+                    sidebarItems = sidebarItems,
+                    currentRoute = currentRoute,
+                    onNavigate = onNavigate,
+                    onLogout = onLogout,
+                    pendingSyncCount = pendingSyncCount,
+                    user = user,
+                    onProfileClick = onProfileClick,
+                    content = content,
+                )
+            }
         }
     }
 }
@@ -140,6 +144,7 @@ private fun CompactShell(
 ) {
     val t = pharmTokens
     var drawerOpen by remember { mutableStateOf(false) }
+    val subPage = LocalSubPageBarController.current?.content
 
     Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
 
@@ -151,12 +156,14 @@ private fun CompactShell(
                     .background(t.colors.surface),
             )
             PharmTopbar(
-                title = title,
-                user = user,
-                showHamburger = true,
+                title = subPage?.title ?: title,
+                user = if (subPage == null) user else null,
+                showHamburger = subPage == null,
                 showThemeToggle = false,
                 showStatus = false,
-                compactUserMenu = true,
+                compactUserMenu = subPage == null,
+                onBack = subPage?.onBack,
+                actions = subPage?.actions,
                 onHamburger = { drawerOpen = true },
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
@@ -211,6 +218,7 @@ private fun ExpandedShell(
 ) {
     val t = pharmTokens
     val sidebar = LocalSidebarState.current
+    val subPage = LocalSubPageBarController.current?.content
 
     Row(
         modifier = Modifier
@@ -238,8 +246,10 @@ private fun ExpandedShell(
                     .background(t.colors.surface),
             )
             PharmTopbar(
-                title = title,
-                user = user,
+                title = subPage?.title ?: title,
+                user = if (subPage == null) user else null,
+                onBack = subPage?.onBack,
+                actions = subPage?.actions,
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
                 trailing = {

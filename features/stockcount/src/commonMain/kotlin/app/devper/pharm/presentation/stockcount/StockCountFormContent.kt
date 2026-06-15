@@ -24,7 +24,7 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.ui.i18n.localizeCommon
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -42,7 +42,7 @@ fun StockCountFormContent(
     val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = s.stockCountHistoryNewCta,
             onBack = callbacks.onBack,
             actions = {

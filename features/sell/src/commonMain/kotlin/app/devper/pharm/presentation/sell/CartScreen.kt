@@ -20,7 +20,7 @@ import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
 import app.devper.pharm.presentation.sell.components.CartDiscountSheet
 import app.devper.pharm.presentation.sell.components.CartPanel
@@ -72,7 +72,7 @@ fun CartScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = pharmStrings.sellCart,
             onBack = onBack,
         )

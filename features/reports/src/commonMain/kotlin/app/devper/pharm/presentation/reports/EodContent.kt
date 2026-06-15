@@ -29,7 +29,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -46,9 +46,8 @@ fun EodContent(
 
     val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = s.reportsEodTitle,
-            subtitle = s.reportsEodSubtitle,
             onBack = onBack,
             actions = {
                 if (state.closed) PharmBadge(text = s.reportsEodClosedBadge, tone = PharmBadgeTone.Green)

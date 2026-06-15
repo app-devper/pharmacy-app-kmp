@@ -20,7 +20,7 @@ import app.devper.pharm.presentation.suppliers.SupplierFormUiState
 import app.devper.pharm.presentation.suppliers.i18n.localizeSupplierForm
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -35,7 +35,7 @@ fun SupplierFormContent(
     val t = pharmTokens
     val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = if (state.isEdit) s.suppliersFormEditTitle else s.suppliersFormAddTitle,
             onBack = callbacks.onBack,
             actions = {
