@@ -325,6 +325,11 @@ object PharmIcons {
         "M4 9 h11 a5 5 0 0 1 5 5 v6",
     )
 
+    val ChevronLeft: ImageVector = strokeIcon(
+        name = "ChevronLeft",
+        "M15 6 L9 12 L15 18",
+    )
+
     val Pencil: ImageVector = strokeIcon(
         name = "Pencil",
         "M16.5 3.5 L20.5 7.5 L8 20 l-5 1 l1 -5 Z",

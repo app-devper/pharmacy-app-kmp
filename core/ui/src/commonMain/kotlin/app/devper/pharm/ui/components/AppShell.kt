@@ -80,6 +80,8 @@ fun AppShell(
     role: Role = Role.UNKNOWN,
     onProfileClick: (() -> Unit)? = null,
     bottomNavItems: List<NavItem> = emptyList(),
+    isSubPage: Boolean = false,
+    onSubPageBack: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -110,6 +112,8 @@ fun AppShell(
                     pendingSyncCount = pendingSyncCount,
                     user = user,
                     onProfileClick = onProfileClick,
+                    isSubPage = isSubPage,
+                    onSubPageBack = onSubPageBack,
                     content = content,
                 )
             } else {
@@ -122,6 +126,8 @@ fun AppShell(
                     pendingSyncCount = pendingSyncCount,
                     user = user,
                     onProfileClick = onProfileClick,
+                    isSubPage = isSubPage,
+                    onSubPageBack = onSubPageBack,
                     content = content,
                 )
             }
@@ -140,6 +146,8 @@ private fun CompactShell(
     pendingSyncCount: Int,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
+    isSubPage: Boolean,
+    onSubPageBack: (() -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
@@ -156,14 +164,14 @@ private fun CompactShell(
                     .background(t.colors.surface),
             )
             PharmTopbar(
-                title = subPage?.title ?: title,
-                user = if (subPage == null) user else null,
-                showHamburger = subPage == null,
+                title = if (isSubPage) subPage?.title ?: title else title,
+                user = if (isSubPage) null else user,
+                showHamburger = !isSubPage,
                 showThemeToggle = false,
                 showStatus = false,
-                compactUserMenu = subPage == null,
-                onBack = subPage?.onBack,
-                actions = subPage?.actions,
+                compactUserMenu = !isSubPage,
+                onBack = if (isSubPage) subPage?.onBack ?: onSubPageBack else null,
+                actions = if (isSubPage) subPage?.actions else null,
                 onHamburger = { drawerOpen = true },
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
@@ -214,6 +222,8 @@ private fun ExpandedShell(
     pendingSyncCount: Int,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
+    isSubPage: Boolean,
+    onSubPageBack: (() -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
@@ -246,10 +256,10 @@ private fun ExpandedShell(
                     .background(t.colors.surface),
             )
             PharmTopbar(
-                title = subPage?.title ?: title,
-                user = if (subPage == null) user else null,
-                onBack = subPage?.onBack,
-                actions = subPage?.actions,
+                title = if (isSubPage) subPage?.title ?: title else title,
+                user = if (isSubPage) null else user,
+                onBack = if (isSubPage) subPage?.onBack ?: onSubPageBack else null,
+                actions = if (isSubPage) subPage?.actions else null,
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
                 trailing = {
