@@ -8,7 +8,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileScreen(
-    onBack: () -> Unit,
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -39,7 +38,6 @@ fun ProfileScreen(
             onFontSizeChange = viewModel::onFontSizeChange,
             onDensityChange = viewModel::onDensityChange,
             onLocaleChange = viewModel::onLocaleChange,
-            onBack = onBack,
         ),
     )
 }

@@ -272,7 +272,7 @@ fun MainShell(appViewModel: AppViewModel) {
             kyNav(nestedNav)
             offlineSyncNav()
             helpNav()
-            profileNav(nestedNav)
+            profileNav()
             usersNav(nestedNav)
         }
     }
