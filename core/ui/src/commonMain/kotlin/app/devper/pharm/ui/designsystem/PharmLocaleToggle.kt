@@ -50,7 +50,7 @@ fun PharmLocaleToggle(
             onClick = { onSelect(LOCALE_WIRE_TH) },
         )
         LocaleSegment(
-            label = s.settingsLocaleEnShort,
+            label = s.settingsLocaleEn,
             active = activeWire == LOCALE_WIRE_EN,
             onClick = { onSelect(LOCALE_WIRE_EN) },
         )

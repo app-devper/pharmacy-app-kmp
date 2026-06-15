@@ -287,10 +287,8 @@ class PharmStringsTablesTest {
     fun th_and_en_share_locale_name_strings_unchanged() {
         assertEquals("ไทย", PharmStringsTh.settingsLocaleTh)
         assertEquals("ไทย", PharmStringsEn.settingsLocaleTh)
-        assertEquals("English", PharmStringsTh.settingsLocaleEn)
-        assertEquals("English", PharmStringsEn.settingsLocaleEn)
-        assertEquals("Eng", PharmStringsTh.settingsLocaleEnShort)
-        assertEquals("Eng", PharmStringsEn.settingsLocaleEnShort)
+        assertEquals("Eng", PharmStringsTh.settingsLocaleEn)
+        assertEquals("Eng", PharmStringsEn.settingsLocaleEn)
     }
 
     @Test
