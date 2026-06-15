@@ -47,8 +47,6 @@ fun OfflineSyncContent(
             .background(t.colors.bgPage),
     ) {
         PharmListToolbar(
-            title = s.navOfflineSync,
-            subtitle = s.offlineSyncSubtitle,
             actions = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     PharmButton(

@@ -31,7 +31,7 @@ private val TITLE_MIN_WIDTH = 600.dp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PharmListToolbar(
-    title: String,
+    title: String = "",
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     onBack: (() -> Unit)? = null,
@@ -45,7 +45,7 @@ fun PharmListToolbar(
 ) {
     val t = pharmTokens
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val showTitle = onBack != null || maxWidth >= TITLE_MIN_WIDTH
+        val showTitle = title.isNotEmpty() && (onBack != null || maxWidth >= TITLE_MIN_WIDTH)
         Column(
             modifier = Modifier
                 .fillMaxWidth()

@@ -18,8 +18,6 @@ internal fun CustomersListToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.navCustomers,
-        subtitle = s.customersListSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.customersSearchPlaceholder,

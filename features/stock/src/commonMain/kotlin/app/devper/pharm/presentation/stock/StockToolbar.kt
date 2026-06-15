@@ -27,8 +27,6 @@ internal fun StockToolbar(
     modifier: Modifier = Modifier,
 ) {
     PharmListToolbar(
-        title = pharmStrings.navStock,
-        subtitle = pharmStrings.stockSubtitle,
         modifier = modifier,
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,

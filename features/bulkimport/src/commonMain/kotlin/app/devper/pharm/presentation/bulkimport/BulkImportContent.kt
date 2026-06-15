@@ -58,8 +58,6 @@ fun BulkImportContent(
             .background(t.colors.bgPage),
     ) {
         PharmListToolbar(
-            title = s.bulkImportTitle,
-            subtitle = s.bulkImportSubtitle,
             actions = {
                 PharmButton(
                     label = s.bulkImportDownloadTemplate,

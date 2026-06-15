@@ -26,8 +26,6 @@ internal fun SalesHistoryListToolbar(
     )
 
     PharmListToolbar(
-        title = s.navSalesHistory,
-        subtitle = s.salesHistorySubtitle,
         modifier = modifier,
         searchValue = state.query,
         onSearchChange = callbacks.onQueryChange,

@@ -21,8 +21,6 @@ internal fun ImportsListToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.importsTitle,
-        subtitle = s.importsSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.importsSearchPlaceholder,

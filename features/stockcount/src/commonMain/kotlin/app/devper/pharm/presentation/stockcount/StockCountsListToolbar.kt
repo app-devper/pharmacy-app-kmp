@@ -18,8 +18,6 @@ internal fun StockCountsListToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
-        title = s.navStockCounts,
-        subtitle = s.stockCountHistorySubtitle,
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.stockCountHistorySearchPlaceholder,
