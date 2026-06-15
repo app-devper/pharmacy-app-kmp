@@ -141,7 +141,7 @@ fun SellScreen(
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val isWide = maxWidth >= 640.dp
             val showRail = maxWidth >= 840.dp
-            val cartWidth = if (showRail) 400.dp else 360.dp
+            val cartWidth = if (showRail) 400.dp else maxWidth * 0.45f
             if (isWide) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     DrugPickerColumn(
