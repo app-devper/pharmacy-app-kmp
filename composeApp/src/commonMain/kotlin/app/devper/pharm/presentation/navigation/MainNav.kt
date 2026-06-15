@@ -125,6 +125,18 @@ private fun rememberMainNavItems(): List<NavItem> {
     }
 }
 
+private val BOTTOM_NAV_ROUTES: List<Any> = listOf(Sell, Stock, SalesHistory, Reports)
+
+@Composable
+private fun rememberBottomNavItems(): List<NavItem> {
+    val strings = pharmStrings
+    return BOTTOM_NAV_ROUTES.mapNotNull { route ->
+        MAIN_NAV_TABLE.firstOrNull { it.route == route }?.let { entry ->
+            NavItem(route = k(entry.route::class), label = entry.label(strings), icon = entry.icon, admin = entry.admin)
+        }
+    }
+}
+
 private fun routeForKey(key: String): Any? =
     MAIN_NAV_TABLE.firstOrNull { k(it.route::class) == key }?.route
 
@@ -198,6 +210,7 @@ fun MainShell(appViewModel: AppViewModel) {
     val backEntry by nestedNav.currentBackStackEntryAsState()
     val (title, sectionKey) = destInfoFor(backEntry?.destination?.route)
     val navItems = rememberMainNavItems()
+    val bottomNavItems = rememberBottomNavItems()
 
     val user: TopbarUser? = if (state.userDisplayName.isNotBlank()) {
         TopbarUser(
@@ -229,6 +242,7 @@ fun MainShell(appViewModel: AppViewModel) {
         role = state.role,
         user = user,
         onProfileClick = { nestedNav.navigate(Profile) { launchSingleTop = true } },
+        bottomNavItems = bottomNavItems,
     ) {
         NavHost(navController = nestedNav, startDestination = Sell) {
             sellNav(nestedNav)

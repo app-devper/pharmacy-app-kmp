@@ -9,12 +9,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material3.Icon
@@ -32,6 +37,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
+import app.devper.pharm.ui.designsystem.BottomNavItem
+import app.devper.pharm.ui.designsystem.PharmBottomNav
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSidebar
 import app.devper.pharm.ui.designsystem.PharmTopbar
 import app.devper.pharm.ui.designsystem.SidebarNavItem
@@ -70,6 +78,7 @@ fun AppShell(
     user: TopbarUser? = null,
     role: Role = Role.UNKNOWN,
     onProfileClick: (() -> Unit)? = null,
+    bottomNavItems: List<NavItem> = emptyList(),
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -81,10 +90,17 @@ fun AppShell(
                 .map { SidebarNavItem(id = it.route, icon = it.icon, admin = it.admin, label = it.label) }
         }
 
+        val bottomItems = remember(bottomNavItems, role) {
+            bottomNavItems
+                .filter { !it.admin || role.canSeeAdminNav() }
+                .map { BottomNavItem(id = it.route, label = it.label, icon = it.icon) }
+        }
+
         if (size.isCompact) {
             CompactShell(
                 title = title,
                 sidebarItems = sidebarItems,
+                bottomItems = bottomItems,
                 currentRoute = currentRoute,
                 onNavigate = onNavigate,
                 onLogout = onLogout,
@@ -113,6 +129,7 @@ fun AppShell(
 private fun CompactShell(
     title: String,
     sidebarItems: List<SidebarNavItem>,
+    bottomItems: List<BottomNavItem>,
     currentRoute: String,
     onNavigate: (String) -> Unit,
     onLogout: () -> Unit,
@@ -127,6 +144,12 @@ private fun CompactShell(
     Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
 
         Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsTopHeight(WindowInsets.statusBars)
+                    .background(t.colors.surface),
+            )
             PharmTopbar(
                 title = title,
                 user = user,
@@ -138,7 +161,17 @@ private fun CompactShell(
                     if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount)
                 },
             )
-            Box(modifier = Modifier.fillMaxSize()) { content() }
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) { content() }
+            if (bottomItems.isNotEmpty()) {
+                PharmBottomNav(
+                    items = bottomItems,
+                    activeId = currentRoute,
+                    onSelect = onNavigate,
+                    moreLabel = pharmStrings.commonMenu,
+                    moreIcon = PharmIcons.Hamburger,
+                    onMore = { drawerOpen = true },
+                )
+            }
         }
 
         if (drawerOpen) {
@@ -195,6 +228,12 @@ private fun ExpandedShell(
                 .weight(1f)
                 .fillMaxHeight(),
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsTopHeight(WindowInsets.statusBars)
+                    .background(t.colors.surface),
+            )
             PharmTopbar(
                 title = title,
                 user = user,
@@ -204,7 +243,12 @@ private fun ExpandedShell(
                     if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount)
                 },
             )
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) { content() }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars),
+            ) { content() }
         }
     }
 }
