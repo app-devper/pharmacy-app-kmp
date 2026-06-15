@@ -29,7 +29,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -45,7 +45,7 @@ fun DrugFormContent(
 ) {
     val t = pharmTokens
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = if (state.mode is DrugFormMode.Edit) pharmStrings.stockFormTitleEdit else pharmStrings.stockFormTitleAdd,
             onBack = callbacks.onBack,
             actions = {

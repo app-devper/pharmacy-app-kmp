@@ -37,7 +37,7 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -54,7 +54,7 @@ fun CustomerDetailContent(
     val t = pharmTokens
     val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = state.customer?.name ?: s.navCustomers,
             onBack = callbacks.onBack,
             actions = {

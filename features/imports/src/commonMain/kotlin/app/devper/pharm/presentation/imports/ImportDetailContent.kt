@@ -36,7 +36,7 @@ import app.devper.pharm.ui.format.localDateToBuddhist
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -58,7 +58,7 @@ fun ImportDetailContent(
     val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        PharmListToolbar(
+        SubPageBar(
             title = state.po?.docNo ?: s.importsTitle,
             onBack = callbacks.onBack,
             actions = {

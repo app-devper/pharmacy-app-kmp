@@ -44,6 +44,8 @@ fun PharmTopbar(
     showThemeToggle: Boolean = true,
     showStatus: Boolean = true,
     compactUserMenu: Boolean = false,
+    onBack: (() -> Unit)? = null,
+    actions: (@Composable () -> Unit)? = null,
     onHamburger: () -> Unit = {},
     onLogout: (() -> Unit)? = null,
     onProfileClick: (() -> Unit)? = null,
@@ -59,15 +61,20 @@ fun PharmTopbar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        if (showHamburger) {
+        if (onBack != null) {
+            BackButton(onClick = onBack)
+        } else if (showHamburger) {
             HamburgerButton(onClick = onHamburger)
         }
         Text(text = title, style = PharmText.h1)
         Box(modifier = Modifier.weight(1f))
-        if (showThemeToggle) {
+        if (onBack != null) {
+            actions?.invoke()
+        }
+        if (onBack == null && showThemeToggle) {
             ThemeToggleButton()
         }
-        if (showStatus && online) {
+        if (onBack == null && showStatus && online) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -81,7 +88,7 @@ fun PharmTopbar(
                 Text(pharmStrings.commonOnline, style = PharmText.meta)
             }
         }
-        if (user != null) {
+        if (onBack == null && user != null) {
             if (compactUserMenu) {
                 PharmActionMenu(
                     actions = buildList {
@@ -146,6 +153,25 @@ private fun ThemeToggleButton() {
             contentDescription = if (controller.isDark) pharmStrings.commonSwitchToLightTheme else pharmStrings.commonSwitchToDarkTheme,
             tint = t.colors.fg2,
             modifier = Modifier.size(18.dp),
+        )
+    }
+}
+
+@Composable
+private fun BackButton(onClick: () -> Unit) {
+    val t = pharmTokens
+    Box(
+        modifier = Modifier
+            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+            .clip(t.shapes.sm)
+            .clickable(role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = PharmIcons.ReturnArrow,
+            contentDescription = pharmStrings.commonBack,
+            tint = t.colors.fg1,
+            modifier = Modifier.size(20.dp),
         )
     }
 }
