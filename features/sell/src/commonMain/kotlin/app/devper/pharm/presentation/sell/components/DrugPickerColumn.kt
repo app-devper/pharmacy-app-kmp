@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.sell.components
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
@@ -55,6 +59,11 @@ fun DrugPickerColumn(
     val t = pharmTokens
     val searchFocus = searchFocusRequester ?: remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { searchFocus.requestFocus() } }
+    val focusManager = LocalFocusManager.current
+    val gridState = rememberLazyGridState()
+    LaunchedEffect(gridState.isScrollInProgress) {
+        if (gridState.isScrollInProgress) focusManager.clearFocus()
+    }
     val onSubmitSearch = {
         if (query.isNotBlank()) {
             visible.firstOrNull()?.let { drug ->
@@ -98,7 +107,11 @@ fun DrugPickerColumn(
 
             visible.isEmpty() && !loading -> EmptyState(searching = query.isNotBlank())
 
-            else -> BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            else -> BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
+            ) {
 
                 val columns = when {
                     maxWidth >= 1280.dp -> 4
@@ -107,6 +120,7 @@ fun DrugPickerColumn(
                 }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
+                    state = gridState,
                     contentPadding = PaddingValues(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
