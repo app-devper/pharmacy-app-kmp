@@ -18,7 +18,6 @@ data class ProfileCallbacks(
     val onFontSizeChange: (String) -> Unit = {},
     val onDensityChange: (String) -> Unit = {},
     val onLocaleChange: (String) -> Unit = {},
-    val onBack: () -> Unit = {},
 ) {
     companion object {
         val Preview = ProfileCallbacks()

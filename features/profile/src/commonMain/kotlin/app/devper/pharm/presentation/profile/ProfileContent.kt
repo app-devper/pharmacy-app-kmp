@@ -46,7 +46,6 @@ fun ProfileContent(
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
             title = strings.profileTitle,
-            onBack = callbacks.onBack,
         )
         Column(
             modifier = Modifier
