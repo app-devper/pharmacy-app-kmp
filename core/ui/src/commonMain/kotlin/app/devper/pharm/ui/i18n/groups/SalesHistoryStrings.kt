@@ -34,10 +34,6 @@ interface SalesHistoryStrings {
     val salesHistoryLoadBillsFailed: String
     val salesHistoryLoadItemsFailed: String
     val salesHistorySubmitReturnFailed: String
-    val salesHistoryMetricNetSales: String
-    val salesHistoryMetricBills: String
-    val salesHistoryMetricAvg: String
-    val salesHistoryMetricVoided: String
     val salesHistoryRangeToday: String
     val salesHistoryRange7d: String
     val salesHistoryRangeMonth: String
