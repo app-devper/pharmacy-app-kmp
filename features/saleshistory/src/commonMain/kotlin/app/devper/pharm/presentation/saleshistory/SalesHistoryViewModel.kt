@@ -34,6 +34,11 @@ class SalesHistoryViewModel(
 
     fun applyFilter() = loadList()
 
+    fun onSelectRange(from: String, to: String) {
+        setState { copy(dateRange = dateRange.withFrom(from).withTo(to)) }
+        loadList()
+    }
+
     fun loadList() {
         val s = current
         setState { copy(loading = true, errorState = null) }

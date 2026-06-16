@@ -31,6 +31,13 @@ object SalesHistoryStringsEn : SalesHistoryStrings {
     override val salesHistoryLoadBillsFailed = "Failed to load bills"
     override val salesHistoryLoadItemsFailed = "Failed to load sale items"
     override val salesHistorySubmitReturnFailed = "Failed to record the return"
+    override val salesHistoryMetricNetSales = "Net sales"
+    override val salesHistoryMetricBills = "Bills"
+    override val salesHistoryMetricAvg = "Avg / bill"
+    override val salesHistoryMetricVoided = "Voided"
+    override val salesHistoryRangeToday = "Today"
+    override val salesHistoryRange7d = "7 days"
+    override val salesHistoryRangeMonth = "This month"
     override val salesHistoryReturnReasonRequired = "Please provide a return reason"
     override val salesHistoryReturnItemsRequired = "Select at least 1 item to return"
 }
