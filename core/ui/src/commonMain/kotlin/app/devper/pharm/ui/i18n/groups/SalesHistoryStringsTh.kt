@@ -31,6 +31,13 @@ object SalesHistoryStringsTh : SalesHistoryStrings {
     override val salesHistoryLoadBillsFailed = "โหลดรายการบิลไม่สำเร็จ"
     override val salesHistoryLoadItemsFailed = "โหลดรายการสินค้าไม่สำเร็จ"
     override val salesHistorySubmitReturnFailed = "บันทึกการคืนสินค้าไม่สำเร็จ"
+    override val salesHistoryMetricNetSales = "ยอดขายสุทธิ"
+    override val salesHistoryMetricBills = "จำนวนบิล"
+    override val salesHistoryMetricAvg = "เฉลี่ย/บิล"
+    override val salesHistoryMetricVoided = "ยกเลิก"
+    override val salesHistoryRangeToday = "วันนี้"
+    override val salesHistoryRange7d = "7 วัน"
+    override val salesHistoryRangeMonth = "เดือนนี้"
     override val salesHistoryReturnReasonRequired = "กรุณาระบุเหตุผลการคืนสินค้า"
     override val salesHistoryReturnItemsRequired = "กรุณาเลือกอย่างน้อย 1 รายการที่จะคืน"
 }

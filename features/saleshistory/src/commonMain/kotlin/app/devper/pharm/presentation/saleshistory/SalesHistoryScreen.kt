@@ -21,6 +21,7 @@ fun SalesHistoryScreen(
             onFromMillisChange = viewModel::onFromMillisChange,
             onToMillisChange = viewModel::onToMillisChange,
             onApplyFilter = viewModel::applyFilter,
+            onSelectRange = viewModel::onSelectRange,
             onOpenReceipt = viewModel::onViewBill,
             onStartReturn = viewModel::onStartReturn,
             onDismissError = viewModel::dismissError,
