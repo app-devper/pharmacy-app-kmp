@@ -41,10 +41,6 @@ fun SalesHistoryContent(
             .background(t.colors.bgPage),
     ) {
         SalesHistoryListToolbar(state = state, callbacks = callbacks)
-        SalesHistoryMetricCards(
-            sales = state.sales,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp),
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -58,6 +54,7 @@ fun SalesHistoryContent(
                 total = state.sales.size,
                 noun = s.salesHistoryCountNoun,
                 searching = searching,
+                trailing = { SalesHistoryTotalStat(sales = state.sales) },
             )
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 

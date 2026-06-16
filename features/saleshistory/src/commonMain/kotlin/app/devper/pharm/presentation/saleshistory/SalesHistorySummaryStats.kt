@@ -1,51 +1,59 @@
 package app.devper.pharm.presentation.saleshistory
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleSummary
-import app.devper.pharm.ui.designsystem.MetricCard
-import app.devper.pharm.ui.designsystem.MetricCardRow
-import app.devper.pharm.ui.designsystem.MetricTint
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
+import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.theme.tabular
 
 @Composable
-internal fun SalesHistoryMetricCards(
+internal fun SalesHistoryTotalStat(
     sales: List<SaleSummary>,
     modifier: Modifier = Modifier,
 ) {
+    val t = pharmTokens
     val s = pharmStrings
-    val valid = sales.filterNot { it.voided }
-    val net = valid.sumOf { it.total.amount }
-    val billCount = valid.size
-    val avg = if (billCount > 0) net / billCount else 0.0
+    val subtotal = sales.filterNot { it.voided }.sumOf { it.total.amount }
     val voided = sales.count { it.voided }
 
-    MetricCardRow(modifier = modifier) {
-        MetricCard(
-            label = s.salesHistoryMetricNetSales,
-            value = fmtBaht(net),
-            sub = "$billCount ${s.salesHistoryCountNoun}",
-            tint = MetricTint.Blue,
-            modifier = Modifier.weight(1f),
-        )
-        MetricCard(
-            label = s.salesHistoryMetricBills,
-            value = billCount.toString(),
-            tint = MetricTint.Indigo,
-            modifier = Modifier.weight(1f),
-        )
-        MetricCard(
-            label = s.salesHistoryMetricAvg,
-            value = fmtBaht(avg),
-            tint = MetricTint.Green,
-            modifier = Modifier.weight(1f),
-        )
-        MetricCard(
-            label = s.salesHistoryMetricVoided,
-            value = voided.toString(),
-            tint = MetricTint.Purple,
-            modifier = Modifier.weight(1f),
-        )
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = s.salesHistoryStatsTotal, style = PharmText.micro.copy(color = t.colors.fg3))
+            Text(
+                text = fmtBaht(subtotal),
+                style = PharmText.micro.copy(
+                    color = t.colors.accent,
+                    fontWeight = FontWeight.SemiBold,
+                ).tabular(),
+            )
+        }
+        if (voided > 0) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "$voided",
+                    style = PharmText.micro.copy(color = t.colors.dangerFg, fontWeight = FontWeight.SemiBold).tabular(),
+                )
+                Text(text = s.commonCancel, style = PharmText.micro.copy(color = t.colors.dangerFg))
+            }
+        }
     }
 }
