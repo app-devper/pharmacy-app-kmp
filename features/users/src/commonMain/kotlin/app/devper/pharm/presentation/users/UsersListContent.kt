@@ -66,7 +66,6 @@ fun UsersListContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        UsersListToolbar(state = state, callbacks = callbacks)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -76,6 +75,8 @@ fun UsersListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            UsersListToolbar(state = state, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(
                 total = state.users.size,
                 noun = s.usersCountNoun,

@@ -46,7 +46,6 @@ fun LowStockContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        LowStockToolbar(onReload = callbacks.onReload)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -56,6 +55,8 @@ fun LowStockContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            LowStockToolbar(onReload = callbacks.onReload)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(total = state.drugs.size, noun = s.planningCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             when {

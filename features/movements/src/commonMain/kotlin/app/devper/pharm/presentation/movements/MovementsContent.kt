@@ -35,7 +35,6 @@ fun MovementsContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        MovementsListToolbar(state = state, callbacks = callbacks)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -45,6 +44,8 @@ fun MovementsContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            MovementsListToolbar(state = state, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(total = state.items.size, noun = pharmStrings.movementsCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 

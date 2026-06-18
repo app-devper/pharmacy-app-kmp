@@ -40,7 +40,6 @@ fun SalesHistoryContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        SalesHistoryListToolbar(state = state, callbacks = callbacks)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -50,6 +49,8 @@ fun SalesHistoryContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            SalesHistoryListToolbar(state = state, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(
                 total = state.sales.size,
                 noun = s.salesHistoryCountNoun,
