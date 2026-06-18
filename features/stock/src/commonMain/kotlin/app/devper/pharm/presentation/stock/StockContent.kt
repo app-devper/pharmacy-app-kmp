@@ -42,11 +42,6 @@ fun StockContent(
             drugs = state.drugs,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
         )
-        StockToolbar(
-            query = state.query,
-            typeFilter = state.typeFilter,
-            callbacks = callbacks,
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -61,6 +56,12 @@ fun StockContent(
                     .background(t.colors.surface)
                     .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
             ) {
+                StockToolbar(
+                    query = state.query,
+                    typeFilter = state.typeFilter,
+                    callbacks = callbacks,
+                )
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
                 PharmListResultLine(
                     total = state.drugs.size,
                     noun = pharmStrings.movementsCountNoun,

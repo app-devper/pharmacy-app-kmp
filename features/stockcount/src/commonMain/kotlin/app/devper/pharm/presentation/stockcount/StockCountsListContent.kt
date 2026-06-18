@@ -40,7 +40,6 @@ fun StockCountsListContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        StockCountsListToolbar(query = state.query, callbacks = callbacks)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -50,6 +49,8 @@ fun StockCountsListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            StockCountsListToolbar(query = state.query, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(
                 total = state.counts.size,
                 noun = pharmStrings.stockCountHistoryCountNoun,

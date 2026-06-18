@@ -39,16 +39,6 @@ fun Ky9Content(
     Column(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
     ) {
-        KyToolbar(
-            currentForm = KyFormType.Ky9,
-            onSwitchForm = callbacks.onSwitchForm,
-            month = state.month,
-            onMonthChange = callbacks.onMonthChange,
-            onApply = callbacks.onApply,
-            onExport = callbacks.onExport,
-            exporting = state.exporting,
-            onAddEntry = callbacks.onAddEntry,
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -66,6 +56,17 @@ fun Ky9Content(
                     .background(t.colors.surface)
                     .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
             ) {
+                KyToolbar(
+                    currentForm = KyFormType.Ky9,
+                    onSwitchForm = callbacks.onSwitchForm,
+                    month = state.month,
+                    onMonthChange = callbacks.onMonthChange,
+                    onApply = callbacks.onApply,
+                    onExport = callbacks.onExport,
+                    exporting = state.exporting,
+                    onAddEntry = callbacks.onAddEntry,
+                )
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
                 PharmListResultLine(
                     total = state.entries.size,
                     noun = pharmStrings.kyCountNoun,

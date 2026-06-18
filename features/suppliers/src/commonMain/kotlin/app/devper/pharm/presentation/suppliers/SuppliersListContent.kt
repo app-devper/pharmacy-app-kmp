@@ -44,7 +44,6 @@ fun SuppliersListContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        SuppliersListToolbar(query = state.query, callbacks = callbacks)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -54,6 +53,8 @@ fun SuppliersListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            SuppliersListToolbar(query = state.query, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(total = state.suppliers.size, noun = s.customersCountNoun, visible = visible.size, searching = searching)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 

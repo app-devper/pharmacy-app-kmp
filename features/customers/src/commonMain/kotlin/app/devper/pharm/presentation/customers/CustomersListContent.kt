@@ -39,7 +39,6 @@ fun CustomersListContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        CustomersListToolbar(query = state.query, callbacks = callbacks)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -49,6 +48,8 @@ fun CustomersListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            CustomersListToolbar(query = state.query, callbacks = callbacks)
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(
                 total = state.customers.size,
                 noun = s.customersCountNoun,

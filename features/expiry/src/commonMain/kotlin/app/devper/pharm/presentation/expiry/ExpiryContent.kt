@@ -47,12 +47,6 @@ fun ExpiryContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        ExpiryToolbar(
-            window = state.window,
-            selectedCount = state.totalSelected,
-            writingOff = state.writingOff,
-            callbacks = callbacks,
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -62,6 +56,13 @@ fun ExpiryContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            ExpiryToolbar(
+                window = state.window,
+                selectedCount = state.totalSelected,
+                writingOff = state.writingOff,
+                callbacks = callbacks,
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(
                 total = state.lots.size,
                 noun = pharmStrings.expiryCountNoun,

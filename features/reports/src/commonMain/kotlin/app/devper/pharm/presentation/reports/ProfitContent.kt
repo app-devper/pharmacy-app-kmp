@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -51,8 +52,6 @@ fun ProfitContent(
             summary = state.summary,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
         )
-        ProfitFilterBar(state = state, callbacks = callbacks)
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,6 +67,8 @@ fun ProfitContent(
                     .background(t.colors.surface)
                     .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
             ) {
+                ProfitFilterBar(state = state, callbacks = callbacks)
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
                 PharmListResultLine(total = rows.size, noun = pharmStrings.movementsCountNoun)
                 Box(modifier = Modifier.fillMaxWidth().padding(top = 1.dp))
                 when {

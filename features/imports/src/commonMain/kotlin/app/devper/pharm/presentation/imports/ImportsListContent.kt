@@ -47,11 +47,6 @@ fun ImportsListContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        ImportsListToolbar(
-            query = state.query,
-            draftCount = state.draftCount,
-            callbacks = callbacks,
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -61,6 +56,12 @@ fun ImportsListContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            ImportsListToolbar(
+                query = state.query,
+                draftCount = state.draftCount,
+                callbacks = callbacks,
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             PharmListResultLine(total = state.orders.size, noun = pharmStrings.importsCountNoun, visible = visible.size, searching = searching)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 

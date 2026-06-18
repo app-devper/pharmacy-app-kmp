@@ -39,16 +39,6 @@ fun KyListContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        KyToolbar(
-            currentForm = state.formType,
-            onSwitchForm = callbacks.onSwitchForm,
-            month = state.month,
-            onMonthChange = callbacks.onMonthChange,
-            onApply = callbacks.onApply,
-            onExport = callbacks.onExport,
-            exporting = state.exporting,
-            onAddEntry = callbacks.onAddEntry,
-        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -66,6 +56,17 @@ fun KyListContent(
                     .background(t.colors.surface)
                     .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
             ) {
+                KyToolbar(
+                    currentForm = state.formType,
+                    onSwitchForm = callbacks.onSwitchForm,
+                    month = state.month,
+                    onMonthChange = callbacks.onMonthChange,
+                    onApply = callbacks.onApply,
+                    onExport = callbacks.onExport,
+                    exporting = state.exporting,
+                    onAddEntry = callbacks.onAddEntry,
+                )
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
                 PharmListResultLine(
                     total = state.rows.size,
                     noun = pharmStrings.kyCountNoun,
