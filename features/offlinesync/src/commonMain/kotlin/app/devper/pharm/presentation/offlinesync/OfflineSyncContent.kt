@@ -46,6 +46,10 @@ fun OfflineSyncContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
+        OfflineSyncMetricsRow(
+            pending = state.pending,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+        )
         PharmListToolbar(
             actions = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -79,8 +83,6 @@ fun OfflineSyncContent(
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            OfflineSyncMetricsRow(pending = state.pending)
-
             when {
                 state.loading && state.pending.isEmpty() -> PharmListSkeleton()
                 state.pending.isEmpty() -> EmptyOfflineSync()
