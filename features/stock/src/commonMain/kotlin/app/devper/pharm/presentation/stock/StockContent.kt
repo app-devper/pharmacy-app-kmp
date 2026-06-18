@@ -5,7 +5,6 @@ import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +38,10 @@ fun StockContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
+        StockMetricsRow(
+            drugs = state.drugs,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+        )
         StockToolbar(
             query = state.query,
             typeFilter = state.typeFilter,
@@ -48,11 +51,8 @@ fun StockContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
-            StockMetricsRow(drugs = state.drugs)
-
             Column(
                 modifier = Modifier
                     .weight(1f)
