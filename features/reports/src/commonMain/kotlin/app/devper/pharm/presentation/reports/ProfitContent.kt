@@ -55,7 +55,7 @@ fun ProfitContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (state.missingCostCount > 0) MissingCostBanner(count = state.missingCostCount)

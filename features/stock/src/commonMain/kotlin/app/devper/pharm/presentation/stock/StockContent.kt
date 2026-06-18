@@ -46,7 +46,7 @@ fun StockContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .padding(16.dp),
         ) {
             Column(
                 modifier = Modifier
