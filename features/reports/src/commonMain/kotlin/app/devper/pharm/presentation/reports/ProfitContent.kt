@@ -47,6 +47,10 @@ fun ProfitContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
+        ProfitMetricsRow(
+            summary = state.summary,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+        )
         ProfitFilterBar(state = state, callbacks = callbacks)
 
         Column(
@@ -55,8 +59,6 @@ fun ProfitContent(
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            ProfitMetricsRow(summary = state.summary)
-
             if (state.missingCostCount > 0) MissingCostBanner(count = state.missingCostCount)
 
             Column(
