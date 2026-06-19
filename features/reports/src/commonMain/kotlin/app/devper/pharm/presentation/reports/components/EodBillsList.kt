@@ -40,10 +40,7 @@ internal fun EodBillRow(bill: SaleSummary) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(t.shapes.md)
-            .background(t.colors.surface, t.shapes.md)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.md)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {

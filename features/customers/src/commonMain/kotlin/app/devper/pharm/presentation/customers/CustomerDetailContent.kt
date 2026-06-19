@@ -74,7 +74,15 @@ fun CustomerDetailContent(
                 }
             },
         )
-        Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clip(t.shapes.lg)
+                .background(t.colors.surface)
+                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+        ) {
             CustomerHeader(customer = state.customer, loading = state.customerLoading)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             SalesSection(state = state)

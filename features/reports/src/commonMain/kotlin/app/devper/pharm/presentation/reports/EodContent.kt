@@ -4,16 +4,19 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.model.SaleSummary
@@ -88,8 +91,7 @@ fun EodContent(
                             onPrint = callbacks.onPrint,
                         )
                     }
-                    item("bills-header") { EodBillsHeader(count = report.billCount) }
-                    items(report.bills, key = { it.id }) { bill -> EodBillRow(bill = bill) }
+                    item("bills") { EodBillsCard(report = report) }
                 }
             }
         }
@@ -103,6 +105,29 @@ fun EodContent(
     )
 
     ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+}
+
+@Composable
+private fun EodBillsCard(report: EodReport) {
+    val t = pharmTokens
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(t.shapes.lg)
+            .background(t.colors.surface)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+            EodBillsHeader(count = report.billCount)
+        }
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        report.bills.forEachIndexed { index, bill ->
+            EodBillRow(bill = bill)
+            if (index < report.bills.lastIndex) {
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            }
+        }
+    }
 }
 
 private val sampleBills = listOf(
