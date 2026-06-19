@@ -1,19 +1,7 @@
 package app.devper.pharm.presentation.ky
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.model.Ky10Entry
 import app.devper.pharm.domain.model.Ky11Entry
@@ -21,6 +9,7 @@ import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -34,58 +23,39 @@ fun KyListContent(
     callbacks: KyListCallbacks = KyListCallbacks(),
 ) {
     val t = pharmTokens
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            state.message?.let { msg -> KyMessageBanner(msg, callbacks.onDismissMessage) }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .clip(t.shapes.lg)
-                    .background(t.colors.surface)
-                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-            ) {
-                KyToolbar(
-                    currentForm = state.formType,
-                    onSwitchForm = callbacks.onSwitchForm,
-                    month = state.month,
-                    onMonthChange = callbacks.onMonthChange,
-                    onApply = callbacks.onApply,
-                    onExport = callbacks.onExport,
-                    exporting = state.exporting,
-                    onAddEntry = callbacks.onAddEntry,
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-                PharmListResultLine(
-                    total = state.rows.size,
-                    noun = pharmStrings.kyCountNoun,
-                    trailing = {
-                        KyValueStat(totalValue = state.rows.sumOf { row -> rowTotalValue(row) })
-                    },
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-                when {
-                    state.loading && state.rows.isEmpty() -> PharmListSkeleton()
-
-                    else -> KyTable(rows = state.rows, formType = state.formType)
-                }
-            }
+    PharmListScaffold(
+        banner = state.message?.let { msg -> { KyMessageBanner(msg, callbacks.onDismissMessage) } },
+        toolbar = {
+            KyToolbar(
+                currentForm = state.formType,
+                onSwitchForm = callbacks.onSwitchForm,
+                month = state.month,
+                onMonthChange = callbacks.onMonthChange,
+                onApply = callbacks.onApply,
+                onExport = callbacks.onExport,
+                exporting = state.exporting,
+                onAddEntry = callbacks.onAddEntry,
+            )
+        },
+        resultLine = {
+            PharmListResultLine(
+                total = state.rows.size,
+                noun = pharmStrings.kyCountNoun,
+                trailing = {
+                    KyValueStat(totalValue = state.rows.sumOf { row -> rowTotalValue(row) })
+                },
+            )
+        },
+        footer = {
             Text(
                 text = pharmStrings.kyToolbarSubtitle,
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
+        },
+    ) {
+        when {
+            state.loading && state.rows.isEmpty() -> PharmListSkeleton()
+            else -> KyTable(rows = state.rows, formType = state.formType)
         }
     }
 
