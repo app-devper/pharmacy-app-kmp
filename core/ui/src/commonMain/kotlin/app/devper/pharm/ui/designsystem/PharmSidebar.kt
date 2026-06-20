@@ -29,7 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -103,12 +107,17 @@ fun PharmSidebar(
     versionLabel: String = "v3.2.1",
 ) {
     val t = pharmTokens
+    val borderColor = t.colors.border
     val width by animateDpAsState(if (collapsed) SidebarRailWidth else t.dimens.sidebarWidth)
     Column(
         modifier = modifier
             .width(width)
             .fillMaxHeight()
-            .background(t.colors.sidebarBg),
+            .background(t.colors.sidebarBg)
+            .drawBehind {
+                val w = 1.dp.toPx()
+                drawRect(color = borderColor, topLeft = Offset(size.width - w, 0f), size = Size(w, size.height))
+            },
     ) {
 
         BrandHeader(collapsed = collapsed)
@@ -185,12 +194,25 @@ private fun SidebarRow(
     val t = pharmTokens
     val bg = if (active) t.colors.sidebarItemActive else Color.Transparent
     val fg = if (active) t.colors.sidebarFg else t.colors.sidebarFgMuted
+    val accent = t.colors.accent
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 2.dp)
             .clip(t.shapes.md)
             .background(bg)
+            .drawBehind {
+                if (active) {
+                    val barW = 3.dp.toPx()
+                    val barH = size.height * 0.55f
+                    drawRoundRect(
+                        color = accent,
+                        topLeft = Offset(0f, (size.height - barH) / 2f),
+                        size = Size(barW, barH),
+                        cornerRadius = CornerRadius(barW, barW),
+                    )
+                }
+            }
             .clickable(role = Role.Button, onClick = onClick)
             .semantics(mergeDescendants = true) {
                 role = Role.Tab
