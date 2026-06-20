@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +31,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -116,13 +118,11 @@ fun PharmModal(
                                 },
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                text = "×",
-                                style = PharmText.h1.copy(
-                                    color = t.colors.fgMuted,
-                                    textAlign = TextAlign.Center,
-                                ),
-                                modifier = Modifier.padding(horizontal = 4.dp),
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = null,
+                                tint = t.colors.fg2,
+                                modifier = Modifier.size(20.dp),
                             )
                         }
                     }
