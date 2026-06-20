@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.state.ToggleableState
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmCheckbox
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmStamp
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.designsystem.PharmTriStateCheckbox
@@ -76,15 +76,7 @@ internal fun ExpiryTable(
             header = s.expiryHeaderLotNumber,
             weight = 1.2f,
             cell = { lot ->
-                Text(
-                    text = lot.lotNumber,
-                    style = PharmText.micro.copy(
-                        color = t.colors.fg3,
-                        fontFamily = FontFamily.Monospace,
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                PharmStamp(text = lot.lotNumber)
             },
         ),
         PharmTableColumn(

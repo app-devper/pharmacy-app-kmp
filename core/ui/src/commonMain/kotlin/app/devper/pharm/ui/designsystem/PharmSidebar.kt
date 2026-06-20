@@ -29,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -148,24 +147,7 @@ private fun BrandHeader(collapsed: Boolean) {
         horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(t.shapes.md)
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(t.colors.accent, t.colors.accentHover)
-                    )
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = PharmIcons.Pill,
-                contentDescription = null,
-                tint = t.colors.sidebarFg,
-                modifier = Modifier.size(18.dp),
-            )
-        }
+        PharmBrandMark(size = 32.dp)
         if (!collapsed) {
             Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                 Text(
