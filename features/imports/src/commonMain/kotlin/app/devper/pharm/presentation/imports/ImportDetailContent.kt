@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,7 +75,15 @@ fun ImportDetailContent(
                 }
             },
         )
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clip(t.shapes.lg)
+                .background(t.colors.surface)
+                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+        ) {
             when {
                 state.loading && state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     PharmCircularProgress()
@@ -149,22 +157,28 @@ fun ImportDetailContent(
 
 @Composable
 private fun Body(po: PurchaseOrder) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    val t = pharmTokens
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         item("header") { HeaderBlock(po) }
+        item("header-divider") {
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        }
         item("section") {
             Text(
                 text = pharmStrings.importsFormItemListTitle(po.itemCount),
                 style = PharmText.h3,
-                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
             )
         }
-        items(
+        itemsIndexed(
             items = po.items,
-            key = { item -> "${item.drugId}|${item.lotNumber}|${item.expiryDate?.toString()}" },
-        ) { item -> ItemRow(item) }
+            key = { _, item -> "${item.drugId}|${item.lotNumber}|${item.expiryDate?.toString()}" },
+        ) { index, item ->
+            ItemRow(item)
+            if (index < po.items.lastIndex) {
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            }
+        }
     }
 }
 
@@ -174,9 +188,6 @@ private fun HeaderBlock(po: PurchaseOrder) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(t.shapes.md)
-            .background(t.colors.surface, t.shapes.md)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.md)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -236,10 +247,7 @@ private fun ItemRow(item: PurchaseOrderItem) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(t.shapes.md)
-            .background(t.colors.surface, t.shapes.md)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.md)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
