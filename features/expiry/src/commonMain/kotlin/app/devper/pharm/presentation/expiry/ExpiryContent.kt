@@ -33,6 +33,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -40,46 +41,32 @@ fun ExpiryContent(
     state: ExpiryUiState,
     callbacks: ExpiryCallbacks = ExpiryCallbacks(),
 ) {
-    val t = pharmTokens
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
+    PharmListScaffold(
+        toolbar = {
             ExpiryToolbar(
                 window = state.window,
                 selectedCount = state.totalSelected,
                 writingOff = state.writingOff,
                 callbacks = callbacks,
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        },
+        resultLine = {
             PharmListResultLine(
                 total = state.lots.size,
                 noun = pharmStrings.expiryCountNoun,
                 trailing = { ExpiryRemainingStat(totalRemaining = state.totalRemaining) },
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.lots.isEmpty() ->
-                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                else -> ExpiryTable(
-                    lots = state.lots,
-                    selected = state.selected,
-                    allSelected = state.allSelected,
-                    callbacks = callbacks,
-                )
-            }
+        },
+    ) {
+        when {
+            state.loading && state.lots.isEmpty() ->
+                PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            else -> ExpiryTable(
+                lots = state.lots,
+                selected = state.selected,
+                allSelected = state.allSelected,
+                callbacks = callbacks,
+            )
         }
     }
 

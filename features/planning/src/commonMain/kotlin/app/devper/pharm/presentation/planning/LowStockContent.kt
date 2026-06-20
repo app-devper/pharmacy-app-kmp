@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -38,37 +39,21 @@ fun LowStockContent(
     state: LowStockUiState,
     callbacks: LowStockCallbacks = LowStockCallbacks(),
 ) {
-    val t = pharmTokens
     val s = pharmStrings
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
+    PharmListScaffold(
+        toolbar = { LowStockToolbar(onReload = callbacks.onReload) },
+        resultLine = { PharmListResultLine(total = state.drugs.size, noun = s.planningCountNoun) },
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
-            LowStockToolbar(onReload = callbacks.onReload)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            PharmListResultLine(total = state.drugs.size, noun = s.planningCountNoun)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            when {
-                state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
-                state.drugs.isEmpty() ->
-                    PharmEmptyState(
-                        icon = PharmIcons.Stock,
-                        title = s.planningLowStockEmpty,
-                        subtitle = s.planningBelowMinEmpty,
-                    )
-                else -> LowStockTable(drugs = state.drugs, callbacks = callbacks)
-            }
+        when {
+            state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
+            state.drugs.isEmpty() ->
+                PharmEmptyState(
+                    icon = PharmIcons.Stock,
+                    title = s.planningLowStockEmpty,
+                    subtitle = s.planningBelowMinEmpty,
+                )
+            else -> LowStockTable(drugs = state.drugs, callbacks = callbacks)
         }
     }
 

@@ -1,32 +1,20 @@
 package app.devper.pharm.presentation.suppliers
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.localizeCommon
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -34,38 +22,23 @@ fun SuppliersListContent(
     state: SuppliersListUiState,
     callbacks: SuppliersListCallbacks = SuppliersListCallbacks(),
 ) {
-    val t = pharmTokens
     val s = pharmStrings
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
-            SuppliersListToolbar(query = state.query, callbacks = callbacks)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+    PharmListScaffold(
+        toolbar = { SuppliersListToolbar(query = state.query, callbacks = callbacks) },
+        resultLine = {
             PharmListResultLine(total = state.suppliers.size, noun = s.customersCountNoun, visible = visible.size, searching = searching)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.suppliers.isEmpty() -> PharmListSkeleton()
-                else -> SuppliersListTable(
-                    suppliers = visible,
-                    callbacks = callbacks,
-                    emptySearching = searching,
-                )
-            }
+        },
+    ) {
+        when {
+            state.loading && state.suppliers.isEmpty() -> PharmListSkeleton()
+            else -> SuppliersListTable(
+                suppliers = visible,
+                callbacks = callbacks,
+                emptySearching = searching,
+            )
         }
     }
 

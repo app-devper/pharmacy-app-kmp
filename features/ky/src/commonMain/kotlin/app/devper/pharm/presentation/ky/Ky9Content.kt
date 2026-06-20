@@ -21,6 +21,7 @@ import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -36,58 +37,41 @@ fun Ky9Content(
     val rows = state.entries.map { KyRow.Ky9(it) }
     val totalValue = state.entries.sumOf { it.totalValue }
 
-    Column(
-        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            state.message?.let { msg -> KyMessageBanner(msg, callbacks.onDismissMessage) }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .clip(t.shapes.lg)
-                    .background(t.colors.surface)
-                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-            ) {
-                KyToolbar(
-                    currentForm = KyFormType.Ky9,
-                    onSwitchForm = callbacks.onSwitchForm,
-                    month = state.month,
-                    onMonthChange = callbacks.onMonthChange,
-                    onApply = callbacks.onApply,
-                    onExport = callbacks.onExport,
-                    exporting = state.exporting,
-                    onAddEntry = callbacks.onAddEntry,
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-                PharmListResultLine(
-                    total = state.entries.size,
-                    noun = pharmStrings.kyCountNoun,
-                    trailing = { KyValueStat(totalValue = totalValue) },
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-                when {
-                    state.loading && state.entries.isEmpty() ->
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            PharmCircularProgress(color = t.colors.accent)
-                        }
-
-                    else -> KyTable(rows = rows, formType = KyFormType.Ky9)
-                }
-            }
-
+    PharmListScaffold(
+        banner = state.message?.let { msg -> { KyMessageBanner(msg, callbacks.onDismissMessage) } },
+        toolbar = {
+            KyToolbar(
+                currentForm = KyFormType.Ky9,
+                onSwitchForm = callbacks.onSwitchForm,
+                month = state.month,
+                onMonthChange = callbacks.onMonthChange,
+                onApply = callbacks.onApply,
+                onExport = callbacks.onExport,
+                exporting = state.exporting,
+                onAddEntry = callbacks.onAddEntry,
+            )
+        },
+        resultLine = {
+            PharmListResultLine(
+                total = state.entries.size,
+                noun = pharmStrings.kyCountNoun,
+                trailing = { KyValueStat(totalValue = totalValue) },
+            )
+        },
+        footer = {
             Text(
                 text = pharmStrings.kyToolbarSubtitle,
                 style = PharmText.micro.copy(color = t.colors.fgMuted),
             )
+        },
+    ) {
+        when {
+            state.loading && state.entries.isEmpty() ->
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    PharmCircularProgress(color = t.colors.accent)
+                }
+
+            else -> KyTable(rows = rows, formType = KyFormType.Ky9)
         }
     }
 

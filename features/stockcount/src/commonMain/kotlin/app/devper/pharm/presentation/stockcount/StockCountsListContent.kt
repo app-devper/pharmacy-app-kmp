@@ -24,6 +24,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -31,43 +32,28 @@ fun StockCountsListContent(
     state: StockCountsListUiState,
     callbacks: StockCountsListCallbacks = StockCountsListCallbacks(),
 ) {
-    val t = pharmTokens
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
-            StockCountsListToolbar(query = state.query, callbacks = callbacks)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+    PharmListScaffold(
+        toolbar = { StockCountsListToolbar(query = state.query, callbacks = callbacks) },
+        resultLine = {
             PharmListResultLine(
                 total = state.counts.size,
                 noun = pharmStrings.stockCountHistoryCountNoun,
                 visible = visible.size,
                 searching = searching,
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.counts.isEmpty() ->
-                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                else -> StockCountsListTable(
-                    counts = visible,
-                    callbacks = callbacks,
-                    emptySearching = searching,
-                )
-            }
+        },
+    ) {
+        when {
+            state.loading && state.counts.isEmpty() ->
+                PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            else -> StockCountsListTable(
+                counts = visible,
+                callbacks = callbacks,
+                emptySearching = searching,
+            )
         }
     }
 
