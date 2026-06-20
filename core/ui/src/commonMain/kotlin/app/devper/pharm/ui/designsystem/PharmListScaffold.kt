@@ -32,16 +32,16 @@ fun PharmListScaffold(
             .background(t.colors.bgPage),
     ) {
         metrics?.let {
-            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) { it() }
+            Box(modifier = Modifier.padding(start = 14.dp, end = 14.dp, top = 14.dp)) { it() }
         }
         banner?.let {
-            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) { it() }
+            Box(modifier = Modifier.padding(start = 14.dp, end = 14.dp, top = 14.dp)) { it() }
         }
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(14.dp)
                 .clip(t.shapes.lg)
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
@@ -55,7 +55,7 @@ fun PharmListScaffold(
             content()
         }
         footer?.let {
-            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) { it() }
+            Box(modifier = Modifier.padding(start = 14.dp, end = 14.dp, bottom = 14.dp)) { it() }
         }
     }
 }
