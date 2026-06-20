@@ -3,12 +3,8 @@ package app.devper.pharm.presentation.reports
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -27,6 +23,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -39,49 +36,26 @@ fun ProfitContent(
     state: ProfitUiState,
     callbacks: ProfitCallbacks = ProfitCallbacks(),
 ) {
-    val t = pharmTokens
     val rows = state.sortedRows
     val totals = rows.takeIf { it.isNotEmpty() }?.let { buildTotals(it) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
+    PharmListScaffold(
+        metrics = { ProfitMetricsRow(summary = state.summary) },
+        banner = if (state.missingCostCount > 0) {
+            { MissingCostBanner(count = state.missingCostCount) }
+        } else null,
+        toolbar = { ProfitFilterBar(state = state, callbacks = callbacks) },
+        resultLine = { PharmListResultLine(total = rows.size, noun = pharmStrings.movementsCountNoun) },
     ) {
-        ProfitMetricsRow(
-            summary = state.summary,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            if (state.missingCostCount > 0) MissingCostBanner(count = state.missingCostCount)
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(t.shapes.lg)
-                    .background(t.colors.surface)
-                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-            ) {
-                ProfitFilterBar(state = state, callbacks = callbacks)
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-                PharmListResultLine(total = rows.size, noun = pharmStrings.movementsCountNoun)
-                Box(modifier = Modifier.fillMaxWidth().padding(top = 1.dp))
-                when {
-                    state.loading && state.report == null -> PharmListSkeleton()
-                    rows.isEmpty() && state.report != null ->
-                        PharmEmptyState(
-                            icon = PharmIcons.Profit,
-                            title = pharmStrings.reportsSectionDailySalesEmpty,
-                            subtitle = pharmStrings.reportsEodTryDifferentRange,
-                        )
-                    else -> ProfitTable(rows = rows, totals = totals)
-                }
-            }
+        when {
+            state.loading && state.report == null -> PharmListSkeleton()
+            rows.isEmpty() && state.report != null ->
+                PharmEmptyState(
+                    icon = PharmIcons.Profit,
+                    title = pharmStrings.reportsSectionDailySalesEmpty,
+                    subtitle = pharmStrings.reportsEodTryDifferentRange,
+                )
+            else -> ProfitTable(rows = rows, totals = totals)
         }
     }
 

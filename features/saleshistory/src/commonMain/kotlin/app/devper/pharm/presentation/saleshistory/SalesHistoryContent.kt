@@ -3,27 +3,16 @@ package app.devper.pharm.presentation.saleshistory
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleSummary
 import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.presentation.saleshistory.i18n.localizeSalesHistory
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -31,42 +20,27 @@ fun SalesHistoryContent(
     state: SalesHistoryUiState,
     callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
 ) {
-    val t = pharmTokens
     val s = pharmStrings
     val searching = state.dateRange.from.isNotBlank() || state.dateRange.to.isNotBlank() || state.query.isNotBlank()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
-            SalesHistoryListToolbar(state = state, callbacks = callbacks)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+    PharmListScaffold(
+        toolbar = { SalesHistoryListToolbar(state = state, callbacks = callbacks) },
+        resultLine = {
             PharmListResultLine(
                 total = state.sales.size,
                 noun = s.salesHistoryCountNoun,
                 searching = searching,
                 trailing = { SalesHistoryTotalStat(sales = state.sales) },
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.sales.isEmpty() -> PharmListSkeleton()
-                else -> SalesHistoryTable(
-                    sales = state.sales,
-                    callbacks = callbacks,
-                    emptySearching = searching,
-                )
-            }
+        },
+    ) {
+        when {
+            state.loading && state.sales.isEmpty() -> PharmListSkeleton()
+            else -> SalesHistoryTable(
+                sales = state.sales,
+                callbacks = callbacks,
+                emptySearching = searching,
+            )
         }
     }
 

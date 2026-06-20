@@ -3,25 +3,16 @@ package app.devper.pharm.presentation.stock
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.fillMaxSize
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 
@@ -30,56 +21,35 @@ fun StockContent(
     state: StockUiState,
     callbacks: StockCallbacks = StockCallbacks(),
 ) {
-    val t = pharmTokens
     val visible = state.filtered
+    val searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
+    PharmListScaffold(
+        metrics = { StockMetricsRow(drugs = state.drugs) },
+        toolbar = {
+            StockToolbar(
+                query = state.query,
+                typeFilter = state.typeFilter,
+                callbacks = callbacks,
+            )
+        },
+        resultLine = {
+            PharmListResultLine(
+                total = state.drugs.size,
+                noun = pharmStrings.movementsCountNoun,
+                visible = visible.size,
+                searching = searching,
+            )
+        },
     ) {
-        StockMetricsRow(
-            drugs = state.drugs,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-        )
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .clip(t.shapes.lg)
-                    .background(t.colors.surface)
-                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-            ) {
-                StockToolbar(
-                    query = state.query,
-                    typeFilter = state.typeFilter,
-                    callbacks = callbacks,
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-                PharmListResultLine(
-                    total = state.drugs.size,
-                    noun = pharmStrings.movementsCountNoun,
-                    visible = visible.size,
-                    searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-                when {
-                    state.loading && state.drugs.isEmpty() ->
-                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                    else -> StockTable(
-                        drugs = visible,
-                        callbacks = callbacks,
-                        emptySearching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All,
-                    )
-                }
-            }
+        when {
+            state.loading && state.drugs.isEmpty() ->
+                PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            else -> StockTable(
+                drugs = visible,
+                callbacks = callbacks,
+                emptySearching = searching,
+            )
         }
     }
 
