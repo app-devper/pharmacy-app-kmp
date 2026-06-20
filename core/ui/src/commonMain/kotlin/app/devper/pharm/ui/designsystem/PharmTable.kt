@@ -177,7 +177,7 @@ private fun <T> PharmTableCard(
             .background(t.colors.surface)
             .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
             .then(clickable)
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }

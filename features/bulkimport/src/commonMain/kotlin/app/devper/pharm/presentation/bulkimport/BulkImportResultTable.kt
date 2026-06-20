@@ -98,7 +98,7 @@ internal fun BulkImportResultTable(
             rows = rows,
             columns = columns,
             key = { it.row },
-            rowHeight = 56.dp,
+            rowHeight = 52.dp,
             emptyContent = {
                 PharmEmptyState(
                     icon = PharmIcons.Imports,

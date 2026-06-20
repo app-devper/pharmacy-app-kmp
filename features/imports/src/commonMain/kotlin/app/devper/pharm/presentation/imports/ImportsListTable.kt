@@ -89,7 +89,7 @@ internal fun ImportsListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { row -> callbacks.onOpenImport(row) },
-        rowHeight = 56.dp,
+        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(
