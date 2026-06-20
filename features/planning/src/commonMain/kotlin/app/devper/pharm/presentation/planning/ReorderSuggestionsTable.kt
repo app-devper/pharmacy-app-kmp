@@ -73,7 +73,7 @@ internal fun ReorderSuggestionsTable(
         key = { it.drugId },
         modifier = modifier,
         onRowClick = { callbacks.onRowClick(it) },
-        rowHeight = 60.dp,
+        rowHeight = 52.dp,
         emptyContent = {
             Text(text = s.planningReorderEmptyTitle, style = PharmText.meta)
         },

@@ -35,8 +35,8 @@ fun MetricCardRow(
         }
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             maxItemsInEachRow = columns,
             content = content,
         )
@@ -77,7 +77,7 @@ fun MetricCard(
             .clip(shape)
             .background(bg, shape)
             .border(1.dp, borderColor, shape)
-            .padding(t.spacing.s4),
+            .padding(horizontal = t.spacing.s4, vertical = t.spacing.s3),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(text = label, style = PharmText.meta)

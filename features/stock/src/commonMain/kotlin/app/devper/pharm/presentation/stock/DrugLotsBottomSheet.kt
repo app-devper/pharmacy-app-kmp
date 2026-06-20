@@ -29,6 +29,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmStamp
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -224,11 +225,11 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = lot.lotNumber,
-                style = PharmText.body.copy(color = t.colors.fg1),
-            )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            PharmStamp(text = lot.lotNumber)
             Text(
                 text = pharmStrings.stockLotExpiryRemaining(localDateToBuddhist(lot.expiryDate), lot.remaining.value, lot.quantity.value),
                 style = PharmText.micro.tabular().copy(color = t.colors.fg2),

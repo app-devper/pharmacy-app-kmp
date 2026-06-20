@@ -38,6 +38,7 @@ import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmStamp
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.format.formatBaht
@@ -251,14 +252,16 @@ private fun ItemRow(item: PurchaseOrderItem) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
                 text = item.drugName.ifBlank { pharmStrings.commonNoDrugName },
                 style = PharmText.body,
             )
-            Text(
+            PharmStamp(
                 text = pharmStrings.importsFormItemLotLine(item.lotNumber, localDateToBuddhist(item.expiryDate)),
-                style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
             )
         }
         Column(horizontalAlignment = Alignment.End) {

@@ -77,7 +77,7 @@ internal fun StockCountFormTable(
         columns = columns,
         key = { it.drug.id },
         modifier = modifier,
-        rowHeight = 56.dp,
+        rowHeight = 52.dp,
         emptyContent = {
             Text(
                 text = if (emptySearching) s.stockCountFormEmptySearching else s.stockCountFormEmptyDefault,

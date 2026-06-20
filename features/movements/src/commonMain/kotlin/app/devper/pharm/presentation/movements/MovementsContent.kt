@@ -1,26 +1,17 @@
 package app.devper.pharm.presentation.movements
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.presentation.movements.i18n.localizeMovements
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
@@ -28,32 +19,14 @@ fun MovementsContent(
     state: MovementsUiState,
     callbacks: MovementsCallbacks = MovementsCallbacks(),
 ) {
-    val t = pharmTokens
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
+    PharmListScaffold(
+        toolbar = { MovementsListToolbar(state = state, callbacks = callbacks) },
+        resultLine = { PharmListResultLine(total = state.items.size, noun = pharmStrings.movementsCountNoun) },
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
-            MovementsListToolbar(state = state, callbacks = callbacks)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            PharmListResultLine(total = state.items.size, noun = pharmStrings.movementsCountNoun)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.items.isEmpty() ->
-                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                else -> MovementsTable(state = state, callbacks = callbacks)
-            }
+        when {
+            state.loading && state.items.isEmpty() ->
+                PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            else -> MovementsTable(state = state, callbacks = callbacks)
         }
     }
 

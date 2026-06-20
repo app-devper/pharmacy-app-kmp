@@ -28,8 +28,8 @@ fun PharmFormCard(
             .clip(t.shapes.lg)
             .background(t.colors.surface, t.shapes.lg)
             .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(horizontal = 20.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(text = title, style = PharmText.h2)

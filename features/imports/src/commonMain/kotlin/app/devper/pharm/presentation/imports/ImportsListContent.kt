@@ -24,6 +24,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
@@ -38,41 +39,28 @@ fun ImportsListContent(
     state: ImportsListUiState,
     callbacks: ImportsListCallbacks = ImportsListCallbacks(),
 ) {
-    val t = pharmTokens
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
+    PharmListScaffold(
+        toolbar = {
             ImportsListToolbar(
                 query = state.query,
                 draftCount = state.draftCount,
                 callbacks = callbacks,
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        },
+        resultLine = {
             PharmListResultLine(total = state.orders.size, noun = pharmStrings.importsCountNoun, visible = visible.size, searching = searching)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.orders.isEmpty() -> PharmListSkeleton()
-                else -> ImportsListTable(
-                    orders = visible,
-                    callbacks = callbacks,
-                    emptySearching = searching,
-                )
-            }
+        },
+    ) {
+        when {
+            state.loading && state.orders.isEmpty() -> PharmListSkeleton()
+            else -> ImportsListTable(
+                orders = visible,
+                callbacks = callbacks,
+                emptySearching = searching,
+            )
         }
     }
 

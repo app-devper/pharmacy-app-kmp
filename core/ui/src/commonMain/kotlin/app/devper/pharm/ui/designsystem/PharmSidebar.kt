@@ -29,7 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -103,12 +107,17 @@ fun PharmSidebar(
     versionLabel: String = "v3.2.1",
 ) {
     val t = pharmTokens
+    val borderColor = t.colors.border
     val width by animateDpAsState(if (collapsed) SidebarRailWidth else t.dimens.sidebarWidth)
     Column(
         modifier = modifier
             .width(width)
             .fillMaxHeight()
-            .background(t.colors.sidebarBg),
+            .background(t.colors.sidebarBg)
+            .drawBehind {
+                val w = 1.dp.toPx()
+                drawRect(color = borderColor, topLeft = Offset(size.width - w, 0f), size = Size(w, size.height))
+            },
     ) {
 
         BrandHeader(collapsed = collapsed)
@@ -144,28 +153,12 @@ private fun BrandHeader(collapsed: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = if (collapsed) 0.dp else 16.dp, vertical = 16.dp),
+            .height(64.dp)
+            .padding(horizontal = if (collapsed) 0.dp else 16.dp),
         horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(32.dp)
-                .clip(t.shapes.md)
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(t.colors.accent, t.colors.accentHover)
-                    )
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = PharmIcons.Pill,
-                contentDescription = null,
-                tint = t.colors.sidebarFg,
-                modifier = Modifier.size(18.dp),
-            )
-        }
+        PharmBrandMark(size = 32.dp)
         if (!collapsed) {
             Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                 Text(
@@ -201,18 +194,32 @@ private fun SidebarRow(
     val t = pharmTokens
     val bg = if (active) t.colors.sidebarItemActive else Color.Transparent
     val fg = if (active) t.colors.sidebarFg else t.colors.sidebarFgMuted
+    val accent = t.colors.accent
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 2.dp)
             .clip(t.shapes.md)
             .background(bg)
+            .drawBehind {
+                if (active) {
+                    val barW = 3.dp.toPx()
+                    val barH = size.height * 0.55f
+                    drawRoundRect(
+                        color = accent,
+                        topLeft = Offset(0f, (size.height - barH) / 2f),
+                        size = Size(barW, barH),
+                        cornerRadius = CornerRadius(barW, barW),
+                    )
+                }
+            }
             .clickable(role = Role.Button, onClick = onClick)
             .semantics(mergeDescendants = true) {
                 role = Role.Tab
                 selected = active
             }
-            .padding(horizontal = if (collapsed) 0.dp else 12.dp, vertical = 8.dp),
+            .height(40.dp)
+            .padding(horizontal = if (collapsed) 0.dp else 12.dp),
         horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -267,15 +274,16 @@ private fun SidebarFooter(
                     onClick = onToggleCollapse,
                     role = Role.Button,
                 )
-                .padding(horizontal = if (collapsed) 0.dp else 16.dp, vertical = 12.dp),
+                .height(48.dp)
+                .padding(horizontal = if (collapsed) 0.dp else 16.dp),
             horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = PharmIcons.Hamburger,
+                imageVector = PharmIcons.ChevronLeft,
                 contentDescription = if (collapsed) pharmStrings.commonExpandMenu else pharmStrings.commonCollapseMenu,
                 tint = t.colors.sidebarFgMuted,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(18.dp).rotate(if (collapsed) 180f else 0f),
             )
             if (!collapsed) {
                 Text(
@@ -288,7 +296,8 @@ private fun SidebarFooter(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .height(48.dp)
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

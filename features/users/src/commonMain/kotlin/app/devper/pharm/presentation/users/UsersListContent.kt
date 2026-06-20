@@ -42,6 +42,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -56,60 +57,45 @@ fun UsersListContent(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
-    val t = pharmTokens
     val s = pharmStrings
     val visible = state.filtered
     val searching = state.searchQuery.isNotBlank()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-        ) {
-            UsersListToolbar(state = state, callbacks = callbacks)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+    PharmListScaffold(
+        toolbar = { UsersListToolbar(state = state, callbacks = callbacks) },
+        resultLine = {
             PharmListResultLine(
                 total = state.users.size,
                 noun = s.usersCountNoun,
                 visible = visible.size,
                 searching = searching,
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-
-            when {
-                state.loading && state.users.isEmpty() -> PharmListSkeleton()
-                state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
-                    icon = PharmIcons.Users,
-                    title = s.usersListEmpty,
-                    action = {
-                        if (state.currentUserRole.canManageUsers()) {
-                            PharmButton(
-                                label = s.usersAddFirstCta,
-                                onClick = callbacks.onAddUser,
-                                variant = PharmButtonVariant.Primary,
-                                size = PharmButtonSize.Sm,
-                                leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
-                            )
-                        }
-                    },
-                )
-                else -> UsersListTable(
-                    users = visible,
-                    actorRole = state.currentUserRole,
-                    currentUserId = state.currentUserId,
-                    callbacks = callbacks,
-                    emptySearching = searching,
-                )
-            }
+        },
+    ) {
+        when {
+            state.loading && state.users.isEmpty() -> PharmListSkeleton()
+            state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
+                icon = PharmIcons.Users,
+                title = s.usersListEmpty,
+                action = {
+                    if (state.currentUserRole.canManageUsers()) {
+                        PharmButton(
+                            label = s.usersAddFirstCta,
+                            onClick = callbacks.onAddUser,
+                            variant = PharmButtonVariant.Primary,
+                            size = PharmButtonSize.Sm,
+                            leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
+                        )
+                    }
+                },
+            )
+            else -> UsersListTable(
+                users = visible,
+                actorRole = state.currentUserRole,
+                currentUserId = state.currentUserId,
+                callbacks = callbacks,
+                emptySearching = searching,
+            )
         }
     }
 
