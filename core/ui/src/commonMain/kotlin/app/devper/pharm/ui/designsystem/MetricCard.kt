@@ -77,7 +77,7 @@ fun MetricCard(
             .clip(shape)
             .background(bg, shape)
             .border(1.dp, borderColor, shape)
-            .padding(t.spacing.s4),
+            .padding(horizontal = t.spacing.s4, vertical = t.spacing.s3),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(text = label, style = PharmText.meta)
