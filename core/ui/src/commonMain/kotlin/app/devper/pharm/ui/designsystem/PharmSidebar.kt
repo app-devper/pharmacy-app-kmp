@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -143,7 +144,8 @@ private fun BrandHeader(collapsed: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = if (collapsed) 0.dp else 16.dp, vertical = 16.dp),
+            .height(64.dp)
+            .padding(horizontal = if (collapsed) 0.dp else 16.dp),
         horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -194,7 +196,8 @@ private fun SidebarRow(
                 role = Role.Tab
                 selected = active
             }
-            .padding(horizontal = if (collapsed) 0.dp else 12.dp, vertical = 8.dp),
+            .height(40.dp)
+            .padding(horizontal = if (collapsed) 0.dp else 12.dp),
         horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -249,15 +252,16 @@ private fun SidebarFooter(
                     onClick = onToggleCollapse,
                     role = Role.Button,
                 )
-                .padding(horizontal = if (collapsed) 0.dp else 16.dp, vertical = 12.dp),
+                .height(48.dp)
+                .padding(horizontal = if (collapsed) 0.dp else 16.dp),
             horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = PharmIcons.Hamburger,
+                imageVector = PharmIcons.ChevronLeft,
                 contentDescription = if (collapsed) pharmStrings.commonExpandMenu else pharmStrings.commonCollapseMenu,
                 tint = t.colors.sidebarFgMuted,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(18.dp).rotate(if (collapsed) 180f else 0f),
             )
             if (!collapsed) {
                 Text(
@@ -270,7 +274,8 @@ private fun SidebarFooter(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .height(48.dp)
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
