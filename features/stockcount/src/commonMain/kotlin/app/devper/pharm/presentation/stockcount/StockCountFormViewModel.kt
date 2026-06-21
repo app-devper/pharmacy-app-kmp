@@ -90,7 +90,7 @@ class StockCountFormViewModel(
     }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
+        setState { copy(loading = drugs.isEmpty(), errorState = null) }
         launchResult(
             block = { getDrugs() },
             onSuccess = { list ->
