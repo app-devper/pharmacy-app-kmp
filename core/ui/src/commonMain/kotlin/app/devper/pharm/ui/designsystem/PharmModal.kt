@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -88,15 +88,12 @@ fun PharmModal(
                 .border(1.dp, t.colors.borderSubtle, shape),
         ) {
             if (title != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.Top,
-                ) {
+                val closeDesc = pharmStrings.commonClose
+                Box(modifier = Modifier.fillMaxWidth()) {
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 16.dp, end = 52.dp, bottom = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(2.dp),
                     ) {
                         Text(title, style = PharmText.h2)
@@ -104,27 +101,25 @@ fun PharmModal(
                             Text(subtitle, style = PharmText.meta)
                         }
                     }
-                    val closeDesc = pharmStrings.commonClose
-                    Box(contentAlignment = Alignment.TopEnd) {
-
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(t.shapes.sm)
-                                .clickable(onClick = onDismiss)
-                                .semantics(mergeDescendants = true) {
-                                    contentDescription = closeDesc
-                                    role = Role.Button
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = null,
-                                tint = t.colors.fg2,
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 9.dp, end = 9.dp)
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, t.colors.border, CircleShape)
+                            .clickable(role = Role.Button, onClick = onDismiss)
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = closeDesc
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null,
+                            tint = t.colors.fg2,
+                            modifier = Modifier.size(18.dp),
+                        )
                     }
                 }
                 Box(
