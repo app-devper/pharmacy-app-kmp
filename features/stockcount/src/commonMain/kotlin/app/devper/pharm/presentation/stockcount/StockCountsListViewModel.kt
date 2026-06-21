@@ -13,7 +13,7 @@ class StockCountsListViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
+        setState { copy(loading = counts.isEmpty(), errorState = null) }
         launchResult(
             block = { getStockCounts() },
             onSuccess = { list -> setState { copy(loading = false, counts = list) } },

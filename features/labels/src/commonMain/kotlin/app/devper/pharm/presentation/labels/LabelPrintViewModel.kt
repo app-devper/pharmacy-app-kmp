@@ -88,7 +88,7 @@ class LabelPrintViewModel(
     fun dismissMessage() = setState { copy(message = null) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
+        setState { copy(loading = drugs.isEmpty(), errorState = null) }
         launchResult(
             block = { getDrugs() },
             onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
