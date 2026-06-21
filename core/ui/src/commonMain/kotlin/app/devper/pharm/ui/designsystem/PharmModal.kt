@@ -89,39 +89,37 @@ fun PharmModal(
         ) {
             if (title != null) {
                 val closeDesc = pharmStrings.commonClose
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 16.dp, end = 52.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
                     ) {
-                        Text(title, style = PharmText.h2, modifier = Modifier.weight(1f))
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(CircleShape)
-                                .border(1.dp, t.colors.border, CircleShape)
-                                .clickable(role = Role.Button, onClick = onDismiss)
-                                .semantics(mergeDescendants = true) {
-                                    contentDescription = closeDesc
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = null,
-                                tint = t.colors.fg2,
-                                modifier = Modifier.size(18.dp),
-                            )
+                        Text(title, style = PharmText.h2)
+                        if (subtitle != null) {
+                            Text(subtitle, style = PharmText.meta)
                         }
                     }
-                    if (subtitle != null) {
-                        Text(subtitle, style = PharmText.meta)
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 12.dp, end = 12.dp)
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, t.colors.border, CircleShape)
+                            .clickable(role = Role.Button, onClick = onDismiss)
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = closeDesc
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null,
+                            tint = t.colors.fg2,
+                            modifier = Modifier.size(18.dp),
+                        )
                     }
                 }
                 Box(
