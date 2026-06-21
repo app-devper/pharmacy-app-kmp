@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -88,33 +88,27 @@ fun PharmModal(
                 .border(1.dp, t.colors.borderSubtle, shape),
         ) {
             if (title != null) {
-                Row(
+                val closeDesc = pharmStrings.commonClose
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.Top,
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(title, style = PharmText.h2)
-                        if (subtitle != null) {
-                            Text(subtitle, style = PharmText.meta)
-                        }
-                    }
-                    val closeDesc = pharmStrings.commonClose
-                    Box(contentAlignment = Alignment.TopEnd) {
-
+                        Text(title, style = PharmText.h2, modifier = Modifier.weight(1f))
                         Box(
                             modifier = Modifier
-                                .size(48.dp)
-                                .clip(t.shapes.sm)
-                                .clickable(onClick = onDismiss)
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .border(1.dp, t.colors.border, CircleShape)
+                                .clickable(role = Role.Button, onClick = onDismiss)
                                 .semantics(mergeDescendants = true) {
                                     contentDescription = closeDesc
-                                    role = Role.Button
                                 },
                             contentAlignment = Alignment.Center,
                         ) {
@@ -122,9 +116,12 @@ fun PharmModal(
                                 imageVector = Icons.Rounded.Close,
                                 contentDescription = null,
                                 tint = t.colors.fg2,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(18.dp),
                             )
                         }
+                    }
+                    if (subtitle != null) {
+                        Text(subtitle, style = PharmText.meta)
                     }
                 }
                 Box(
