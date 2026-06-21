@@ -52,14 +52,13 @@ class SettingsEditorViewModel(
 
     fun reload() {
         if (current.saving) return
-        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { refreshSettings() },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
-                setState { copy(loading = false, baseline = fields, form = if (dirty) form else fields) }
+                setState { copy(baseline = fields, form = if (dirty) form else fields) }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = SettingsUiStateError.LoadSettingsFailed(e)) } },
+            onFailure = { e -> setState { copy(errorState = SettingsUiStateError.LoadSettingsFailed(e)) } },
         )
     }
 
