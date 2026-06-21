@@ -104,7 +104,7 @@ fun PharmModal(
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(top = 5.dp, end = 5.dp)
+                            .padding(top = 9.dp, end = 9.dp)
                             .size(32.dp)
                             .clip(CircleShape)
                             .border(1.dp, t.colors.border, CircleShape)
