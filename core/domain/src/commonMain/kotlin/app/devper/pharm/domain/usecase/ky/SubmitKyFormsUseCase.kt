@@ -24,54 +24,48 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
 
     override suspend fun execute(param: SubmitKyFormsParam): KySubmissionResult {
         val errors = mutableListOf<String>()
-        var attempted = 0
         val saleId = param.sale.id
 
         for (line in param.required.ky10) {
-            attempted++
             val form = KyForm.Ky10(
                 saleId = saleId,
                 date = param.date,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
                 qty = line.qty,
-                unit = line.drug.unit ?: "หน่วย",
+                unit = line.drug.unit.orEmpty(),
                 buyerName = param.captured.ky10BuyerName,
                 buyerAddress = param.captured.ky10BuyerAddress,
                 rxNo = param.captured.ky10RxNo,
                 doctor = param.captured.ky10Doctor,
                 balance = param.captured.ky10Balance,
             )
-            runCatching { ky.submitKy10(form) }
-                .onFailure { errors += "ขย.10 ${line.drug.name}: ${it.message ?: "ไม่ทราบสาเหตุ"}" }
+            try { ky.submitKy10(form) } catch (e: Exception) { errors += "ky10:${line.drug.name}:${e.message.orEmpty()}" }
         }
 
         for (line in param.required.ky11) {
-            attempted++
             val form = KyForm.Ky11(
                 saleId = saleId,
                 date = param.date,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
                 qty = line.qty,
-                unit = line.drug.unit ?: "หน่วย",
+                unit = line.drug.unit.orEmpty(),
                 buyerName = param.captured.ky11BuyerName,
                 purpose = param.captured.ky11Purpose,
                 pharmacist = param.captured.ky11Pharmacist,
             )
-            runCatching { ky.submitKy11(form) }
-                .onFailure { errors += "ขย.11 ${line.drug.name}: ${it.message ?: "ไม่ทราบสาเหตุ"}" }
+            try { ky.submitKy11(form) } catch (e: Exception) { errors += "ky11:${line.drug.name}:${e.message.orEmpty()}" }
         }
 
         for (line in param.required.ky12) {
-            attempted++
             val form = KyForm.Ky12(
                 saleId = saleId,
                 date = param.date,
                 drugName = line.drug.name,
                 regNo = line.drug.regNo.orEmpty(),
                 qty = line.qty,
-                unit = line.drug.unit ?: "หน่วย",
+                unit = line.drug.unit.orEmpty(),
                 rxNo = param.captured.ky12RxNo,
                 patientName = param.captured.ky12PatientName,
                 doctor = param.captured.ky12Doctor,
@@ -79,10 +73,10 @@ class SubmitKyFormsUseCase(private val ky: KyRepository, dispatchers: AppDispatc
                 totalValue = (line.unitPrice * line.displayQty).amount,
                 status = param.captured.ky12Status,
             )
-            runCatching { ky.submitKy12(form) }
-                .onFailure { errors += "ขย.12 ${line.drug.name}: ${it.message ?: "ไม่ทราบสาเหตุ"}" }
+            try { ky.submitKy12(form) } catch (e: Exception) { errors += "ky12:${line.drug.name}:${e.message.orEmpty()}" }
         }
 
+        val attempted = param.required.ky10.size + param.required.ky11.size + param.required.ky12.size
         return KySubmissionResult(attempted = attempted, failed = errors)
     }
 }

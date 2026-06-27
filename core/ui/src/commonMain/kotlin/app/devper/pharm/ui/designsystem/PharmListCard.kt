@@ -38,12 +38,12 @@ fun PharmListCard(
     val shape = t.shapes.lg
     val borderColor = if (highlighted) t.colors.successFg else t.colors.border
 
-    var surface = modifier
+    val surface = modifier
         .fillMaxWidth()
         .clip(shape)
         .background(t.colors.surface, shape)
         .border(1.dp, borderColor, shape)
-    if (onClick != null) surface = surface.clickable(role = Role.Button, onClick = onClick)
+        .let { if (onClick != null) it.clickable(role = Role.Button, onClick = onClick) else it }
 
     Row(
         modifier = surface.padding(12.dp),
