@@ -1,15 +1,31 @@
 package app.devper.pharm.presentation.labels
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ReloadOnResume
+import app.devper.pharm.ui.i18n.localize
+import app.devper.pharm.ui.i18n.pharmStrings
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LabelPrintScreen(viewModel: LabelPrintViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbar = LocalPharmSnackbar.current
+    val s = pharmStrings
+
     ReloadOnResume(viewModel::reload)
+
+    LaunchedEffect(state.messageState) {
+        state.messageState?.let {
+            snackbar.showToast(PharmToast.Info(it.localize(s)))
+            viewModel.dismissMessage()
+        }
+    }
+
     LabelPrintContent(
         state = state,
         callbacks = LabelPrintCallbacks(
@@ -22,7 +38,6 @@ fun LabelPrintScreen(viewModel: LabelPrintViewModel = koinViewModel()) {
             onSizeChange = viewModel::onSizeChange,
             onClearAll = viewModel::onClearAll,
             onPrint = viewModel::onPrint,
-            onDismissMessage = viewModel::dismissMessage,
             onDismissError = viewModel::dismissError,
         ),
     )

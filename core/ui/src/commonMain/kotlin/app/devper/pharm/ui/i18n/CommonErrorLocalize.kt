@@ -36,6 +36,7 @@ fun AppException.localizeCommon(s: PharmStrings): String = when (this) {
 fun CommonUiStateMessage.localize(s: PharmStrings): String = when (this) {
     is CommonUiStateMessage.ExportEmpty -> s.commonExportEmpty
     is CommonUiStateMessage.Saved -> s.commonSaved
+    is CommonUiStateMessage.ExportDone -> path
 }
 
 fun FieldValidationError.localizeFieldValidation(s: PharmStrings): String {

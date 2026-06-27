@@ -8,9 +8,12 @@ import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
+import app.devper.pharm.common.AppException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -55,5 +58,67 @@ class ExpiryViewModelTest {
         assertEquals(listOf("a"), repo.lastWriteoff?.lotIds)
         assertTrue(vm.state.value.selected.isEmpty())
         assertEquals(1, vm.state.value.writeoffResult?.writtenOff)
+    }
+
+    @Test
+    fun toggle_selected_adds_then_removes_lot() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("x")))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+        vm.toggleSelected("x")
+        assertTrue("x" in vm.state.value.selected)
+        vm.toggleSelected("x")
+        assertFalse("x" in vm.state.value.selected)
+    }
+
+    @Test
+    fun ask_confirm_and_cancel_toggles_dialog() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+        vm.askConfirm()
+        assertTrue(vm.state.value.confirmDialog)
+        vm.cancelConfirm()
+        assertFalse(vm.state.value.confirmDialog)
+    }
+
+    @Test
+    fun list_failure_sets_error_state() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(listThrows = true)
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun writeoff_failure_sets_error_state() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(
+            seed = listOf(lot("a")),
+            writeoffThrows = true,
+        )
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+        vm.toggleSelected("a")
+        vm.confirmWriteoff()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.errorState)
+        assertNull(vm.state.value.writeoffResult)
+    }
+
+    @Test
+    fun dismiss_result_clears_writeoff_result() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(
+            seed = listOf(lot("a")),
+            writeoffResult = WriteoffResult(writtenOff = 1, failures = emptyList()),
+        )
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+        vm.toggleSelected("a")
+        vm.confirmWriteoff()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.writeoffResult)
+        vm.dismissResult()
+        assertNull(vm.state.value.writeoffResult)
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.offlinesync.i18n.localize
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.ReloadOnResume
 import app.devper.pharm.ui.i18n.pharmStrings
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -15,6 +16,8 @@ fun OfflineSyncScreen(viewModel: OfflineSyncViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbar = LocalPharmSnackbar.current
     val s = pharmStrings
+
+    ReloadOnResume(viewModel::refresh)
 
     LaunchedEffect(state.messageState) {
         state.messageState?.let {

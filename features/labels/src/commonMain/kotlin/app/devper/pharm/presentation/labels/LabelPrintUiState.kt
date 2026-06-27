@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.labels
 
 import app.devper.pharm.common.AppException
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
@@ -13,7 +14,7 @@ data class LabelPrintUiState(
     val lines: List<LabelLine> = emptyList(),
     override val loading: Boolean = false,
     val printing: Boolean = false,
-    val message: String? = null,
+    val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
 ) : LoadableUiState<LabelPrintUiState> {
 

@@ -13,6 +13,5 @@ data class LabelPrintCallbacks(
     val onSizeChange: (LabelSize) -> Unit = {},
     val onClearAll: () -> Unit = {},
     val onPrint: () -> Unit = {},
-    val onDismissMessage: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

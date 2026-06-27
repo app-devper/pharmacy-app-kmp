@@ -8,11 +8,13 @@ import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import app.devper.pharm.common.error.CommonUiStateMessage
+import app.devper.pharm.presentation.settings.exception.SettingsUiStateError
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,5 +65,62 @@ class SettingsEditorViewModelTest {
         assertNotNull(repo.lastUpdate)
         assertIs<CommonUiStateMessage.Saved>(model.state.value.messageState)
         assertFalse(model.state.value.saving)
+    }
+
+    @Test
+    fun dismiss_message_clears_message_state() = runVmTest { d ->
+        val repo = FakeSettingsRepository()
+        val model = vm(repo, d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาทดสอบ")
+        model.submit()
+        advanceUntilIdle()
+        assertNotNull(model.state.value.messageState)
+        model.dismissMessage()
+        assertNull(model.state.value.messageState)
+    }
+
+    @Test
+    fun dirty_resets_to_false_after_successful_save() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาทดสอบ")
+        assertTrue(model.state.value.dirty)
+        model.submit()
+        advanceUntilIdle()
+        assertFalse(model.state.value.dirty)
+    }
+
+    @Test
+    fun submit_failure_sets_error_and_clears_saving() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(updateThrows = true), d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาใหม่")
+        model.submit()
+        advanceUntilIdle()
+        assertNotNull(model.state.value.errorState)
+        assertFalse(model.state.value.saving)
+        assertNull(model.state.value.messageState)
+    }
+
+    @Test
+    fun refresh_failure_sets_load_error() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(refreshThrows = true), d)
+        advanceUntilIdle()
+        assertIs<SettingsUiStateError.LoadSettingsFailed>(model.state.value.errorState)
+        assertFalse(model.state.value.loading)
+    }
+
+    @Test
+    fun editing_multiple_fields_marks_all_dirty() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onStoreAddress("123 ถ.สุขุมวิท")
+        model.onStorePhone("02-123-4567")
+        model.onPharmacistName("ภ.ก. สมชาย")
+        assertTrue(model.state.value.dirty)
+        assertEquals("123 ถ.สุขุมวิท", model.state.value.form.storeAddress)
+        assertEquals("02-123-4567", model.state.value.form.storePhone)
+        assertEquals("ภ.ก. สมชาย", model.state.value.form.pharmacistName)
     }
 }

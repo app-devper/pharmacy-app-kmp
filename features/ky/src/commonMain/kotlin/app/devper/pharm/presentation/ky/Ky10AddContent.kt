@@ -174,3 +174,21 @@ private fun Ky10AddContent_Filled_Preview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun Ky10AddContent_Saving_Preview() {
+    PharmacyTheme {
+        Ky10AddContent(
+            state = Ky10AddUiState(
+                saving = true,
+                draft = Ky10Draft(
+                    date = "2026-06-01",
+                    drugName = "Diazepam 5mg",
+                    unit = "เม็ด",
+                    qty = "30",
+                ),
+            ),
+        )
+    }
+}

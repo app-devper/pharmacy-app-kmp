@@ -148,3 +148,21 @@ private fun Ky11AddContent_Filled_Preview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun Ky11AddContent_Saving_Preview() {
+    PharmacyTheme {
+        Ky11AddContent(
+            state = Ky11AddUiState(
+                saving = true,
+                draft = Ky11Draft(
+                    date = "2026-06-01",
+                    drugName = "Pseudoephedrine 60mg",
+                    unit = "เม็ด",
+                    qty = "20",
+                ),
+            ),
+        )
+    }
+}

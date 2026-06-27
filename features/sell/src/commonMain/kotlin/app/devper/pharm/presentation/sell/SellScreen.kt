@@ -23,8 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.domain.model.CartLine
-import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.ToastAction
@@ -33,24 +31,11 @@ import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.scanner.scanBarcodes
-import app.devper.pharm.presentation.sell.components.AltUnitPickerSheet
-import app.devper.pharm.presentation.sell.components.CartDiscountSheet
 import app.devper.pharm.presentation.sell.components.CartFooterBar
-import app.devper.pharm.presentation.sell.components.CartPanel
 import app.devper.pharm.presentation.sell.components.CartSlotRail
 import app.devper.pharm.presentation.sell.components.CartTabStrip
-import app.devper.pharm.presentation.sell.components.CustomerPickerSheet
 import app.devper.pharm.presentation.sell.components.DrugPickerColumn
-import app.devper.pharm.presentation.sell.components.KyCaptureSheet
-import app.devper.pharm.presentation.sell.components.SkipKyConfirmSheet
-import app.devper.pharm.presentation.sell.components.LineDiscountSheet
-import app.devper.pharm.presentation.sell.components.OversellConfirmSheet
-import app.devper.pharm.presentation.sell.components.ParkOverwriteDialog
-import app.devper.pharm.presentation.sell.components.ParkedCartsSheet
-import app.devper.pharm.presentation.sell.components.PaymentDialog
-import app.devper.pharm.presentation.sell.components.ReceiptDialog
 import app.devper.pharm.presentation.sell.components.ShortcutLegend
-import app.devper.pharm.presentation.sell.components.VoidReasonSheet
 import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -129,6 +114,39 @@ fun SellScreen(
         hasError = combinedError != null,
         onDismissAllErrors = dismissAllErrors,
         searchFocus = searchFocus,
+    )
+
+    val overlayCallbacks = SellOverlayCallbacks(
+        onTapParkSlot = onTapParkSlot,
+        onPickAltUnit = drugPickerVM::onPickAltUnit,
+        onCloseAltUnitPicker = drugPickerVM::onCloseAltUnitPicker,
+        onDiscardParkedSlot = parkedCartVM::discard,
+        onRequestOverwriteSlot = parkedCartVM::requestOverwrite,
+        onCloseParkedSheet = parkedCartVM::closeSheet,
+        onConfirmOverwrite = parkedCartVM::confirmOverwrite,
+        onCancelOverwrite = parkedCartVM::cancelOverwrite,
+        onReceivedChange = sellVM::onReceivedChange,
+        onSubmitPayment = checkoutVM::submit,
+        onSubmitExactPayment = checkoutVM::submitExact,
+        onClosePayment = checkoutVM::closePayment,
+        onConfirmKyCapture = checkoutVM::confirmKyCapture,
+        onRequestSkipKy = checkoutVM::requestSkipKy,
+        onDismissKyCapture = checkoutVM::dismissKyCapture,
+        onConfirmSkipKy = checkoutVM::confirmSkipKy,
+        onCancelSkipKy = checkoutVM::cancelSkipKy,
+        onPickCustomer = customerPickerVM::pick,
+        onCloseCustomerPicker = customerPickerVM::close,
+        onApplyLineDiscount = sellVM::onApplyLineDiscount,
+        onCloseLineDiscount = sellVM::onCloseLineDiscount,
+        onApplyCartDiscount = sellVM::onApplyCartDiscount,
+        onCloseCartDiscount = sellVM::onCloseCartDiscount,
+        onConfirmOversell = checkoutVM::confirmOversell,
+        onDismissOversell = checkoutVM::dismissOversell,
+        onDismissReceipt = checkoutVM::dismissReceipt,
+        onOpenVoidSheet = voidSaleVM::openSheet,
+        onPrintReceipt = { sale -> checkoutVM.printLastReceipt(sale) },
+        onConfirmVoid = { saleId, reason -> voidSaleVM.confirm(saleId, reason) },
+        onCloseVoidSheet = voidSaleVM::closeSheet,
     )
 
     Surface(
@@ -214,115 +232,16 @@ fun SellScreen(
                 }
             }
 
-            drugState.altUnitPickerFor?.let { drug ->
-                AltUnitPickerSheet(
-                    drug = drug,
-                    activeTier = sellState.activeTier,
-                    onPick = drugPickerVM::onPickAltUnit,
-                    onDismiss = drugPickerVM::onCloseAltUnitPicker,
-                )
-            }
-
-            if (parkedState.sheetOpen) {
-                ParkedCartsSheet(
-                    slots = parkedState.parkedSlots,
-                    canParkActiveCart = !parkedState.activeCartIsEmpty,
-                    onTapSlot = onTapParkSlot,
-                    onDiscardSlot = parkedCartVM::discard,
-                    onRequestOverwrite = parkedCartVM::requestOverwrite,
-                    onDismiss = parkedCartVM::closeSheet,
-                )
-            }
-            parkedState.overwriteSlot?.let { slot ->
-                ParkOverwriteDialog(
-                    slotNumber = slot + 1,
-                    onConfirm = parkedCartVM::confirmOverwrite,
-                    onCancel = parkedCartVM::cancelOverwrite,
-                )
-            }
-
-            if (checkoutState.paymentOpen) {
-                PaymentDialog(
-                    received = sellState.received,
-                    total = sellState.total.amount,
-                    checkingOut = checkoutState.checkingOut,
-                    onReceivedChange = sellVM::onReceivedChange,
-                    onSubmit = checkoutVM::submit,
-                    onSubmitExact = checkoutVM::submitExact,
-                    onDismiss = checkoutVM::closePayment,
-                )
-            }
-
-            checkoutState.kyCapturePending?.let { required ->
-                KyCaptureSheet(
-                    required = required,
-                    initial = sellState.kyInitialFields,
-                    submitting = checkoutState.checkingOut,
-                    onConfirm = checkoutVM::confirmKyCapture,
-                    onSkip = checkoutVM::requestSkipKy,
-                    onDismiss = checkoutVM::dismissKyCapture,
-                )
-            }
-
-            if (checkoutState.showSkipKyConfirm) {
-                SkipKyConfirmSheet(
-                    onConfirm = checkoutVM::confirmSkipKy,
-                    onDismiss = checkoutVM::cancelSkipKy,
-                )
-            }
-
-            if (isWide) {
-                if (customerState.open) {
-                    CustomerPickerSheet(
-                        customers = customerState.customers,
-                        loading = customerState.loading,
-                        onPick = customerPickerVM::pick,
-                        onDismiss = customerPickerVM::close,
-                    )
-                }
-                sellState.lineDiscountFor?.let { line ->
-                    LineDiscountSheet(
-                        line = line,
-                        onApply = sellVM::onApplyLineDiscount,
-                        onDismiss = sellVM::onCloseLineDiscount,
-                    )
-                }
-                if (sellState.cartDiscountSheetOpen) {
-                    CartDiscountSheet(
-                        current = sellState.cartDiscount,
-                        subtotal = sellState.subtotal.amount,
-                        onApply = sellVM::onApplyCartDiscount,
-                        onDismiss = sellVM::onCloseCartDiscount,
-                    )
-                }
-                checkoutState.oversellPending?.let { rows ->
-                    OversellConfirmSheet(
-                        shortfalls = rows,
-                        onConfirm = checkoutVM::confirmOversell,
-                        onDismiss = checkoutVM::dismissOversell,
-                    )
-                }
-                sellState.receipt?.let { sale ->
-                    val template = checkoutState.lastReceiptTemplate
-                    if (template != null) {
-                        ReceiptDialog(
-                            template = template,
-                            onDismiss = checkoutVM::dismissReceipt,
-                            onVoid = sale.id.takeIf { it.isNotBlank() }
-                                ?.let { { voidSaleVM.openSheet() } },
-                            onPrint = { checkoutVM.printLastReceipt(sale) },
-                        )
-                    }
-                    if (voidState.sheetOpen) {
-                        VoidReasonSheet(
-                            billNo = sale.billNo,
-                            submitting = voidState.submitting,
-                            onConfirm = { reason -> voidSaleVM.confirm(sale.id, reason) },
-                            onDismiss = voidSaleVM::closeSheet,
-                        )
-                    }
-                }
-            }
+            SellOverlays(
+                drugState = drugState,
+                sellState = sellState,
+                checkoutState = checkoutState,
+                parkedState = parkedState,
+                customerState = customerState,
+                voidState = voidState,
+                isWide = isWide,
+                callbacks = overlayCallbacks,
+            )
         }
     }
 
@@ -332,52 +251,4 @@ fun SellScreen(
     )
 
     ShortcutLegend(open = showShortcuts, onClose = { showShortcuts = false })
-}
-
-@Composable
-private fun SellCartPanel(
-    sellState: SellUiState,
-    canCheckout: Boolean,
-    checkingOut: Boolean,
-    onSetQty: (CartLineKey, Int) -> Unit,
-    onRemove: (CartLineKey) -> Unit,
-    onTapLineForDiscount: (CartLine) -> Unit,
-    onOpenCartDiscount: () -> Unit,
-    onRequestClearCart: () -> Unit,
-    onConfirmClearCart: () -> Unit,
-    onCancelClearCart: () -> Unit,
-    onOpenPayment: () -> Unit,
-    parkedFilledCount: Int,
-    onPickCustomer: () -> Unit,
-    onClearCustomer: () -> Unit,
-    onOpenParkedSheet: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    CartPanel(
-        cart = sellState.cart,
-        customer = sellState.customer,
-        activeTier = sellState.activeTier,
-        cartDiscount = sellState.cartDiscount,
-        grossSubtotal = sellState.grossSubtotal.amount,
-        itemDiscountTotal = sellState.itemDiscountTotal.amount,
-        cartDiscountAmount = sellState.cartDiscountAmount.amount,
-        total = sellState.total.amount,
-        canCheckout = canCheckout,
-        checkingOut = checkingOut,
-        onSetQty = onSetQty,
-        onRemove = onRemove,
-        onTapLineForDiscount = onTapLineForDiscount,
-        onPickCustomer = onPickCustomer,
-        onClearCustomer = onClearCustomer,
-        onOpenCartDiscount = onOpenCartDiscount,
-        onOpenPayment = onOpenPayment,
-        showClearConfirm = sellState.showClearConfirm,
-        onRequestClearCart = onRequestClearCart,
-        onConfirmClearCart = onConfirmClearCart,
-        onCancelClearCart = onCancelClearCart,
-        parkedFilledCount = parkedFilledCount,
-        onOpenParkedSheet = onOpenParkedSheet,
-        showShortcutHints = true,
-        modifier = modifier,
-    )
 }

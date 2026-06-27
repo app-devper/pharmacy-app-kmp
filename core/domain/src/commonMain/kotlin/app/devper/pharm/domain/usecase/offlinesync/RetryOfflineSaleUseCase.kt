@@ -22,8 +22,8 @@ class RetryOfflineSaleUseCase(
             val sale = sales.replayCheckout(pending.payloadJson)
             queue.markSynced(param)
             sale
-        } catch (e: Throwable) {
-            queue.markFailed(MarkOfflineSaleFailedParam(id = param, error = e.message ?: "ไม่ทราบสาเหตุ"))
+        } catch (e: Exception) {
+            queue.markFailed(MarkOfflineSaleFailedParam(id = param, error = e.message ?: ""))
             throw e
         }
     }

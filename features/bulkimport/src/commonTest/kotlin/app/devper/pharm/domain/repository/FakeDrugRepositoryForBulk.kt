@@ -11,6 +11,7 @@ import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 
 class FakeDrugRepositoryForBulk(
     private val result: BulkImportResult = BulkImportResult(imported = 0, errors = emptyList()),
+    private val importThrows: Boolean = false,
 ) : DrugRepository {
 
     var lastBulkImport: List<AddDrugParam>? = null
@@ -24,6 +25,7 @@ class FakeDrugRepositoryForBulk(
 
     override suspend fun bulkImport(drugs: List<AddDrugParam>): BulkImportResult {
         lastBulkImport = drugs
+        if (importThrows) throw RuntimeException("import failed")
         return result
     }
 

@@ -15,7 +15,9 @@ class FakeDrugRepository(
     private val updateThrowsOn: String? = null,
     private val listThrows: Boolean = false,
     private val lowStockSeed: List<Drug> = emptyList(),
+    private val lowStockThrows: Boolean = false,
     private val reorderSeed: List<ReorderSuggestion> = emptyList(),
+    private val reorderThrows: Boolean = false,
 ) : DrugRepository {
 
     var listCallCount: Int = 0
@@ -67,10 +69,14 @@ class FakeDrugRepository(
         return BulkImportResult(imported = drugs.size, errors = emptyList())
     }
 
-    override suspend fun lowStock(): List<Drug> = lowStockSeed
+    override suspend fun lowStock(): List<Drug> {
+        if (lowStockThrows) throw RuntimeException("lowStock failed")
+        return lowStockSeed
+    }
 
     override suspend fun reorderSuggestions(param: ReorderSuggestionsParam): List<ReorderSuggestion> {
         lastReorderParam = param
+        if (reorderThrows) throw RuntimeException("reorderSuggestions failed")
         return reorderSeed
     }
 }

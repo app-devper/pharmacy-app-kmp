@@ -288,7 +288,7 @@ class SubmitKyFormsUseCaseTest {
         val r = result.getOrThrow()
         assertEquals(2, r.attempted)
         assertEquals(1, r.failed.size)
-        assertTrue(r.failed[0].contains("ขย.11"))
+        assertTrue(r.failed[0].startsWith("ky11:"))
         assertTrue(r.failed[0].contains("Drug-11"))
         assertEquals(1, repo.ky10Submissions.size)
         assertTrue(repo.ky11Submissions.isEmpty())
@@ -330,7 +330,7 @@ class SubmitKyFormsUseCaseTest {
             sale = sale(), required = required, captured = KyCaptureFields(), date = DATE,
         ).getOrThrow()
 
-        assertEquals("หน่วย", repo.ky10Submissions.single().unit)
+        assertEquals("", repo.ky10Submissions.single().unit)
     }
 
     @Test
@@ -348,9 +348,9 @@ class SubmitKyFormsUseCaseTest {
 
         assertEquals(3, r.attempted)
         assertEquals(3, r.failed.size)
-        assertTrue(r.failed.any { it.startsWith("ขย.10") && it.contains("A") })
-        assertTrue(r.failed.any { it.startsWith("ขย.11") && it.contains("B") })
-        assertTrue(r.failed.any { it.startsWith("ขย.12") && it.contains("C") })
+        assertTrue(r.failed.any { it.startsWith("ky10:") && it.contains("A") })
+        assertTrue(r.failed.any { it.startsWith("ky11:") && it.contains("B") })
+        assertTrue(r.failed.any { it.startsWith("ky12:") && it.contains("C") })
         assertTrue(r.anyFailed)
     }
 

@@ -53,7 +53,6 @@ class CommonErrorLocalizeTest {
 
     @Test
     fun transport_errors_localize_by_type_not_by_baked_in_message() {
-        // English defaults carry English identifiers; localizeCommon must return the Thai table value.
         assertEquals(PharmStringsTh.commonErrorNetwork, NetworkException().localizeCommon(PharmStringsTh))
         assertEquals(PharmStringsTh.commonErrorAuth, AuthException().localizeCommon(PharmStringsTh))
         assertEquals(PharmStringsEn.commonErrorServer, ServerException().localizeCommon(PharmStringsEn))
@@ -72,5 +71,12 @@ class CommonErrorLocalizeTest {
             assertTrue(m.localize(PharmStringsTh).isNotBlank())
             assertNotEquals(m.localize(PharmStringsTh), m.localize(PharmStringsEn))
         }
+    }
+
+    @Test
+    fun export_done_passes_path_through_as_message() {
+        val msg = CommonUiStateMessage.ExportDone("/downloads/report.xlsx")
+        assertEquals("/downloads/report.xlsx", msg.localize(PharmStringsTh))
+        assertEquals("/downloads/report.xlsx", msg.localize(PharmStringsEn))
     }
 }

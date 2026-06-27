@@ -151,3 +151,14 @@ private fun ProfileContent_Loading_Preview() {
         ProfileContent(state = ProfileUiState(loading = true), callbacks = ProfileCallbacks())
     }
 }
+
+@Preview
+@Composable
+private fun ProfileContent_Saving_Preview() {
+    PharmacyTheme {
+        ProfileContent(
+            state = sampleProfileState.copy(saving = true),
+            callbacks = ProfileCallbacks(),
+        )
+    }
+}

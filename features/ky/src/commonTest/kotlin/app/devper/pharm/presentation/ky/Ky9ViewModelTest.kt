@@ -8,8 +8,10 @@ import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
+import app.devper.pharm.common.error.CommonUiStateMessage
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,7 +42,8 @@ class Ky9ViewModelTest {
         advanceUntilIdle()
         vm.exportPdf()
         advanceUntilIdle()
-        assertEquals("saved.pdf", vm.state.value.message)
+        val msg = assertIs<CommonUiStateMessage.ExportDone>(vm.state.value.messageState)
+        assertEquals("saved.pdf", msg.path)
         assertEquals("ky9", export.lastKyParam?.form)
     }
 }

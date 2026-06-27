@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReorderSuggestionsViewModelTest {
@@ -37,5 +38,26 @@ class ReorderSuggestionsViewModelTest {
         advanceUntilIdle()
         assertEquals(0, vm.state.value.suggestions.size)
         assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun load_failure_sets_error_state_and_clears_loading() = runVmTest { d ->
+        val repo = FakeDrugRepository(reorderThrows = true)
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d))
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun reload_refreshes_list_from_repo() = runVmTest { d ->
+        val repo = FakeDrugRepository(reorderSeed = listOf(suggestion("a")))
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d))
+        advanceUntilIdle()
+        assertEquals(1, vm.state.value.suggestions.size)
+        vm.reload()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.loading)
+        assertNotNull(repo.lastReorderParam)
     }
 }

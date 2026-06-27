@@ -77,10 +77,10 @@ class CheckoutUseCase(
             kySkippedByCashier = param.kySkippedByCashier,
         )
 
-        val serialized = runCatching { sales.serializeCheckout(checkoutParam) }.getOrNull()
+        val serialized = serializeForOfflineQueue(checkoutParam)
         val sale = try {
             sales.checkout(checkoutParam)
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             throw CheckoutFailure(
                 cause = e,
                 serializedRequest = serialized,
@@ -89,6 +89,12 @@ class CheckoutUseCase(
         }
         cart.commitReceipt(sale)
         return CheckoutOutcome.Success(sale)
+    }
+
+    private fun serializeForOfflineQueue(param: CheckoutParam): String? = try {
+        sales.serializeCheckout(param)
+    } catch (e: Exception) {
+        null
     }
 
     private fun computeShortfalls(lines: List<CartLine>): List<OversellShortfall> =

@@ -1,8 +1,6 @@
 package app.devper.pharm.presentation.help
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -20,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,13 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.help.i18n.localize
 import app.devper.pharm.ui.components.ErrorBottomSheet
-
 import app.devper.pharm.ui.help.MarkdownText
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -45,12 +38,6 @@ import app.devper.pharm.ui.theme.pharmTokens
 import kotlinx.coroutines.launch
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
-
-data class HelpSection(
-    val id: String,
-    val title: String,
-    val markdown: String,
-)
 
 private const val DUAL_PANE_MIN_DP = 720
 private const val PINNED_ITEMS_BEFORE_SECTIONS = 2
@@ -155,41 +142,6 @@ private fun HelpBody(
 }
 
 @Composable
-private fun HelpToc(
-    sections: List<HelpSection>,
-    activeId: String?,
-    onSelect: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val t = pharmTokens
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = pharmStrings.helpToc,
-            style = PharmText.thead.copy(color = t.colors.fg3),
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
-        sections.forEach { section ->
-            val isActive = section.id == activeId
-            val fg = if (isActive) t.colors.accent else t.colors.fg2
-            val bg = if (isActive) t.colors.accentBgSoft else t.colors.bgPage
-            Text(
-                text = section.title,
-                style = PharmText.bodySm.copy(
-                    color = fg,
-                    fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Medium,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(t.shapes.md)
-                    .background(bg)
-                    .clickable(role = Role.Button) { onSelect(section.id) }
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-            )
-        }
-    }
-}
-
-@Composable
 private fun HelpArticle(
     sections: List<HelpSection>,
     listState: LazyListState,
@@ -202,12 +154,8 @@ private fun HelpArticle(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item("__title__") {
-            ArticleHeader()
-        }
-        item("__tip__") {
-            KeyboardTipBanner()
-        }
+        item("__title__") { ArticleHeader() }
+        item("__tip__") { KeyboardTipBanner() }
         items(
             count = sections.size,
             key = { idx -> sections[idx].id },
@@ -234,95 +182,6 @@ private fun ArticleHeader() {
             style = PharmText.meta.copy(color = t.colors.fgMuted),
         )
     }
-}
-
-@Composable
-private fun KeyboardTipBanner() {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.infoBg)
-            .border(1.dp, t.colors.infoFg.copy(alpha = 0.25f), t.shapes.lg)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = pharmStrings.helpTipsLabel,
-            style = PharmText.bodySm.copy(
-                color = t.colors.infoFg,
-                fontWeight = FontWeight.SemiBold,
-            ),
-        )
-        KeyboardKey("F1")
-        Text(
-            text = pharmStrings.helpTipFocusSearch,
-            style = PharmText.bodySm.copy(color = t.colors.infoFg),
-        )
-        KeyboardKey("F2")
-        Text(
-            text = pharmStrings.helpTipPaymentField,
-            style = PharmText.bodySm.copy(color = t.colors.infoFg),
-        )
-        KeyboardKey("F4")
-        Text(
-            text = pharmStrings.helpTipParkBill,
-            style = PharmText.bodySm.copy(color = t.colors.infoFg),
-        )
-    }
-}
-
-@Composable
-private fun KeyboardKey(label: String) {
-    val t = pharmTokens
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(t.colors.surface)
-            .border(1.dp, t.colors.infoFg.copy(alpha = 0.35f), RoundedCornerShape(4.dp))
-            .padding(horizontal = 6.dp, vertical = 2.dp),
-    ) {
-        Text(
-            text = label,
-            style = PharmText.micro.copy(
-                color = t.colors.infoFg,
-                fontWeight = FontWeight.SemiBold,
-            ),
-        )
-    }
-}
-
-private val H2_HEADING = Regex("(?m)^## (?!#)(.+)$")
-
-internal fun splitSections(markdown: String): List<HelpSection> {
-    val normalized = markdown.replace("\r\n", "\n")
-    val matches = H2_HEADING.findAll(normalized).toList()
-    if (matches.isEmpty()) return emptyList()
-    return matches.mapIndexed { index, match ->
-        val title = match.groupValues[1].trim()
-        val from = match.range.first
-        val to = matches.getOrNull(index + 1)?.range?.first ?: normalized.length
-        HelpSection(
-            id = slugify(title),
-            title = title,
-            markdown = normalized.substring(from, to).trimEnd('\n'),
-        )
-    }
-}
-
-private fun slugify(text: String): String {
-    val builder = StringBuilder()
-    for (ch in text) {
-        when {
-            ch.isLetterOrDigit() -> builder.append(ch.lowercaseChar())
-            ch == ' ' || ch == '-' || ch == '_' -> builder.append('-')
-            else -> Unit
-        }
-    }
-    val raw = builder.toString().trim('-').replace(Regex("-+"), "-")
-    return raw.ifBlank { "section-${text.hashCode().toString(16)}" }
 }
 
 private val PreviewMarkdown = """
