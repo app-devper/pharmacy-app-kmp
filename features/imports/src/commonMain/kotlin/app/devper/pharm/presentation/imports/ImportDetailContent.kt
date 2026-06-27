@@ -30,19 +30,15 @@ import app.devper.pharm.domain.model.PurchaseOrderItem
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.presentation.imports.i18n.localizeImports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.format.localDateToBuddhist
-import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmModal
-import app.devper.pharm.ui.designsystem.PharmStamp
-import app.devper.pharm.ui.designsystem.PharmStatus
-import app.devper.pharm.ui.designsystem.PharmStatusBadge
-import app.devper.pharm.ui.format.formatBaht
 import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.format.localDateTimeToBuddhist
+import app.devper.pharm.ui.format.localDateToBuddhist
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -96,7 +92,7 @@ fun ImportDetailContent(
             }
         }
 
-        state.po?.let { po -> ActionBar(po = po, state = state, callbacks = callbacks) }
+        state.po?.let { po -> ImportDetailActionBar(po = po, state = state, callbacks = callbacks) }
     }
 
     if (state.confirmDialog) {
@@ -119,10 +115,7 @@ fun ImportDetailContent(
                 )
             },
         ) {
-            Text(
-                s.importsConfirmReceiveMessage,
-                style = PharmText.body,
-            )
+            Text(s.importsConfirmReceiveMessage, style = PharmText.body)
         }
     }
     if (state.deleteDialog) {
@@ -146,10 +139,7 @@ fun ImportDetailContent(
                 )
             },
         ) {
-            Text(
-                s.importsConfirmDeleteDraftMessage,
-                style = PharmText.body,
-            )
+            Text(s.importsConfirmDeleteDraftMessage, style = PharmText.body)
         }
     }
 
@@ -175,7 +165,7 @@ private fun Body(po: PurchaseOrder) {
             items = po.items,
             key = { _, item -> "${item.drugId}|${item.lotNumber}|${item.expiryDate?.toString()}" },
         ) { index, item ->
-            ItemRow(item)
+            ImportDetailItemRow(item)
             if (index < po.items.lastIndex) {
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
             }
@@ -197,14 +187,13 @@ private fun HeaderBlock(po: PurchaseOrder) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             StatusChip(po.status)
-            val s = pharmStrings
-            Text(
-                text = s.importsFormItemTotal(formatBahtCurrency(po.totalCost.amount)),
-                style = PharmText.h2.tabular(),
-            )
         }
-        Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         val s = pharmStrings
+        Text(
+            text = s.importsFormItemTotal(formatBahtCurrency(po.totalCost.amount)),
+            style = PharmText.h2.tabular(),
+        )
+        Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         DetailRow(s.importsFormSupplier, po.supplier.ifBlank { "-" })
         DetailRow(s.importsHeaderInvoiceNo, po.invoiceNo.ifBlank { "-" })
         DetailRow(s.importsFormReceiveDate, localDateToBuddhist(po.receiveDate).ifBlank { "-" })
@@ -212,116 +201,6 @@ private fun HeaderBlock(po: PurchaseOrder) {
         DetailRow(s.importsFormCreatedAt, localDateTimeToBuddhist(po.createdAt))
         po.confirmedAt?.let {
             DetailRow(s.importsFormConfirmedAt, localDateTimeToBuddhist(it))
-        }
-    }
-}
-
-@Composable
-private fun StatusChip(status: PurchaseOrderStatus) {
-    val pharmStatus = when (status) {
-        PurchaseOrderStatus.Draft     -> PharmStatus.Draft
-        PurchaseOrderStatus.Confirmed -> PharmStatus.Confirmed
-    }
-    PharmStatusBadge(status = pharmStatus)
-}
-
-@Composable
-private fun DetailRow(label: String, value: String) {
-    val t = pharmTokens
-    Row(verticalAlignment = Alignment.Top) {
-        Text(
-            text = label,
-            style = PharmText.h3.copy(color = t.colors.fg2),
-            modifier = Modifier.padding(end = 12.dp),
-        )
-        Text(
-            text = value,
-            style = PharmText.body,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun ItemRow(item: PurchaseOrderItem) {
-    val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = item.drugName.ifBlank { pharmStrings.commonNoDrugName },
-                style = PharmText.body,
-            )
-            PharmStamp(
-                text = pharmStrings.importsFormItemLotLine(item.lotNumber, localDateToBuddhist(item.expiryDate)),
-            )
-        }
-        Column(horizontalAlignment = Alignment.End) {
-            Text(
-                text = pharmStrings.importsQtyPieces(item.qty.value),
-                style = PharmText.h3.tabular(),
-            )
-            Text(
-                text = "@${formatBaht(item.costPrice.amount)}",
-                style = PharmText.bodySm.tabular().copy(color = t.colors.fg2),
-            )
-        }
-    }
-}
-
-@Composable
-private fun ActionBar(
-    po: PurchaseOrder,
-    state: ImportDetailUiState,
-    callbacks: ImportDetailCallbacks,
-) {
-    val t = pharmTokens
-    val s = pharmStrings
-    Box(modifier = Modifier.fillMaxWidth().background(t.colors.surface)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (po.status == PurchaseOrderStatus.Draft) {
-                PharmButton(
-                    label = s.commonDelete,
-                    onClick = callbacks.onAskDelete,
-                    variant = PharmButtonVariant.Outline,
-                    enabled = !state.confirming && !state.deleting,
-                    leadingIcon = {
-                        Icon(PharmIcons.Trash, contentDescription = null, modifier = Modifier.size(18.dp))
-                    },
-                )
-                PharmButton(
-                    label = s.importsConfirmReceiveCta,
-                    onClick = callbacks.onAskConfirm,
-                    modifier = Modifier.weight(1f),
-                    enabled = !state.confirming && !state.deleting && po.itemCount > 0,
-                    loading = state.confirming,
-                    leadingIcon = {
-                        Icon(PharmIcons.Check, contentDescription = null, modifier = Modifier.size(18.dp))
-                    },
-                )
-            } else {
-                Text(
-                    text = s.importsStatusReceivedDetail,
-                    style = PharmText.h3.copy(color = t.colors.successFg),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(t.shapes.md)
-                        .background(t.colors.successBg, t.shapes.md)
-                        .padding(horizontal = 12.dp, vertical = 12.dp),
-                )
-            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.common.AppException
-
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.Ky10Entry
 import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
@@ -46,7 +46,7 @@ data class KyListUiState(
     override val loading: Boolean = false,
     val rows: List<KyRow> = emptyList(),
     val exporting: Boolean = false,
-    val message: String? = null,
+    val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
 ) : LoadableUiState<KyListUiState> {
 

@@ -185,3 +185,21 @@ private fun Ky12AddContent_Filled_Preview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun Ky12AddContent_Saving_Preview() {
+    PharmacyTheme {
+        Ky12AddContent(
+            state = Ky12AddUiState(
+                saving = true,
+                draft = Ky12Draft(
+                    date = "2026-06-01",
+                    drugName = "Morphine 10mg",
+                    unit = "amp",
+                    qty = "10",
+                ),
+            ),
+        )
+    }
+}

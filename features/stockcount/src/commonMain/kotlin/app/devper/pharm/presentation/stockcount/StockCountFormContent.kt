@@ -226,3 +226,18 @@ private fun StockCountFormContent_WithChanges_Preview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun StockCountFormContent_Saving_Preview() {
+    PharmacyTheme {
+        StockCountFormContent(
+            state = StockCountFormUiState(
+                saving = true,
+                drugs = previewDrugs,
+                counts = mapOf("1" to "478", "3" to "0"),
+            ),
+            history = previewHistory,
+        )
+    }
+}

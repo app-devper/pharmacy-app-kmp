@@ -11,8 +11,10 @@ import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
+import app.devper.pharm.common.error.CommonUiStateMessage
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -48,7 +50,8 @@ class KyListViewModelTest {
         advanceUntilIdle()
         model.exportPdf()
         advanceUntilIdle()
-        assertEquals("ดาวน์โหลดแล้ว", model.state.value.message)
+        val msg = assertIs<CommonUiStateMessage.ExportDone>(model.state.value.messageState)
+        assertEquals("ดาวน์โหลดแล้ว", msg.path)
         assertNotNull(export.lastKyParam)
         assertEquals("ky11", export.lastKyParam?.form)
     }

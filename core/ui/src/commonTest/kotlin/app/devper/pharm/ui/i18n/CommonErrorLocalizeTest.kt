@@ -73,4 +73,11 @@ class CommonErrorLocalizeTest {
             assertNotEquals(m.localize(PharmStringsTh), m.localize(PharmStringsEn))
         }
     }
+
+    @Test
+    fun export_done_passes_path_through_as_message() {
+        val msg = CommonUiStateMessage.ExportDone("/downloads/report.xlsx")
+        assertEquals("/downloads/report.xlsx", msg.localize(PharmStringsTh))
+        assertEquals("/downloads/report.xlsx", msg.localize(PharmStringsEn))
+    }
 }

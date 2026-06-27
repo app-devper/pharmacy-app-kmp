@@ -38,7 +38,6 @@ fun Ky9Content(
     val totalValue = state.entries.sumOf { it.totalValue }
 
     PharmListScaffold(
-        banner = state.message?.let { msg -> { KyMessageBanner(msg, callbacks.onDismissMessage) } },
         toolbar = {
             KyToolbar(
                 currentForm = KyFormType.Ky9,

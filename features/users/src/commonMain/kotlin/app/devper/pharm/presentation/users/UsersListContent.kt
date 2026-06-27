@@ -1,41 +1,15 @@
 package app.devper.pharm.presentation.users
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.extension.canManage
 import app.devper.pharm.domain.extension.canManageUsers
-import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.presentation.users.i18n.localizeUsers
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -45,11 +19,9 @@ import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
-import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -125,188 +97,6 @@ private fun UsersListToolbar(
             }
         },
     )
-}
-
-@Composable
-private fun ActionDialog(
-    state: UsersListUiState,
-    callbacks: UsersListCallbacks,
-) {
-    val target = state.actionTarget ?: return
-    val mode = state.actionMode ?: return
-    val t = pharmTokens
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.scrim)
-            .clickable(enabled = !state.actionBusy, onClick = callbacks.onDismissAction),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            modifier = Modifier
-                .widthIn(max = 480.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-                .clickable(enabled = false, onClick = {})
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            when (mode) {
-                UsersAction.Delete       -> DeleteDialogBody(target = target, state = state, callbacks = callbacks)
-                UsersAction.EditRole     -> RoleDialogBody(target = target, actorRole = state.currentUserRole, state = state, callbacks = callbacks)
-                UsersAction.ToggleStatus -> StatusDialogBody(target = target, state = state, callbacks = callbacks)
-                UsersAction.SetPassword  -> PasswordDialogBody(target = target, state = state, callbacks = callbacks)
-            }
-        }
-    }
-}
-
-@Composable
-private fun DeleteDialogBody(
-    target: UmUser,
-    state: UsersListUiState,
-    callbacks: UsersListCallbacks,
-) {
-    val s = pharmStrings
-    Text(text = s.usersConfirmDeleteTitle, style = PharmText.h2)
-    Text(
-        text = s.usersConfirmDeleteMessage(target.username),
-        style = PharmText.body,
-    )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        PharmButton(
-            label = s.commonCancel,
-            onClick = callbacks.onDismissAction,
-            variant = PharmButtonVariant.Ghost,
-            enabled = !state.actionBusy,
-        )
-        PharmButton(
-            label = s.commonDelete,
-            onClick = callbacks.onConfirmDelete,
-            variant = PharmButtonVariant.Danger,
-            loading = state.actionBusy,
-        )
-    }
-}
-
-@Composable
-private fun RoleDialogBody(
-    target: UmUser,
-    actorRole: Role,
-    state: UsersListUiState,
-    callbacks: UsersListCallbacks,
-) {
-    val s = pharmStrings
-    Text(text = s.usersConfirmRoleTitle, style = PharmText.h2)
-    Text(text = "@${target.username}", style = PharmText.micro.copy(color = pharmTokens.colors.fgMuted))
-    val options = roleOptionsFor(actorRole)
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { role ->
-            PharmButton(
-                label = role.label(),
-                onClick = { callbacks.onSubmitRoleChange(role) },
-                variant = if (role == target.role) PharmButtonVariant.Primary else PharmButtonVariant.Outline,
-                enabled = !state.actionBusy,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-    }
-    PharmButton(
-        label = s.commonCancel,
-        onClick = callbacks.onDismissAction,
-        variant = PharmButtonVariant.Ghost,
-        enabled = !state.actionBusy,
-    )
-}
-
-@Composable
-private fun StatusDialogBody(
-    target: UmUser,
-    state: UsersListUiState,
-    callbacks: UsersListCallbacks,
-) {
-    val s = pharmStrings
-    val nextActive = !target.status.isActive
-    Text(
-        text = if (nextActive) s.usersConfirmEnableTitle else s.usersConfirmSuspendTitle,
-        style = PharmText.h2,
-    )
-    Text(
-        text = if (nextActive) s.usersConfirmEnableMessage(target.username) else s.usersConfirmSuspendMessage(target.username),
-        style = PharmText.body,
-    )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        PharmButton(
-            label = s.commonCancel,
-            onClick = callbacks.onDismissAction,
-            variant = PharmButtonVariant.Ghost,
-            enabled = !state.actionBusy,
-        )
-        PharmButton(
-            label = if (nextActive) s.usersActionEnable else s.usersActionSuspend,
-            onClick = callbacks.onConfirmStatusToggle,
-            variant = PharmButtonVariant.Primary,
-            loading = state.actionBusy,
-        )
-    }
-}
-
-@Composable
-private fun PasswordDialogBody(
-    target: UmUser,
-    state: UsersListUiState,
-    callbacks: UsersListCallbacks,
-) {
-    val s = pharmStrings
-    var pwd by rememberSaveable(target.id) { mutableStateOf("") }
-    var confirm by rememberSaveable(target.id) { mutableStateOf("") }
-    val matches = pwd.length >= 8 && pwd == confirm
-    Text(text = s.usersSetPasswordTitle(target.displayName), style = PharmText.h2)
-    FormField(label = s.usersFormPasswordNew, required = true) {
-        PharmTextField(
-            value = pwd,
-            onValueChange = { pwd = it },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardType = KeyboardType.Password,
-        )
-    }
-    val confirmError = confirm.isNotBlank() && pwd != confirm
-    FormField(
-        label = s.profilePasswordConfirm,
-        required = true,
-        error = if (confirmError) s.profilePasswordMismatch else null,
-    ) {
-        PharmTextField(
-            value = confirm,
-            onValueChange = { confirm = it },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardType = KeyboardType.Password,
-            isError = confirmError,
-        )
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        PharmButton(
-            label = s.commonCancel,
-            onClick = callbacks.onDismissAction,
-            variant = PharmButtonVariant.Ghost,
-            enabled = !state.actionBusy,
-        )
-        PharmButton(
-            label = s.usersActionSetPassword,
-            onClick = { callbacks.onSubmitPasswordSet(pwd) },
-            variant = PharmButtonVariant.Primary,
-            enabled = matches,
-            loading = state.actionBusy,
-        )
-    }
-}
-
-private fun roleOptionsFor(actor: Role): List<Role> = when (actor) {
-    Role.SUPER -> listOf(Role.ADMIN, Role.MANAGER, Role.USER)
-    Role.ADMIN -> listOf(Role.MANAGER, Role.USER)
-    else       -> emptyList()
 }
 
 private val previewUsers = listOf(

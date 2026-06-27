@@ -5,6 +5,7 @@ import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.param.labels.PrintLabelsParam
 import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase
 import app.devper.pharm.presentation.labels.exception.LabelPrintUiStateError
@@ -80,12 +81,12 @@ class LabelPrintViewModel(
                     ),
                 )
             },
-            onSuccess = { feedback -> setState { copy(printing = false, message = feedback) } },
+            onSuccess = { feedback -> setState { copy(printing = false, messageState = CommonUiStateMessage.ExportDone(feedback)) } },
             onFailure = { e -> setState { copy(printing = false, errorState = LabelPrintUiStateError.PrintFailed(e)) } },
         )
     }
 
-    fun dismissMessage() = setState { copy(message = null) }
+    fun dismissMessage() = setState { copy(messageState = null) }
 
     fun reload() {
         setState { copy(loading = drugs.isEmpty(), errorState = null) }

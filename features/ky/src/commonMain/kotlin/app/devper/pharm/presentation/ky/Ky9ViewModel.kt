@@ -5,6 +5,7 @@ import app.devper.pharm.domain.param.ky.KyMonthFilterParam
 import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
 import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
@@ -20,15 +21,15 @@ class Ky9ViewModel(
 
     fun exportPdf() {
         val s = current
-        setState { copy(exporting = true, errorState = null, message = null) }
+        setState { copy(exporting = true, errorState = null, messageState = null) }
         launchResult(
             block = { exportKyForm(ExportKyFormParam(form = "ky9", month = s.month)) },
-            onSuccess = { msg -> setState { copy(exporting = false, message = msg) } },
+            onSuccess = { msg -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(msg)) } },
             onFailure = { e -> setState { copy(exporting = false, errorState = KyUiStateError.DownloadPdfFailed(e)) } },
         )
     }
 
-    fun dismissMessage() = setState { copy(message = null) }
+    fun dismissMessage() = setState { copy(messageState = null) }
 
     fun reload() {
         val s = current

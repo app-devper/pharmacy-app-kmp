@@ -8,6 +8,5 @@ data class Ky9Callbacks(
     val onApply: () -> Unit = {},
     val onExport: () -> Unit = {},
     val onAddEntry: () -> Unit = {},
-    val onDismissMessage: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

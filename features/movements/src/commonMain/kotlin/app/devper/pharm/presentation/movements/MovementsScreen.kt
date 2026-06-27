@@ -19,10 +19,9 @@ fun MovementsScreen(viewModel: MovementsViewModel = koinViewModel()) {
     val snackbar = LocalPharmSnackbar.current
     val s = pharmStrings
 
-    LaunchedEffect(state.message, state.messageState) {
-        val text = state.message ?: state.messageState?.localize(s)
-        text?.let {
-            snackbar.showToast(PharmToast.Info(it))
+    LaunchedEffect(state.messageState) {
+        state.messageState?.let {
+            snackbar.showToast(PharmToast.Info(it.localize(s)))
             viewModel.dismissMessage()
         }
     }

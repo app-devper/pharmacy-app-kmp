@@ -24,7 +24,6 @@ fun KyListContent(
 ) {
     val t = pharmTokens
     PharmListScaffold(
-        banner = state.message?.let { msg -> { KyMessageBanner(msg, callbacks.onDismissMessage) } },
         toolbar = {
             KyToolbar(
                 currentForm = state.formType,
@@ -226,7 +225,7 @@ private fun KyListContent_WithMessage_Preview() {
                 formType = KyFormType.Ky11,
                 month = "2026-05",
                 rows = sampleKy11Rows,
-                message = "ส่งออก PDF สำเร็จ",
+                messageState = app.devper.pharm.common.error.CommonUiStateMessage.ExportDone("ส่งออก PDF สำเร็จ"),
             ),
         )
     }

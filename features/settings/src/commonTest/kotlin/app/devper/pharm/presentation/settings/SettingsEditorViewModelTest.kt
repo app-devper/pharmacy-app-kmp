@@ -13,6 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,5 +64,29 @@ class SettingsEditorViewModelTest {
         assertNotNull(repo.lastUpdate)
         assertIs<CommonUiStateMessage.Saved>(model.state.value.messageState)
         assertFalse(model.state.value.saving)
+    }
+
+    @Test
+    fun dismiss_message_clears_message_state() = runVmTest { d ->
+        val repo = FakeSettingsRepository()
+        val model = vm(repo, d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาทดสอบ")
+        model.submit()
+        advanceUntilIdle()
+        assertNotNull(model.state.value.messageState)
+        model.dismissMessage()
+        assertNull(model.state.value.messageState)
+    }
+
+    @Test
+    fun dirty_resets_to_false_after_successful_save() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาทดสอบ")
+        assertTrue(model.state.value.dirty)
+        model.submit()
+        advanceUntilIdle()
+        assertFalse(model.state.value.dirty)
     }
 }

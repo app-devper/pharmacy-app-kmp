@@ -16,6 +16,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MovementsViewModelTest {
@@ -64,5 +65,67 @@ class MovementsViewModelTest {
         advanceUntilIdle()
         assertIs<CommonUiStateMessage.ExportEmpty>(model.state.value.messageState)
         assertEquals(null, export.lastFilename)
+    }
+
+    @Test
+    fun export_with_items_calls_save_and_sets_done_message() = runVmTest { d ->
+        val export = FakeExportRepository(result = "/storage/movements.csv")
+        val model = MovementsViewModel(
+            GetMovementsUseCase(FakeMovementsRepository(StockMovementsPage(listOf(movement("a")), 1)), d),
+            ExportMovementsCsvUseCase(export, d),
+            app.devper.pharm.domain.observer.testTimeZoneProvider(),
+        )
+        advanceUntilIdle()
+        model.onExportExcel()
+        advanceUntilIdle()
+        assertNotNull(export.lastFilename)
+        assertIs<CommonUiStateMessage.ExportDone>(model.state.value.messageState)
+    }
+
+    @Test
+    fun dismiss_message_clears_message_state() = runVmTest { d ->
+        val export = FakeExportRepository()
+        val model = MovementsViewModel(
+            GetMovementsUseCase(FakeMovementsRepository(StockMovementsPage(emptyList(), 0)), d),
+            ExportMovementsCsvUseCase(export, d),
+            app.devper.pharm.domain.observer.testTimeZoneProvider(),
+        )
+        advanceUntilIdle()
+        model.onExportExcel()
+        advanceUntilIdle()
+        assertNotNull(model.state.value.messageState)
+        model.dismissMessage()
+        assertNull(model.state.value.messageState)
+    }
+
+    @Test
+    fun toggle_type_removes_then_readds_type_id() = runVmTest { d ->
+        val model = vm(d, StockMovementsPage(emptyList(), 0))
+        advanceUntilIdle()
+        val initialIds = model.state.value.activeTypeIds
+        val firstId = initialIds.first()
+        model.onToggleType(firstId)
+        assertFalse(firstId in model.state.value.activeTypeIds)
+        model.onToggleType(firstId)
+        assert(firstId in model.state.value.activeTypeIds)
+    }
+
+    @Test
+    fun next_page_increments_and_prev_page_decrements() = runVmTest { d ->
+        val items = (1..21).map { movement("x$it") }
+        val model = vm(d, StockMovementsPage(items, total = 21))
+        advanceUntilIdle()
+        model.onNextPage()
+        assertEquals(2, model.state.value.page)
+        model.onPrevPage()
+        assertEquals(1, model.state.value.page)
+    }
+
+    @Test
+    fun prev_page_does_not_go_below_one() = runVmTest { d ->
+        val model = vm(d, StockMovementsPage(emptyList(), 0))
+        advanceUntilIdle()
+        model.onPrevPage()
+        assertEquals(1, model.state.value.page)
     }
 }

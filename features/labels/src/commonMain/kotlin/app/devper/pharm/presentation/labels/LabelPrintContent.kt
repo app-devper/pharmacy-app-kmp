@@ -31,7 +31,6 @@ fun LabelPrintContent(
     callbacks: LabelPrintCallbacks = LabelPrintCallbacks(),
 ) {
     val t = pharmTokens
-    val s = pharmStrings
 
     Column(
         modifier = Modifier
@@ -82,11 +81,8 @@ fun LabelPrintContent(
         }
     }
 
-    if (state.message != null) {
-        ErrorBottomSheet(message = state.message, onDismiss = callbacks.onDismissMessage, title = s.labelsPrintSuccess)
-    }
     state.errorState?.let { err ->
-        ErrorBottomSheet(message = err.localizeLabels(s), onDismiss = callbacks.onDismissError)
+        ErrorBottomSheet(message = err.localizeLabels(pharmStrings), onDismiss = callbacks.onDismissError)
     }
 }
 

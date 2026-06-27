@@ -8,6 +8,7 @@ import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
 import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
@@ -25,14 +26,14 @@ class KyListViewModel(
 
     fun onMonthChange(v: String) = setState { copy(month = v) }
     fun applyFilter() = reload()
-    fun dismissMessage() = setState { copy(message = null) }
+    fun dismissMessage() = setState { copy(messageState = null) }
 
     fun exportPdf() {
         val s = current
-        setState { copy(exporting = true, errorState = null, message = null) }
+        setState { copy(exporting = true, errorState = null, messageState = null) }
         launchResult(
             block = { exportKyForm(ExportKyFormParam(form = s.formType.wire, month = s.month)) },
-            onSuccess = { msg -> setState { copy(exporting = false, message = msg) } },
+            onSuccess = { msg -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(msg)) } },
             onFailure = { e -> setState { copy(exporting = false, errorState = KyUiStateError.DownloadPdfFailed(e)) } },
         )
     }

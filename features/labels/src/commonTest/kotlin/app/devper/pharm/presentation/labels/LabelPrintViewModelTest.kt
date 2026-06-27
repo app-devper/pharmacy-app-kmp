@@ -6,6 +6,7 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.repository.FakeDrugRepository
@@ -208,7 +209,8 @@ class LabelPrintViewModelTest {
         vm.onPrint()
         advanceUntilIdle()
         assertFalse(vm.state.value.printing)
-        assertEquals("saved labels.pdf", vm.state.value.message)
+        val msg = assertIs<CommonUiStateMessage.ExportDone>(vm.state.value.messageState)
+        assertEquals("saved labels.pdf", msg.path)
         val param = assertNotNull(fake.lastParam)
         assertEquals(1, param.lines.size)
         assertEquals("d1", param.lines[0].drugId)
@@ -226,7 +228,7 @@ class LabelPrintViewModelTest {
         assertFalse(state.printing)
         assertIs<LabelPrintUiStateError.PrintFailed>(state.errorState)
         assertEquals("printer offline", state.errorState?.cause?.message)
-        assertNull(state.message)
+        assertNull(state.messageState)
     }
 
     @Test

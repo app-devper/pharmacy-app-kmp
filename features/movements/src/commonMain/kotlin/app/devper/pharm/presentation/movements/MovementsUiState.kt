@@ -16,7 +16,6 @@ data class MovementsUiState(
     val page: Int = 1,
     val pageSize: Int = 20,
     val exporting: Boolean = false,
-    val message: String? = null,
     val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
 ) : LoadableUiState<MovementsUiState> {

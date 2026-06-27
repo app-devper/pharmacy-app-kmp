@@ -64,12 +64,12 @@ class MovementsViewModel(
                     ),
                 )
             },
-            onSuccess = { feedback -> setState { copy(exporting = false, message = feedback) } },
+            onSuccess = { feedback -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(feedback)) } },
             onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
         )
     }
 
-    fun dismissMessage() = setState { copy(message = null, messageState = null) }
+    fun dismissMessage() = setState { copy(messageState = null) }
 
     fun applyFilter() = reload()
 

@@ -154,3 +154,22 @@ private fun Ky9AddContent_Filled_Preview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun Ky9AddContent_Saving_Preview() {
+    PharmacyTheme {
+        Ky9AddContent(
+            state = Ky9AddUiState(
+                saving = true,
+                draft = Ky9Draft(
+                    date = "2026-06-01",
+                    drugName = "Tramadol 50mg",
+                    unit = "เม็ด",
+                    qty = "100",
+                    pricePerUnit = "2.50",
+                ),
+            ),
+        )
+    }
+}
