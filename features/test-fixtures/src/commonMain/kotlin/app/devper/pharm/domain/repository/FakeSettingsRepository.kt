@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class FakeSettingsRepository(
     initialSettings: Settings = Settings(),
     private val refreshThrows: Boolean = false,
+    private val updateThrows: Boolean = false,
 ) : SettingsRepository {
 
     private val settingsState = MutableStateFlow(initialSettings)
@@ -28,6 +29,7 @@ class FakeSettingsRepository(
     }
 
     override suspend fun update(param: UpdateSettingsParam): Settings {
+        if (updateThrows) throw RuntimeException("update failed")
         lastUpdate = param
         return settingsState.value
     }

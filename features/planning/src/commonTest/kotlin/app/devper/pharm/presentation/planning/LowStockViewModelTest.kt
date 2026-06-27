@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LowStockViewModelTest {
@@ -41,6 +42,15 @@ class LowStockViewModelTest {
         bus.emit()
         advanceUntilIdle()
         assertEquals(1, vm.state.value.drugs.size)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun load_failure_sets_error_state_and_clears_loading() = runVmTest { d ->
+        val repo = FakeDrugRepository(lowStockThrows = true)
+        val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 }

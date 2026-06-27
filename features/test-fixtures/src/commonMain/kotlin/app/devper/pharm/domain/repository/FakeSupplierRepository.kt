@@ -10,6 +10,7 @@ class FakeSupplierRepository(
     private val listThrows: Boolean = false,
     private val addThrowsOn: String? = null,
     private val updateThrowsOn: String? = null,
+    private val deleteThrows: Boolean = false,
 ) : SupplierRepository {
 
     var lastAdd: SupplierInput? = null
@@ -52,6 +53,7 @@ class FakeSupplierRepository(
     }
 
     override suspend fun delete(id: String) {
+        if (deleteThrows) throw RuntimeException("delete failed")
         lastDelete = id
     }
 }

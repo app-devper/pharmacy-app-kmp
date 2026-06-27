@@ -11,8 +11,11 @@ import app.devper.pharm.domain.usecase.purchasing.BulkImportDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
+import app.devper.pharm.presentation.bulkimport.exception.BulkImportUiStateError
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -22,6 +25,14 @@ class BulkImportViewModelTest {
 
     private object NoopFilePicker : FilePicker {
         override suspend fun pickJsonFile(): Result<String?> = Result.success(null)
+    }
+
+    private class ContentFilePicker(private val content: String) : FilePicker {
+        override suspend fun pickJsonFile(): Result<String?> = Result.success(content)
+    }
+
+    private object FailingFilePicker : FilePicker {
+        override suspend fun pickJsonFile(): Result<String?> = Result.failure(RuntimeException("picker failed"))
     }
 
     private fun newVm(
@@ -127,5 +138,68 @@ class BulkImportViewModelTest {
 
         assertNull(repo.lastBulkImport)
         assertNotNull(vm.state.value.parseErrorState)
+    }
+
+    @Test
+    fun submit_empty_array_sets_no_rows_error() = runVmTest { dispatchers ->
+        val (vm, repo) = newVm(dispatchers)
+        vm.onTextChange("[]")
+        vm.submit()
+        advanceUntilIdle()
+        assertIs<BulkImportUiStateError.NoRows>(vm.state.value.parseErrorState)
+        assertNull(repo.lastBulkImport)
+    }
+
+    @Test
+    fun import_failure_sets_error_state() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeDrugRepositoryForBulk(importThrows = true))
+        vm.onTextChange("""[{"name": "A", "sell_price": 1}]""")
+        vm.submit()
+        advanceUntilIdle()
+        assertIs<BulkImportUiStateError.ImportFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.submitting)
+        assertNull(vm.state.value.result)
+    }
+
+    @Test
+    fun pick_file_cancelled_leaves_text_unchanged() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, filePicker = NoopFilePicker)
+        vm.onTextChange("original")
+        vm.pickFile()
+        advanceUntilIdle()
+        assertEquals("original", vm.state.value.text)
+    }
+
+    @Test
+    fun pick_file_content_updates_text_and_previews() = runVmTest { dispatchers ->
+        val json = """[{"name": "DrugX", "sell_price": 5}]"""
+        val (vm, _) = newVm(dispatchers, filePicker = ContentFilePicker(json))
+        vm.pickFile()
+        advanceUntilIdle()
+        assertEquals(json, vm.state.value.text)
+        assertEquals(1, vm.state.value.previewCount)
+        assertNull(vm.state.value.parseErrorState)
+    }
+
+    @Test
+    fun pick_file_failure_sets_pick_file_error() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, filePicker = FailingFilePicker)
+        vm.pickFile()
+        advanceUntilIdle()
+        assertIs<BulkImportUiStateError.PickFileFailed>(vm.state.value.errorState)
+    }
+
+    @Test
+    fun reset_clears_all_state() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers)
+        vm.onTextChange("""[{"name": "A", "sell_price": 1}]""")
+        vm.preview()
+        assertNotNull(vm.state.value.previewCount)
+        vm.reset()
+        val s = vm.state.value
+        assertEquals("", s.text)
+        assertNull(s.previewCount)
+        assertNull(s.parseErrorState)
+        assertNull(s.result)
     }
 }
