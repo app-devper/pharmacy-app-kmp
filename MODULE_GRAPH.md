@@ -222,28 +222,28 @@ them as `AppException` subclasses would be ceremony for no value.
 
 ### `:features:<x>` — 20 per-feature modules
 
-| Module | Files (prod / test) | Notable |
-|---|---|---|
-| `:features:auth` | 4 prod + 6 tests + 1 co-located fake | Login screen; navigates to Sell via shared route on success |
-| `:features:bulkimport` | 9 prod + 8 tests + 1 co-located fake | Drag-drop area + JSON import wizard |
-| `:features:customers` | 14 prod + 2 tests | List + Form + Detail + form/ subdir |
-| `:features:expiry` | 8 prod | Lot expiry tracker with bulk write-off |
-| `:features:help` | 6 prod + 9 tests + 1 markdown asset | `composeResources/files/user_guide.md`; own `packageOfResClass = "app.devper.pharm.features.help.resources"` |
-| `:features:imports` | 21 prod + 1 test | Purchase orders — biggest after sell; includes drug + supplier picker dialogs |
-| `:features:ky` | 13 prod | KHY9 + KyList for forms 10/11/12 |
-| `:features:labels` | 6 prod + 16 tests | Code128 barcode label printing (backend ships Code128 PDFs) |
-| `:features:movements` | 11 prod | Stock movements log with type-filter chips |
-| `:features:offlinesync` | 8 prod + 4 tests | Offline sale queue monitor with metrics + retry/cancel |
-| `:features:planning` | 13 prod | LowStock list + ReorderSuggestions, bundled because they share domain semantics |
-| `:features:profile` | 6 prod + 11 tests | Theme/font-scale switcher wired into running app |
-| `:features:reports` | 28 prod + 15 tests | Reports dashboard + Profit + Eod, biggest reports-cluster module |
-| `:features:saleshistory` | 11 prod + 13 tests + 1 co-located fake | List + return-sale sheet |
-| `:features:sell` | 39 prod + 6 tests | Heaviest feature — Sell + 5 sibling VMs (Checkout, DrugPicker, CustomerPicker, ParkedCart, VoidSale) + 23 component sheets |
-| `:features:settings` | 15 prod + 7 tests | 5-tab editor (Store / Receipt / Pharmacist / Stock / Ky) + admin links menu |
-| `:features:stock` | 23 prod + 30 tests + 2 co-located fakes | Stock list + DrugForm + DrugLots + StockAdjustments siblings |
-| `:features:stockcount` | 16 prod + 7 tests | Physical-count list + Form sibling |
-| `:features:suppliers` | 11 prod + 1 test | List + Form with form/ subdir |
-| `:features:users` | 12 prod + 2 tests | List + Form |
+| Module | Notable |
+|---|---|
+| `:features:auth` | Login screen; navigates to Sell via shared route on success |
+| `:features:bulkimport` | Drag-drop area + JSON import wizard |
+| `:features:customers` | List + Form + Detail + form/ subdir |
+| `:features:expiry` | Lot expiry tracker with bulk write-off |
+| `:features:help` | `composeResources/files/user_guide.md`; own `packageOfResClass = "app.devper.pharm.features.help.resources"` |
+| `:features:imports` | Purchase orders — biggest after sell; includes drug + supplier picker dialogs |
+| `:features:ky` | KHY9 + KyList for forms 10/11/12 |
+| `:features:labels` | Code128 barcode label printing (backend ships Code128 PDFs) |
+| `:features:movements` | Stock movements log with type-filter chips |
+| `:features:offlinesync` | Offline sale queue monitor with metrics + retry/cancel |
+| `:features:planning` | LowStock list + ReorderSuggestions, bundled because they share domain semantics |
+| `:features:profile` | Theme/font-scale switcher wired into running app |
+| `:features:reports` | Reports dashboard + Profit + Eod, biggest reports-cluster module |
+| `:features:saleshistory` | List + return-sale sheet |
+| `:features:sell` | Heaviest feature — Sell + 5 sibling VMs (Checkout, DrugPicker, CustomerPicker, ParkedCart, VoidSale) + 23 component sheets |
+| `:features:settings` | 5-tab editor (Store / Receipt / Pharmacist / Stock / Ky) + admin links menu |
+| `:features:stock` | Stock list + DrugForm + DrugLots + StockAdjustments siblings |
+| `:features:stockcount` | Physical-count list + Form sibling |
+| `:features:suppliers` | List + Form with form/ subdir |
+| `:features:users` | List + Form |
 
 Each `:features:<x>` follows the same pattern:
 - `build.gradle.kts` applies `pharmacy.kmp.compose.library`, depends on
@@ -284,41 +284,17 @@ to check them.
 
 ## Test layout
 
-| Module                       | Test source set | Tests in suite |
-|------------------------------|-----------------|----:|
-| `:core:common`               | `commonTest`    | 51 (incl. `MoneyTest` + `QuantityTest`) |
-| `:core:domain`               | `commonTest`    | 164 (incl. `CartUseCasesTest` covering the 13 cart wrappers, `DateConvTest` for Bangkok TZ rules) |
-| `:core:ui`                   | `commonTest`    | 110 (incl. `MoneyFormatTest`, `DateFormatTest` + `BuddhistEraTest` for UTC → Bangkok display) |
-| `:core:data`                 | `commonTest`    | 71 (incl. `UiPreferencesRepositoryImplTest` + `CartRepositoryImplAtomicityTest`) |
-| `:features:test-fixtures`    | none (fakes are commonMain) | 0 |
-| 20× `:features:<x>`          | `commonTest`    | 362 across 29 module test suites (`:features:sell` alone ships 83) |
-| `:composeApp`                | `commonTest`    | 1 (`AppModuleWiringTest` — resolves every VM via Koin) |
-
-**Project-wide**: 759 `@Test` functions on JVM. The Android
-`testDebugUnitTest` target runs the same `commonTest` sources separately,
-so the doubled count is higher on a full `:composeApp:check`.
+| Module | Test source set | What's covered |
+|---|---|---|
+| `:core:common` | `commonTest` | `MoneyTest`, `QuantityTest`, `AppException` typed errors, `BaseUseCase`/`BaseSyncUseCase` |
+| `:core:domain` | `commonTest` | Model invariants, parsers, validators, pricing, `CartUseCasesTest`, `DateConvTest` (Bangkok TZ) |
+| `:core:ui` | `commonTest` | `MoneyFormatTest`, `DateFormatTest`, `BuddhistEraTest`, `BaseViewModel`, `BaseFormViewModel` |
+| `:core:data` | `commonTest` | `AppJson`, `HttpResponseValidator` HTTP→typed exception, `OfflineSaleQueueImpl`, `UiPreferencesRepositoryImpl` |
+| `:features:test-fixtures` | none (fakes are commonMain) | — |
+| 20× `:features:<x>` | `commonTest` | ViewModel unit tests via `runVmTest` + `Fake*Repository` |
+| `:composeApp` | `commonTest` | `AppModuleWiringTest` — resolves every VM via Koin |
 
 Run everything:
-```bash
-./gradlew :composeApp:auditArchitecture \
-          :composeApp:testDebugUnitTest \
-          :composeApp:compileTestKotlinIosSimulatorArm64 \
-          :composeApp:compileTestKotlinWasmJs \
-          :features:auth:jvmTest :features:bulkimport:jvmTest \
-          :features:customers:jvmTest :features:expiry:jvmTest \
-          :features:help:jvmTest :features:imports:jvmTest \
-          :features:ky:jvmTest :features:labels:jvmTest \
-          :features:movements:jvmTest :features:offlinesync:jvmTest \
-          :features:planning:jvmTest :features:profile:jvmTest \
-          :features:reports:jvmTest :features:saleshistory:jvmTest \
-          :features:sell:jvmTest :features:settings:jvmTest \
-          :features:stock:jvmTest :features:stockcount:jvmTest \
-          :features:suppliers:jvmTest :features:users:jvmTest \
-          :core:common:jvmTest :core:domain:jvmTest \
-          :core:ui:jvmTest :core:data:jvmTest
-```
-
-Quick smoke (no per-feature breakdown — runs the dependent tree):
 ```bash
 ./gradlew :composeApp:check
 ```
