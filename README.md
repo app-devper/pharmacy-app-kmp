@@ -34,12 +34,12 @@ For iOS as a real app: open `iosApp/iosApp.xcodeproj` in Xcode.
 
 ## Backends
 
-| Service | URL |
-|---|---|
-| um-api (auth) | `https://devper-um-1056670356976.asia-southeast1.run.app` |
-| pharmacy-app/backend | `https://pharmacy-api-1056670356976.asia-southeast1.run.app` |
+Single host for both um-api and pharmacy-app/backend: `https://api.devper.app`
 
-To point at a local backend, override `ApiConfig` in the platform Koin module.
+- `/api/um/v1/*` — auth (login, user info, logout)
+- `/api/pharmacy/v1/*` — pharmacy POS endpoints
+
+To point at a local backend, override `ApiConfig(apiBaseUrl = "http://10.0.2.2:8087")` in the platform Koin module.
 
 ## Docs
 
