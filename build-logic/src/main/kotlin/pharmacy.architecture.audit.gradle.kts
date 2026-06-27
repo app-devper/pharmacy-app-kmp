@@ -59,11 +59,19 @@ tasks.register("auditArchitecture") {
             Regex("""^\s*import\s+app\.devper\.pharm\.data\."""),
         )
 
-        grepFiles(
-            "A23 feature DI non-VM   ",
-            "features/src/commonMain/kotlin/app/devper/pharm/di",
-            Regex("""^\s*import\s+app\.devper\.pharm\.domain\.(usecase|observer|parser)\."""),
-        )
+        val a23DiImportRe = Regex("""^\s*import\s+app\.devper\.pharm\.domain\.(usecase|observer|parser)\.""")
+        projectRoot.resolve("features").walkTopDown()
+            .filter { it.isFile && it.name.endsWith("Module.kt") && !it.absolutePath.contains("/build/") }
+            .filter { it.absolutePath.contains("/di/") }
+            .forEach { f ->
+                f.useLines { lines ->
+                    lines.forEachIndexed { i, line ->
+                        if (a23DiImportRe.containsMatchIn(line)) {
+                            violations += "A23 feature DI non-VM       ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
+                        }
+                    }
+                }
+            }
 
         fun scanDtoFields(label: String, dir: String) {
             val root = projectRoot.resolve(dir)

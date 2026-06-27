@@ -34,7 +34,6 @@ class DomainLabelsTest {
             assertTrue(it.label(PharmStringsTh).isNotBlank())
             assertTrue(it.label(PharmStringsEn).isNotBlank())
         }
-        // wire stays the Thai backend contract; English label must differ from it.
         assertEquals("นับสต็อก", AdjustmentReason.Recount.wire)
         assertNotEquals(AdjustmentReason.Recount.wire, AdjustmentReason.Recount.label(PharmStringsEn))
     }

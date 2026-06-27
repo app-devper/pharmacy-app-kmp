@@ -53,7 +53,6 @@ class CommonErrorLocalizeTest {
 
     @Test
     fun transport_errors_localize_by_type_not_by_baked_in_message() {
-        // English defaults carry English identifiers; localizeCommon must return the Thai table value.
         assertEquals(PharmStringsTh.commonErrorNetwork, NetworkException().localizeCommon(PharmStringsTh))
         assertEquals(PharmStringsTh.commonErrorAuth, AuthException().localizeCommon(PharmStringsTh))
         assertEquals(PharmStringsEn.commonErrorServer, ServerException().localizeCommon(PharmStringsEn))

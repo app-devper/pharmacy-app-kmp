@@ -150,7 +150,6 @@ class DateFormatTest {
     @OptIn(kotlin.time.ExperimentalTime::class)
     @Test
     fun ymdToMillis_returns_zero_offset_relative_to_utc_epoch() {
-        // sanity: 1970-01-01 UTC midnight = 0
         assertEquals(0L, ymdToMillis("1970-01-01"))
     }
 }
