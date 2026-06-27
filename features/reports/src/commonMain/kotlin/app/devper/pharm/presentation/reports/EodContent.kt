@@ -26,11 +26,9 @@ import app.devper.pharm.presentation.reports.components.EodBalanceCard
 import app.devper.pharm.presentation.reports.components.EodBillRow
 import app.devper.pharm.presentation.reports.components.EodBillsHeader
 import app.devper.pharm.presentation.reports.components.EodClosedReceiptCard
-import app.devper.pharm.presentation.reports.components.EodControls
+import app.devper.pharm.presentation.reports.components.EodHeader
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.designsystem.PharmBadge
-import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -46,16 +44,10 @@ fun EodContent(
 ) {
     val report = state.report
     val t = pharmTokens
-
     val s = pharmStrings
+
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
-            title = s.reportsEodTitle,
-            onBack = onBack,
-            actions = {
-                if (state.closed) PharmBadge(text = s.reportsEodClosedBadge, tone = PharmBadgeTone.Green)
-            },
-        )
+        SubPageBar(title = s.reportsEodTitle, onBack = onBack)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -63,7 +55,7 @@ fun EodContent(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            EodControls(
+            EodHeader(
                 date = state.date,
                 loading = state.loading,
                 closing = state.closing,
@@ -104,7 +96,7 @@ fun EodContent(
         onCancel = callbacks.onCancelClose,
     )
 
-    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeReports(s), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

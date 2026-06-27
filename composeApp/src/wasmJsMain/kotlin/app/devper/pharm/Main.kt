@@ -25,6 +25,7 @@ import org.koin.dsl.module
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
+    loadJsJodaTimezoneDatabase()
     val settings = StorageSettings()
     applyPersistedLocale(settings.getStringOrNull("ui.locale"))
 
