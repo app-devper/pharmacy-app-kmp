@@ -38,6 +38,7 @@ internal fun StockCountsListTable(
         PharmTableColumn<StockCount>(
             header = s.stockCountHeaderRound,
             weight = 1.6f,
+            compactTitle = true,
             cell = { count -> StockCountNoCell(count) },
         ),
         PharmTableColumn(
@@ -60,6 +61,7 @@ internal fun StockCountsListTable(
         PharmTableColumn(
             header = s.stockCountHeaderNote,
             weight = 1.8f,
+            hideInCompact = true,
             cell = { count -> StockCountNoteCell(count) },
         ),
         PharmTableColumn(
