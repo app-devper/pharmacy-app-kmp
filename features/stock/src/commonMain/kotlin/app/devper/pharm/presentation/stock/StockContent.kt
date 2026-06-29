@@ -11,6 +11,8 @@ import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import androidx.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -45,6 +47,10 @@ fun StockContent(
         when {
             state.loading && state.drugs.isEmpty() ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.drugs.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.Stock,
+                title = pharmStrings.stockListEmpty,
+            )
             else -> StockTable(
                 drugs = visible,
                 callbacks = callbacks,

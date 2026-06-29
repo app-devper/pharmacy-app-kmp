@@ -1,11 +1,15 @@
 package app.devper.pharm.presentation.customers
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.localizeCommon
 import app.devper.pharm.ui.theme.PharmacyTheme
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -33,7 +37,11 @@ fun CustomersListContent(
         },
     ) {
         when {
-            state.loading && state.customers.isEmpty() -> PharmListSkeleton()
+            state.loading && state.customers.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.customers.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.Customers,
+                title = s.customersListEmpty,
+            )
             else -> CustomersListTable(
                 customers = visible,
                 callbacks = callbacks,
