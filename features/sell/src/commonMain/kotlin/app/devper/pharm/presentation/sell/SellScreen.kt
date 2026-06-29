@@ -184,6 +184,7 @@ fun SellScreen(
                             onConfirmClearCart = sellVM::confirmClearCart,
                             onCancelClearCart = sellVM::cancelClearCart,
                             onOpenPayment = checkoutVM::openPayment,
+                            activeSlot = parkedState.activeSlot,
                             parkedFilledCount = parkedState.filledCount,
                             onPickCustomer = customerPickerVM::open,
                             onClearCustomer = customerPickerVM::clear,

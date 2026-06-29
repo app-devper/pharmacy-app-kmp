@@ -5,7 +5,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +13,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -74,6 +72,7 @@ fun CartPanel(
     onRequestClearCart: () -> Unit,
     onConfirmClearCart: () -> Unit,
     onCancelClearCart: () -> Unit,
+    activeSlot: Int = 0,
     @Suppress("UNUSED_PARAMETER") parkedFilledCount: Int = 0,
     @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
     compact: Boolean = false,
@@ -90,6 +89,7 @@ fun CartPanel(
             .background(t.colors.surface),
     ) {
         CartPanelHeader(
+            activeSlot = activeSlot,
             cartCount = cartCount,
             hasItems = hasItems,
             checkingOut = checkingOut,
@@ -98,6 +98,8 @@ fun CartPanel(
             onConfirmClearCart = onConfirmClearCart,
             onCancelClearCart = onCancelClearCart,
         )
+
+        CartSectionDivider()
 
         CartCustomerPill(
             customer = customer,
@@ -164,6 +166,7 @@ fun CartPanel(
 
 @Composable
 private fun CartPanelHeader(
+    activeSlot: Int,
     cartCount: Int,
     hasItems: Boolean,
     checkingOut: Boolean,
@@ -173,11 +176,12 @@ private fun CartPanelHeader(
     onCancelClearCart: () -> Unit,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
@@ -185,26 +189,23 @@ private fun CartPanelHeader(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(pharmStrings.sellCart, style = PharmText.h3)
+            Text("${s.sellCart} #${activeSlot + 1}", style = PharmText.h3)
             Text(
-                text = "· " + pharmStrings.commonItemsCount(cartCount),
+                text = "· " + s.commonItemsCount(cartCount),
                 style = PharmText.meta,
             )
         }
         val canClear = hasItems && !checkingOut
-        Box(
-            modifier = Modifier
-                .clip(t.shapes.sm)
-                .clickable(role = Role.Button, onClick = onRequestClearCart, enabled = canClear)
-                .defaultMinSize(minHeight = 44.dp)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center,
+        IconButton(
+            onClick = onRequestClearCart,
+            enabled = canClear,
+            modifier = Modifier.size(40.dp),
         ) {
-            Text(
-                pharmStrings.sellClearCartCta,
-                style = PharmText.micro.copy(
-                    color = if (canClear) t.colors.dangerFg else t.colors.fgMuted,
-                ),
+            Icon(
+                PharmIcons.Trash,
+                contentDescription = s.sellClearCartCta,
+                tint = if (canClear) t.colors.dangerFg else t.colors.fgMuted,
+                modifier = Modifier.size(18.dp),
             )
         }
     }
