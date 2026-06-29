@@ -5,18 +5,17 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -100,13 +99,11 @@ fun CartCustomerPill(
         }
         val clearCustomerDesc = s.sellCustomerClear
         if (customer != null) {
-            Box(
+            IconButton(
+                onClick = onClear,
                 modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable(role = Role.Button, onClick = onClear)
-                    .semantics { contentDescription = clearCustomerDesc }
-                    .padding(4.dp),
-                contentAlignment = Alignment.Center,
+                    .size(32.dp)
+                    .semantics { contentDescription = clearCustomerDesc },
             ) {
                 Text("×", style = PharmText.h2.copy(color = t.colors.accent))
             }
