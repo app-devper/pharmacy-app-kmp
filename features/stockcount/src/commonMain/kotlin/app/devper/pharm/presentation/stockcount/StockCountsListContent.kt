@@ -23,6 +23,8 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -49,6 +51,10 @@ fun StockCountsListContent(
         when {
             state.loading && state.counts.isEmpty() ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.counts.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.StockCount,
+                title = pharmStrings.stockCountHistoryEmpty,
+            )
             else -> StockCountsListTable(
                 counts = visible,
                 callbacks = callbacks,

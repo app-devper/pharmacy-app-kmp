@@ -3,11 +3,15 @@ package app.devper.pharm.presentation.saleshistory
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import app.devper.pharm.domain.model.SaleSummary
 import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.presentation.saleshistory.i18n.localizeSalesHistory
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -35,7 +39,11 @@ fun SalesHistoryContent(
         },
     ) {
         when {
-            state.loading && state.sales.isEmpty() -> PharmListSkeleton()
+            state.loading && state.sales.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.sales.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.SalesHistory,
+                title = s.salesHistoryEmptyDateRange,
+            )
             else -> SalesHistoryTable(
                 sales = state.sales,
                 callbacks = callbacks,

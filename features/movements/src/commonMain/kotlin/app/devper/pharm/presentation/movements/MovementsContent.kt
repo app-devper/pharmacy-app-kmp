@@ -10,6 +10,8 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import androidx.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -26,6 +28,10 @@ fun MovementsContent(
         when {
             state.loading && state.items.isEmpty() ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.items.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.Movements,
+                title = pharmStrings.movementsEmpty,
+            )
             else -> MovementsTable(state = state, callbacks = callbacks)
         }
     }

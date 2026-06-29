@@ -30,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -53,18 +54,11 @@ fun ImportFormContent(
             title = if (state.isEdit) s.importsFormEditTitle else s.importsNewTitle,
             onBack = callbacks.onBack,
             actions = {
-                if (state.saving) {
-                    PharmCircularProgress(
-                        color = t.colors.accent,
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(20.dp),
-                    )
-                } else if (!state.readOnly) {
-                    PharmButton(
-                        label = s.commonSave,
-                        onClick = callbacks.onSubmit,
-                        enabled = state.canSubmit,
-                        size = PharmButtonSize.Sm,
+                if (!state.readOnly) {
+                    PharmSaveAction(
+                        saving = state.saving,
+                        canSubmit = state.canSubmit,
+                        onSubmit = callbacks.onSubmit,
                     )
                 }
             },
