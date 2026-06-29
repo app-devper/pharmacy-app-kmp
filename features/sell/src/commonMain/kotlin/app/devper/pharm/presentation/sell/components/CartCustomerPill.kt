@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -105,7 +107,12 @@ fun CartCustomerPill(
                     .size(32.dp)
                     .semantics { contentDescription = clearCustomerDesc },
             ) {
-                Text("×", style = PharmText.h2.copy(color = t.colors.accent))
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = null,
+                    tint = t.colors.accent,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         } else {
             if (showShortcutHint) {
