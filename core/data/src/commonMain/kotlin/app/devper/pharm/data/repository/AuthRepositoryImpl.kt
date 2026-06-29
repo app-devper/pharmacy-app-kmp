@@ -24,7 +24,7 @@ class AuthRepositoryImpl(
 
         val info = try {
             api.getUserInfo()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             tokenStorage.clear()
             throw e
         }
