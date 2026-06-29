@@ -6,6 +6,7 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelSize
@@ -239,5 +240,43 @@ class LabelPrintViewModelTest {
         vm.onPrint()
         advanceUntilIdle()
         assertEquals(0, fake.callCount)
+    }
+
+    @Test
+    fun load_failure_sets_error_and_clears_loading() = runVmTest { dispatchers ->
+        val drugRepo = FakeDrugRepository(listThrows = true)
+        val vm = LabelPrintViewModel(
+            getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
+            printLabels = PrintLabelsUseCase(FakeLabelRepository(), dispatchers),
+        )
+        advanceUntilIdle()
+        assertFalse(vm.state.value.loading)
+        assertIs<CommonUiStateError.LoadFailed>(vm.state.value.errorState)
+    }
+
+    @Test
+    fun reload_triggers_another_drug_list_call() = runVmTest { dispatchers ->
+        val drugRepo = FakeDrugRepository(seed = listOf(drug("d1")))
+        val vm = LabelPrintViewModel(
+            getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
+            printLabels = PrintLabelsUseCase(FakeLabelRepository(), dispatchers),
+        )
+        advanceUntilIdle()
+        assertEquals(1, drugRepo.listCallCount)
+        vm.reload()
+        advanceUntilIdle()
+        assertEquals(2, drugRepo.listCallCount)
+    }
+
+    @Test
+    fun dismiss_message_clears_message_state() = runVmTest { dispatchers ->
+        val (vm, _) = bundle(dispatchers, labelRepo = FakeLabelRepository(saveAs = "labels.pdf"))
+        advanceUntilIdle()
+        vm.onAddDrug(drug("d1"))
+        vm.onPrint()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.messageState)
+        vm.dismissMessage()
+        assertNull(vm.state.value.messageState)
     }
 }

@@ -142,4 +142,14 @@ class LoginViewModelTest {
         advanceUntilIdle()
         assertNull(uiPrefs.lastLocale)
     }
+
+    @Test
+    fun onPasswordChange_clears_error_side_effect() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(dispatchers)
+        vm.submit()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.errorState)
+        vm.onPasswordChange("x")
+        assertNull(vm.state.value.errorState)
+    }
 }

@@ -204,4 +204,41 @@ class ProfileViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.localeChangeApplied)
     }
+
+    @Test
+    fun close_password_panel_hides_panel() = runVmTest { dispatchers ->
+        val vm = bundle(FakeProfileRepository(), dispatchers)
+        advanceUntilIdle()
+        vm.openPasswordPanel()
+        assertTrue(vm.state.value.showPasswordPanel)
+        vm.closePasswordPanel()
+        assertFalse(vm.state.value.showPasswordPanel)
+    }
+
+    @Test
+    fun dismiss_password_error_clears_it() = runVmTest { dispatchers ->
+        val fake = FakeProfileRepository(changePasswordFailsWith = RuntimeException("change failed"))
+        val vm = bundle(fake, dispatchers)
+        advanceUntilIdle()
+        vm.openPasswordPanel()
+        vm.onOldPassword("old")
+        vm.onNewPassword("new123")
+        vm.onConfirmPassword("new123")
+        vm.submitPasswordChange()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.passwordErrorState)
+        vm.dismissPasswordError()
+        assertNull(vm.state.value.passwordErrorState)
+    }
+
+    @Test
+    fun reload_refreshes_profile_and_clears_loading() = runVmTest { dispatchers ->
+        val vm = bundle(FakeProfileRepository(), dispatchers)
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.user)
+        vm.reload()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.user)
+        assertFalse(vm.state.value.loading)
+    }
 }

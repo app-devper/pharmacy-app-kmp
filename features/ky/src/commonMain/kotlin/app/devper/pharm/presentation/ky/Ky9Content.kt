@@ -111,3 +111,11 @@ private fun Ky9Content_Loading_Preview() {
         Ky9Content(state = Ky9UiState(month = "2026-06", loading = true))
     }
 }
+
+@Preview
+@Composable
+private fun Ky9Content_Empty_Preview() {
+    PharmacyTheme {
+        Ky9Content(state = Ky9UiState(month = "2026-06", entries = emptyList()))
+    }
+}
