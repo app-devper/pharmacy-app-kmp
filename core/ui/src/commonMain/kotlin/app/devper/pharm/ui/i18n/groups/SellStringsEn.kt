@@ -31,7 +31,7 @@ object SellStringsEn : SellStrings {
     override val sellParkedOverwriteBody = "The existing parked bill will be replaced by the current one"
     override val sellClearCartCta = "Clear"
     override val sellClearCartBody: (Int) -> String = { n -> "Remove all $n items from the cart? This cannot be undone" }
-    override val sellAllergyTitle = "Allergies"
+    override val sellAllergyTitle = "Allergies / conditions"
     override val sellControlledKy: (String) -> String = { v -> "Controlled drugs — KY $v records required" }
     override val sellKyCaptureHint = "Buyer details will be captured at checkout"
     override val sellPickerCountAll: (Int) -> String = { n -> "All $n items" }
@@ -114,7 +114,7 @@ object SellStringsEn : SellStrings {
     override val sellHospital = "Hospital"
     override val sellPatient = "Patient"
     override val sellPurpose = "Purpose"
-    override val sellAllergies = "Allergies"
+    override val sellAllergies = "Allergies / chronic conditions"
     override val sellSaveKyBeforeBill = "Save KY before checkout"
     override val sellControlledRx: (Int) -> String = { forms -> "Controlled drug — must log KY $forms" }
     override val sellControlledNote = "Controlled drugs (KY 10–13) require pharmacist info, license no., prescriber and buyer/patient before bill issuance per regulations"
