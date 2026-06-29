@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
@@ -71,7 +70,7 @@ fun CartLineRow(
     modifier: Modifier = Modifier,
 ) {
     var showRemoveConfirm by remember { mutableStateOf(false) }
-    val rowVerticalPadding = if (LocalPharmDensity.current == PharmDensity.Compact) 8.dp else 12.dp
+    val rowVerticalPadding = if (LocalPharmDensity.current == PharmDensity.Compact) 6.dp else 8.dp
 
     BoxWithConstraints(
         modifier = modifier
@@ -80,12 +79,11 @@ fun CartLineRow(
             .padding(horizontal = 12.dp, vertical = rowVerticalPadding),
     ) {
         if (maxWidth < 360.dp) {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    CartLineInfoIcon()
                     CartLineName(line = line, modifier = Modifier.weight(1f))
                     CartLineRemoveButton(onClick = { showRemoveConfirm = true })
                 }
@@ -103,7 +101,6 @@ fun CartLineRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                CartLineInfoIcon()
                 CartLineName(line = line, modifier = Modifier.weight(1f))
                 QtyStepper(qty = line.displayQty, onQtyChange = onQtyChange)
                 CartLinePrice(line = line)
@@ -143,20 +140,9 @@ fun CartLineRow(
 }
 
 @Composable
-private fun CartLineInfoIcon() {
-    val t = pharmTokens
-    Icon(
-        imageVector = Icons.Outlined.Info,
-        contentDescription = pharmStrings.sellLineDetailsDesc,
-        tint = t.colors.accent,
-        modifier = Modifier.size(18.dp),
-    )
-}
-
-@Composable
 private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
     val t = pharmTokens
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(1.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -176,13 +162,11 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
                 )
             }
         }
-        if (line.selectedUnit == null) {
-            Text(
-                text = line.drug.unit ?: pharmStrings.commonUnitPiece,
-                style = PharmText.micro,
-                color = t.colors.fg2,
-            )
-        }
+        Text(
+            text = "${formatBahtCurrency(line.unitPrice.amount)} / ${line.displayUnit}",
+            style = PharmText.micro,
+            color = t.colors.fg3,
+        )
     }
 }
 
@@ -192,7 +176,7 @@ private fun CartLinePrice(line: CartLine) {
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.width(96.dp),
+        modifier = Modifier.width(84.dp),
     ) {
         Text(
             text = formatBahtCurrency(line.lineTotal.amount),
@@ -216,12 +200,12 @@ private fun CartLinePrice(line: CartLine) {
 @Composable
 private fun CartLineRemoveButton(onClick: () -> Unit) {
     val t = pharmTokens
-    IconButton(onClick = onClick, modifier = Modifier.size(44.dp)) {
+    IconButton(onClick = onClick, modifier = Modifier.size(36.dp)) {
         Icon(
             imageVector = Icons.Rounded.Close,
             contentDescription = pharmStrings.sellRemoveLineDesc,
             tint = t.colors.fg2,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(18.dp),
         )
     }
 }
@@ -259,9 +243,8 @@ private fun QtyStepper(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-
         StepperCircle(
             onClick = { onQtyChange(qty - 1) },
             container = t.colors.dangerBg,
@@ -273,15 +256,15 @@ private fun QtyStepper(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(40.dp)
-                .height(28.dp),
+                .width(36.dp)
+                .height(24.dp),
         ) {
             if (editing) {
                 BasicTextField(
                     value = draft,
                     onValueChange = { draft = it.filter(Char::isDigit).take(4) },
                     singleLine = true,
-                    textStyle = PharmText.body.tabular().copy(
+                    textStyle = PharmText.bodySm.tabular().copy(
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
                         color = t.colors.fg1,
@@ -298,13 +281,12 @@ private fun QtyStepper(
             } else {
                 Text(
                     text = "${qty}x",
-                    style = PharmText.body.tabular(),
+                    style = PharmText.bodySm.tabular(),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable(role = Role.Button) { editing = true },
                 )
             }
         }
-
         StepperCircle(
             onClick = { onQtyChange((qty + 1).coerceAtMost(MAX_QTY)) },
             container = t.colors.accent,
@@ -329,11 +311,11 @@ private fun StepperCircle(
     IconButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.size(44.dp),
+        modifier = Modifier.size(36.dp),
     ) {
         Box(
             modifier = Modifier
-                .size(28.dp)
+                .size(22.dp)
                 .clip(CircleShape)
                 .background(
                     if (enabled) container
@@ -346,7 +328,7 @@ private fun StepperCircle(
                 contentDescription = description,
                 tint = if (enabled) iconTint
                        else t.colors.fg2,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(13.dp),
             )
         }
     }

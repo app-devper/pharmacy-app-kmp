@@ -39,7 +39,7 @@ fun CartTotalsBlock(
 ) {
     val t = pharmTokens
     val hasDiscount = itemDiscountTotal > 0.0 || cartDiscountAmount > 0.0
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(true) }
     val open = expanded || hasDiscount
 
     Column(
