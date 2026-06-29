@@ -64,11 +64,21 @@ private fun TabChip(
 ) {
     val t = pharmTokens
     val parkSlotDesc = pharmStrings.sellParkSlotDesc(number)
+    val bg = when {
+        selected -> t.colors.accentBgSoft
+        filled   -> t.colors.sidebarItemActive
+        else     -> t.colors.surface
+    }
+    val fg = when {
+        selected -> t.colors.accent
+        filled   -> t.colors.sidebarFg
+        else     -> t.colors.fg2
+    }
     Box(
         modifier = modifier
             .height(44.dp)
             .clip(t.shapes.md)
-            .background(if (selected) t.colors.accentBgSoft else t.colors.surface)
+            .background(bg)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,
@@ -76,7 +86,7 @@ private fun TabChip(
         Text(
             text = number.toString(),
             style = PharmText.buttonMd,
-            color = if (selected) t.colors.accent else t.colors.fg2,
+            color = fg,
             fontWeight = if (selected || filled) FontWeight.Bold else FontWeight.Medium,
             textAlign = TextAlign.Center,
         )
