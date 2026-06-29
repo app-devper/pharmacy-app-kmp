@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -101,10 +102,10 @@ fun CartCustomerPill(
         if (customer != null) {
             Box(
                 modifier = Modifier
-                    .clip(t.shapes.sm)
+                    .clip(CircleShape)
                     .clickable(role = Role.Button, onClick = onClear)
                     .semantics { contentDescription = clearCustomerDesc }
-                    .padding(horizontal = 8.dp),
+                    .padding(4.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text("×", style = PharmText.h2.copy(color = t.colors.accent))
