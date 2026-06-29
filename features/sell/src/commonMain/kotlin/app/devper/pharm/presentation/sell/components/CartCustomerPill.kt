@@ -114,17 +114,11 @@ fun CartCustomerPill(
                     tint = t.colors.warningFg,
                     modifier = Modifier.size(12.dp),
                 )
-                Column {
-                    Text(
-                        s.sellAllergyTitle,
-                        style = PharmText.micro.copy(color = t.colors.warningFg),
-                    )
-                    Text(
-                        allergy,
-                        style = PharmText.micro.copy(color = t.colors.warningFg),
-                        fontWeight = FontWeight.Medium,
-                    )
-                }
+                Text(
+                    allergy,
+                    style = PharmText.micro.copy(color = t.colors.warningFg),
+                    fontWeight = FontWeight.Medium,
+                )
             }
         }
     }
