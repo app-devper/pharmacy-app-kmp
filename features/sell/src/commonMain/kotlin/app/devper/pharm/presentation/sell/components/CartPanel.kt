@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -118,14 +117,17 @@ fun CartPanel(
             CartComplianceBanner(required = kyRequired)
         }
 
+        CartSectionDivider()
+
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (hasItems) {
-                LazyColumn(contentPadding = PaddingValues(vertical = 4.dp)) {
-                    items(
+                LazyColumn {
+                    itemsIndexed(
                         cart,
-                        key = { line -> "${line.drug.id}::${line.selectedUnit?.name.orEmpty()}" },
-                    ) { line ->
+                        key = { _, line -> "${line.drug.id}::${line.selectedUnit?.name.orEmpty()}" },
+                    ) { index, line ->
                         Box(modifier = Modifier.animateItem()) {
+                            if (index > 0) CartSectionDivider()
                             CartLineRow(
                                 line = line,
                                 onQtyChange = { displayQty -> onSetQty(line.key, displayQty) },
