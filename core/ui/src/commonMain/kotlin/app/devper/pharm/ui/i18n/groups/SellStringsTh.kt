@@ -31,7 +31,7 @@ object SellStringsTh : SellStrings {
     override val sellParkedOverwriteBody = "บิลที่พักไว้เดิมจะถูกแทนที่ด้วยบิลปัจจุบัน"
     override val sellClearCartCta = "ล้าง"
     override val sellClearCartBody: (Int) -> String = { n -> "ลบรายการในตะกร้าทั้งหมด $n รายการ? การกระทำนี้ย้อนกลับไม่ได้" }
-    override val sellAllergyTitle = "แพ้ยา / โรคประจำตัว"
+    override val sellAllergyTitle = "แพ้ยา"
     override val sellControlledKy: (String) -> String = { v -> "ยาควบคุม — ต้องบันทึก ขย.$v" }
     override val sellKyCaptureHint = "ระบบจะให้กรอกข้อมูลผู้ซื้อตอนชำระเงิน"
     override val sellPickerCountAll: (Int) -> String = { n -> "ทั้งหมด $n รายการ" }
@@ -114,7 +114,7 @@ object SellStringsTh : SellStrings {
     override val sellHospital = "โรงพยาบาล"
     override val sellPatient = "ผู้ป่วย"
     override val sellPurpose = "วัตถุประสงค์"
-    override val sellAllergies = "แพ้ยา / โรคประจำตัว"
+    override val sellAllergies = "แพ้ยา"
     override val sellSaveKyBeforeBill = "บันทึก ขย. ก่อนออกบิล"
     override val sellControlledRx: (Int) -> String = { forms -> "ยาควบคุม — ต้องบันทึก ขย.$forms" }
     override val sellControlledNote = "ยาควบคุมพิเศษ (ขย.10–13) ต้องบันทึกชื่อเภสัชกร เลขที่ใบอนุญาต ผู้สั่งใช้ และข้อมูลผู้ซื้อ/ผู้ป่วย ก่อนออกบิลตามข้อกำหนด"
