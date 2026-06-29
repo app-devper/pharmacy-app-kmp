@@ -3,11 +3,11 @@ package app.devper.pharm.presentation.stock
 import app.devper.pharm.presentation.stock.i18n.label
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -19,6 +19,7 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.i18n.pharmStrings
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun StockToolbar(
     query: String,
@@ -40,9 +41,9 @@ internal fun StockToolbar(
             )
         },
         actions = {
-            Row(
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 PharmButton(
                     label = "Excel",

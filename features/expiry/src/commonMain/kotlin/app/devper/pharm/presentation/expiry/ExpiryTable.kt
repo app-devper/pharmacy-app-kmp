@@ -52,6 +52,7 @@ internal fun ExpiryTable(
         PharmTableColumn<ExpiringLot>(
             header = "",
             weight = 0.4f,
+            hideInCompact = true,
             cell = { lot ->
                 PharmCheckbox(
                     checked = lot.id in selected,
@@ -63,6 +64,7 @@ internal fun ExpiryTable(
         PharmTableColumn(
             header = s.expiryHeaderDrugName,
             weight = 2.4f,
+            compactTitle = true,
             cell = { lot ->
                 Text(
                     text = lot.drugName,
@@ -75,6 +77,7 @@ internal fun ExpiryTable(
         PharmTableColumn(
             header = s.expiryHeaderLotNumber,
             weight = 1.2f,
+            hideInCompact = true,
             cell = { lot ->
                 PharmStamp(text = lot.lotNumber)
             },

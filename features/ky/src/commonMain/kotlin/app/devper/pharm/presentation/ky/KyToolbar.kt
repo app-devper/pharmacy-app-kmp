@@ -2,6 +2,8 @@ package app.devper.pharm.presentation.ky
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
@@ -27,6 +29,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 
 private const val KY_TAB_PREFIX = "ky"
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun KyToolbar(
     currentForm: KyFormType,
@@ -48,9 +51,9 @@ internal fun KyToolbar(
             KyMonthField(month = month, onMonthChange = onMonthChange, onApply = onApply)
         },
         actions = {
-            Row(
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 PharmButton(
                     label = "Excel",
@@ -78,6 +81,7 @@ internal fun KyToolbar(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun KyMonthField(
     month: String,
@@ -85,8 +89,8 @@ private fun KyMonthField(
     onApply: () -> Unit,
 ) {
     val t = pharmTokens
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    FlowRow(
+        verticalArrangement = Arrangement.spacedBy(6.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(pharmStrings.kyMonthLabel, style = PharmText.micro.copy(color = t.colors.fg3))

@@ -42,6 +42,7 @@ internal fun CustomersListTable(
         PharmTableColumn<Customer>(
             header = s.commonName,
             weight = 1.8f,
+            compactTitle = true,
             cell = { customer -> CustomerNameCell(customer) },
         ),
         PharmTableColumn(
@@ -59,11 +60,13 @@ internal fun CustomersListTable(
             header = s.customersHeaderTotalSpent,
             weight = 1.0f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { CustomerPlaceholderCell() },
         ),
         PharmTableColumn(
             header = s.customersHeaderLastVisit,
             weight = 1.0f,
+            hideInCompact = true,
             cell = { CustomerPlaceholderCell() },
         ),
         PharmTableColumn(
