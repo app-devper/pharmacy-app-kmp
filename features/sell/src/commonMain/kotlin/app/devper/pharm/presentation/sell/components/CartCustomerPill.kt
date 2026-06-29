@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -118,9 +119,11 @@ fun CartCustomerPill(
             if (showShortcutHint) {
                 ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
             }
-            Text(
-                "›",
-                style = PharmText.body.copy(color = t.colors.accent),
+            Icon(
+                Icons.Rounded.KeyboardArrowRight,
+                contentDescription = null,
+                tint = t.colors.accent,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
