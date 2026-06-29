@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -104,9 +103,8 @@ fun CartCustomerPill(
                 modifier = Modifier
                     .clip(t.shapes.sm)
                     .clickable(role = Role.Button, onClick = onClear)
-                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
                     .semantics { contentDescription = clearCustomerDesc }
-                    .padding(horizontal = 8.dp, vertical = 2.dp),
+                    .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text("×", style = PharmText.h2.copy(color = t.colors.accent))
