@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.sell.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,14 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
@@ -38,9 +33,7 @@ fun CartTotalsBlock(
     showShortcutHint: Boolean = false,
 ) {
     val t = pharmTokens
-    val hasDiscount = itemDiscountTotal > 0.0 || cartDiscountAmount > 0.0
-    var expanded by remember { mutableStateOf(true) }
-    val open = expanded || hasDiscount
+    val s = pharmStrings
 
     Column(
         modifier = Modifier
@@ -52,18 +45,12 @@ fun CartTotalsBlock(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = if (open) pharmStrings.sellHideSubtotal else pharmStrings.sellShowSubtotal,
-                style = PharmText.micro.copy(color = t.colors.fg3),
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable(enabled = !hasDiscount) { expanded = !expanded }
-                    .padding(vertical = 4.dp),
-            )
+            Text(s.sellTotal, style = PharmText.bodySm.copy(color = t.colors.fg2), modifier = Modifier.weight(1f))
+            Text(fmtBaht(grossSubtotal), style = PharmText.bodySm.copy(color = t.colors.fg2))
             Row(
                 modifier = Modifier
                     .clickable(role = Role.Button, onClick = onOpenCartDiscount)
-                    .padding(vertical = 4.dp),
+                    .padding(start = 12.dp, top = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
@@ -74,7 +61,7 @@ fun CartTotalsBlock(
                     text = if (cartDiscountAmount > 0.0) {
                         "${cartDiscountLabel(cartDiscount)} −${fmtBaht(cartDiscountAmount)}"
                     } else {
-                        pharmStrings.sellAddDiscount
+                        s.sellAddDiscount
                     },
                     style = PharmText.micro.copy(
                         color = if (cartDiscountAmount > 0.0) t.colors.discount else t.colors.accent,
@@ -82,17 +69,11 @@ fun CartTotalsBlock(
                 )
             }
         }
-
-        AnimatedVisibility(visible = open) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                CartTotalsRow(pharmStrings.sellTotal, fmtBaht(grossSubtotal), color = t.colors.fg2)
-                if (itemDiscountTotal > 0.0) {
-                    CartTotalsRow(pharmStrings.sellDiscountLine, "−${fmtBaht(itemDiscountTotal)}", color = t.colors.discount)
-                }
-                if (cartDiscountAmount > 0.0) {
-                    CartTotalsRow(cartDiscountLabel(cartDiscount), "−${fmtBaht(cartDiscountAmount)}", color = t.colors.discount)
-                }
-            }
+        if (itemDiscountTotal > 0.0) {
+            CartTotalsRow(s.sellDiscountLine, "−${fmtBaht(itemDiscountTotal)}", color = t.colors.discount)
+        }
+        if (cartDiscountAmount > 0.0) {
+            CartTotalsRow(cartDiscountLabel(cartDiscount), "−${fmtBaht(cartDiscountAmount)}", color = t.colors.discount)
         }
     }
 }
