@@ -54,7 +54,7 @@ fun CartCustomerPill(
             .background(t.colors.accentBgSoft)
             .clickable(role = Role.Button, onClick = onPick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
