@@ -44,7 +44,7 @@ fun CartCustomerPill(
     val s = pharmStrings
     val name = customer?.name ?: s.sellCustomerWalkIn
     val allergy = customer?.allergyNote?.takeIf { it.isNotBlank() && it != "-" }
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -52,74 +52,73 @@ fun CartCustomerPill(
             .background(t.colors.accentBgSoft)
             .clickable(role = Role.Button, onClick = onPick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    s.sellCustomer,
-                    style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
-                )
-                Text(
-                    name,
-                    style = PharmText.bodySm.copy(
-                        color = t.colors.accent,
-                        fontWeight = FontWeight.Medium,
-                    ),
-                )
-            }
-            if (customer != null && activeTier.isNotBlank() && activeTier != Tier.Retail) {
-                Text(
-                    text = "$activeTier · ",
-                    style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
-                )
-            }
-            val clearCustomerDesc = s.sellCustomerClear
-            if (customer != null) {
-                Box(
-                    modifier = Modifier
-                        .clip(t.shapes.sm)
-                        .clickable(role = Role.Button, onClick = onClear)
-                        .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                        .semantics { contentDescription = clearCustomerDesc }
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
-                    contentAlignment = Alignment.Center,
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                s.sellCustomer,
+                style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
+            )
+            Text(
+                name,
+                style = PharmText.bodySm.copy(
+                    color = t.colors.accent,
+                    fontWeight = FontWeight.Medium,
+                ),
+            )
+            if (allergy != null) {
+                Row(
+                    modifier = Modifier.padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    Text("×", style = PharmText.h2.copy(color = t.colors.accent))
+                    Icon(
+                        PharmIcons.Warning,
+                        contentDescription = null,
+                        tint = t.colors.warningFg,
+                        modifier = Modifier.size(12.dp),
+                    )
+                    Column {
+                        Text(
+                            s.sellAllergyTitle,
+                            style = PharmText.micro.copy(color = t.colors.warningFg),
+                        )
+                        Text(
+                            allergy,
+                            style = PharmText.micro.copy(color = t.colors.warningFg),
+                            fontWeight = FontWeight.Medium,
+                        )
+                    }
                 }
-            } else {
-                if (showShortcutHint) {
-                    ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
-                }
-                Text(
-                    "›",
-                    style = PharmText.body.copy(color = t.colors.accent),
-                )
             }
         }
-        if (allergy != null) {
-            Row(
-                modifier = Modifier.padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+        if (customer != null && activeTier.isNotBlank() && activeTier != Tier.Retail) {
+            Text(
+                text = "$activeTier · ",
+                style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
+            )
+        }
+        val clearCustomerDesc = s.sellCustomerClear
+        if (customer != null) {
+            Box(
+                modifier = Modifier
+                    .clip(t.shapes.sm)
+                    .clickable(role = Role.Button, onClick = onClear)
+                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                    .semantics { contentDescription = clearCustomerDesc }
+                    .padding(horizontal = 8.dp, vertical = 2.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    PharmIcons.Warning,
-                    contentDescription = null,
-                    tint = t.colors.warningFg,
-                    modifier = Modifier.size(12.dp),
-                )
-                Column {
-                    Text(
-                        s.sellAllergyTitle,
-                        style = PharmText.micro.copy(color = t.colors.warningFg),
-                    )
-                    Text(
-                        allergy,
-                        style = PharmText.micro.copy(color = t.colors.warningFg),
-                        fontWeight = FontWeight.Medium,
-                    )
-                }
+                Text("×", style = PharmText.h2.copy(color = t.colors.accent))
             }
+        } else {
+            if (showShortcutHint) {
+                ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
+            }
+            Text(
+                "›",
+                style = PharmText.body.copy(color = t.colors.accent),
+            )
         }
     }
 }
