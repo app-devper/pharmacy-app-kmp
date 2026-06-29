@@ -25,7 +25,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
-import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.common.pharmShortcuts
 import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -68,16 +67,7 @@ fun SellScreen(
         }
     }
     val onTapParkSlot: (Int) -> Unit = { slot ->
-        val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
         parkedCartVM.tapSlot(slot)
-        if (willPark) {
-            snackbar.showToast(
-                PharmToast.Info(
-                    message = s.sellParkedToast(slot + 1),
-                    action = ToastAction(s.sellOpenViewCta) { parkedCartVM.openSheet() },
-                ),
-            )
-        }
     }
 
     val combinedError = sellState.errorState
