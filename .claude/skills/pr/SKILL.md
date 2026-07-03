@@ -1,56 +1,69 @@
 ---
 name: pr
-description: Immediately squash-merge the current branch's open pull request (the repo has no branch protection, so any mergeable PR merges on command), then delete the merged branch and sync local main. Use when the user says "auto", "merge it", "/pr", or otherwise asks to land the current PR in /Users/admin/ProjectPos/pharmacy-app/app-kmp.
+description: Land the current branch's open pull request in app-devper/pharmacy-app-kmp — squash-merge (auto-merge if the required check is still running), delete the branch, sync the base branch, and back-merge main into develop when the PR targeted main. Use when the user says "pr land", "merge it", "/pr", or otherwise asks to land the current PR.
 ---
 
-# pr — land the current branch's PR now
+# pr — land the current branch's PR
 
-This repo (`app-devper/pharmacy-app-kmp`) has **no required status checks / branch
-protection**, so a mergeable PR can be squash-merged immediately. PRs land via **squash**
-(see #67/#68). This skill merges the PR for the **current branch**, deletes the branch, and
-syncs `main`.
+This repo follows **git flow** (see the `git-flow` skill): feature PRs target
+`develop`; release/hotfix PRs target `main`. Both branches require the
+"Linux (JVM + Android + WasmJs + audit)" check. PRs land via **squash**.
 
 ## Steps
 
 1. **Find the PR for the current branch**
    ```bash
-   gh pr view --json number,state,mergeable,mergeStateStatus,headRefName,title
+   gh pr view --json number,state,mergeable,mergeStateStatus,baseRefName,headRefName,title
    ```
-   - No PR for this branch → stop and tell the user (offer to open one with `gh pr create`).
+   - No PR for this branch → stop and tell the user (offer `gh pr create`
+     with the base the `git-flow` skill prescribes).
    - `state` is `MERGED`/`CLOSED` → report it; nothing to do.
 
-2. **Push any unpushed commits first** (a PR can't include what isn't pushed)
+2. **Push any unpushed commits first**
    ```bash
    git push
    ```
 
-3. **Check mergeability.** If `mergeable` is `CONFLICTING`, stop and report the conflict —
-   do **not** force. If `mergeable` is `UNKNOWN`, re-run step 1 once (GitHub may still be
-   computing) before proceeding.
+3. **Check mergeability.** `CONFLICTING` → stop and report — do **not**
+   force. `UNKNOWN` → re-run step 1 once before proceeding.
 
-4. **Squash-merge + delete the remote branch**
+4. **Squash-merge**
    ```bash
-   gh pr merge <number> --squash --delete-branch
+   gh pr checks <number>
    ```
+   - Required check passed → `gh pr merge <number> --squash --delete-branch`
+   - Still running → `gh pr merge <number> --squash --auto --delete-branch`
+     then watch until it lands:
+     ```bash
+     gh pr view <number> --json state -q .state   # poll / Monitor until MERGED
+     ```
+   - Check failed → stop, show the failure, do not merge.
 
-5. **Sync local main and clean up**
+5. **Sync the base branch and clean up**
    ```bash
-   git checkout main
-   git pull --ff-only origin main
-   git branch -D <headRefName>      # delete the now-merged local branch
+   git checkout <baseRefName>
+   git pull --ff-only origin <baseRefName>
+   git branch -D <headRefName>
    git remote prune origin
    ```
 
-6. **Report**: the merged PR number + URL, the squash commit SHA now on `main`
-   (`git log --oneline -1`), and confirm the branch was deleted local + remote.
+6. **If the PR targeted `main`: back-merge into `develop`** (mandatory —
+   see `git-flow` skill)
+   ```bash
+   git checkout develop && git pull --ff-only origin develop
+   git merge main && git push origin develop
+   ```
+   Also remind: the merge fired the `deploy-pharm-app` Cloud Build —
+   report its outcome (`gcloud builds list --limit=1`).
+
+7. **Report**: merged PR number + URL, the squash commit SHA on the base
+   branch (`git log --oneline -1`), branch deleted local + remote, and for
+   `main` landings the deploy/tag result.
 
 ## Notes
 
-- Default strategy is `--squash` to match repo history. Only use `--merge` / `--rebase` if the
-  user explicitly asks.
-- `--delete-branch` removes both the remote branch and (after the local checkout/pull) the
-  local one; step 5's `git branch -D` covers the local copy if it lingers.
-- If the user wants the PR to **wait** for CI before landing, that needs a branch-protection
-  rule + required checks configured on `main` in GitHub settings first — this skill does not
-  set that up; it lands the PR now.
+- Default strategy is `--squash`. Only `--merge` / `--rebase` if the user
+  explicitly asks.
+- A merge into `main` deploys to production and tags `v<app-version>` —
+  confirm the release/hotfix PR bumped `app-version` before landing.
 - Run from inside `/Users/admin/ProjectPos/pharmacy-app/app-kmp`.
