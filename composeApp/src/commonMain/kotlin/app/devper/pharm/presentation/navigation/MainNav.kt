@@ -202,6 +202,7 @@ private val SUB_PAGE_ROUTE_KEYS: Set<String> = setOf(
     k(DrugAdd::class), k(DrugEdit::class), k(DrugLots::class), k(DrugAdjust::class), k(DrugHistory::class),
     k(StockCountNew::class), k(SupplierAdd::class), k(SupplierEdit::class),
     k(UserAdd::class), k(UserEdit::class),
+    k(Profile::class),
 )
 
 @Composable
