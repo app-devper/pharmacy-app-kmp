@@ -5,6 +5,10 @@ description: Git flow branching for app-devper/pharmacy-app-kmp — main (produc
 
 # git-flow — branching + release model for this repo
 
+Project override of the user-level `git-flow` skill (`~/.claude/skills/git-flow/`)
+— generic recipes live there; everything below is what's specific to
+`app-devper/pharmacy-app-kmp`.
+
 ## Branch map
 
 | Branch | Role | PR target | After merge |
