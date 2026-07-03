@@ -138,7 +138,7 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
             }
         }
 
-        customer.allergyNote?.takeIf { it.isNotBlank() }?.let { note ->
+        customer.allergyNote?.takeIf { it.isNotBlank() && it != "-" }?.let { note ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

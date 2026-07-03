@@ -1,4 +1,5 @@
 package app.devper.pharm.presentation.sell
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
 import app.devper.pharm.presentation.sell.flow.ParkedCartViewModel
@@ -25,7 +26,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
-import app.devper.pharm.ui.common.ToastAction
 import app.devper.pharm.ui.common.pharmShortcuts
 import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -68,16 +68,7 @@ fun SellScreen(
         }
     }
     val onTapParkSlot: (Int) -> Unit = { slot ->
-        val willPark = parkedState.parkedSlots.getOrNull(slot) == null && !parkedState.activeCartIsEmpty
         parkedCartVM.tapSlot(slot)
-        if (willPark) {
-            snackbar.showToast(
-                PharmToast.Info(
-                    message = s.sellParkedToast(slot + 1),
-                    action = ToastAction(s.sellOpenViewCta) { parkedCartVM.openSheet() },
-                ),
-            )
-        }
     }
 
     val combinedError = sellState.errorState
@@ -157,8 +148,8 @@ fun SellScreen(
             .pharmShortcuts(*sellShortcuts),
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val isWide = maxWidth >= 640.dp
-            val showRail = maxWidth >= 840.dp
+            val isWide = maxWidth >= PharmBreakpoint.Medium
+            val showRail = maxWidth >= PharmBreakpoint.Expanded
             val cartWidth = if (showRail) 400.dp else maxWidth * 0.45f
             if (isWide) {
                 Row(modifier = Modifier.fillMaxSize()) {
@@ -194,6 +185,7 @@ fun SellScreen(
                             onConfirmClearCart = sellVM::confirmClearCart,
                             onCancelClearCart = sellVM::cancelClearCart,
                             onOpenPayment = checkoutVM::openPayment,
+                            activeSlot = parkedState.activeSlot,
                             parkedFilledCount = parkedState.filledCount,
                             onPickCustomer = customerPickerVM::open,
                             onClearCustomer = customerPickerVM::clear,

@@ -24,29 +24,26 @@ internal fun ProfitMetricsRow(summary: ProfitSummary?, modifier: Modifier = Modi
             label = s.reportsProfitRevenue,
             value = fmtBaht(revenue),
             sub = s.reportsProfitBeforeCost,
-            tint = MetricTint.Blue,
-            modifier = Modifier.weight(1f),
         )
         MetricCard(
             label = s.reportsProfitCost,
             value = fmtBaht(cost),
             sub = s.reportsCostBasis,
-            tint = MetricTint.Purple,
-            modifier = Modifier.weight(1f),
         )
         MetricCard(
             label = s.reportsProfitTotal,
             value = fmtBaht(profit),
             sub = s.reportsRevenueMinusCost,
-            tint = MetricTint.Green,
-            modifier = Modifier.weight(1f),
+            tint = when {
+                profit > 0.0 -> MetricTint.Success
+                profit < 0.0 -> MetricTint.Danger
+                else -> MetricTint.Neutral
+            },
         )
         MetricCard(
             label = pharmStrings.reportsAvgMargin,
             value = marginText,
-            sub = "weighted by revenue",
-            tint = MetricTint.Indigo,
-            modifier = Modifier.weight(1f),
+            sub = pharmStrings.reportsAvgMarginHint,
         )
     }
 }

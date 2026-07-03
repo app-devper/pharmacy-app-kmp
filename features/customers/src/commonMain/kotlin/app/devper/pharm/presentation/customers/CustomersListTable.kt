@@ -53,7 +53,7 @@ internal fun CustomersListTable(
         PharmTableColumn(
             header = s.customersHeaderAllergyShort,
             weight = 1.8f,
-            hideInCardWhenEmpty = { customer -> customer.allergyNote.isNullOrBlank() },
+            hideInCardWhenEmpty = { customer -> customer.allergyNote.isNullOrBlank() || customer.allergyNote == "-" },
             cell = { customer -> CustomerAllergyCell(customer) },
         ),
         PharmTableColumn(
@@ -141,7 +141,7 @@ private fun CustomerPhoneCell(customer: Customer) {
 @Composable
 private fun CustomerAllergyCell(customer: Customer) {
     val t = pharmTokens
-    val note = customer.allergyNote?.takeIf { it.isNotBlank() }
+    val note = customer.allergyNote?.takeIf { it.isNotBlank() && it != "-" }
     if (note == null) return
     Row(
         verticalAlignment = Alignment.CenterVertically,

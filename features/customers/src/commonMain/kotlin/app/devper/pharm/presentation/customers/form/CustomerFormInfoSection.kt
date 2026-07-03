@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.customers.form
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -47,7 +48,7 @@ private fun CustomerInfoGrid(
     callbacks: CustomerFormCallbacks,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val twoCol = maxWidth >= 560.dp
+        val twoCol = maxWidth >= PharmBreakpoint.FormTwoCol
         if (twoCol) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(modifier = Modifier.weight(1f)) { NameField(form, callbacks) }

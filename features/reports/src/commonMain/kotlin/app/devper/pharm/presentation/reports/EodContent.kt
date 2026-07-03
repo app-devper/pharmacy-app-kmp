@@ -4,7 +4,6 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.model.SaleSummary
@@ -52,7 +50,7 @@ fun EodContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 8.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             EodHeader(
@@ -105,10 +103,9 @@ private fun EodBillsCard(report: EodReport) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+            .background(t.colors.surface),
     ) {
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
             EodBillsHeader(count = report.billCount)
         }

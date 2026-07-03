@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.labels
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -42,7 +43,7 @@ fun LabelPrintContent(
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
-            val sideBySide = maxWidth >= 600.dp
+            val sideBySide = maxWidth >= PharmBreakpoint.Medium
             if (sideBySide) {
                 Row(
                     modifier = Modifier.fillMaxSize(),

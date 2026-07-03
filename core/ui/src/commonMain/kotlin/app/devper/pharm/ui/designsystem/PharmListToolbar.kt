@@ -49,13 +49,14 @@ fun PharmListToolbar(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 if (onBack != null) {
                     Box(
@@ -86,7 +87,7 @@ fun PharmListToolbar(
                 }
                 badge?.invoke()
                 if (searchValue != null && onSearchChange != null) {
-                    Box(modifier = Modifier.weight(1f).widthIn(max = 280.dp)) {
+                    Box(modifier = Modifier.widthIn(min = 160.dp, max = 280.dp)) {
                         PharmTextField(
                             value = searchValue,
                             onValueChange = onSearchChange,
@@ -101,6 +102,7 @@ fun PharmListToolbar(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically,
                     content = filters,
                 )
             }

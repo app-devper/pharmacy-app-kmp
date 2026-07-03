@@ -21,29 +21,23 @@ internal fun StockMetricsRow(drugs: List<Drug>, modifier: Modifier = Modifier) {
             label = pharmStrings.stockMetricCount,
             value = total.toString(),
             sub = pharmStrings.movementsCountNoun,
-            tint = MetricTint.Blue,
-            modifier = Modifier.weight(1f),
         )
         MetricCard(
             label = pharmStrings.stockMetricOut,
             value = oos.toString(),
             sub = pharmStrings.stockStatusUrgent,
-            tint = MetricTint.Purple,
-            modifier = Modifier.weight(1f),
+            tint = if (oos > 0) MetricTint.Danger else MetricTint.Neutral,
         )
         MetricCard(
             label = pharmStrings.stockStatusLow,
             value = low.toString(),
             sub = pharmStrings.stockMetricBelowMin,
-            tint = MetricTint.Indigo,
-            modifier = Modifier.weight(1f),
+            tint = if (low > 0) MetricTint.Warning else MetricTint.Neutral,
         )
         MetricCard(
             label = pharmStrings.reportsMetricStockValue,
             value = fmtBaht(stockValue),
             sub = pharmStrings.stockMetricValueByCost,
-            tint = MetricTint.Green,
-            modifier = Modifier.weight(1f),
         )
     }
 }

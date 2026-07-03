@@ -104,6 +104,7 @@ fun CartScreen(
                 onRequestClearCart = sellVM::requestClearCart,
                 onConfirmClearCart = sellVM::confirmClearCart,
                 onCancelClearCart = sellVM::cancelClearCart,
+                activeSlot = parkedState.activeSlot,
                 parkedFilledCount = parkedState.filledCount,
                 onOpenParkedSheet = parkedCartVM::openSheet,
                 compact = true,

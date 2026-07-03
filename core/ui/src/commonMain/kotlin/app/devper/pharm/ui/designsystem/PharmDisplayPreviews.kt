@@ -103,10 +103,10 @@ private fun MetricCard_AllTints_Body() {
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        MetricCard(label = "ยอดขายวันนี้",  value = fmtBaht(28450.0), sub = "วันก่อน +12%", tint = MetricTint.Blue)
-        MetricCard(label = "บิลทั้งหมด",     value = "342",            sub = "30 วันที่ผ่านมา", tint = MetricTint.Indigo)
-        MetricCard(label = "ยาที่หมด",       value = "5 รายการ",        sub = "ต้องสั่งเพิ่ม", tint = MetricTint.Green)
-        MetricCard(label = "ลูกค้า VIP",     value = "18",             sub = "+2 รายใหม่", tint = MetricTint.Purple)
+        MetricCard(label = "ยอดขายวันนี้",  value = fmtBaht(28450.0), sub = "วันก่อน +12%", tint = MetricTint.Neutral)
+        MetricCard(label = "กำไรเดือนนี้",   value = fmtBaht(38500.0), sub = "รายได้ − ต้นทุน", tint = MetricTint.Success)
+        MetricCard(label = "ใกล้หมด",       value = "12 รายการ",       sub = "ต่ำกว่าขั้นต่ำ", tint = MetricTint.Warning)
+        MetricCard(label = "ยาที่หมด",       value = "5 รายการ",        sub = "ต้องสั่งเพิ่ม", tint = MetricTint.Danger)
     }
 }
 

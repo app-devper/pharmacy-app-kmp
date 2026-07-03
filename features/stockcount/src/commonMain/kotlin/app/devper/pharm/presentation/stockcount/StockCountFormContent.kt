@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -89,7 +90,7 @@ private fun DualPaneBody(
     history: List<StockCountHistoryEntry>,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        val isWide = maxWidth >= 720.dp
+        val isWide = maxWidth >= PharmBreakpoint.FormThreeCol
         val rows = state.toFormRows()
         val emptySearching = state.query.isNotBlank()
 

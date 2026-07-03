@@ -2,6 +2,7 @@ package app.devper.pharm.ui.i18n.groups
 
 object ReportsStringsEn : ReportsStrings {
     override val reportsAvgMargin = "Avg margin"
+    override val reportsAvgMarginHint = "Weighted by revenue"
 
     override val reportsSubtitle = "Sales / stock / top sellers overview"
     override val reportsTabSummary = "Summary"

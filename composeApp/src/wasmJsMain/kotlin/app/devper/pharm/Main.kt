@@ -6,6 +6,7 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
@@ -14,6 +15,7 @@ import app.devper.pharm.di.appModule
 import app.devper.pharm.platform.ConnectivityObserverImpl
 import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.FilePickerImpl
+import app.devper.pharm.platform.MotionPreferencesImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import app.devper.pharm.platform.WebSecureStorage
 import com.russhwolf.settings.Settings
@@ -39,6 +41,7 @@ fun main() {
         single<ConnectivityObserver> { ConnectivityObserverImpl() }
         single<FilePicker> { FilePickerImpl() }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
+        single<MotionPreferences> { MotionPreferencesImpl() }
     }
     startKoin { modules(webPlatformModule, appModule) }
 

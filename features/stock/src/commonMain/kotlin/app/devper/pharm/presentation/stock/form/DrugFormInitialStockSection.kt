@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock.form
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -37,7 +38,7 @@ private fun InitialStockGrid(
     callbacks: DrugFormCallbacks,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val threeCol = maxWidth >= 720.dp
+        val threeCol = maxWidth >= PharmBreakpoint.FormThreeCol
         if (threeCol) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(modifier = Modifier.weight(1f)) { QuantityField(form, callbacks) }

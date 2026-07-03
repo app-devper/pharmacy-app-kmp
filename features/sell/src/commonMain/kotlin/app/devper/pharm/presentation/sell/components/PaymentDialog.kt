@@ -2,6 +2,8 @@ package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmKeypad
@@ -150,9 +153,15 @@ private fun PaymentInfoCard(
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(text = label, style = PharmText.micro.copy(color = fg))
-        Text(
+        val valueStyle = PharmText.displayTotal.copy(color = fg)
+        BasicText(
             text = value,
-            style = PharmText.h2.copy(color = fg, fontWeight = FontWeight.Bold).tabular(),
+            style = valueStyle,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 14.sp,
+                maxFontSize = valueStyle.fontSize,
+            ),
         )
     }
 }

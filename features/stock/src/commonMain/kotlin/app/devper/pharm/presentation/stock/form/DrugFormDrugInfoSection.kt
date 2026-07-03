@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock.form
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -57,7 +58,7 @@ private fun DrugInfoGrid(
     callbacks: DrugFormCallbacks,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val twoCol = maxWidth >= 560.dp
+        val twoCol = maxWidth >= PharmBreakpoint.FormTwoCol
         if (twoCol) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 GridRow(

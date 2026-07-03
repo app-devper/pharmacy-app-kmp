@@ -140,6 +140,16 @@ object PharmText {
             fontFeatureSettings = TabularNumbers,
         )
 
+    val displayTotal: TextStyle
+        @androidx.compose.runtime.Composable
+        get() = base().copy(
+            fontSize = scaledSp(28f),
+            fontWeight = FontWeight.Bold,
+            lineHeight = scaledSp(34f),
+            color = pharmTokens.colors.fg1,
+            fontFeatureSettings = TabularNumbers,
+        )
+
     val buttonMd: TextStyle
         @androidx.compose.runtime.Composable
         get() = base().copy(fontSize = scaledSp(14f), fontWeight = FontWeight.Medium)

@@ -173,6 +173,8 @@ fun PharmTextField(
                                 Text(
                                     text = placeholder,
                                     style = style.copy(color = t.colors.fgMuted),
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 )
                             }
                             inner()

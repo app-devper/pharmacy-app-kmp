@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -109,7 +110,7 @@ internal fun ImportLineCard(
             }
         }
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-            val threeCol = maxWidth >= 600.dp
+            val threeCol = maxWidth >= PharmBreakpoint.Medium
             if (threeCol) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ImportLabeledField(label = s.commonQty, required = true, modifier = Modifier.weight(1f)) {

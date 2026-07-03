@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.reports
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,10 +34,8 @@ internal fun ReportsTopDrugsSection(rows: List<TopDrug>, modifier: Modifier = Mo
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface, t.shapes.lg)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(20.dp),
+            .background(t.colors.surface)
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         val s = pharmStrings

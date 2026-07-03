@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -124,28 +129,28 @@ private fun CalendarHeader(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        MonthNavButton(symbol = "‹", description = prevDesc, onClick = onPrev)
+        IconButton(onClick = onPrev, modifier = Modifier.size(36.dp)) {
+            Icon(
+                Icons.Rounded.KeyboardArrowLeft,
+                contentDescription = prevDesc,
+                tint = pharmTokens.colors.fg2,
+                modifier = Modifier.size(22.dp),
+            )
+        }
         Text(
             text = title,
             style = PharmText.h3.copy(color = t.colors.fg1),
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
         )
-        MonthNavButton(symbol = "›", description = nextDesc, onClick = onNext)
-    }
-}
-
-@Composable
-private fun MonthNavButton(symbol: String, description: String, onClick: () -> Unit) {
-    val t = pharmTokens
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(t.shapes.md)
-            .clickable(role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = symbol, style = PharmText.h2.copy(color = t.colors.fg2))
+        IconButton(onClick = onNext, modifier = Modifier.size(36.dp)) {
+            Icon(
+                Icons.Rounded.KeyboardArrowRight,
+                contentDescription = nextDesc,
+                tint = pharmTokens.colors.fg2,
+                modifier = Modifier.size(22.dp),
+            )
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.suppliers.form
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -42,7 +43,7 @@ private fun SupplierInfoGrid(
     callbacks: SupplierFormCallbacks,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val twoCol = maxWidth >= 560.dp
+        val twoCol = maxWidth >= PharmBreakpoint.FormTwoCol
         if (twoCol) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 GridRow(

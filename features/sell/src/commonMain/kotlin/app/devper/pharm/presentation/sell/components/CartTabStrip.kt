@@ -4,19 +4,19 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -36,21 +36,24 @@ internal fun CartTabStrip(
     onTapSlot: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        slots.forEachIndexed { index, parked ->
-            TabChip(
-                number = index + 1,
-                filled = parked != null,
-                selected = index == activeSlot,
-                onClick = { onTapSlot(index) },
-                modifier = Modifier.weight(1f),
-            )
+    val t = pharmTokens
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.TopCenter))
+        Row(modifier = Modifier.fillMaxWidth().height(44.dp)) {
+            slots.forEachIndexed { index, parked ->
+                if (index > 0) {
+                    Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(t.colors.divider))
+                }
+                TabChip(
+                    number = index + 1,
+                    filled = parked != null,
+                    selected = index == activeSlot,
+                    onClick = { onTapSlot(index) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.BottomCenter))
     }
 }
 
@@ -66,9 +69,8 @@ private fun TabChip(
     val parkSlotDesc = pharmStrings.sellParkSlotDesc(number)
     Box(
         modifier = modifier
-            .height(44.dp)
-            .clip(t.shapes.md)
-            .background(if (selected) t.colors.accentBgSoft else t.colors.surface)
+            .fillMaxHeight()
+            .background(if (selected) t.colors.sidebarItemActive else t.colors.bgPage)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,
@@ -76,7 +78,11 @@ private fun TabChip(
         Text(
             text = number.toString(),
             style = PharmText.buttonMd,
-            color = if (selected) t.colors.accent else t.colors.fg2,
+            color = when {
+                selected -> t.colors.accent
+                filled   -> t.colors.fg1
+                else     -> t.colors.fg2
+            },
             fontWeight = if (selected || filled) FontWeight.Bold else FontWeight.Medium,
             textAlign = TextAlign.Center,
         )
@@ -85,8 +91,17 @@ private fun TabChip(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(top = 5.dp, end = 7.dp)
-                    .size(7.dp)
+                    .size(6.dp)
                     .background(color = t.colors.successFg, shape = CircleShape),
+            )
+        }
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .background(t.colors.accent),
             )
         }
     }

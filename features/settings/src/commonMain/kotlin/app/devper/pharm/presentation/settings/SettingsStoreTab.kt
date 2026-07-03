@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.settings
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,7 @@ internal fun SettingsStoreTab(state: SettingsEditorUiState, editor: SettingsEdit
         SettingsFormField(value = f.storeAddress, onValueChange = editor.onStoreAddress)
     }
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val twoCol = maxWidth >= 560.dp
+        val twoCol = maxWidth >= PharmBreakpoint.FormTwoCol
         if (twoCol) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 SettingsLabeledField(label = s.commonPhone, modifier = Modifier.weight(1f)) {

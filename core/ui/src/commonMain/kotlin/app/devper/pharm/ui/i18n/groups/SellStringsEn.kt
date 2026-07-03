@@ -54,7 +54,7 @@ object SellStringsEn : SellStrings {
     override val sellDiscountPercentInvalid = "Percent must be between 0–100"
     override val sellDiscountFlatInvalid: (String) -> String = { v -> "Amount must be between 0–$v" }
     override val sellDiscountDeducted = "Discount applied"
-    override val sellAddDiscount = "Add discount ›"
+    override val sellAddDiscount = "Add discount"
     override val sellCartDiscountShort = "Cart discount"
     override val sellCartDiscountPercentLabel: (Int) -> String = { n -> "Cart discount $n%" }
     override val sellVoidBillTitle: (String) -> String = { v -> "Void bill $v" }

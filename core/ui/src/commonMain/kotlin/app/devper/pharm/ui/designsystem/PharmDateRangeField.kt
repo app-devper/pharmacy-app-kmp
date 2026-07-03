@@ -5,6 +5,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -37,6 +40,7 @@ data class PharmDateQuickPeriod(
     val toMillis: Long,
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PharmDateRangeField(
     range: PharmDateRange,
@@ -50,32 +54,45 @@ fun PharmDateRangeField(
     var pickingFrom by remember { mutableStateOf(false) }
     var pickingTo by remember { mutableStateOf(false) }
 
-    Row(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        DateField(
-            label = fromLabel,
-            valueMillis = range.fromMillis,
-            formatDate = formatDate,
-            onClick = { pickingFrom = true },
-            modifier = Modifier.weight(1f),
-        )
-        DateField(
-            label = toLabel,
-            valueMillis = range.toMillis,
-            formatDate = formatDate,
-            onClick = { pickingTo = true },
-            modifier = Modifier.weight(1f),
-        )
-        quickPeriods.forEach { period ->
-            QuickPeriodChip(
-                label = period.label,
-                onClick = {
-                    onRangeChange(PharmDateRange(fromMillis = period.fromMillis, toMillis = period.toMillis))
-                },
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            DateField(
+                label = fromLabel,
+                valueMillis = range.fromMillis,
+                formatDate = formatDate,
+                onClick = { pickingFrom = true },
+                modifier = Modifier.weight(1f),
             )
+            DateField(
+                label = toLabel,
+                valueMillis = range.toMillis,
+                formatDate = formatDate,
+                onClick = { pickingTo = true },
+                modifier = Modifier.weight(1f),
+            )
+        }
+        if (quickPeriods.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                quickPeriods.forEach { period ->
+                    QuickPeriodChip(
+                        label = period.label,
+                        onClick = {
+                            onRangeChange(PharmDateRange(fromMillis = period.fromMillis, toMillis = period.toMillis))
+                        },
+                    )
+                }
+            }
         }
     }
 

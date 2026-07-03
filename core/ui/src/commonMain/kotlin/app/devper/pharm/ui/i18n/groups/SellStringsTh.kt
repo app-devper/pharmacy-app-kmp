@@ -54,7 +54,7 @@ object SellStringsTh : SellStrings {
     override val sellDiscountPercentInvalid = "เปอร์เซ็นต์ต้องอยู่ระหว่าง 0–100"
     override val sellDiscountFlatInvalid: (String) -> String = { v -> "จำนวนต้องอยู่ระหว่าง 0–$v" }
     override val sellDiscountDeducted = "หักส่วนลด"
-    override val sellAddDiscount = "เพิ่มส่วนลด ›"
+    override val sellAddDiscount = "เพิ่มส่วนลด"
     override val sellCartDiscountShort = "ส่วนลดบิล"
     override val sellCartDiscountPercentLabel: (Int) -> String = { n -> "ส่วนลดบิล $n%" }
     override val sellVoidBillTitle: (String) -> String = { v -> "ยกเลิกบิล $v" }
