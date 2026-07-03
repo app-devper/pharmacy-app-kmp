@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,13 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Remove
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -68,30 +67,29 @@ fun CartLineRow(
     onRemove: () -> Unit,
     onTapForDiscount: () -> Unit,
     modifier: Modifier = Modifier,
+    narrow: Boolean = false,
 ) {
     var showRemoveConfirm by remember { mutableStateOf(false) }
     val rowVerticalPadding = if (LocalPharmDensity.current == PharmDensity.Compact) 6.dp else 8.dp
 
-    BoxWithConstraints(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clickable(role = Role.Button, onClick = onTapForDiscount)
             .padding(horizontal = 12.dp, vertical = rowVerticalPadding),
     ) {
-        if (maxWidth < 360.dp) {
+        if (narrow) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                CartLineName(line = line, modifier = Modifier.fillMaxWidth())
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    CartLineName(line = line, modifier = Modifier.weight(1f))
-                    CartLineRemoveButton(onClick = { showRemoveConfirm = true })
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    QtyStepper(qty = line.displayQty, onQtyChange = onQtyChange)
+                    QtyStepper(
+                        qty = line.displayQty,
+                        onQtyChange = onQtyChange,
+                        onRequestRemove = { showRemoveConfirm = true },
+                    )
                     Box(modifier = Modifier.weight(1f))
                     CartLinePrice(line = line)
                 }
@@ -102,9 +100,12 @@ fun CartLineRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 CartLineName(line = line, modifier = Modifier.weight(1f))
-                QtyStepper(qty = line.displayQty, onQtyChange = onQtyChange)
+                QtyStepper(
+                    qty = line.displayQty,
+                    onQtyChange = onQtyChange,
+                    onRequestRemove = { showRemoveConfirm = true },
+                )
                 CartLinePrice(line = line)
-                CartLineRemoveButton(onClick = { showRemoveConfirm = true })
             }
         }
     }
@@ -120,6 +121,7 @@ fun CartLineRow(
                 onClick = { showRemoveConfirm = false },
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
+                modifier = Modifier.widthIn(min = 96.dp),
             )
             PharmButton(
                 label = pharmStrings.commonDelete,
@@ -129,6 +131,7 @@ fun CartLineRow(
                 },
                 variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Sm,
+                modifier = Modifier.widthIn(min = 96.dp),
             )
         },
     ) {
@@ -176,7 +179,7 @@ private fun CartLinePrice(line: CartLine) {
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.width(84.dp),
+        modifier = Modifier.widthIn(min = 84.dp),
     ) {
         Text(
             text = formatBahtCurrency(line.lineTotal.amount),
@@ -193,19 +196,6 @@ private fun CartLinePrice(line: CartLine) {
                     else t.colors.fg2,
             maxLines = 1,
             textAlign = TextAlign.End,
-        )
-    }
-}
-
-@Composable
-private fun CartLineRemoveButton(onClick: () -> Unit) {
-    val t = pharmTokens
-    IconButton(onClick = onClick, modifier = Modifier.size(36.dp)) {
-        Icon(
-            imageVector = Icons.Rounded.Close,
-            contentDescription = pharmStrings.sellRemoveLineDesc,
-            tint = t.colors.fg2,
-            modifier = Modifier.size(18.dp),
         )
     }
 }
@@ -228,6 +218,7 @@ private const val MAX_QTY = 9999
 private fun QtyStepper(
     qty: Int,
     onQtyChange: (Int) -> Unit,
+    onRequestRemove: () -> Unit,
 ) {
     val t = pharmTokens
     var editing by remember { mutableStateOf(false) }
@@ -246,18 +237,22 @@ private fun QtyStepper(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         StepperCircle(
-            onClick = { onQtyChange(qty - 1) },
+            onClick = { if (qty > 1) onQtyChange(qty - 1) else onRequestRemove() },
             container = t.colors.dangerBg,
             iconTint = t.colors.dangerFg,
             icon = Icons.Outlined.Remove,
-            description = pharmStrings.sellQtyDecrease,
-            enabled = qty > 1,
+            description = if (qty > 1) pharmStrings.sellQtyDecrease else pharmStrings.sellRemoveLineDesc,
+            enabled = true,
         )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .width(36.dp)
-                .height(24.dp),
+                .height(36.dp)
+                .then(
+                    if (editing) Modifier
+                    else Modifier.clickable(role = Role.Button) { editing = true },
+                ),
         ) {
             if (editing) {
                 BasicTextField(
@@ -283,7 +278,6 @@ private fun QtyStepper(
                     text = "${qty}x",
                     style = PharmText.bodySm.tabular(),
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable(role = Role.Button) { editing = true },
                 )
             }
         }

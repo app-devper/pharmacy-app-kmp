@@ -1,9 +1,15 @@
 package app.devper.pharm.presentation.saleshistory
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.saleshistory.internal.formatYmdDisplay
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -38,16 +44,23 @@ internal fun SalesHistoryListToolbar(
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = s.salesHistorySearchPlaceholder,
         filters = {
-            SalesHistoryRangeChips(state = state, onSelectRange = callbacks.onSelectRange)
-            PharmDateRangeField(
-                range = range,
-                onRangeChange = { next ->
-                    if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
-                    if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
-                },
-                formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
-                modifier = Modifier.weight(1f),
-            )
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
+                PharmDateRangeField(
+                    range = range,
+                    onRangeChange = { next ->
+                        if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
+                        if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
+                    },
+                    formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
+                    modifier = Modifier.widthIn(min = 220.dp),
+                )
+                SalesHistoryRangeChips(state = state, onSelectRange = callbacks.onSelectRange)
+            }
         },
         actions = {
             PharmButton(

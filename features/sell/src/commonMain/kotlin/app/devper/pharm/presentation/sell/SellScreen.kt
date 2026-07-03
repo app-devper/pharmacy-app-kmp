@@ -1,4 +1,5 @@
 package app.devper.pharm.presentation.sell
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
 import app.devper.pharm.presentation.sell.flow.ParkedCartViewModel
@@ -147,8 +148,8 @@ fun SellScreen(
             .pharmShortcuts(*sellShortcuts),
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val isWide = maxWidth >= 640.dp
-            val showRail = maxWidth >= 840.dp
+            val isWide = maxWidth >= PharmBreakpoint.Medium
+            val showRail = maxWidth >= PharmBreakpoint.Expanded
             val cartWidth = if (showRail) 400.dp else maxWidth * 0.45f
             if (isWide) {
                 Row(modifier = Modifier.fillMaxSize()) {

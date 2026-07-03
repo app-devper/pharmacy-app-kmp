@@ -36,18 +36,17 @@ internal fun ExpiryToolbar(
     PharmListToolbar(
         modifier = modifier,
         filters = {
-            PharmSingleSelectChips(
-                chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label(pharmStrings)) },
-                activeId = window.name,
-                onSelect = { id -> callbacks.onWindowChange(ExpiryWindow.valueOf(id)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        },
-        actions = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                PharmSingleSelectChips(
+                    chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label(pharmStrings)) },
+                    activeId = window.name,
+                    onSelect = { id -> callbacks.onWindowChange(ExpiryWindow.valueOf(id)) },
+                    modifier = Modifier.weight(1f),
+                )
                 PharmButton(
                     label = "Excel",
                     onClick = callbacks.onExportExcel,

@@ -1,10 +1,12 @@
 package app.devper.pharm.presentation.reports
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -79,7 +81,12 @@ internal fun ProfitFilterBar(
             )
         },
         filters = {
-            Box(modifier = Modifier.weight(1f)) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
                 PharmDateRangeField(
                     range = range,
                     onRangeChange = { next ->
@@ -88,21 +95,22 @@ internal fun ProfitFilterBar(
                     },
                     formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
                     quickPeriods = quickPeriods,
+                    modifier = Modifier.widthIn(min = 220.dp),
                 )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = s.reportsSortBy,
-                    style = PharmText.bodySm.copy(color = t.colors.fg3),
-                )
-                PharmSingleSelectChips(
-                    chips = sortChips,
-                    activeId = state.sort.name,
-                    onSelect = { id -> callbacks.onSortChange(ProfitSort.valueOf(id)) },
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = s.reportsSortBy,
+                        style = PharmText.bodySm.copy(color = t.colors.fg3),
+                    )
+                    PharmSingleSelectChips(
+                        chips = sortChips,
+                        activeId = state.sort.name,
+                        onSelect = { id -> callbacks.onSortChange(ProfitSort.valueOf(id)) },
+                    )
+                }
             }
         },
     )

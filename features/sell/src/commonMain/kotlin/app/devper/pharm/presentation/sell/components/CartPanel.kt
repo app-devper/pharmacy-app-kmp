@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.animation.AnimatedVisibility
@@ -7,6 +8,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -119,7 +121,8 @@ fun CartPanel(
 
         CartSectionDivider()
 
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            val narrowRows = maxWidth < PharmBreakpoint.Stack
             if (hasItems) {
                 LazyColumn {
                     itemsIndexed(
@@ -133,6 +136,7 @@ fun CartPanel(
                                 onQtyChange = { displayQty -> onSetQty(line.key, displayQty) },
                                 onRemove = { onRemove(line.key) },
                                 onTapForDiscount = { onTapLineForDiscount(line) },
+                                narrow = narrowRows,
                             )
                         }
                     }
@@ -154,6 +158,8 @@ fun CartPanel(
                 onOpenCartDiscount = onOpenCartDiscount,
                 showShortcutHint = showShortcutHints,
             )
+
+            CartSectionDivider()
 
             CartPayButton(
                 total = total,

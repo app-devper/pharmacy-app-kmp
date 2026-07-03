@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.sell.components
 
 import app.devper.pharm.ui.i18n.pharmStrings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -49,22 +47,19 @@ fun CartCustomerPill(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-            .clip(t.shapes.md)
-            .background(t.colors.accentBgSoft)
             .clickable(role = Role.Button, onClick = onPick)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     s.sellCustomer,
-                    style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
+                    style = PharmText.micro.copy(color = t.colors.fg2),
                 )
                 Text(
                     name,
                     style = PharmText.bodySm.copy(
-                        color = t.colors.accent,
+                        color = t.colors.fg2,
                         fontWeight = FontWeight.Medium,
                     ),
                 )
@@ -72,7 +67,7 @@ fun CartCustomerPill(
             if (customer != null && activeTier.isNotBlank() && activeTier != Tier.Retail) {
                 Text(
                     text = "$activeTier · ",
-                    style = PharmText.micro.copy(color = t.colors.accent.copy(alpha = 0.7f)),
+                    style = PharmText.micro.copy(color = t.colors.fg2),
                 )
             }
             val clearCustomerDesc = s.sellCustomerClear
@@ -86,7 +81,7 @@ fun CartCustomerPill(
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = null,
-                        tint = t.colors.accent,
+                        tint = t.colors.fg2,
                         modifier = Modifier.size(16.dp),
                     )
                 }

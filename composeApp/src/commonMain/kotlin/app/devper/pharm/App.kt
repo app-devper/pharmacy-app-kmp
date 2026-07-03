@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.presentation.AppViewModel
@@ -19,6 +20,7 @@ import app.devper.pharm.presentation.navigation.AppNavHost
 import app.devper.pharm.ui.components.LocalSidebarState
 import app.devper.pharm.ui.components.SidebarState
 import app.devper.pharm.ui.designsystem.LocalPharmDensity
+import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmSnackbarHost
@@ -28,11 +30,13 @@ import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.ThemeController
 import androidx.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
 fun App(viewModel: AppViewModel = koinViewModel()) {
+    val motionPreferences = koinInject<MotionPreferences>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val systemDark = isSystemInDarkTheme()
     val darkTheme = when (state.uiPreferences.theme) {
@@ -69,6 +73,7 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
             LocalPharmDensity provides density,
             LocalSidebarState provides sidebarState,
             LocalPharmSnackbar provides snackbarHost,
+            LocalReducedMotion provides motionPreferences.reduceMotion,
         ) {
             AppLocaleProvider(localeWire = state.uiPreferences.locale.wire) {
                 Surface {

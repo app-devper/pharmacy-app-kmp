@@ -2,12 +2,11 @@ package app.devper.pharm.presentation.movements
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.movements.internal.formatYmdDisplay
@@ -40,11 +39,6 @@ internal fun MovementsListToolbar(
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.movementsSearchPlaceholder,
         filters = {
-            MovementsTypeChips(
-                activeIds = state.activeTypeIds,
-                onToggle = callbacks.onToggleType,
-                modifier = Modifier.fillMaxWidth(),
-            )
             PharmDateRangeField(
                 range = range,
                 onRangeChange = { next ->
@@ -52,13 +46,17 @@ internal fun MovementsListToolbar(
                     if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                 },
                 formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.widthIn(min = 220.dp),
+            )
+            MovementsTypeChips(
+                activeIds = state.activeTypeIds,
+                onToggle = callbacks.onToggleType,
             )
         },
         actions = {
-            Row(
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 PharmButton(
                     label = s.commonSearch,

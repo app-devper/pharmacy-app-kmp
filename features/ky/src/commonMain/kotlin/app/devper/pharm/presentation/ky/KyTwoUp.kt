@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,7 +17,7 @@ internal fun KyTwoUp(
     right: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        if (maxWidth >= 560.dp) {
+        if (maxWidth >= PharmBreakpoint.FormTwoCol) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Box(modifier = Modifier.weight(1f)) { left() }
                 Box(modifier = Modifier.weight(1f)) { right() }

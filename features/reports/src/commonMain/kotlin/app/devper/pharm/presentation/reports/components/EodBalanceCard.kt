@@ -3,6 +3,8 @@ package app.devper.pharm.presentation.reports.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -58,9 +61,15 @@ internal fun EodBalanceCard(report: EodReport) {
             )
         }
         if (!balanced) {
-            Text(
+            val driftStyle = PharmText.displayTotal.copy(color = fg)
+            BasicText(
                 text = (if (drift > 0) "+${fmtBaht(drift)}" else fmtBaht(drift)),
-                style = PharmText.total.copy(color = fg),
+                style = driftStyle,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 14.sp,
+                    maxFontSize = driftStyle.fontSize,
+                ),
             )
         }
     }

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -47,9 +48,9 @@ fun ReportsContent(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
         contentAlignment = Alignment.TopCenter,
     ) {
-        val contentModifier = if (maxWidth >= 1000.dp) Modifier.widthIn(max = 1040.dp).fillMaxSize()
+        val contentModifier = if (maxWidth >= PharmBreakpoint.DashboardCap) Modifier.widthIn(max = 1040.dp).fillMaxSize()
         else Modifier.fillMaxSize()
-        val stackTopAndSlow = maxWidth < 700.dp
+        val stackTopAndSlow = maxWidth < PharmBreakpoint.FormThreeCol
 
         Column(modifier = contentModifier) {
             val s = pharmStrings
@@ -57,7 +58,7 @@ fun ReportsContent(
                 ReportsMetricsRow(
                     summary = it,
                     monthProfit = state.monthProfit,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
                 )
             }
             PharmListToolbar(
@@ -75,8 +76,8 @@ fun ReportsContent(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item("window") {
                         ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)

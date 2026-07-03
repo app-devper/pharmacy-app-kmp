@@ -5,7 +5,6 @@ import app.devper.pharm.presentation.stock.i18n.label
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -37,7 +36,6 @@ internal fun StockToolbar(
                 chips = StockTypeFilter.entries.map { PharmFilterChip(id = it.name, label = it.label(pharmStrings)) },
                 activeId = typeFilter.name,
                 onSelect = { id -> callbacks.onTypeFilterChange(StockTypeFilter.valueOf(id)) },
-                modifier = Modifier.fillMaxWidth(),
             )
         },
         actions = {

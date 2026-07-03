@@ -21,29 +21,32 @@ internal fun ReportsMetricsRow(
             label = s.reportsMetricSalesToday,
             value = formatBahtCurrency(summary.todaySales),
             sub = "${summary.todayBills} ${s.movementsCountNoun}",
-            tint = MetricTint.Blue,
-            modifier = Modifier.weight(1f),
         )
         MetricCard(
             label = s.reportsMetricSalesMonth,
             value = formatBahtCurrency(summary.monthSales),
             sub = s.commonBaht,
-            tint = MetricTint.Indigo,
-            modifier = Modifier.weight(1f),
         )
         MetricCard(
             label = s.reportsMetricProfitMonth,
             value = monthProfit?.let { formatBahtCurrency(it) } ?: "—",
             sub = s.reportsMetricProfitMonthHint,
-            tint = MetricTint.Green,
-            modifier = Modifier.weight(1f),
+            tint = when {
+                monthProfit == null -> MetricTint.Neutral
+                monthProfit > 0.0 -> MetricTint.Success
+                monthProfit < 0.0 -> MetricTint.Danger
+                else -> MetricTint.Neutral
+            },
         )
         MetricCard(
             label = s.reportsMetricStockValue,
             value = formatBahtCurrency(summary.stockValue),
             sub = s.reportsMetricStockHint(summary.outStock, summary.lowStock),
-            tint = MetricTint.Purple,
-            modifier = Modifier.weight(1f),
+            tint = when {
+                summary.outStock > 0 -> MetricTint.Danger
+                summary.lowStock > 0 -> MetricTint.Warning
+                else -> MetricTint.Neutral
+            },
         )
     }
 }

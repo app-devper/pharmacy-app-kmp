@@ -4,7 +4,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,8 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -43,22 +40,19 @@ internal fun CartSlotRail(
     Column(
         modifier = modifier
             .fillMaxHeight()
-            .width(44.dp)
-            .padding(vertical = 10.dp, horizontal = 4.dp),
+            .width(44.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            slots.forEachIndexed { index, parked ->
-                SlotChip(
-                    number = index + 1,
-                    filled = parked != null,
-                    selected = index == selectedSlot,
-                    onClick = { onTapSlot(index) },
-                )
-            }
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+
+        slots.forEachIndexed { index, parked ->
+            SlotChip(
+                number = index + 1,
+                filled = parked != null,
+                selected = index == selectedSlot,
+                onClick = { onTapSlot(index) },
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -72,6 +66,7 @@ internal fun CartSlotRail(
             text = todayDayMonth(),
             style = PharmText.bodySm.copy(color = t.colors.successFg, fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 12.dp),
         )
     }
 }
@@ -89,16 +84,28 @@ private fun SlotChip(
         modifier = Modifier
             .fillMaxWidth()
             .height(44.dp)
-            .clip(t.shapes.md)
-            .background(if (selected) t.colors.accentBgSoft else Color.Transparent)
+            .background(if (selected) t.colors.sidebarItemActive else t.colors.bgPage)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,
     ) {
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .width(2.dp)
+                    .height(24.dp)
+                    .background(t.colors.accent),
+            )
+        }
         Text(
             text = number.toString(),
             style = PharmText.buttonMd,
-            color = if (selected) t.colors.accent else t.colors.fg2,
+            color = when {
+                selected -> t.colors.accent
+                filled   -> t.colors.fg1
+                else     -> t.colors.fg2
+            },
             fontWeight = if (selected || filled) FontWeight.Bold else FontWeight.Medium,
             textAlign = TextAlign.Center,
         )
@@ -107,7 +114,7 @@ private fun SlotChip(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(top = 4.dp, end = 6.dp)
-                    .size(7.dp)
+                    .size(6.dp)
                     .background(color = t.colors.successFg, shape = CircleShape),
             )
         }

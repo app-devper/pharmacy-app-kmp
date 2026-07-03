@@ -4,7 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,6 +34,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OfflineSyncContent(
     state: OfflineSyncUiState,
@@ -48,11 +50,14 @@ fun OfflineSyncContent(
     ) {
         OfflineSyncMetricsRow(
             pending = state.pending,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
         )
         PharmListToolbar(
             actions = {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
                     PharmButton(
                         label = s.commonRefresh,
                         onClick = callbacks.onRefresh,
@@ -80,7 +85,7 @@ fun OfflineSyncContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             when {

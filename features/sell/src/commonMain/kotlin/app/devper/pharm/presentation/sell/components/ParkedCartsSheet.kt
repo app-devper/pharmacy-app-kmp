@@ -2,11 +2,9 @@ package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,8 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
@@ -54,33 +52,26 @@ fun ParkedCartsSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val t = pharmTokens
+    val s = pharmStrings
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = t.colors.surface,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
             Text(
-                text = pharmStrings.sellParked,
+                text = s.sellParked,
                 style = PharmText.h1,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
             Text(
-                text = if (canParkActiveCart) {
-                    pharmStrings.sellParkedHintCanPark
-                } else {
-                    pharmStrings.sellParkedHintEmpty
-                },
+                text = if (canParkActiveCart) s.sellParkedHintCanPark else s.sellParkedHintEmpty,
                 style = PharmText.meta,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
             )
 
-            Spacer(Modifier.height(4.dp))
+            SheetDivider()
+
             slots.forEachIndexed { idx, parked ->
                 if (parked == null) {
                     EmptySlotRow(
@@ -98,6 +89,7 @@ fun ParkedCartsSheet(
                         onDiscard = { onDiscardSlot(idx) },
                     )
                 }
+                SheetDivider()
             }
         }
     }
@@ -110,26 +102,23 @@ private fun EmptySlotRow(
     onClick: () -> Unit,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(t.shapes.md)
-            .background(t.colors.bgPage)
-            .clickable(enabled = canPark, onClick = onClick)
+            .clickable(enabled = canPark, role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         SlotBadge(slotNumber, dimmed = !canPark)
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = if (canPark) pharmStrings.sellParkSlotHere else pharmStrings.bulkImportEmptyDefault,
-                style = PharmText.body.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = if (canPark) t.colors.fg1 else t.colors.fgMuted,
-                ),
-            )
-        }
+        Text(
+            text = if (canPark) s.sellParkSlotHere else s.bulkImportEmptyDefault,
+            style = PharmText.body.copy(
+                fontWeight = FontWeight.Medium,
+                color = if (canPark) t.colors.fg1 else t.colors.fgMuted,
+            ),
+            modifier = Modifier.weight(1f).padding(start = 12.dp),
+        )
     }
 }
 
@@ -143,35 +132,30 @@ private fun FilledSlotRow(
     onDiscard: () -> Unit,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     var confirmingDiscard by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(t.shapes.md)
-            .background(t.colors.accentBgSoft)
             .clickable(role = Role.Button, onClick = onRestore)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(start = 16.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         SlotBadge(slotNumber)
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
             Text(
-                text = parked.customer?.name ?: pharmStrings.sellCustomerWalkIn,
-                style = PharmText.body.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = t.colors.fg1,
-                ),
+                text = parked.customer?.name ?: s.sellCustomerWalkIn,
+                style = PharmText.body.copy(fontWeight = FontWeight.SemiBold, color = t.colors.fg1),
             )
             Text(
-                text = pharmStrings.sellParkedSummary(parked.itemCount, fmtBaht(parked.total.amount)),
+                text = s.sellParkedSummary(parked.itemCount, fmtBaht(parked.total.amount)),
                 style = PharmText.meta.tabular(),
             )
         }
-
         if (canOverwrite) {
             PharmButton(
-                label = pharmStrings.commonConfirm,
+                label = s.commonConfirm,
                 onClick = onOverwrite,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
@@ -179,10 +163,10 @@ private fun FilledSlotRow(
         }
         IconButton(onClick = { confirmingDiscard = true }) {
             Icon(
-                imageVector = PharmIcons.Close,
-                contentDescription = pharmStrings.sellParkedDeleteDesc,
-                tint = t.colors.fg2,
-                modifier = Modifier.size(20.dp),
+                imageVector = PharmIcons.Trash,
+                contentDescription = s.sellParkedDeleteDesc,
+                tint = t.colors.dangerFg,
+                modifier = Modifier.size(18.dp),
             )
         }
     }
@@ -190,17 +174,17 @@ private fun FilledSlotRow(
     PharmModal(
         open = confirmingDiscard,
         onDismiss = { confirmingDiscard = false },
-        title = pharmStrings.sellParkedDeleteTitle(slotNumber),
+        title = s.sellParkedDeleteTitle(slotNumber),
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = pharmStrings.commonCancel,
+                label = s.commonCancel,
                 onClick = { confirmingDiscard = false },
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = pharmStrings.commonDelete,
+                label = s.commonDelete,
                 onClick = {
                     confirmingDiscard = false
                     onDiscard()
@@ -210,10 +194,7 @@ private fun FilledSlotRow(
             )
         },
     ) {
-        Text(
-            pharmStrings.sellParkedDeleteBody(parked.itemCount),
-            style = PharmText.body,
-        )
+        Text(s.sellParkedDeleteBody(parked.itemCount), style = PharmText.body)
     }
 }
 
@@ -238,30 +219,41 @@ private fun SlotBadge(slotNumber: Int, dimmed: Boolean = false) {
 }
 
 @Composable
+private fun SheetDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(pharmTokens.colors.divider),
+    )
+}
+
+@Composable
 fun ParkOverwriteDialog(
     slotNumber: Int,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
+    val s = pharmStrings
     PharmModal(
         open = true,
         onDismiss = onCancel,
-        title = pharmStrings.sellParkedOverwriteTitle(slotNumber),
+        title = s.sellParkedOverwriteTitle(slotNumber),
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
-                label = pharmStrings.commonCancel,
+                label = s.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
                 size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = pharmStrings.commonConfirm,
+                label = s.commonConfirm,
                 onClick = onConfirm,
                 size = PharmButtonSize.Sm,
             )
         },
     ) {
-        Text(pharmStrings.sellParkedOverwriteBody, style = PharmText.body)
+        Text(s.sellParkedOverwriteBody, style = PharmText.body)
     }
 }

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,26 +80,28 @@ fun DrugPickerColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.colors.surface)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SearchBar(
-                query = query,
-                onChange = onQueryChange,
-                onSubmit = onSubmitSearch,
-                focusRequester = searchFocus,
+            PharmTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                placeholder = pharmStrings.sellSearchPlaceholder,
                 modifier = Modifier.weight(1f),
+                imeAction = ImeAction.Search,
+                onImeAction = onSubmitSearch,
+                focusRequester = searchFocus,
+                leadingSlot = null,
+                trailingSlot = null,
             )
+            ScannerActivePill()
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.divider),
-        )
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
         ResultLine(query, total = drugs.size, visibleCount = visible.size)
+
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
         when {
             loading && drugs.isEmpty() -> Box(
@@ -114,16 +118,17 @@ fun DrugPickerColumn(
             ) {
 
                 val columns = when {
-                    maxWidth >= 1280.dp -> 4
-                    maxWidth >= 640.dp  -> 3
-                    else                -> 2
+                    maxWidth >= PharmBreakpoint.GridWide -> 4
+                    maxWidth >= PharmBreakpoint.Medium  -> 3
+                    maxWidth >= PharmBreakpoint.Stack  -> 2
+                    else                -> 1
                 }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
                     state = gridState,
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(visible, key = { it.id }) { drug ->
                         DrugCard(
@@ -147,41 +152,14 @@ fun DrugPickerColumn(
 }
 
 @Composable
-private fun SearchBar(
-    query: String,
-    onChange: (String) -> Unit,
-    onSubmit: () -> Unit,
-    focusRequester: FocusRequester,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        PharmTextField(
-            value = query,
-            onValueChange = onChange,
-            placeholder = pharmStrings.sellSearchPlaceholder,
-            modifier = Modifier.weight(1f),
-            imeAction = ImeAction.Search,
-            onImeAction = onSubmit,
-            focusRequester = focusRequester,
-            leadingSlot = null,
-            trailingSlot = null,
-        )
-        ScannerActivePill()
-    }
-}
-
-@Composable
 private fun ScannerActivePill() {
     val t = pharmTokens
     Row(
         modifier = Modifier
+            .height(t.dimens.controlHeight)
             .clip(t.shapes.md)
             .background(t.colors.accentBgSoft)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -191,9 +169,11 @@ private fun ScannerActivePill() {
                 .clip(t.shapes.pill)
                 .background(t.colors.successFg),
         )
-        Text(
-            text = pharmStrings.sellScannerOn,
-            style = PharmText.badge.copy(color = t.colors.accent),
+        Icon(
+            imageVector = PharmIcons.Scan,
+            contentDescription = pharmStrings.sellScannerOn,
+            tint = t.colors.accent,
+            modifier = Modifier.size(18.dp),
         )
     }
 }
@@ -204,7 +184,10 @@ private fun ResultLine(query: String, total: Int, visibleCount: Int) {
     Text(
         text = text,
         style = PharmText.micro,
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(pharmTokens.colors.surface)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     )
 }
 

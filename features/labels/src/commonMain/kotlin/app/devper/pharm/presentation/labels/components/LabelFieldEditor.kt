@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.labels.components
 
+import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -100,7 +101,7 @@ private fun LabelLineRow(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
-        val singleLine = maxWidth >= 600.dp
+        val singleLine = maxWidth >= PharmBreakpoint.Medium
         if (singleLine) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

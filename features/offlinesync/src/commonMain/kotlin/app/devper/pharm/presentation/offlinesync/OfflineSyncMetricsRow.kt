@@ -20,22 +20,18 @@ internal fun OfflineSyncMetricsRow(pending: List<PendingSale>, modifier: Modifie
             label = s.offlineSyncMetricsTotal,
             value = total.toString(),
             sub = s.offlineSyncMetricsLocation,
-            tint = MetricTint.Blue,
-            modifier = Modifier.weight(1f),
+            tint = if (total > 0) MetricTint.Warning else MetricTint.Neutral,
         )
         MetricCard(
             label = s.offlineSyncMetricsFailed,
             value = failed.toString(),
             sub = s.offlineSyncStatusRetry,
-            tint = MetricTint.Purple,
-            modifier = Modifier.weight(1f),
+            tint = if (failed > 0) MetricTint.Danger else MetricTint.Neutral,
         )
         MetricCard(
             label = s.offlineSyncMetricsAttempts,
             value = attempts.toString(),
             sub = s.offlineSyncMetricsAttemptsSuffix,
-            tint = MetricTint.Indigo,
-            modifier = Modifier.weight(1f),
         )
     }
 }

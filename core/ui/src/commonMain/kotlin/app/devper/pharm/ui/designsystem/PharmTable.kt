@@ -3,14 +3,12 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -130,7 +129,7 @@ fun <T> PharmTable(
 }
 
 private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
-private val CARD_MODE_MAX_WIDTH: Dp = 600.dp
+private val CARD_MODE_MAX_WIDTH: Dp = PharmBreakpoint.Medium
 
 @Composable
 private fun <T> PharmTableCardList(
@@ -144,11 +143,7 @@ private fun <T> PharmTableCardList(
     val title = remember(visible) { visible.firstOrNull { it.compactTitle } ?: visible.firstOrNull() }
     val details = remember(visible, title) { visible.filter { it !== title } }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = rows, key = key) { row ->
             val onClickRow = remember(row, onRowClick) {
                 onRowClick?.let { cb -> { cb(row) } }
@@ -170,32 +165,37 @@ private fun <T> PharmTableCard(
 ) {
     val t = pharmTokens
     val clickable = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(t.shapes.lg)
-            .background(t.colors.surface)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .then(clickable)
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
-        details.forEach { col ->
-            if (col.hideInCardWhenEmpty?.invoke(row) == true) return@forEach
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = col.header,
-                    style = PharmText.micro.copy(color = t.colors.fgMuted),
-                    modifier = Modifier.weight(1f),
-                )
-                Box(contentAlignment = Alignment.CenterEnd) { col.cell(row) }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(clickable)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
+            details.forEach { col ->
+                if (col.hideInCardWhenEmpty?.invoke(row) == true) return@forEach
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = col.header,
+                        style = PharmText.micro.copy(color = t.colors.fgMuted),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Box(contentAlignment = Alignment.CenterEnd) { col.cell(row) }
+                }
             }
         }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(t.colors.divider),
+        )
     }
 }
 
