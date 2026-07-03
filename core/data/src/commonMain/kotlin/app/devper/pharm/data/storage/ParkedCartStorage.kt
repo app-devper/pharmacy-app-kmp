@@ -11,6 +11,7 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.domain.repository.sales.PARK_SLOT_COUNT
 import com.russhwolf.settings.Settings
+import app.devper.pharm.common.StorageException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
@@ -29,10 +30,9 @@ class ParkedCartStorage(private val settings: Settings) {
             json.decodeFromString(ParkedCartDto.serializer(), raw)
                 .takeIf { it.version == ParkedCartDto.SCHEMA_VERSION }
                 ?.toDomain()
-        } catch (_: SerializationException) {
-
+        } catch (e: SerializationException) {
             settings.remove(keyFor(slot))
-            null
+            throw StorageException(e.message ?: "parked cart corrupt: slot $slot")
         }
     }
 
@@ -52,9 +52,9 @@ class ParkedCartStorage(private val settings: Settings) {
                 .takeIf { it.version == ParkedCartDto.SCHEMA_VERSION }
                 ?.toDomain()
                 ?.let { ActiveCart(it.items, it.customer, it.cartDiscount, it.activeTier, it.cashReceived) }
-        } catch (_: SerializationException) {
+        } catch (e: SerializationException) {
             settings.remove(KEY_ACTIVE)
-            null
+            throw StorageException(e.message ?: "active cart corrupt")
         }
     }
 
