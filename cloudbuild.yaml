@@ -12,6 +12,13 @@ steps:
         unzip -q /tmp/tools.zip -d $$ANDROID_HOME/cmdline-tools
         mv $$ANDROID_HOME/cmdline-tools/cmdline-tools $$ANDROID_HOME/cmdline-tools/latest
         yes | $$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null
+        export GRADLE_USER_HOME=/workspace/.gradle
+        mkdir -p $$GRADLE_USER_HOME
+        {
+          echo 'org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8'
+          echo 'kotlin.daemon.jvmargs=-Xmx3g'
+          echo 'org.gradle.workers.max=6'
+        } > $$GRADLE_USER_HOME/gradle.properties
         ./gradlew :composeApp:wasmJsBrowserDistribution --no-daemon --stacktrace
 
   - id: deploy-hosting
