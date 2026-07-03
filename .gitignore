@@ -33,3 +33,6 @@ DerivedData/
 
 # Claude Code
 .claude/
+
+# Firebase
+.firebase/
