@@ -1,0 +1,56 @@
+steps:
+  - id: build-wasm
+    name: eclipse-temurin:17-jdk
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        apt-get update -qq && apt-get install -y -qq unzip >/dev/null
+        export ANDROID_HOME=/workspace/.android-sdk
+        mkdir -p $$ANDROID_HOME/cmdline-tools
+        curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/tools.zip
+        unzip -q /tmp/tools.zip -d $$ANDROID_HOME/cmdline-tools
+        mv $$ANDROID_HOME/cmdline-tools/cmdline-tools $$ANDROID_HOME/cmdline-tools/latest
+        yes | $$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null
+        ./gradlew :composeApp:wasmJsBrowserDistribution --no-daemon --stacktrace
+
+  - id: deploy-hosting
+    name: node:20
+    entrypoint: npx
+    args:
+      - firebase-tools
+      - deploy
+      - --only
+      - hosting:pharm-app
+      - --project
+      - devperpos
+      - --non-interactive
+
+  - id: tag-version
+    name: gcr.io/cloud-builders/git
+    entrypoint: bash
+    secretEnv: [GITHUB_TOKEN]
+    args:
+      - -ceu
+      - |
+        VERSION=$(grep -m1 '^app-version' gradle/libs.versions.toml | sed 's/.*"\(.*\)"/\1/')
+        TAG="v$$VERSION"
+        REMOTE="https://x-access-token:$$GITHUB_TOKEN@github.com/app-devper/pharmacy-app-kmp.git"
+        if git ls-remote --tags "$$REMOTE" "refs/tags/$$TAG" | grep -q .; then
+          echo "$$TAG already exists, skipping"
+        else
+          git config user.email "cloudbuild@devperpos.iam.gserviceaccount.com"
+          git config user.name "Cloud Build"
+          git tag -a "$$TAG" -m "Release $$TAG"
+          git push "$$REMOTE" "$$TAG"
+        fi
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/devperpos/secrets/github-token-pharm-kmp/versions/latest
+      env: GITHUB_TOKEN
+
+timeout: 2400s
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
