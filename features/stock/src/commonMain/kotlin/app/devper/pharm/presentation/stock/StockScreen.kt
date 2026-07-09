@@ -15,6 +15,7 @@ fun StockScreen(
     onOpenAdjust: (drugId: String, drugName: String) -> Unit = { _, _ -> },
     onOpenHistory: (drugId: String, drugName: String) -> Unit = { _, _ -> },
     onOpenReorderSuggestions: () -> Unit = {},
+    onOpenExpiry: () -> Unit = {},
     viewModel: StockViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -33,6 +34,7 @@ fun StockScreen(
             onOpenAdjust = { onOpenAdjust(it.id, it.name) },
             onOpenHistory = { onOpenHistory(it.id, it.name) },
             onOpenReorderSuggestions = onOpenReorderSuggestions,
+            onOpenExpiry = onOpenExpiry,
             onDismissError = viewModel::dismissError,
         ),
     )

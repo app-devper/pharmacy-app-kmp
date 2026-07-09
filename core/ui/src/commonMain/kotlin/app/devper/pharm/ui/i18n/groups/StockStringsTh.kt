@@ -68,6 +68,8 @@ object StockStringsTh : StockStrings {
     override val stockMetricValueByCost = "ตามราคาทุน"
     override val stockMetricBelowMin = "ต่ำกว่าขั้นต่ำ"
     override val stockMetricOut = "หมดสต็อก"
+    override val stockMetricExpiring = "ใกล้หมดอายุ"
+    override val stockMetricExpiringSub = "ภายใน 90 วัน — กดเพื่อดู"
     override val stockMetricBackorder = "ค้างส่ง"
     override val stockStatusOut = "หมด"
     override val stockStatusLow = "ใกล้หมด"

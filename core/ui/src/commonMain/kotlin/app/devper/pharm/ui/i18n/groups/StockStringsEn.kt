@@ -68,6 +68,8 @@ object StockStringsEn : StockStrings {
     override val stockMetricValueByCost = "By cost"
     override val stockMetricBelowMin = "Below minimum"
     override val stockMetricOut = "Out of stock"
+    override val stockMetricExpiring = "Expiring soon"
+    override val stockMetricExpiringSub = "within 90 days — tap to view"
     override val stockMetricBackorder = "Backorder"
     override val stockStatusOut = "Out"
     override val stockStatusLow = "Low"

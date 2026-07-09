@@ -2,6 +2,7 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -89,6 +91,7 @@ fun MetricCard(
     modifier: Modifier = Modifier,
     sub: String? = null,
     tint: MetricTint = MetricTint.Neutral,
+    onClick: (() -> Unit)? = null,
 ) {
     val t = pharmTokens
     val valueColor: Color = when (tint) {
@@ -110,10 +113,12 @@ fun MetricCard(
         MetricTint.Danger  -> t.colors.dangerFg.copy(alpha = 0.2f)
     }
     val shape = t.shapes.lg
+    val clickMod = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
+            .then(clickMod)
             .background(bg, shape)
             .border(1.dp, borderColor, shape)
             .padding(horizontal = t.spacing.s4, vertical = t.spacing.s3),

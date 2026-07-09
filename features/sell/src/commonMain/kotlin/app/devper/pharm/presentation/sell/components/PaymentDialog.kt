@@ -18,8 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.devper.pharm.presentation.sell.cashQuickAmounts
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmKeypad
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
@@ -125,6 +127,22 @@ fun PaymentDialog(
                     fg = pharmTokens.colors.warningFg,
                     modifier = Modifier.weight(1f),
                 )
+            }
+
+            val quickAmounts = cashQuickAmounts(total)
+            if (quickAmounts.isNotEmpty()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    quickAmounts.forEach { amount ->
+                        PharmButton(
+                            label = "฿$amount",
+                            onClick = { onReceivedChange(amount.toString()) },
+                            variant = PharmButtonVariant.Outline,
+                            size = PharmButtonSize.Sm,
+                            enabled = !checkingOut,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
             }
 
             PharmKeypad(
