@@ -36,6 +36,8 @@ object SellStringsTh : SellStrings {
     override val sellKyCaptureHint = "ระบบจะให้กรอกข้อมูลผู้ซื้อตอนชำระเงิน"
     override val sellPickerCountAll: (Int) -> String = { n -> "ทั้งหมด $n รายการ" }
     override val sellPickerCountFound: (Int, Int) -> String = { a, b -> "พบ $a จาก $b" }
+    override val sellPickerConfirmAdd: (String) -> String = { "กด Enter อีกครั้งเพื่อเพิ่ม \"$it\"" }
+    override val sellPickerAdded: (String) -> String = { "เพิ่ม $it แล้ว" }
     override val sellPickerEmptyStock = "ยังไม่มีรายการยาในคลัง"
     override val sellOversellCount: (Int) -> String = { n -> "ยา $n รายการเกินสต็อก" }
     override val sellOversellExplain = "ขายล่วงหน้า: ยอมขายเกินสต็อกที่มีได้ ระบบบันทึกจำนวนที่เกินไว้และจะกระทบยอดเมื่อรับเข้า/ปรับสต็อกครั้งถัดไป จำนวนที่ขายเกินยังคืนไม่ได้จนกว่าจะผูกกับล็อตจริง"
