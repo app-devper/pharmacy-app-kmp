@@ -7,7 +7,10 @@ import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.EodReport
+import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.SettingsProvider
+import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
@@ -67,12 +70,34 @@ class EodViewModelTest {
         ),
         settings: FakeSettingsRepository = FakeSettingsRepository(),
         printer: ReceiptPrinter = RecordingPrinter(),
+        offlineQueue: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
     ): EodViewModel = EodViewModel(
         settings = SettingsProvider(settings),
+        offlineQueue = OfflineQueueProvider(offlineQueue),
         getEodReport = GetEodReportUseCase(reports, dispatchers),
         closeEod = CloseEodUseCase(reports, dispatchers),
         printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
     )
+
+    @Test
+    fun pending_offline_sales_surface_in_state() = runVmTest { dispatchers ->
+        val queue = FakeOfflineSaleQueue(
+            seed = listOf(
+                PendingSale(id = "p1", clientRequestId = "r1", payloadJson = "{}", enqueuedAt = 1L),
+                PendingSale(id = "p2", clientRequestId = "r2", payloadJson = "{}", enqueuedAt = 2L),
+            ),
+        )
+        val vm = newVm(dispatchers, offlineQueue = queue)
+        advanceUntilIdle()
+        assertEquals(2, vm.state.value.pendingSyncCount)
+    }
+
+    @Test
+    fun empty_queue_keeps_pending_count_zero() = runVmTest { dispatchers ->
+        val vm = newVm(dispatchers)
+        advanceUntilIdle()
+        assertEquals(0, vm.state.value.pendingSyncCount)
+    }
 
     @Test
     fun init_loads_report_from_repository() = runVmTest { dispatchers ->

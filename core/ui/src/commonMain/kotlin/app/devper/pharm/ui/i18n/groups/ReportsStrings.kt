@@ -63,6 +63,8 @@ interface ReportsStrings {
     val reportsEodToday: String
     val reportsEodConfirmTitle: String
     val reportsEodConfirmMessage: String
+    val reportsEodPendingSyncBanner: (Int) -> String
+    val reportsEodPendingSyncWarning: (Int) -> String
     val reportsEodCloseCta: String
     val reportsEodClosedBadge: String
     val reportsEodTryDifferentRange: String
@@ -84,4 +86,11 @@ interface ReportsStrings {
     val reportsEodClosedDate: (String) -> String
     val reportsBillsOfDay: (Int) -> String
     val reportsWalkInCustomer: String
+
+    val reportsCsvHeaderDrug: String
+    val reportsCsvHeaderQty: String
+    val reportsCsvHeaderRevenue: String
+    val reportsCsvHeaderCost: String
+    val reportsCsvHeaderProfit: String
+    val reportsCsvHeaderMargin: String
 }

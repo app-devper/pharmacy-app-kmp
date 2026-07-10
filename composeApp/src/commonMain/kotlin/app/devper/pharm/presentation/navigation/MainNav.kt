@@ -252,6 +252,7 @@ fun MainShell(appViewModel: AppViewModel) {
         },
         onLogout = appViewModel::signOut,
         pendingSyncCount = state.pendingSyncCount,
+        onSyncClick = appViewModel::syncNow,
         role = state.role,
         user = user,
         onProfileClick = { nestedNav.navigate(Profile) { launchSingleTop = true } },

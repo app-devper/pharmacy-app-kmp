@@ -14,13 +14,14 @@ import app.devper.pharm.domain.usecase.auth.LogoutUseCase
 import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.onEach
 
 class AppViewModel(
     authState: AuthStateProvider,
     offlineQueue: OfflineQueueProvider,
     uiPreferences: UiPreferencesProvider,
-    offlineAutoSync: OfflineAutoSync,
+    private val offlineAutoSync: OfflineAutoSync,
     private val logout: LogoutUseCase,
     private val getProfile: GetProfileUseCase,
     private val setTheme: SetThemePreferenceUseCase,
@@ -64,6 +65,10 @@ class AppViewModel(
                 setState { copy(role = Role.UNKNOWN, userDisplayName = "", userInitial = "") }
             },
         )
+    }
+
+    fun syncNow() {
+        viewModelScope.launch { offlineAutoSync.syncPending() }
     }
 
     fun signOut() {
