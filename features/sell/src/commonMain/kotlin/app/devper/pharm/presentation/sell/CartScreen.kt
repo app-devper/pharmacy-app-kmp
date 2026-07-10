@@ -108,6 +108,8 @@ fun CartScreen(
                 parkedFilledCount = parkedState.filledCount,
                 onOpenParkedSheet = parkedCartVM::openSheet,
                 compact = true,
+                kyCaptured = checkoutState.kyCaptured,
+                onOpenKyPrecapture = checkoutVM::openKyPrecapture,
             )
         }
     }

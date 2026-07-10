@@ -38,6 +38,8 @@ interface SellStrings {
     val sellPickerCountFound: (Int, Int) -> String
     val sellPickerConfirmAdd: (String) -> String
     val sellPickerAdded: (String) -> String
+    val sellKyPrecaptureNeeded: String
+    val sellKyPrecaptureDone: String
     val sellPickerEmptyStock: String
     val sellOversellCount: (Int) -> String
     val sellOversellExplain: String

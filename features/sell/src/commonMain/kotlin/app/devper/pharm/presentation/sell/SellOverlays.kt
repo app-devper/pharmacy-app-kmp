@@ -40,6 +40,8 @@ data class SellOverlayCallbacks(
     val onSubmitExactPayment: () -> Unit = {},
     val onClosePayment: () -> Unit = {},
     val onConfirmKyCapture: (KyCaptureFields) -> Unit = {},
+    val onConfirmKyPrecapture: (KyCaptureFields) -> Unit = {},
+    val onDismissKyPrecapture: () -> Unit = {},
     val onRequestSkipKy: () -> Unit = {},
     val onDismissKyCapture: () -> Unit = {},
     val onConfirmSkipKy: () -> Unit = {},
@@ -107,6 +109,17 @@ internal fun SellOverlays(
             onSubmit = callbacks.onSubmitPayment,
             onSubmitExact = callbacks.onSubmitExactPayment,
             onDismiss = callbacks.onClosePayment,
+        )
+    }
+
+    checkoutState.kyPrecapture?.let { required ->
+        KyCaptureSheet(
+            required = required,
+            initial = checkoutState.capturedKyFields ?: sellState.kyInitialFields,
+            submitting = false,
+            onConfirm = callbacks.onConfirmKyPrecapture,
+            onSkip = callbacks.onDismissKyPrecapture,
+            onDismiss = callbacks.onDismissKyPrecapture,
         )
     }
 

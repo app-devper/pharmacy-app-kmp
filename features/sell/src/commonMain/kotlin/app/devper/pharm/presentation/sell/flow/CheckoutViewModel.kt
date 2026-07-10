@@ -57,6 +57,7 @@ class CheckoutViewModel(
     private var pendingKyFields: KyCaptureFields? = null
     private var pendingKyRequired: KyRequired? = null
     private var pendingKySkippedByCashier: Boolean = false
+    private var precaptureItems: List<CartLine>? = null
     private var receiptSnapshot: ReceiptSnapshot? = null
 
     private var lastSettings: Settings = Settings()
@@ -64,7 +65,17 @@ class CheckoutViewModel(
     init {
 
         cartState.state
-            .onEach { snap -> setState { copy(cartIsEmpty = snap.isEmpty) } }
+            .onEach { snap ->
+                val invalidatePrecapture = current.kyCaptured && snap.items != precaptureItems
+                if (invalidatePrecapture) {
+                    pendingKyFields = null
+                    precaptureItems = null
+                }
+                setState {
+                    if (invalidatePrecapture) copy(cartIsEmpty = snap.isEmpty, kyCaptured = false, capturedKyFields = null)
+                    else copy(cartIsEmpty = snap.isEmpty)
+                }
+            }
             .launchIn(viewModelScope)
         settings.state
             .onEach { lastSettings = it }
@@ -100,6 +111,8 @@ class CheckoutViewModel(
                 pendingKyRequired = null
                 pendingKyFields = null
                 pendingKySkippedByCashier = true
+            } else if (pendingKyFields != null) {
+                pendingKyRequired = required
             } else {
                 pendingKyRequired = required
                 setState { copy(kyCapturePending = required) }
@@ -107,6 +120,22 @@ class CheckoutViewModel(
             }
         }
         startNewCheckout(allowOversell = false)
+    }
+
+    fun openKyPrecapture() {
+        val required = cartState.current.items.calculateKyRequired()
+        if (required.isEmpty) return
+        setState { copy(kyPrecapture = required) }
+    }
+
+    fun confirmKyPrecapture(fields: KyCaptureFields) {
+        pendingKyFields = fields
+        precaptureItems = cartState.current.items
+        setState { copy(kyPrecapture = null, kyCaptured = true, capturedKyFields = fields) }
+    }
+
+    fun dismissKyPrecapture() {
+        setState { copy(kyPrecapture = null) }
     }
 
     fun confirmKyCapture(fields: KyCaptureFields) {
@@ -128,7 +157,8 @@ class CheckoutViewModel(
         pendingKyFields = null
         pendingKyRequired = null
         pendingKySkippedByCashier = true
-        setState { copy(kyCapturePending = null, showSkipKyConfirm = false) }
+        precaptureItems = null
+        setState { copy(kyCapturePending = null, showSkipKyConfirm = false, kyCaptured = false, capturedKyFields = null) }
         startNewCheckout(allowOversell = false)
     }
 
@@ -136,7 +166,8 @@ class CheckoutViewModel(
         pendingKyFields = null
         pendingKyRequired = null
         pendingKySkippedByCashier = false
-        setState { copy(kyCapturePending = null, showSkipKyConfirm = false) }
+        precaptureItems = null
+        setState { copy(kyCapturePending = null, showSkipKyConfirm = false, kyCaptured = false, capturedKyFields = null) }
     }
 
     fun confirmOversell() {
