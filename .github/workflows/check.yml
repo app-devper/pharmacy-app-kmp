@@ -30,20 +30,10 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Cache Kotlin/Native dist (~/.konan)
-        uses: actions/cache@v4
-        with:
-          path: ~/.konan
-          key: konan-${{ runner.os }}-${{ hashFiles('**/gradle/libs.versions.toml', '**/build.gradle.kts', '**/settings.gradle.kts') }}
-          restore-keys: |
-            konan-${{ runner.os }}-
-
-      - name: Architecture audit
-        run: ./gradlew :composeApp:auditArchitecture --stacktrace
-
-      - name: JVM tests (4 core + 20 per-feature + test-fixtures compile)
+      - name: Audit + tests + coverage (single Gradle invocation)
         run: |
           ./gradlew --parallel \
+            :composeApp:auditArchitecture \
             :core:common:jvmTest \
             :core:domain:jvmTest \
             :core:ui:jvmTest \
@@ -69,20 +59,14 @@ jobs:
             :features:stockcount:jvmTest \
             :features:suppliers:jvmTest \
             :features:users:jvmTest \
+            :composeApp:testDebugUnitTest \
+            :composeApp:compileTestKotlinWasmJs \
+            koverVerify \
             --stacktrace
 
-      - name: Android debug unit tests
-        run: ./gradlew :composeApp:testDebugUnitTest --stacktrace
-
-      - name: Compile WasmJs test target
-        run: ./gradlew :composeApp:compileTestKotlinWasmJs --stacktrace
-
-      - name: Coverage verify (Kover line floor)
-        run: ./gradlew koverVerify --stacktrace
-
-      - name: Coverage report (XML + HTML)
-        if: always()
-        run: ./gradlew koverXmlReport koverHtmlReport --stacktrace
+      - name: Coverage report on failure (XML)
+        if: failure()
+        run: ./gradlew koverXmlReport --stacktrace
 
       - name: Upload test + coverage reports on failure
         if: failure()
