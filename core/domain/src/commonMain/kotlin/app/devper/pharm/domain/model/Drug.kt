@@ -2,6 +2,7 @@ package app.devper.pharm.domain.model
 
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
+import kotlinx.datetime.LocalDate
 
 data class Drug(
     val id: String,
@@ -16,6 +17,9 @@ data class Drug(
     val minStock: Quantity,
     val unit: String?,
     val regNo: String?,
+
+    val nextLotNumber: String? = null,
+    val nextLotExpiry: LocalDate? = null,
 
     val prices: Map<String, Money> = emptyMap(),
 

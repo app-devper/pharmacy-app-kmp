@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
+import app.devper.pharm.domain.extension.EXPIRY_WARNING_DAYS
 import app.devper.pharm.ui.theme.pharmTokens
 
 enum class DrugCardType { Rx, Herb, Supplement }
@@ -43,6 +44,7 @@ fun DrugCard(
     altUnitCount: Int = 0,
     kyForm: Int? = null,
     highlighted: Boolean = false,
+    expiryDaysLeft: Int? = null,
     lowStockThreshold: Int = 20,
 ) {
     val t = pharmTokens
@@ -125,6 +127,11 @@ fun DrugCard(
             when {
                 oversold -> PharmBadge(text = s.commonOversoldBadge(-stock), tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
                 empty    -> PharmBadge(text = s.commonPresellBadge, tone = PharmBadgeTone.Amber, size = PharmBadgeSize.Sm)
+            }
+            when {
+                expiryDaysLeft == null -> Unit
+                expiryDaysLeft < 0 -> PharmBadge(text = s.commonExpiredBadge, tone = PharmBadgeTone.Red, size = PharmBadgeSize.Sm)
+                expiryDaysLeft <= EXPIRY_WARNING_DAYS -> PharmBadge(text = s.commonExpiresInBadge(expiryDaysLeft), tone = PharmBadgeTone.Amber, size = PharmBadgeSize.Sm)
             }
         }
 

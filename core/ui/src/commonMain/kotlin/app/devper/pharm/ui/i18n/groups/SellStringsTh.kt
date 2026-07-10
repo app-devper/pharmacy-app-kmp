@@ -38,6 +38,7 @@ object SellStringsTh : SellStrings {
     override val sellPickerCountFound: (Int, Int) -> String = { a, b -> "พบ $a จาก $b" }
     override val sellPickerConfirmAdd: (String) -> String = { "กด Enter อีกครั้งเพื่อเพิ่ม \"$it\"" }
     override val sellPickerAdded: (String) -> String = { "เพิ่ม $it แล้ว" }
+    override val sellLineNextLot: (String, String) -> String = { lot, date -> "ล็อต $lot · หมดอายุ $date" }
     override val sellKyPrecaptureNeeded = "แตะเพื่อกรอกข้อมูล ขย. ล่วงหน้า"
     override val sellKyPrecaptureDone = "บันทึกข้อมูล ขย. แล้ว — แตะเพื่อแก้ไข"
     override val sellPickerEmptyStock = "ยังไม่มีรายการยาในคลัง"

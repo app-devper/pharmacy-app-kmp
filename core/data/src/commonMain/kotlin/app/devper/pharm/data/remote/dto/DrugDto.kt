@@ -20,6 +20,14 @@ data class DrugDto(
     @SerialName("prices") val prices: Map<String, Double>? = null,
     @SerialName("alt_units") val altUnits: List<AltUnitDto>? = null,
     @SerialName("report_types") val reportTypes: List<String>? = null,
+    @SerialName("next_lot") val nextLot: NextLotDto? = null,
+)
+
+@Serializable
+data class NextLotDto(
+    @SerialName("lot_id") val lotId: String = "",
+    @SerialName("lot_number") val lotNumber: String = "",
+    @SerialName("expiry_date") val expiryDate: String = "",
 )
 
 @Serializable

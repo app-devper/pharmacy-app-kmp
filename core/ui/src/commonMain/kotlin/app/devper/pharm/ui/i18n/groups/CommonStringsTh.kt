@@ -38,6 +38,8 @@ object CommonStringsTh : CommonStrings {
     override val commonDrugTypeSupplement = "อาหารเสริม"
     override val commonDrugTypeRx = "ยาแผนปัจจุบัน"
     override val commonOversoldBadge: (Int) -> String = { n -> "ขายเกิน $n" }
+    override val commonExpiredBadge = "ล็อตหมดอายุ"
+    override val commonExpiresInBadge: (Int) -> String = { n -> "หมดอายุใน $n วัน" }
     override val commonPresellBadge = "ขายล่วงหน้า"
     override val commonStockRemaining: (Int, String) -> String = { n, unit -> "คงเหลือ $n $unit" }
     override val commonOnline = "ออนไลน์"

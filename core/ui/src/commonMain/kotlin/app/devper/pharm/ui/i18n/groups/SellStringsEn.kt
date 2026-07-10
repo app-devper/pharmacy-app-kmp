@@ -38,6 +38,7 @@ object SellStringsEn : SellStrings {
     override val sellPickerCountFound: (Int, Int) -> String = { a, b -> "Found $a of $b" }
     override val sellPickerConfirmAdd: (String) -> String = { "Press Enter again to add \"$it\"" }
     override val sellPickerAdded: (String) -> String = { "Added $it" }
+    override val sellLineNextLot: (String, String) -> String = { lot, date -> "Lot $lot · exp $date" }
     override val sellKyPrecaptureNeeded = "Tap to fill in KY details ahead"
     override val sellKyPrecaptureDone = "KY details saved — tap to edit"
     override val sellPickerEmptyStock = "No drugs in inventory yet"
