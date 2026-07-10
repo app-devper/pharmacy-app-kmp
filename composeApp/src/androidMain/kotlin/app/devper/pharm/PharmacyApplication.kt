@@ -5,6 +5,7 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.InputPreferences
 import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.print.ReceiptPrinter
@@ -15,6 +16,7 @@ import app.devper.pharm.platform.AndroidKeystoreSecureStorage
 import app.devper.pharm.platform.ConnectivityObserverImpl
 import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.FilePickerImpl
+import app.devper.pharm.platform.InputPreferencesImpl
 import app.devper.pharm.platform.MotionPreferencesImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
 import com.russhwolf.settings.Settings
@@ -47,6 +49,7 @@ class PharmacyApplication : Application() {
             single<FilePicker> { FilePickerImpl() }
             single<ReceiptPrinter> { ReceiptPrinterImpl() }
             single<MotionPreferences> { MotionPreferencesImpl(applicationContext) }
+            single<InputPreferences> { InputPreferencesImpl() }
         }
 
         startKoin {

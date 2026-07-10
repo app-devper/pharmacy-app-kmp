@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import app.devper.pharm.common.platform.InputPreferences
 import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.ThemePreference
@@ -21,6 +22,7 @@ import app.devper.pharm.ui.components.LocalSidebarState
 import app.devper.pharm.ui.components.SidebarState
 import app.devper.pharm.ui.designsystem.LocalPharmDensity
 import app.devper.pharm.ui.designsystem.LocalReducedMotion
+import app.devper.pharm.ui.designsystem.LocalTouchPrimary
 import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmSnackbarHost
@@ -37,6 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Preview
 fun App(viewModel: AppViewModel = koinViewModel()) {
     val motionPreferences = koinInject<MotionPreferences>()
+    val inputPreferences = koinInject<InputPreferences>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val systemDark = isSystemInDarkTheme()
     val darkTheme = when (state.uiPreferences.theme) {
@@ -74,6 +77,7 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
             LocalSidebarState provides sidebarState,
             LocalPharmSnackbar provides snackbarHost,
             LocalReducedMotion provides motionPreferences.reduceMotion,
+            LocalTouchPrimary provides inputPreferences.isTouchPrimary,
         ) {
             AppLocaleProvider(localeWire = state.uiPreferences.locale.wire) {
                 Surface {

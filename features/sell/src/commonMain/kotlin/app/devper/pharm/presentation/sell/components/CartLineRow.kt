@@ -43,10 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.extension.EXPIRY_WARNING_DAYS
 import app.devper.pharm.domain.extension.nextLotDaysLeft
 import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.ui.designsystem.LocalTouchPrimary
 import app.devper.pharm.ui.format.localDateToBuddhist
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
@@ -242,6 +244,7 @@ private fun QtyStepper(
     onRequestRemove: () -> Unit,
 ) {
     val t = pharmTokens
+    val controlSize = if (LocalTouchPrimary.current) 44.dp else 36.dp
     var editing by remember { mutableStateOf(false) }
     var draft by remember(qty) { mutableStateOf(qty.toString()) }
 
@@ -264,12 +267,13 @@ private fun QtyStepper(
             icon = Icons.Outlined.Remove,
             description = if (qty > 1) pharmStrings.sellQtyDecrease else pharmStrings.sellRemoveLineDesc,
             enabled = true,
+            size = controlSize,
         )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(36.dp)
-                .height(36.dp)
+                .width(controlSize)
+                .height(controlSize)
                 .then(
                     if (editing) Modifier
                     else Modifier.clickable(role = Role.Button) { editing = true },
@@ -309,6 +313,7 @@ private fun QtyStepper(
             icon = Icons.Outlined.Add,
             description = pharmStrings.sellQtyIncrease,
             enabled = qty < MAX_QTY,
+            size = controlSize,
         )
     }
 }
@@ -321,12 +326,13 @@ private fun StepperCircle(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     description: String,
     enabled: Boolean,
+    size: Dp = 36.dp,
 ) {
     val t = pharmTokens
     IconButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.size(36.dp),
+        modifier = Modifier.size(size),
     ) {
         Box(
             modifier = Modifier
