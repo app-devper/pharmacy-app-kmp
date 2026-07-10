@@ -264,6 +264,7 @@ fun MainShell(appViewModel: AppViewModel) {
             stockNav(
                 nestedNav,
                 onOpenReorderSuggestions = { nestedNav.navigate(ReorderSuggestions) { launchSingleTop = true } },
+                onOpenExpiry = { nestedNav.navigate(Expiry) { launchSingleTop = true } },
             )
             customersNav(nestedNav)
             salesHistoryNav()

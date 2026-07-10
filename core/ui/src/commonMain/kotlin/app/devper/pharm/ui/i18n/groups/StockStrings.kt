@@ -76,6 +76,8 @@ interface StockStrings {
     val stockMetricValueByCost: String
     val stockMetricBelowMin: String
     val stockMetricOut: String
+    val stockMetricExpiring: String
+    val stockMetricExpiringSub: String
     val stockMetricBackorder: String
     val stockStatusOut: String
     val stockStatusLow: String

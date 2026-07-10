@@ -27,7 +27,7 @@ fun StockContent(
     val searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All
 
     PharmListScaffold(
-        metrics = { StockMetricsRow(drugs = state.drugs) },
+        metrics = { StockMetricsRow(drugs = state.drugs, expiringSoonCount = state.expiringSoonCount, onOpenExpiry = callbacks.onOpenExpiry) },
         toolbar = {
             StockToolbar(
                 query = state.query,

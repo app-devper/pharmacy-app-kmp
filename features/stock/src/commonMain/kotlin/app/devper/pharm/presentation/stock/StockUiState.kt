@@ -10,6 +10,7 @@ data class StockUiState(
     val query: String = "",
     val typeFilter: StockTypeFilter = StockTypeFilter.All,
     val drugs: List<Drug> = emptyList(),
+    val expiringSoonCount: Int? = null,
     val errorState: AppException? = null,
 ) : LoadableUiState<StockUiState> {
 

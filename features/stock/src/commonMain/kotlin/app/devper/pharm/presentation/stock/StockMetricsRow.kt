@@ -10,7 +10,12 @@ import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
-internal fun StockMetricsRow(drugs: List<Drug>, modifier: Modifier = Modifier) {
+internal fun StockMetricsRow(
+    drugs: List<Drug>,
+    expiringSoonCount: Int?,
+    onOpenExpiry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val total = drugs.size
     val oos = drugs.count { !it.stock.isPositive }
     val low = drugs.count { it.stock.isPositive && it.minStock.isPositive && it.stock <= it.minStock }
@@ -34,6 +39,15 @@ internal fun StockMetricsRow(drugs: List<Drug>, modifier: Modifier = Modifier) {
             sub = pharmStrings.stockMetricBelowMin,
             tint = if (low > 0) MetricTint.Warning else MetricTint.Neutral,
         )
+        expiringSoonCount?.let { expiring ->
+            MetricCard(
+                label = pharmStrings.stockMetricExpiring,
+                value = expiring.toString(),
+                sub = pharmStrings.stockMetricExpiringSub,
+                tint = if (expiring > 0) MetricTint.Warning else MetricTint.Neutral,
+                onClick = onOpenExpiry,
+            )
+        }
         MetricCard(
             label = pharmStrings.reportsMetricStockValue,
             value = fmtBaht(stockValue),

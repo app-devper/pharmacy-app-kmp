@@ -13,6 +13,7 @@ data class StockCallbacks(
     val onExportExcel: () -> Unit = {},
     val onImport: () -> Unit = {},
     val onOpenReorderSuggestions: () -> Unit = {},
+    val onOpenExpiry: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )
 
