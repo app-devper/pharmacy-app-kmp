@@ -38,6 +38,8 @@ interface CommonStrings {
     val commonDrugTypeSupplement: String
     val commonDrugTypeRx: String
     val commonOversoldBadge: (Int) -> String
+    val commonExpiredBadge: String
+    val commonExpiresInBadge: (Int) -> String
     val commonPresellBadge: String
     val commonStockRemaining: (Int, String) -> String
     val commonOnline: String

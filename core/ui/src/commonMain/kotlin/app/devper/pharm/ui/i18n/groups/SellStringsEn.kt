@@ -38,6 +38,7 @@ object SellStringsEn : SellStrings {
     override val sellPickerCountFound: (Int, Int) -> String = { a, b -> "Found $a of $b" }
     override val sellPickerConfirmAdd: (String) -> String = { "Press Enter again to add \"$it\"" }
     override val sellPickerAdded: (String) -> String = { "Added $it" }
+    override val sellLineNextLot: (String, String) -> String = { lot, date -> "Lot $lot · exp $date" }
     override val sellPickerEmptyStock = "No drugs in inventory yet"
     override val sellOversellCount: (Int) -> String = { n -> "$n drug(s) exceed stock" }
     override val sellOversellExplain = "Pre-sell: sell beyond available stock. The excess is recorded and reconciled on the next import/adjustment. Oversold units cannot be returned until bound to a real lot"

@@ -38,6 +38,8 @@ object CommonStringsEn : CommonStrings {
     override val commonDrugTypeSupplement = "Supplement"
     override val commonDrugTypeRx = "Modern medicine"
     override val commonOversoldBadge: (Int) -> String = { n -> "Oversold $n" }
+    override val commonExpiredBadge = "Lot expired"
+    override val commonExpiresInBadge: (Int) -> String = { n -> "Expires in $n d" }
     override val commonPresellBadge = "Pre-sell"
     override val commonStockRemaining: (Int, String) -> String = { n, unit -> "In stock $n $unit" }
     override val commonOnline = "Online"

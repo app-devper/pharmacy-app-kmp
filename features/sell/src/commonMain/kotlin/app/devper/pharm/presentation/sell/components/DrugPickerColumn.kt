@@ -38,9 +38,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.extension.SearchSubmitAction
+import app.devper.pharm.domain.extension.nextLotDaysLeft
 import app.devper.pharm.domain.extension.resolvePrice
 import app.devper.pharm.domain.extension.resolveSearchSubmit
 import kotlinx.coroutines.delay
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmEmptyState
@@ -142,7 +146,9 @@ fun DrugPickerColumn(
 
             visible.isEmpty() && !loading -> EmptyState(searching = query.isNotBlank())
 
-            else -> BoxWithConstraints(
+            else -> {
+                val today = remember { Clock.System.now().toLocalDateTime(TimeZone.of("Asia/Bangkok")).date }
+                BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
@@ -173,6 +179,7 @@ fun DrugPickerColumn(
                             altUnitCount = drug.altUnits.count { !it.hidden },
                             kyForm = inferKyForm(drug),
                             highlighted = drug.id == armedDrugId,
+                            expiryDaysLeft = drug.nextLotDaysLeft(today),
                             lowStockThreshold = drug.minStock.value.coerceAtLeast(20),
                             onClick = { onAdd(drug) },
                         )
@@ -192,6 +199,7 @@ fun DrugPickerColumn(
                             style = PharmText.meta.copy(color = t.colors.successFg),
                         )
                     }
+                }
                 }
             }
         }
