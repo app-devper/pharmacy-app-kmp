@@ -72,7 +72,7 @@ class CheckoutViewModel(
                     precaptureItems = null
                 }
                 setState {
-                    if (invalidatePrecapture) copy(cartIsEmpty = snap.isEmpty, kyCaptured = false, capturedKyFields = null)
+                    if (invalidatePrecapture) copy(cartIsEmpty = snap.isEmpty, kyCaptured = false, capturedKyFields = null, kyPrecaptureInvalidated = true)
                     else copy(cartIsEmpty = snap.isEmpty)
                 }
             }
@@ -125,7 +125,7 @@ class CheckoutViewModel(
     fun openKyPrecapture() {
         val required = cartState.current.items.calculateKyRequired()
         if (required.isEmpty) return
-        setState { copy(kyPrecapture = required) }
+        setState { copy(kyPrecapture = required, kyPrecaptureInvalidated = false) }
     }
 
     fun confirmKyPrecapture(fields: KyCaptureFields) {

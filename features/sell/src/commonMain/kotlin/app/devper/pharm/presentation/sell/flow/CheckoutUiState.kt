@@ -12,6 +12,7 @@ data class CheckoutUiState(
     val kyCapturePending: KyRequired? = null,
     val kyPrecapture: KyRequired? = null,
     val kyCaptured: Boolean = false,
+    val kyPrecaptureInvalidated: Boolean = false,
     val capturedKyFields: KyCaptureFields? = null,
     val showSkipKyConfirm: Boolean = false,
     val oversellPending: List<OversellShortfall>? = null,

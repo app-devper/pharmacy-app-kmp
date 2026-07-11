@@ -42,6 +42,7 @@ object SellStringsTh : SellStrings {
     override val sellKyPrecaptureNeeded = "แตะเพื่อกรอกข้อมูล ขย. ล่วงหน้า"
     override val sellKyPrecaptureDone = "บันทึกข้อมูล ขย. แล้ว — แตะเพื่อแก้ไข"
     override val sellKySkipAutoOn = "ปิดการบันทึกอัตโนมัติไว้ในตั้งค่า — บิลนี้จะไม่เก็บข้อมูล ขย."
+    override val sellKyPrecaptureInvalidated = "ตะกร้าเปลี่ยน — กรุณาตรวจข้อมูล ขย. อีกครั้ง"
     override val sellPickerEmptyStock = "ยังไม่มีรายการยาในคลัง"
     override val sellOversellCount: (Int) -> String = { n -> "ยา $n รายการเกินสต็อก" }
     override val sellOversellExplain = "ขายล่วงหน้า: ยอมขายเกินสต็อกที่มีได้ ระบบบันทึกจำนวนที่เกินไว้และจะกระทบยอดเมื่อรับเข้า/ปรับสต็อกครั้งถัดไป จำนวนที่ขายเกินยังคืนไม่ได้จนกว่าจะผูกกับล็อตจริง"

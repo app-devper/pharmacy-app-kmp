@@ -42,6 +42,7 @@ object SellStringsEn : SellStrings {
     override val sellKyPrecaptureNeeded = "Tap to fill in KY details ahead"
     override val sellKyPrecaptureDone = "KY details saved — tap to edit"
     override val sellKySkipAutoOn = "Auto capture is disabled in Settings — this bill will not record KY details"
+    override val sellKyPrecaptureInvalidated = "Cart changed — please review the KY details again"
     override val sellPickerEmptyStock = "No drugs in inventory yet"
     override val sellOversellCount: (Int) -> String = { n -> "$n drug(s) exceed stock" }
     override val sellOversellExplain = "Pre-sell: sell beyond available stock. The excess is recorded and reconciled on the next import/adjustment. Oversold units cannot be returned until bound to a real lot"

@@ -42,6 +42,7 @@ interface SellStrings {
     val sellKyPrecaptureNeeded: String
     val sellKyPrecaptureDone: String
     val sellKySkipAutoOn: String
+    val sellKyPrecaptureInvalidated: String
     val sellPickerEmptyStock: String
     val sellOversellCount: (Int) -> String
     val sellOversellExplain: String

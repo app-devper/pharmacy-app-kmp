@@ -366,6 +366,10 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.kyCaptured)
         assertNull(vm.state.value.capturedKyFields)
+        assertTrue(vm.state.value.kyPrecaptureInvalidated)
+        vm.openKyPrecapture()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.kyPrecaptureInvalidated)
     }
 
     @Test

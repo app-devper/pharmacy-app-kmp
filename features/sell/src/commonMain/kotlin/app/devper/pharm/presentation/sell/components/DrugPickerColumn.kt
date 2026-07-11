@@ -126,6 +126,18 @@ fun DrugPickerColumn(
 
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
+        addedDrugName?.let { name ->
+            Text(
+                text = pharmStrings.sellPickerAdded(name),
+                style = PharmText.micro.copy(color = t.colors.successFg),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(t.colors.successBg)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        }
+
         visible.firstOrNull { it.id == armedDrugId }?.let { armed ->
             Text(
                 text = pharmStrings.sellPickerConfirmAdd(armed.name),
@@ -182,21 +194,6 @@ fun DrugPickerColumn(
                             expiryDaysLeft = drug.nextLotDaysLeft(today),
                             lowStockThreshold = drug.minStock.value.coerceAtLeast(20),
                             onClick = { onAdd(drug) },
-                        )
-                    }
-                }
-                addedDrugName?.let { name ->
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp)
-                            .clip(t.shapes.pill)
-                            .background(t.colors.successBg)
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = pharmStrings.sellPickerAdded(name),
-                            style = PharmText.meta.copy(color = t.colors.successFg),
                         )
                     }
                 }
