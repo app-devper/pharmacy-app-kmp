@@ -1,5 +1,6 @@
 package app.devper.pharm
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import app.devper.pharm.common.AppDispatchers
@@ -46,9 +47,22 @@ fun main() {
     startKoin { modules(webPlatformModule, appModule) }
 
     ComposeViewport(content = {
+        LaunchedEffect(Unit) { hideBootLoader() }
         App()
     })
 }
+
+private fun hideBootLoader(): Unit = js(
+    """
+    {
+        var el = document.getElementById('app-loading');
+        if (el) {
+            el.classList.add('done');
+            setTimeout(function () { el.remove(); }, 250);
+        }
+    }
+    """,
+)
 
 private fun applyPersistedLocale(wire: String?) {
     val tag = when (wire?.lowercase()) {
