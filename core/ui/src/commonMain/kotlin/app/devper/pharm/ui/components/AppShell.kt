@@ -75,6 +75,7 @@ fun AppShell(
     onLogout: () -> Unit,
 
     pendingSyncCount: Int = 0,
+    onSyncClick: () -> Unit = {},
 
     user: TopbarUser? = null,
     role: Role = Role.UNKNOWN,
@@ -110,6 +111,7 @@ fun AppShell(
                     onNavigate = onNavigate,
                     onLogout = onLogout,
                     pendingSyncCount = pendingSyncCount,
+                    onSyncClick = onSyncClick,
                     user = user,
                     onProfileClick = onProfileClick,
                     isSubPage = isSubPage,
@@ -124,6 +126,7 @@ fun AppShell(
                     onNavigate = onNavigate,
                     onLogout = onLogout,
                     pendingSyncCount = pendingSyncCount,
+                    onSyncClick = onSyncClick,
                     user = user,
                     onProfileClick = onProfileClick,
                     isSubPage = isSubPage,
@@ -144,6 +147,7 @@ private fun CompactShell(
     onNavigate: (String) -> Unit,
     onLogout: () -> Unit,
     pendingSyncCount: Int,
+    onSyncClick: () -> Unit,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
     isSubPage: Boolean,
@@ -176,7 +180,7 @@ private fun CompactShell(
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
                 trailing = {
-                    if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount)
+                    if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount, onClick = onSyncClick)
                 },
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) { content() }
@@ -220,6 +224,7 @@ private fun ExpandedShell(
     onNavigate: (String) -> Unit,
     onLogout: () -> Unit,
     pendingSyncCount: Int,
+    onSyncClick: () -> Unit,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
     isSubPage: Boolean,
@@ -263,7 +268,7 @@ private fun ExpandedShell(
                 onLogout = onLogout,
                 onProfileClick = onProfileClick,
                 trailing = {
-                    if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount)
+                    if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount, onClick = onSyncClick)
                 },
             )
             Box(
@@ -277,11 +282,12 @@ private fun ExpandedShell(
 }
 
 @Composable
-private fun PendingSyncBadge(count: Int) {
+private fun PendingSyncBadge(count: Int, onClick: () -> Unit) {
     val t = pharmTokens
     Row(
         modifier = Modifier
             .clip(t.shapes.md)
+            .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
             .background(t.colors.dangerBg)
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,

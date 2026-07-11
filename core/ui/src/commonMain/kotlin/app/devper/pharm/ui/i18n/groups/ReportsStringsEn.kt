@@ -59,6 +59,8 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsEodToday = "Today"
     override val reportsEodConfirmTitle = "Confirm EOD"
     override val reportsEodConfirmMessage = "Verify totals before confirming — once closed, this cannot be reverted"
+    override val reportsEodPendingSyncBanner: (Int) -> String = { n -> "$n bill(s) awaiting sync — today's totals exclude them" }
+    override val reportsEodPendingSyncWarning: (Int) -> String = { n -> "$n bill(s) still awaiting sync — close the day anyway?" }
     override val reportsEodCloseCta = "Close day"
     override val reportsEodClosedBadge = "Closed"
     override val reportsEodTryDifferentRange = "Try a different date range above"
@@ -84,4 +86,11 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsLoadReportFailed = "Failed to load report"
     override val reportsEodCloseFailed = "Failed to close the day"
     override val reportsEodPrintUnsupported = "Failed to print receipt — not supported on this platform"
+
+    override val reportsCsvHeaderDrug = "Drug name"
+    override val reportsCsvHeaderQty = "Qty sold"
+    override val reportsCsvHeaderRevenue = "Revenue"
+    override val reportsCsvHeaderCost = "Cost"
+    override val reportsCsvHeaderProfit = "Profit"
+    override val reportsCsvHeaderMargin = "Margin %"
 }

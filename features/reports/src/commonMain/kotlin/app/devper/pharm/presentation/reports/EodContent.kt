@@ -72,6 +72,9 @@ fun EodContent(
                     contentPadding = PaddingValues(bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
+                    if (state.pendingSyncCount > 0) item("pendingSync") {
+                        EodPendingSyncBanner(count = state.pendingSyncCount)
+                    }
                     item("summary") { EodSummaryCards(report) }
                     item("balance") { EodBalanceCard(report) }
                     if (state.closed) item("closed") {
@@ -90,6 +93,7 @@ fun EodContent(
     EodConfirmCloseModal(
         open = state.confirmClose,
         report = report,
+        pendingSyncCount = state.pendingSyncCount,
         onConfirm = callbacks.onConfirmClose,
         onCancel = callbacks.onCancelClose,
     )
