@@ -78,7 +78,17 @@ class SettingsEditorViewModel(
     fun onStockExpiringDays(v: String) = patch { copy(stockExpiringDays = v.intOnly()) }
     fun onPharmacistName(v: String) = patch { copy(pharmacistName = v) }
     fun onPharmacistLicenseNo(v: String) = patch { copy(pharmacistLicenseNo = v) }
-    fun onKySkipAuto(v: Boolean) = patch { copy(kySkipAuto = v) }
+    fun onKySkipAuto(v: Boolean) {
+        if (v && !current.form.kySkipAuto) setState { copy(confirmKySkip = true) }
+        else patch { copy(kySkipAuto = v) }
+    }
+
+    fun confirmKySkipAuto() {
+        setState { copy(confirmKySkip = false) }
+        patch { copy(kySkipAuto = true) }
+    }
+
+    fun cancelKySkipAuto() = setState { copy(confirmKySkip = false) }
     fun onKyDefaultBuyerAddress(v: String) = patch { copy(kyDefaultBuyerAddress = v) }
     fun onTimezone(v: String) = patch { copy(timezone = v) }
 

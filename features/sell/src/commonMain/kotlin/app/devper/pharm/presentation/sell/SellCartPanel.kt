@@ -25,6 +25,7 @@ internal fun SellCartPanel(
     onClearCustomer: () -> Unit,
     onOpenParkedSheet: () -> Unit,
     kyCaptured: Boolean = false,
+    kySkipAuto: Boolean = false,
     onOpenKyPrecapture: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -55,6 +56,7 @@ internal fun SellCartPanel(
         onOpenParkedSheet = onOpenParkedSheet,
         showShortcutHints = true,
         kyCaptured = kyCaptured,
+        kySkipAuto = kySkipAuto,
         onOpenKyPrecapture = onOpenKyPrecapture,
         modifier = modifier,
     )

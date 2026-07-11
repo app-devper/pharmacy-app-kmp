@@ -180,6 +180,7 @@ fun SellScreen(
                             canCheckout = checkoutState.canCheckout,
                             checkingOut = checkoutState.checkingOut,
                             kyCaptured = checkoutState.kyCaptured,
+                            kySkipAuto = sellState.settings.ky.skipAuto,
                             onOpenKyPrecapture = checkoutVM::openKyPrecapture,
                             onSetQty = sellVM::onSetQty,
                             onRemove = sellVM::onRemove,

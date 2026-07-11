@@ -32,6 +32,8 @@ fun SettingsScreen(
             onPharmacistName = viewModel::onPharmacistName,
             onPharmacistLicenseNo = viewModel::onPharmacistLicenseNo,
             onKySkipAuto = viewModel::onKySkipAuto,
+            onConfirmKySkip = viewModel::confirmKySkipAuto,
+            onCancelKySkip = viewModel::cancelKySkipAuto,
             onKyDefaultBuyerAddress = viewModel::onKyDefaultBuyerAddress,
             onTimezone = viewModel::onTimezone,
             onSubmit = viewModel::submit,

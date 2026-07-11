@@ -81,6 +81,7 @@ fun CartPanel(
     compact: Boolean = false,
     showShortcutHints: Boolean = false,
     kyCaptured: Boolean = false,
+    kySkipAuto: Boolean = false,
     onOpenKyPrecapture: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -120,7 +121,7 @@ fun CartPanel(
             enter = pharmBannerEnter(),
             exit = ExitTransition.None,
         ) {
-            CartComplianceBanner(required = kyRequired, captured = kyCaptured, onClick = onOpenKyPrecapture)
+            CartComplianceBanner(required = kyRequired, captured = kyCaptured, skipAuto = kySkipAuto, onClick = onOpenKyPrecapture)
         }
 
         CartSectionDivider()
@@ -311,21 +312,30 @@ private fun CartSectionDivider() {
 }
 
 @Composable
-private fun CartComplianceBanner(required: KyRequired, captured: Boolean, onClick: () -> Unit) {
+private fun CartComplianceBanner(required: KyRequired, captured: Boolean, skipAuto: Boolean, onClick: () -> Unit) {
     val t = pharmTokens
     val forms = buildList {
         if (required.needsKy10) add("10")
         if (required.needsKy11) add("11")
         if (required.needsKy12) add("12")
     }.joinToString(", ")
-    val bg = if (captured) t.colors.successBg else t.colors.warningBg
-    val fg = if (captured) t.colors.successFg else t.colors.warningFg
+    val bg = when {
+        skipAuto -> t.colors.dangerBg
+        captured -> t.colors.successBg
+        else -> t.colors.warningBg
+    }
+    val fg = when {
+        skipAuto -> t.colors.dangerFg
+        captured -> t.colors.successFg
+        else -> t.colors.warningFg
+    }
+    val clickMod = if (skipAuto) Modifier else Modifier.clickable(role = Role.Button, onClick = onClick)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clip(t.shapes.md)
-            .clickable(role = Role.Button, onClick = onClick)
+            .then(clickMod)
             .background(bg)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
@@ -344,7 +354,11 @@ private fun CartComplianceBanner(required: KyRequired, captured: Boolean, onClic
                 style = PharmText.micro.copy(color = fg, fontWeight = FontWeight.SemiBold),
             )
             Text(
-                text = if (captured) pharmStrings.sellKyPrecaptureDone else pharmStrings.sellKyPrecaptureNeeded,
+                text = when {
+                    skipAuto -> pharmStrings.sellKySkipAutoOn
+                    captured -> pharmStrings.sellKyPrecaptureDone
+                    else -> pharmStrings.sellKyPrecaptureNeeded
+                },
                 style = PharmText.bodySm.copy(color = t.colors.warningFg),
             )
         }
