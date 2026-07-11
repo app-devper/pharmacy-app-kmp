@@ -180,16 +180,14 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
         if (nextLotExpiry != null) {
             val today = remember { Clock.System.now().toLocalDateTime(TimeZone.of("Asia/Bangkok")).date }
             val daysLeft = line.drug.nextLotDaysLeft(today)
-            Text(
-                text = pharmStrings.sellLineNextLot(line.drug.nextLotNumber.orEmpty(), localDateToBuddhist(nextLotExpiry)),
-                style = PharmText.micro,
-                color = when {
-                    daysLeft != null && daysLeft < 0 -> t.colors.dangerFg
-                    daysLeft != null && daysLeft <= EXPIRY_WARNING_DAYS -> t.colors.warningFg
-                    else -> t.colors.fg3
-                },
-                maxLines = 1,
-            )
+            if (daysLeft != null && daysLeft <= EXPIRY_WARNING_DAYS) {
+                Text(
+                    text = pharmStrings.sellLineNextLot(line.drug.nextLotNumber.orEmpty(), localDateToBuddhist(nextLotExpiry)),
+                    style = PharmText.micro,
+                    color = if (daysLeft < 0) t.colors.dangerFg else t.colors.warningFg,
+                    maxLines = 1,
+                )
+            }
         }
     }
 }

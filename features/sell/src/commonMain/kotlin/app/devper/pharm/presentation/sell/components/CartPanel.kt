@@ -81,6 +81,7 @@ fun CartPanel(
     compact: Boolean = false,
     showShortcutHints: Boolean = false,
     kyCaptured: Boolean = false,
+    kyInvalidated: Boolean = false,
     kySkipAuto: Boolean = false,
     onOpenKyPrecapture: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -121,7 +122,7 @@ fun CartPanel(
             enter = pharmBannerEnter(),
             exit = ExitTransition.None,
         ) {
-            CartComplianceBanner(required = kyRequired, captured = kyCaptured, skipAuto = kySkipAuto, onClick = onOpenKyPrecapture)
+            CartComplianceBanner(required = kyRequired, captured = kyCaptured, invalidated = kyInvalidated, skipAuto = kySkipAuto, onClick = onOpenKyPrecapture)
         }
 
         CartSectionDivider()
@@ -312,7 +313,7 @@ private fun CartSectionDivider() {
 }
 
 @Composable
-private fun CartComplianceBanner(required: KyRequired, captured: Boolean, skipAuto: Boolean, onClick: () -> Unit) {
+private fun CartComplianceBanner(required: KyRequired, captured: Boolean, invalidated: Boolean, skipAuto: Boolean, onClick: () -> Unit) {
     val t = pharmTokens
     val forms = buildList {
         if (required.needsKy10) add("10")
@@ -357,6 +358,7 @@ private fun CartComplianceBanner(required: KyRequired, captured: Boolean, skipAu
                 text = when {
                     skipAuto -> pharmStrings.sellKySkipAutoOn
                     captured -> pharmStrings.sellKyPrecaptureDone
+                    invalidated -> pharmStrings.sellKyPrecaptureInvalidated
                     else -> pharmStrings.sellKyPrecaptureNeeded
                 },
                 style = PharmText.bodySm.copy(color = t.colors.warningFg),
