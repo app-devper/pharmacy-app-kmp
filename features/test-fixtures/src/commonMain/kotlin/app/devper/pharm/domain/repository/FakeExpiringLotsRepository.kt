@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
 
 import app.devper.pharm.domain.model.ExpiringLot
@@ -21,13 +23,13 @@ class FakeExpiringLotsRepository(
 
     override suspend fun list(filter: ExpiringLotsFilterParam): List<ExpiringLot> {
         lastFilter = filter
-        if (listThrows) throw RuntimeException("list failed")
+        if (listThrows) throw ServerException("list failed")
         return seed
     }
 
     override suspend fun writeoff(param: WriteoffLotsParam): WriteoffResult {
         lastWriteoff = param
-        if (writeoffThrows) throw RuntimeException("writeoff failed")
+        if (writeoffThrows) throw ServerException("writeoff failed")
         return writeoffResult
     }
 }

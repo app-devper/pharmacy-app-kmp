@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.inventory.StockCountsRepository
 
 import app.devper.pharm.domain.model.StockCount
@@ -22,7 +24,7 @@ class FakeStockCountsRepository(
     }
 
     override suspend fun add(param: CreateStockCountParam): StockCount {
-        if (addThrows) throw RuntimeException("create failed")
+        if (addThrows) throw ServerException("create failed")
         lastAdd = param
         return StockCount(
             id = "sc-${seed.size + 1}",

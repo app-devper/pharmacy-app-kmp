@@ -20,4 +20,11 @@ object MovementsStringsEn : MovementsStrings {
     override val movementsPagination: (Int, Int) -> String = { page, total -> "Page $page / $total" }
     override val movementsShownOf: (Int, Int) -> String = { shown, total -> "Showing $shown of $total items" }
     override val movementsLoadHistoryFailed = "Failed to load history"
+
+    override val movementsCsvHeaderAt = "Time"
+    override val movementsCsvHeaderType = "Type"
+    override val movementsCsvHeaderDrug = "Drug"
+    override val movementsCsvHeaderQty = "Quantity"
+    override val movementsCsvHeaderRef = "Reference"
+    override val movementsCsvHeaderNote = "Note"
 }

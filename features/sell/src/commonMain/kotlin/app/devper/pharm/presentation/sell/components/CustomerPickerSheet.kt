@@ -29,7 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.extension.tierLabel
+import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
@@ -122,10 +122,15 @@ private fun CustomerRow(customer: Customer, onClick: () -> Unit) {
         customer.phone?.let {
             Text(text = it, style = PharmText.meta)
         }
-        if (customer.priceTier.isNotBlank() && customer.priceTier != "retail") {
+        if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
             Box(modifier = Modifier.padding(top = 4.dp)) {
+                val label = when (customer.priceTier) {
+                    Tier.Wholesale -> pharmStrings.sellTierWholesaleLabel
+                    Tier.Regular -> pharmStrings.sellTierRegularLabel
+                    else -> customer.priceTier
+                }
                 PharmBadge(
-                    text = tierLabel(customer.priceTier),
+                    text = label,
                     tone = PharmBadgeTone.Indigo,
                     size = PharmBadgeSize.Sm,
                 )

@@ -10,6 +10,8 @@ object LabelsStringsEn : LabelsStrings {
     override val labelsRemoveLine = "Remove line"
     override val labelsClear = "Clear"
     override val labelsSizeLabel = "Label size"
+    override val labelsSizeSmall = "38 × 25 mm"
+    override val labelsSizeMedium = "50 × 30 mm"
     override val labelsPreviewLabel: (String) -> String = { size -> "Preview ($size)" }
     override val labelsPrintCount: (Int) -> String = { count -> "Print $count label(s)" }
     override val labelsPrinting = "Printing…"

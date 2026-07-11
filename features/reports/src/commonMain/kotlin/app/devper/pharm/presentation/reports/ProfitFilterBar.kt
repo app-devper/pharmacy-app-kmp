@@ -67,9 +67,21 @@ internal fun ProfitFilterBar(
         actions = {
             PharmButton(
                 label = "Excel",
-                onClick = callbacks.onExportExcel,
+                onClick = {
+                    callbacks.onExportExcel(
+                        listOf(
+                            s.reportsCsvHeaderDrug,
+                            s.reportsCsvHeaderQty,
+                            s.reportsCsvHeaderRevenue,
+                            s.reportsCsvHeaderCost,
+                            s.reportsCsvHeaderProfit,
+                            s.reportsCsvHeaderMargin,
+                        )
+                    )
+                },
                 size = PharmButtonSize.Md,
                 variant = PharmButtonVariant.Outline,
+                loading = state.exporting,
                 leadingIcon = {
                     Icon(
                         imageVector = PharmIcons.Excel,

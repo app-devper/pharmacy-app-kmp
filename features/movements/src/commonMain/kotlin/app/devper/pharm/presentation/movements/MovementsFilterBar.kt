@@ -65,9 +65,21 @@ internal fun MovementsListToolbar(
                 )
                 PharmButton(
                     label = "Excel",
-                    onClick = callbacks.onExportExcel,
+                    onClick = {
+                        callbacks.onExportExcel(
+                            listOf(
+                                s.movementsCsvHeaderAt,
+                                s.movementsCsvHeaderType,
+                                s.movementsCsvHeaderDrug,
+                                s.movementsCsvHeaderQty,
+                                s.movementsCsvHeaderRef,
+                                s.movementsCsvHeaderNote,
+                            )
+                        )
+                    },
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
+                    loading = state.exporting,
                     leadingIcon = {
                         Icon(
                             imageVector = PharmIcons.Excel,

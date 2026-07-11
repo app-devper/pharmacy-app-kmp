@@ -15,9 +15,3 @@ fun resolvePrice(base: Money, prices: Map<String, Money>?, tier: String): Money 
     return base
 }
 
-fun tierLabel(tier: String): String = when (tier) {
-    Tier.Wholesale -> "ขายส่ง"
-    Tier.Regular   -> "ขายปลีก"
-    Tier.Retail, "" -> "ราคาปลีก"
-    else -> tier
-}

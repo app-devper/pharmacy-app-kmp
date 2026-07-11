@@ -8,6 +8,6 @@ data class MovementsCallbacks(
     val onToggleType: (String) -> Unit = {},
     val onPrevPage: () -> Unit = {},
     val onNextPage: () -> Unit = {},
-    val onExportExcel: () -> Unit = {},
+    val onExportExcel: (List<String>) -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

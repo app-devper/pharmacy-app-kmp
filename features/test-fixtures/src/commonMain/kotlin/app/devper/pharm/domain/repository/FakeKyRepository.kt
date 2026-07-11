@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.ky.KyRepository
 
 import app.devper.pharm.domain.model.Ky10Entry
@@ -23,22 +25,22 @@ class FakeKyRepository(
     val ky9Adds = mutableListOf<AddKy9Param>()
 
     override suspend fun submitKy10(form: KyForm.Ky10) {
-        if (ky10Throws) throw RuntimeException("ky10 failed")
+        if (ky10Throws) throw ServerException("ky10 failed")
         ky10Submissions += form
     }
 
     override suspend fun submitKy11(form: KyForm.Ky11) {
-        if (ky11Throws) throw RuntimeException("ky11 failed")
+        if (ky11Throws) throw ServerException("ky11 failed")
         ky11Submissions += form
     }
 
     override suspend fun submitKy12(form: KyForm.Ky12) {
-        if (ky12Throws) throw RuntimeException("ky12 failed")
+        if (ky12Throws) throw ServerException("ky12 failed")
         ky12Submissions += form
     }
 
     override suspend fun addKy9(param: AddKy9Param) {
-        if (ky9Throws) throw RuntimeException("ky9 failed")
+        if (ky9Throws) throw ServerException("ky9 failed")
         ky9Adds += param
     }
 

@@ -20,6 +20,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
+import app.devper.pharm.ui.i18n.label
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -36,8 +37,8 @@ internal fun LabelPrintToolbar(
 ) {
     val t = pharmTokens
     val s = pharmStrings
-    val chips = remember(t) {
-        LabelSize.entries.map { PharmFilterChip(id = it.wire, label = it.label) }
+    val chips = remember(s) {
+        LabelSize.entries.map { PharmFilterChip(id = it.wire, label = it.label(s)) }
     }
     Row(
         modifier = Modifier
