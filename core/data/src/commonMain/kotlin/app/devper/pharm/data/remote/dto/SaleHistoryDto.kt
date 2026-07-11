@@ -26,6 +26,14 @@ data class SaleItemDto(
     @SerialName("unit") val unit: String = "",
     @SerialName("unit_factor") val unitFactor: Int = 0,
     @SerialName("price_tier") val priceTier: String = "",
+    @SerialName("lot_splits") val lotSplits: List<SaleLotSplitDto> = emptyList(),
+)
+
+@Serializable
+data class SaleLotSplitDto(
+    @SerialName("lot_id") val lotId: String = "",
+    @SerialName("lot_number") val lotNumber: String = "",
+    @SerialName("qty") val qty: Int = 0,
 )
 
 @Serializable

@@ -7,6 +7,7 @@ interface SalesHistoryStrings {
     val salesHistoryReturnReasonPlaceholder: String
     val salesHistoryReturnConfirmCta: String
     val salesHistorySoldRemaining: (Int, String, Int) -> String
+    val salesHistoryReturnCapHint: (Int, Int) -> String
     val salesHistoryRefund: (String) -> String
     val salesHistoryBillTitle: (String) -> String
     val salesHistoryVoidedBadge: String

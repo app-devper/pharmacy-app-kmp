@@ -7,6 +7,7 @@ object SalesHistoryStringsTh : SalesHistoryStrings {
     override val salesHistoryReturnReasonPlaceholder = "เหตุผลการคืน เช่น ลูกค้าเปลี่ยนใจ, สินค้าเสีย ฯลฯ"
     override val salesHistoryReturnConfirmCta = "ยืนยันคืนสินค้า"
     override val salesHistorySoldRemaining: (Int, String, Int) -> String = { q, u, r -> "ขายไป $q $u · เหลือคืน $r" }
+    override val salesHistoryReturnCapHint: (Int, Int) -> String = { max, pending -> "คืนได้สูงสุด $max — $pending หน่วยยังไม่ผูกกับล็อตจริง" }
     override val salesHistoryRefund: (String) -> String = { v -> "คืนเงิน $v" }
     override val salesHistoryBillTitle: (String) -> String = { bill -> "บิล $bill" }
     override val salesHistoryVoidedBadge = "ยกเลิกแล้ว"

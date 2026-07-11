@@ -16,4 +16,10 @@ internal fun SaleItemDto.toDomain(returnedQty: Int): SaleItemSnapshot = SaleItem
     unitFactor = unitFactor,
     priceTier = priceTier,
     returnedQty = returnedQty,
+    lotBoundQty = lotSplits
+        .filter { it.lotId.isNotBlank() && it.lotId != ZERO_OBJECT_ID }
+        .sumOf { it.qty },
 )
+
+private const val ZERO_OBJECT_ID = "000000000000000000000000"
+

@@ -150,7 +150,7 @@ private fun ReturnLineRow(
     val t = pharmTokens
     val factor = if (item.unitFactor > 1) item.unitFactor else 1
     val draftDisplay = draftBaseQty / factor
-    val maxDisplay = item.remainingDisplayQty
+    val maxDisplay = item.returnableDisplayQty
     val refund = item.price.amount * draftBaseQty
 
     Row(
@@ -170,6 +170,13 @@ private fun ReturnLineRow(
                 style = PharmText.micro.tabular(),
                 color = t.colors.fg2,
             )
+            if (item.returnableQty < item.remainingQty) {
+                Text(
+                    text = pharmStrings.salesHistoryReturnCapHint(item.returnableDisplayQty, item.unreturnableQty),
+                    style = PharmText.micro,
+                    color = t.colors.warningFg,
+                )
+            }
             if (refund > 0) {
                 Text(
                     text = pharmStrings.salesHistoryRefund(app.devper.pharm.ui.format.formatBahtCurrency(refund)),
