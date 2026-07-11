@@ -30,6 +30,9 @@ interface SettingsStrings {
     val settingsPharmacistLicenseNo: String
     val settingsKySkipAuto: String
     val settingsKySkipAutoHint: String
+    val settingsKySkipConfirmTitle: String
+    val settingsKySkipConfirmBody: String
+    val settingsKySkipConfirmCta: String
     val settingsKyDefaultBuyerAddress: String
     val settingsKyDefaultBuyerAddressHint: String
 }

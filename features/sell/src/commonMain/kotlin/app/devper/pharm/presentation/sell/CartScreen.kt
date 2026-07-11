@@ -109,6 +109,7 @@ fun CartScreen(
                 onOpenParkedSheet = parkedCartVM::openSheet,
                 compact = true,
                 kyCaptured = checkoutState.kyCaptured,
+                kySkipAuto = sellState.settings.ky.skipAuto,
                 onOpenKyPrecapture = checkoutVM::openKyPrecapture,
             )
         }

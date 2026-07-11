@@ -34,6 +34,7 @@ data class SettingsEditorUiState(
     val baseline: SettingsFormFields = SettingsFormFields(),
     val form: SettingsFormFields = SettingsFormFields(),
     val tab: SettingsTab = SettingsTab.Store,
+    val confirmKySkip: Boolean = false,
     override val loading: Boolean = false,
     val saving: Boolean = false,
     val messageState: CommonUiStateMessage? = null,

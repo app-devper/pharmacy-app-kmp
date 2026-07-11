@@ -17,6 +17,8 @@ data class SettingsEditorCallbacks(
     val onPharmacistName: (String) -> Unit = {},
     val onPharmacistLicenseNo: (String) -> Unit = {},
     val onKySkipAuto: (Boolean) -> Unit = {},
+    val onConfirmKySkip: () -> Unit = {},
+    val onCancelKySkip: () -> Unit = {},
     val onKyDefaultBuyerAddress: (String) -> Unit = {},
     val onTimezone: (String) -> Unit = {},
     val onSubmit: () -> Unit = {},

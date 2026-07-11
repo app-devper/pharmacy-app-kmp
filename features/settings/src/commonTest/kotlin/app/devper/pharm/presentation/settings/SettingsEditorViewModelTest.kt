@@ -28,6 +28,46 @@ class SettingsEditorViewModelTest {
         )
 
     @Test
+    fun enabling_ky_skip_requires_confirmation() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        assertTrue(model.state.value.confirmKySkip)
+        assertFalse(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
+    fun cancelling_ky_skip_confirmation_keeps_it_off() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        model.cancelKySkipAuto()
+        assertFalse(model.state.value.confirmKySkip)
+        assertFalse(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
+    fun confirming_ky_skip_enables_it() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        model.confirmKySkipAuto()
+        assertFalse(model.state.value.confirmKySkip)
+        assertTrue(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
+    fun disabling_ky_skip_needs_no_confirmation() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        model.confirmKySkipAuto()
+        model.onKySkipAuto(false)
+        assertFalse(model.state.value.confirmKySkip)
+        assertFalse(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
     fun init_finishes_loading_and_refreshes() = runVmTest { d ->
         val repo = FakeSettingsRepository()
         val model = vm(repo, d)
