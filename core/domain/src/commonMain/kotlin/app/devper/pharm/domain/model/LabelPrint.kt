@@ -1,8 +1,8 @@
 package app.devper.pharm.domain.model
 
-enum class LabelSize(val wire: String, val widthMm: Int, val heightMm: Int, val label: String) {
-    Small("38x25", 38, 25, "38 × 25 มม."),
-    Medium("50x30", 50, 30, "50 × 30 มม.");
+enum class LabelSize(val wire: String, val widthMm: Int, val heightMm: Int) {
+    Small("38x25", 38, 25),
+    Medium("50x30", 50, 30);
 
     companion object {
         fun fromWire(raw: String?): LabelSize = entries.firstOrNull { it.wire == raw } ?: Small

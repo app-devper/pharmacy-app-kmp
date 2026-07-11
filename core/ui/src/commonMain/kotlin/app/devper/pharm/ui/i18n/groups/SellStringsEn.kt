@@ -75,6 +75,9 @@ object SellStringsEn : SellStrings {
     override val sellParkedToast: (Int) -> String = { n -> "Cart parked in slot $n" }
     override val sellOpenViewCta = "Open"
     override val sellAddedToast: (String) -> String = { v -> "Added $v" }
+    override val sellTierWholesaleLabel = "Wholesale"
+    override val sellTierRegularLabel = "Regular"
+    override val sellTierRetailLabel = "Retail"
 
     override val sellCart = "Cart"
     override val sellSearchPlaceholder = "Search by brand, generic, or barcode (F2)"

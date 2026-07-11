@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.reports.MovementsRepository
 
 import app.devper.pharm.domain.model.StockMovementsPage
@@ -15,7 +17,7 @@ class FakeMovementsRepository(
 
     override suspend fun list(filter: MovementsFilterParam): StockMovementsPage {
         lastFilter = filter
-        if (throws) throw RuntimeException("movements failed")
+        if (throws) throw ServerException("movements failed")
         return page
     }
 }

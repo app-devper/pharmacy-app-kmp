@@ -11,6 +11,8 @@ interface LabelsStrings {
     val labelsRemoveLine: String
     val labelsClear: String
     val labelsSizeLabel: String
+    val labelsSizeSmall: String
+    val labelsSizeMedium: String
     val labelsPreviewLabel: (String) -> String
     val labelsPrintCount: (Int) -> String
     val labelsPrinting: String

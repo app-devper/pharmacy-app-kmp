@@ -1,7 +1,10 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.purchasing.PurchaseOrderRepository
 
+import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderItem
@@ -30,13 +33,13 @@ class FakePurchaseOrderRepository(
     override suspend fun list(): List<PurchaseOrderSummary> = listSeed
 
     override suspend fun get(id: String): PurchaseOrder {
-        if (getThrows) throw RuntimeException("get failed")
-        return seed[id] ?: throw IllegalStateException("ไม่พบใบรับ")
+        if (getThrows) throw ServerException("get failed")
+        return seed[id] ?: throw NotFoundException("Not found bill")
     }
 
     override suspend fun add(param: AddPurchaseOrderParam): PurchaseOrder {
         if (addThrowsOn != null && param.supplier == addThrowsOn) {
-            throw RuntimeException("backend rejected: $addThrowsOn")
+            throw ServerException("backend rejected: $addThrowsOn")
         }
         lastAdd = param
         return synthesise(id = "new-po", param.supplier, param.invoiceNo, param.receiveDate, param.notes, param.items)
@@ -50,7 +53,7 @@ class FakePurchaseOrderRepository(
     override suspend fun confirm(id: String): PurchaseOrder {
         lastConfirm = id
         return seed[id]?.copy(status = PurchaseOrderStatus.Confirmed)
-            ?: throw IllegalStateException("ไม่พบใบรับ $id")
+            ?: throw NotFoundException("Not found bill $id")
     }
 
     override suspend fun delete(id: String) {

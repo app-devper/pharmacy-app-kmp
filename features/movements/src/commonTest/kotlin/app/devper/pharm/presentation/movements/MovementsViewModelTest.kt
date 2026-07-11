@@ -61,7 +61,7 @@ class MovementsViewModelTest {
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         advanceUntilIdle()
-        model.onExportExcel()
+        model.onExportExcel(listOf("h1", "h2"))
         advanceUntilIdle()
         assertIs<CommonUiStateMessage.ExportEmpty>(model.state.value.messageState)
         assertEquals(null, export.lastFilename)
@@ -76,7 +76,7 @@ class MovementsViewModelTest {
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         advanceUntilIdle()
-        model.onExportExcel()
+        model.onExportExcel(listOf("h1", "h2"))
         advanceUntilIdle()
         assertNotNull(export.lastFilename)
         assertIs<CommonUiStateMessage.ExportDone>(model.state.value.messageState)
@@ -91,7 +91,7 @@ class MovementsViewModelTest {
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         advanceUntilIdle()
-        model.onExportExcel()
+        model.onExportExcel(listOf("h1", "h2"))
         advanceUntilIdle()
         assertNotNull(model.state.value.messageState)
         model.dismissMessage()

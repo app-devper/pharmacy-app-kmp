@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.inventory.LabelRepository
 
 import app.devper.pharm.domain.param.labels.PrintLabelsParam
@@ -16,7 +18,7 @@ class FakeLabelRepository(
 
     override suspend fun printLabels(param: PrintLabelsParam): String {
         callCount++
-        if (throws) throw RuntimeException("printer offline")
+        if (throws) throw ServerException("printer offline")
         lastParam = param
         return saveAs
     }

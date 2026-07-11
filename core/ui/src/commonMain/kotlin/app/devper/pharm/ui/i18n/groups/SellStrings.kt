@@ -75,6 +75,9 @@ interface SellStrings {
     val sellParkedToast: (Int) -> String
     val sellOpenViewCta: String
     val sellAddedToast: (String) -> String
+    val sellTierWholesaleLabel: String
+    val sellTierRegularLabel: String
+    val sellTierRetailLabel: String
 
     val sellCheckoutEmptyCart: String
 

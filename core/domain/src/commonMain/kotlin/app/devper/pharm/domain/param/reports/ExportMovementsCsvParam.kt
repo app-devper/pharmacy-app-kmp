@@ -8,4 +8,5 @@ data class ExportMovementsCsvParam(
     val to: LocalDate?,
     val drugName: String,
     val rows: List<StockMovement>,
+    val headers: List<String> = emptyList(),
 )

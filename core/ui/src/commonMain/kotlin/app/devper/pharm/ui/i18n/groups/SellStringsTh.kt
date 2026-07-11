@@ -75,6 +75,9 @@ object SellStringsTh : SellStrings {
     override val sellParkedToast: (Int) -> String = { n -> "พักตะกร้าไว้ช่อง $n แล้ว" }
     override val sellOpenViewCta = "เปิดดู"
     override val sellAddedToast: (String) -> String = { v -> "เพิ่ม $v" }
+    override val sellTierWholesaleLabel = "ขายส่ง"
+    override val sellTierRegularLabel = "ขายปลีก"
+    override val sellTierRetailLabel = "ราคาปลีก"
 
     override val sellCart = "ตะกร้า"
     override val sellSearchPlaceholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)"

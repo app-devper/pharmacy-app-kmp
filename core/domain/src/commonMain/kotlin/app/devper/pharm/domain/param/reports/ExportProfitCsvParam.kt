@@ -7,4 +7,5 @@ data class ExportProfitCsvParam(
     val from: LocalDate?,
     val to: LocalDate?,
     val rows: List<DrugProfit>,
+    val headers: List<String> = emptyList(),
 )

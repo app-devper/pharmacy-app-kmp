@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.customers.CustomerRepository
 
 import app.devper.pharm.domain.model.Customer
@@ -32,18 +34,18 @@ class FakeCustomerRepository(
         private set
 
     override suspend fun list(): List<Customer> {
-        if (listThrows) throw RuntimeException("list failed")
+        if (listThrows) throw ServerException("list failed")
         return seed
     }
 
     override suspend fun add(input: CustomerInput): Customer {
-        if (input.name == addThrowsOn) throw RuntimeException("backend rejected: $addThrowsOn")
+        if (input.name == addThrowsOn) throw ServerException("backend rejected: $addThrowsOn")
         lastAdd = input
         return addResult.copy(name = input.name, phone = input.phone, priceTier = input.priceTier)
     }
 
     override suspend fun update(id: String, input: CustomerInput) {
-        if (input.name == updateThrowsOn) throw RuntimeException("backend rejected: $updateThrowsOn")
+        if (input.name == updateThrowsOn) throw ServerException("backend rejected: $updateThrowsOn")
         lastUpdateId = id
         lastUpdate = input
     }
@@ -51,7 +53,7 @@ class FakeCustomerRepository(
     override suspend fun getCustomerSales(customerId: String): List<SaleSummary> {
         lastSalesQuery = customerId
         if (salesThrowsOn != null && customerId == salesThrowsOn) {
-            throw RuntimeException("sales failed for $customerId")
+            throw ServerException("sales failed for $customerId")
         }
         return salesBy[customerId].orEmpty()
     }

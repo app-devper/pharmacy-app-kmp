@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
+import app.devper.pharm.ui.i18n.label
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.print.PharmLabelCard
 import app.devper.pharm.ui.theme.PharmText
@@ -33,7 +34,7 @@ internal fun LabelPreviewPane(size: LabelSize, line: LabelLine?, modifier: Modif
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = s.labelsPreviewLabel(size.label),
+            text = s.labelsPreviewLabel(size.label(s)),
             style = PharmText.micro.copy(color = t.colors.fg2, fontWeight = FontWeight.SemiBold),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
