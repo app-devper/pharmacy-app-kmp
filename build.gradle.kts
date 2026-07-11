@@ -73,4 +73,4 @@ kover {
     }
 }
 
-val COVERAGE_FLOOR = 50
+val COVERAGE_FLOOR = 55
