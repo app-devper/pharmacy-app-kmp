@@ -37,6 +37,7 @@ data class UiPreferences(
     val fontSize: FontSizePreference = FontSizePreference.Md,
     val density: DensityPreference = DensityPreference.Comfortable,
     val locale: LocalePreference = LocalePreference.Th,
+    val lastUsername: String = "",
 ) {
     companion object {
         val Default: UiPreferences = UiPreferences()

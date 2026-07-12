@@ -34,6 +34,7 @@ fun SettingsScreen(
             onKySkipAuto = viewModel::onKySkipAuto,
             onConfirmKySkip = viewModel::confirmKySkipAuto,
             onCancelKySkip = viewModel::cancelKySkipAuto,
+            onTestPrint = viewModel::testPrint,
             onKyDefaultBuyerAddress = viewModel::onKyDefaultBuyerAddress,
             onTimezone = viewModel::onTimezone,
             onSubmit = viewModel::submit,

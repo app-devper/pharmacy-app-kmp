@@ -19,6 +19,7 @@ data class SettingsEditorCallbacks(
     val onKySkipAuto: (Boolean) -> Unit = {},
     val onConfirmKySkip: () -> Unit = {},
     val onCancelKySkip: () -> Unit = {},
+    val onTestPrint: (app.devper.pharm.common.print.ReceiptTemplate) -> Unit = {},
     val onKyDefaultBuyerAddress: (String) -> Unit = {},
     val onTimezone: (String) -> Unit = {},
     val onSubmit: () -> Unit = {},

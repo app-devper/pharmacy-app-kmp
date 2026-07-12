@@ -7,7 +7,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.Icon
+import app.devper.pharm.common.print.ReceiptLine
+import app.devper.pharm.common.print.ReceiptTemplate
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFilterChip
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmToggleSwitch
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -54,4 +61,40 @@ internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEd
         }
         PharmToggleSwitch(checked = f.receiptShowPharmacist, onCheckedChange = editor.onReceiptShowPharmacist)
     }
+    PharmButton(
+        label = s.settingsTestPrintCta,
+        onClick = {
+            editor.onTestPrint(
+                ReceiptTemplate(
+                    storeName = f.storeName,
+                    storeAddress = f.storeAddress,
+                    storePhone = f.storePhone,
+                    storeTaxId = f.storeTaxId,
+                    billNo = "TEST-0001",
+                    soldAt = "-",
+                    customerName = "-",
+                    items = listOf(
+                        ReceiptLine(
+                            name = s.settingsTestPrintSampleItem,
+                            displayQty = 2,
+                            displayUnit = s.commonUnitDefault,
+                            unitPrice = 25.0,
+                            lineTotal = 50.0,
+                        ),
+                    ),
+                    subtotal = 50.0,
+                    itemDiscountTotal = 0.0,
+                    cartDiscount = 0.0,
+                    total = 50.0,
+                    received = 100.0,
+                    change = 50.0,
+                    pharmacistName = if (f.receiptShowPharmacist) f.pharmacistName else "",
+                    footer = f.receiptFooter,
+                ),
+            )
+        },
+        variant = PharmButtonVariant.Outline,
+        size = PharmButtonSize.Sm,
+        leadingIcon = { Icon(PharmIcons.Print, contentDescription = null) },
+    )
 }

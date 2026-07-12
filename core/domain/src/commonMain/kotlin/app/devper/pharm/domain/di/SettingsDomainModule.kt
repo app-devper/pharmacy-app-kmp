@@ -6,6 +6,7 @@ import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
 import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase
 import app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
 import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
@@ -23,4 +24,5 @@ val settingsDomainModule = module {
     factoryOf(::SetFontSizePreferenceUseCase)
     factoryOf(::SetDensityPreferenceUseCase)
     factoryOf(::SetLocalePreferenceUseCase)
+    factoryOf(::SetLastUsernameUseCase)
 }

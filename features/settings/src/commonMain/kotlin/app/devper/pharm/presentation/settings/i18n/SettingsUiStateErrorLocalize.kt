@@ -7,5 +7,6 @@ import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeSettings(s: PharmStrings): String = when (this) {
     is SettingsUiStateError.LoadSettingsFailed -> s.settingsLoadFailed
+    is SettingsUiStateError.TestPrintFailed -> s.settingsTestPrintFailed
     else -> localizeCommon(s)
 }

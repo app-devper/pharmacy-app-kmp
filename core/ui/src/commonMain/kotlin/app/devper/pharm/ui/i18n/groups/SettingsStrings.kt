@@ -33,6 +33,9 @@ interface SettingsStrings {
     val settingsKySkipConfirmTitle: String
     val settingsKySkipConfirmBody: String
     val settingsKySkipConfirmCta: String
+    val settingsTestPrintCta: String
+    val settingsTestPrintSampleItem: String
+    val settingsTestPrintFailed: String
     val settingsKyDefaultBuyerAddress: String
     val settingsKyDefaultBuyerAddressHint: String
 }
