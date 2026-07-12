@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
+import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
 import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.presentation.auth.exception.LoginUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
@@ -14,11 +15,17 @@ class LoginViewModel(
     private val login: LoginUseCase,
     uiPreferences: UiPreferencesProvider,
     private val setLocale: SetLocalePreferenceUseCase,
+    private val setLastUsername: SetLastUsernameUseCase,
 ) : BaseLoadableViewModel<LoginUiState>(LoginUiState()) {
 
     init {
         uiPreferences.state
-            .onEach { prefs -> setState { copy(locale = prefs.locale.wire) } }
+            .onEach { prefs ->
+                setState {
+                    if (username.isBlank() && prefs.lastUsername.isNotBlank()) copy(locale = prefs.locale.wire, username = prefs.lastUsername)
+                    else copy(locale = prefs.locale.wire)
+                }
+            }
             .launchIn(viewModelScope)
     }
 
@@ -40,7 +47,10 @@ class LoginViewModel(
         setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { login(s.username, s.password) },
-            onSuccess = { user -> setState { copy(loading = false, loggedInUser = user, password = "") } },
+            onSuccess = { user ->
+                setLastUsername(s.username)
+                setState { copy(loading = false, loggedInUser = user, password = "") }
+            },
             onFailure = { e ->
                 setState { copy(loading = false, errorState = LoginUiStateError.LoginFailed(e), password = "") }
             },

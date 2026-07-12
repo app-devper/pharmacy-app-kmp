@@ -12,6 +12,8 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.settings.ReceiptSettingsInput
 import app.devper.pharm.domain.param.settings.StockSettingsInput
 import app.devper.pharm.domain.param.settings.UpdateSettingsParam
+import app.devper.pharm.common.print.ReceiptTemplate
+import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
 import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
@@ -23,6 +25,7 @@ class SettingsEditorViewModel(
     settings: SettingsProvider,
     private val refreshSettings: RefreshSettingsUseCase,
     private val updateSettings: UpdateSettingsUseCase,
+    private val printReceipt: PrintReceiptUseCase,
 ) : BaseLoadableViewModel<SettingsEditorUiState>(SettingsEditorUiState()) {
 
     private var hydrated = false
@@ -81,6 +84,16 @@ class SettingsEditorViewModel(
     fun onKySkipAuto(v: Boolean) {
         if (v && !current.form.kySkipAuto) setState { copy(confirmKySkip = true) }
         else patch { copy(kySkipAuto = v) }
+    }
+
+    fun testPrint(template: ReceiptTemplate) {
+        launchResult(
+            block = { printReceipt(template) },
+            onSuccess = { printed ->
+                if (!printed) setState { copy(errorState = SettingsUiStateError.TestPrintFailed()) }
+            },
+            onFailure = { e -> setState { copy(errorState = SettingsUiStateError.TestPrintFailed(e)) } },
+        )
     }
 
     fun confirmKySkipAuto() {

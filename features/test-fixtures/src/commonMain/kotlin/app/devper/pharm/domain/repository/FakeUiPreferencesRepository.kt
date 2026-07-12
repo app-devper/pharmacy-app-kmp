@@ -42,6 +42,10 @@ class FakeUiPreferencesRepository(
         internal.value = internal.value.copy(density = density)
     }
 
+    override fun setLastUsername(username: String) {
+        internal.value = internal.value.copy(lastUsername = username)
+    }
+
     override fun setLocale(locale: LocalePreference) {
         lastLocale = locale
         internal.value = internal.value.copy(locale = locale)

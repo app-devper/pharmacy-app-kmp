@@ -38,11 +38,17 @@ class UiPreferencesRepositoryImpl(
         settings.putString(KEY_LOCALE, locale.wire)
     }
 
+    override fun setLastUsername(username: String) {
+        internal.value = internal.value.copy(lastUsername = username)
+        settings.putString(KEY_LAST_USERNAME, username)
+    }
+
     private fun loadFromSettings(): UiPreferences = UiPreferences(
         theme = ThemePreference.parse(settings.getStringOrNull(KEY_THEME)),
         fontSize = FontSizePreference.parse(settings.getStringOrNull(KEY_FONT_SIZE)),
         density = DensityPreference.parse(settings.getStringOrNull(KEY_DENSITY)),
         locale = LocalePreference.parse(settings.getStringOrNull(KEY_LOCALE)),
+        lastUsername = settings.getStringOrNull(KEY_LAST_USERNAME).orEmpty(),
     )
 
     private companion object {
@@ -50,5 +56,6 @@ class UiPreferencesRepositoryImpl(
         const val KEY_FONT_SIZE = "ui.fontSize"
         const val KEY_DENSITY = "ui.density"
         const val KEY_LOCALE = "ui.locale"
+        const val KEY_LAST_USERNAME = "ui.lastUsername"
     }
 }
