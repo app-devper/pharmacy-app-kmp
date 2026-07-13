@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.inventory.DrugRepository
 
 import app.devper.pharm.domain.model.BulkImportResult
@@ -33,13 +35,13 @@ class FakeDrugRepository(
 
     override suspend fun list(): List<Drug> {
         listCallCount++
-        if (listThrows) throw RuntimeException("list failed")
+        if (listThrows) throw ServerException("list failed")
         return seed
     }
 
     override suspend fun add(param: AddDrugParam): Drug {
         if (addThrowsOn != null && param.barcode == addThrowsOn) {
-            throw RuntimeException("backend rejected: $addThrowsOn")
+            throw ServerException("backend rejected: $addThrowsOn")
         }
         lastAdd = param
 
@@ -60,7 +62,7 @@ class FakeDrugRepository(
     }
 
     override suspend fun update(param: UpdateDrugParam) {
-        if (param.id == updateThrowsOn) throw RuntimeException("backend rejected: $updateThrowsOn")
+        if (param.id == updateThrowsOn) throw ServerException("backend rejected: $updateThrowsOn")
         lastUpdate = param
     }
 
@@ -70,13 +72,13 @@ class FakeDrugRepository(
     }
 
     override suspend fun lowStock(): List<Drug> {
-        if (lowStockThrows) throw RuntimeException("lowStock failed")
+        if (lowStockThrows) throw ServerException("lowStock failed")
         return lowStockSeed
     }
 
     override suspend fun reorderSuggestions(param: ReorderSuggestionsParam): List<ReorderSuggestion> {
         lastReorderParam = param
-        if (reorderThrows) throw RuntimeException("reorderSuggestions failed")
+        if (reorderThrows) throw ServerException("reorderSuggestions failed")
         return reorderSeed
     }
 }

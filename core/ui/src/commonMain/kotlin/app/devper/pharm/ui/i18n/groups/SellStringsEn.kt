@@ -36,6 +36,13 @@ object SellStringsEn : SellStrings {
     override val sellKyCaptureHint = "Buyer details will be captured at checkout"
     override val sellPickerCountAll: (Int) -> String = { n -> "All $n items" }
     override val sellPickerCountFound: (Int, Int) -> String = { a, b -> "Found $a of $b" }
+    override val sellPickerConfirmAdd: (String) -> String = { "Press Enter again to add \"$it\"" }
+    override val sellPickerAdded: (String) -> String = { "Added $it" }
+    override val sellLineNextLot: (String, String) -> String = { lot, date -> "Lot $lot · exp $date" }
+    override val sellKyPrecaptureNeeded = "Tap to fill in KY details ahead"
+    override val sellKyPrecaptureDone = "KY details saved — tap to edit"
+    override val sellKySkipAutoOn = "Auto capture is disabled in Settings — this bill will not record KY details"
+    override val sellKyPrecaptureInvalidated = "Cart changed — please review the KY details again"
     override val sellPickerEmptyStock = "No drugs in inventory yet"
     override val sellOversellCount: (Int) -> String = { n -> "$n drug(s) exceed stock" }
     override val sellOversellExplain = "Pre-sell: sell beyond available stock. The excess is recorded and reconciled on the next import/adjustment. Oversold units cannot be returned until bound to a real lot"
@@ -70,6 +77,9 @@ object SellStringsEn : SellStrings {
     override val sellParkedToast: (Int) -> String = { n -> "Cart parked in slot $n" }
     override val sellOpenViewCta = "Open"
     override val sellAddedToast: (String) -> String = { v -> "Added $v" }
+    override val sellTierWholesaleLabel = "Wholesale"
+    override val sellTierRegularLabel = "Regular"
+    override val sellTierRetailLabel = "Retail"
 
     override val sellCart = "Cart"
     override val sellSearchPlaceholder = "Search by brand, generic, or barcode (F2)"

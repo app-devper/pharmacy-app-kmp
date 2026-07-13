@@ -46,7 +46,7 @@ class MovementsViewModel(
         copy(page = (page + 1).coerceAtMost(max))
     }
 
-    fun onExportExcel() {
+    fun onExportExcel(headers: List<String>) {
         val s = current
         if (s.items.isEmpty()) {
             setState { copy(messageState = CommonUiStateMessage.ExportEmpty) }
@@ -61,6 +61,7 @@ class MovementsViewModel(
                         to = s.dateRange.toDate,
                         drugName = s.drugName,
                         rows = s.items,
+                        headers = headers,
                     ),
                 )
             },

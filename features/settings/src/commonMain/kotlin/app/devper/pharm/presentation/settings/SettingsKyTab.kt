@@ -10,6 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.designsystem.PharmToggleSwitch
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -31,6 +35,26 @@ internal fun SettingsKyTab(state: SettingsEditorUiState, editor: SettingsEditorC
         }
         PharmToggleSwitch(checked = f.kySkipAuto, onCheckedChange = editor.onKySkipAuto)
     }
+    PharmModal(
+        open = state.confirmKySkip,
+        onDismiss = editor.onCancelKySkip,
+        title = s.settingsKySkipConfirmTitle,
+        subtitle = s.settingsKySkipConfirmBody,
+        footer = {
+            PharmButton(
+                label = s.commonCancel,
+                onClick = editor.onCancelKySkip,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = s.settingsKySkipConfirmCta,
+                onClick = editor.onConfirmKySkip,
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Sm,
+            )
+        },
+    ) {}
     SettingsLabeledField(label = s.settingsKyDefaultBuyerAddress) {
         Box(modifier = Modifier.heightIn(min = 56.dp, max = 120.dp)) {
             PharmTextField(

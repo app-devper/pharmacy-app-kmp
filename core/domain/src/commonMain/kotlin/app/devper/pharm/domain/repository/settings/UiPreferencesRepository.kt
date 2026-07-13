@@ -13,4 +13,5 @@ interface UiPreferencesRepository {
     fun setFontSize(size: FontSizePreference)
     fun setDensity(density: DensityPreference)
     fun setLocale(locale: LocalePreference)
+    fun setLastUsername(username: String)
 }

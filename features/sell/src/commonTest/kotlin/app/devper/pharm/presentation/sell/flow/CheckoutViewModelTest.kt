@@ -313,6 +313,66 @@ class CheckoutViewModelTest {
     }
 
     @Test
+    fun openKyPrecapture_is_noop_without_ky_lines() = runVmTest { dispatchers ->
+        val (vm) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+        )
+        advanceUntilIdle()
+        vm.openKyPrecapture()
+        advanceUntilIdle()
+        assertNull(vm.state.value.kyPrecapture)
+        assertFalse(vm.state.value.kyCaptured)
+    }
+
+    @Test
+    fun precaptured_ky_lets_submit_checkout_without_reopening_sheet() = runVmTest { dispatchers ->
+        val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
+        val (vm, _, sales, ky) = newVm(
+            dispatchers,
+            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+        )
+        advanceUntilIdle()
+        vm.openKyPrecapture()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.kyPrecapture)
+        vm.confirmKyPrecapture(KyCaptureFields(ky10BuyerName = "Buyer", ky10BuyerAddress = "Addr"))
+        advanceUntilIdle()
+        assertTrue(vm.state.value.kyCaptured)
+        vm.submit()
+        advanceUntilIdle()
+        assertNull(vm.state.value.kyCapturePending)
+        assertNotNull(sales.lastCheckout)
+        assertEquals(1, ky.ky10Submissions.size)
+        assertEquals("Buyer", ky.ky10Submissions[0].buyerName)
+    }
+
+    @Test
+    fun cart_change_invalidates_precaptured_ky() = runVmTest { dispatchers ->
+        val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
+        val otherLine = line(drug = drug(id = "d2", name = "Other"))
+        val cart = FakeCartRepository(
+            initialItems = listOf(line(drug = kyDrug), otherLine),
+            initialReceived = "100",
+        )
+        val (vm) = newVm(dispatchers, cart)
+        advanceUntilIdle()
+        vm.openKyPrecapture()
+        advanceUntilIdle()
+        vm.confirmKyPrecapture(KyCaptureFields(ky10BuyerName = "Buyer"))
+        advanceUntilIdle()
+        assertTrue(vm.state.value.kyCaptured)
+        cart.remove(otherLine.key)
+        advanceUntilIdle()
+        assertFalse(vm.state.value.kyCaptured)
+        assertNull(vm.state.value.capturedKyFields)
+        assertTrue(vm.state.value.kyPrecaptureInvalidated)
+        vm.openKyPrecapture()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.kyPrecaptureInvalidated)
+    }
+
+    @Test
     fun requestSkipKy_opens_confirm_without_skipping() = runVmTest { dispatchers ->
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales, ky) = newVm(

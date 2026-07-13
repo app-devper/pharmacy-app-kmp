@@ -37,7 +37,7 @@ class ProfitViewModelTest {
     fun export_with_no_rows_sets_message() = runVmTest { d ->
         val model = vm(d)
         advanceUntilIdle()
-        model.onExportExcel()
+        model.onExportExcel(listOf("h1", "h2"))
         assertIs<CommonUiStateMessage.ExportEmpty>(model.state.value.messageState)
     }
 }

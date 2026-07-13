@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.extension.Tier
-import app.devper.pharm.domain.extension.tierLabel
 import app.devper.pharm.presentation.customers.i18n.localizeCustomerDetail
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
@@ -134,7 +133,12 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
                 )
             }
             if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
-                PharmBadge(text = tierLabel(customer.priceTier), tone = PharmBadgeTone.Purple)
+                val label = when (customer.priceTier) {
+                    Tier.Wholesale -> s.sellTierWholesaleLabel
+                    Tier.Regular -> s.sellTierRegularLabel
+                    else -> customer.priceTier
+                }
+                PharmBadge(text = label, tone = PharmBadgeTone.Purple)
             }
         }
 

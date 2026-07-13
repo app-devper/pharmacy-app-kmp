@@ -15,6 +15,7 @@ data class EodUiState(
     val closedTemplate: ReceiptTemplate? = null,
     val closing: Boolean = false,
     val confirmClose: Boolean = false,
+    val pendingSyncCount: Int = 0,
     val errorState: AppException? = null,
 ) : LoadableUiState<EodUiState> {
 

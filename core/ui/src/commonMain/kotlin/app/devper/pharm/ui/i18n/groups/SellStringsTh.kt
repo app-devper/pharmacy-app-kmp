@@ -36,6 +36,13 @@ object SellStringsTh : SellStrings {
     override val sellKyCaptureHint = "ระบบจะให้กรอกข้อมูลผู้ซื้อตอนชำระเงิน"
     override val sellPickerCountAll: (Int) -> String = { n -> "ทั้งหมด $n รายการ" }
     override val sellPickerCountFound: (Int, Int) -> String = { a, b -> "พบ $a จาก $b" }
+    override val sellPickerConfirmAdd: (String) -> String = { "กด Enter อีกครั้งเพื่อเพิ่ม \"$it\"" }
+    override val sellPickerAdded: (String) -> String = { "เพิ่ม $it แล้ว" }
+    override val sellLineNextLot: (String, String) -> String = { lot, date -> "ล็อต $lot · หมดอายุ $date" }
+    override val sellKyPrecaptureNeeded = "แตะเพื่อกรอกข้อมูล ขย. ล่วงหน้า"
+    override val sellKyPrecaptureDone = "บันทึกข้อมูล ขย. แล้ว — แตะเพื่อแก้ไข"
+    override val sellKySkipAutoOn = "ปิดการบันทึกอัตโนมัติไว้ในตั้งค่า — บิลนี้จะไม่เก็บข้อมูล ขย."
+    override val sellKyPrecaptureInvalidated = "ตะกร้าเปลี่ยน — กรุณาตรวจข้อมูล ขย. อีกครั้ง"
     override val sellPickerEmptyStock = "ยังไม่มีรายการยาในคลัง"
     override val sellOversellCount: (Int) -> String = { n -> "ยา $n รายการเกินสต็อก" }
     override val sellOversellExplain = "ขายล่วงหน้า: ยอมขายเกินสต็อกที่มีได้ ระบบบันทึกจำนวนที่เกินไว้และจะกระทบยอดเมื่อรับเข้า/ปรับสต็อกครั้งถัดไป จำนวนที่ขายเกินยังคืนไม่ได้จนกว่าจะผูกกับล็อตจริง"
@@ -70,6 +77,9 @@ object SellStringsTh : SellStrings {
     override val sellParkedToast: (Int) -> String = { n -> "พักตะกร้าไว้ช่อง $n แล้ว" }
     override val sellOpenViewCta = "เปิดดู"
     override val sellAddedToast: (String) -> String = { v -> "เพิ่ม $v" }
+    override val sellTierWholesaleLabel = "ขายส่ง"
+    override val sellTierRegularLabel = "ขายปลีก"
+    override val sellTierRetailLabel = "ราคาปลีก"
 
     override val sellCart = "ตะกร้า"
     override val sellSearchPlaceholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)"

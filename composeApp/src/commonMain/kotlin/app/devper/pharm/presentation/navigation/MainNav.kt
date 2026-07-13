@@ -252,6 +252,7 @@ fun MainShell(appViewModel: AppViewModel) {
         },
         onLogout = appViewModel::signOut,
         pendingSyncCount = state.pendingSyncCount,
+        onSyncClick = appViewModel::syncNow,
         role = state.role,
         user = user,
         onProfileClick = { nestedNav.navigate(Profile) { launchSingleTop = true } },
@@ -264,6 +265,8 @@ fun MainShell(appViewModel: AppViewModel) {
             stockNav(
                 nestedNav,
                 onOpenReorderSuggestions = { nestedNav.navigate(ReorderSuggestions) { launchSingleTop = true } },
+                onOpenExpiry = { nestedNav.navigate(Expiry) { launchSingleTop = true } },
+                onOpenImports = { nestedNav.navigate(Imports) { launchSingleTop = true } },
             )
             customersNav(nestedNav)
             salesHistoryNav()
@@ -275,7 +278,7 @@ fun MainShell(appViewModel: AppViewModel) {
             stockCountsNav(nestedNav)
             expiryNav()
             labelPrintNav()
-            planningNav(nestedNav)
+            planningNav(nestedNav, onOpenPurchaseOrder = { nestedNav.navigate(ImportNew) { launchSingleTop = true } })
             reportsNav(nestedNav)
             kyNav(nestedNav)
             offlineSyncNav()

@@ -1,7 +1,9 @@
 package app.devper.pharm.ui.i18n
 
 import app.devper.pharm.domain.model.AdjustmentReason
+import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.model.KyFormType
+import app.devper.pharm.ui.i18n.groups.LabelsStrings
 import app.devper.pharm.domain.model.MovementType
 
 fun MovementType.localizedLabel(s: PharmStrings): String = when (this) {
@@ -25,4 +27,9 @@ fun AdjustmentReason.label(s: PharmStrings): String = when (this) {
     AdjustmentReason.Expired -> s.stockReasonExpired
     AdjustmentReason.Lost -> s.stockReasonLost
     AdjustmentReason.Other -> s.stockReasonOther
+}
+
+fun LabelSize.label(s: LabelsStrings): String = when (this) {
+    LabelSize.Small -> s.labelsSizeSmall
+    LabelSize.Medium -> s.labelsSizeMedium
 }

@@ -1,8 +1,8 @@
 [versions]
 agp = "8.13.2"
 
-app-version = "3.2.2"
-app-versionCode = "2"
+app-version = "3.2.3"
+app-versionCode = "3"
 
 buildkonfig = "0.17.0"
 

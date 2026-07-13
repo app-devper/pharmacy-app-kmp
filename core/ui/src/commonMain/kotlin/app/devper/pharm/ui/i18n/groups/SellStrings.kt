@@ -36,6 +36,13 @@ interface SellStrings {
     val sellKyCaptureHint: String
     val sellPickerCountAll: (Int) -> String
     val sellPickerCountFound: (Int, Int) -> String
+    val sellPickerConfirmAdd: (String) -> String
+    val sellPickerAdded: (String) -> String
+    val sellLineNextLot: (String, String) -> String
+    val sellKyPrecaptureNeeded: String
+    val sellKyPrecaptureDone: String
+    val sellKySkipAutoOn: String
+    val sellKyPrecaptureInvalidated: String
     val sellPickerEmptyStock: String
     val sellOversellCount: (Int) -> String
     val sellOversellExplain: String
@@ -70,6 +77,9 @@ interface SellStrings {
     val sellParkedToast: (Int) -> String
     val sellOpenViewCta: String
     val sellAddedToast: (String) -> String
+    val sellTierWholesaleLabel: String
+    val sellTierRegularLabel: String
+    val sellTierRetailLabel: String
 
     val sellCheckoutEmptyCart: String
 

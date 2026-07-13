@@ -24,7 +24,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,7 +37,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.domain.extension.SearchSubmitAction
+import app.devper.pharm.domain.extension.nextLotDaysLeft
 import app.devper.pharm.domain.extension.resolvePrice
+import app.devper.pharm.domain.extension.resolveSearchSubmit
+import kotlinx.coroutines.delay
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmEmptyState
@@ -66,12 +76,25 @@ fun DrugPickerColumn(
     LaunchedEffect(gridState.isScrollInProgress) {
         if (gridState.isScrollInProgress) focusManager.clearFocus()
     }
+    var armedDrugId by remember(query) { mutableStateOf<String?>(null) }
+    var addedDrugName by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(addedDrugName) {
+        if (addedDrugName != null) {
+            delay(2000)
+            addedDrugName = null
+        }
+    }
+    val addAndClear = { drug: Drug ->
+        onAdd(drug)
+        addedDrugName = drug.name
+        onQueryChange("")
+    }
     val onSubmitSearch = {
-        if (query.isNotBlank()) {
-            visible.firstOrNull()?.let { drug ->
-                onAdd(drug)
-                onQueryChange("")
-            }
+        when (val action = visible.resolveSearchSubmit(query)) {
+            is SearchSubmitAction.AddNow -> addAndClear(action.drug)
+            is SearchSubmitAction.Confirm ->
+                if (armedDrugId == action.drug.id) addAndClear(action.drug) else armedDrugId = action.drug.id
+            SearchSubmitAction.None -> Unit
         }
     }
     Column(modifier = modifier.fillMaxSize().background(t.colors.bgPage)) {
@@ -103,6 +126,30 @@ fun DrugPickerColumn(
 
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
+        addedDrugName?.let { name ->
+            Text(
+                text = pharmStrings.sellPickerAdded(name),
+                style = PharmText.micro.copy(color = t.colors.successFg),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(t.colors.successBg)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        }
+
+        visible.firstOrNull { it.id == armedDrugId }?.let { armed ->
+            Text(
+                text = pharmStrings.sellPickerConfirmAdd(armed.name),
+                style = PharmText.micro.copy(color = t.colors.accent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(t.colors.accentBgSoft)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        }
+
         when {
             loading && drugs.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(),
@@ -111,7 +158,9 @@ fun DrugPickerColumn(
 
             visible.isEmpty() && !loading -> EmptyState(searching = query.isNotBlank())
 
-            else -> BoxWithConstraints(
+            else -> {
+                val today = remember { Clock.System.now().toLocalDateTime(TimeZone.of("Asia/Bangkok")).date }
+                BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
@@ -141,10 +190,13 @@ fun DrugPickerColumn(
                             type = inferType(drug),
                             altUnitCount = drug.altUnits.count { !it.hidden },
                             kyForm = inferKyForm(drug),
+                            highlighted = drug.id == armedDrugId,
+                            expiryDaysLeft = drug.nextLotDaysLeft(today),
                             lowStockThreshold = drug.minStock.value.coerceAtLeast(20),
                             onClick = { onAdd(drug) },
                         )
                     }
+                }
                 }
             }
         }

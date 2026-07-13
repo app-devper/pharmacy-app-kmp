@@ -20,4 +20,11 @@ object MovementsStringsTh : MovementsStrings {
     override val movementsPagination: (Int, Int) -> String = { page, total -> "หน้า $page / $total" }
     override val movementsShownOf: (Int, Int) -> String = { shown, total -> "แสดง $shown จาก $total รายการ" }
     override val movementsLoadHistoryFailed = "โหลดประวัติไม่สำเร็จ"
+
+    override val movementsCsvHeaderAt = "เวลา"
+    override val movementsCsvHeaderType = "ประเภท"
+    override val movementsCsvHeaderDrug = "ยา"
+    override val movementsCsvHeaderQty = "จำนวน"
+    override val movementsCsvHeaderRef = "อ้างอิง"
+    override val movementsCsvHeaderNote = "หมายเหตุ"
 }

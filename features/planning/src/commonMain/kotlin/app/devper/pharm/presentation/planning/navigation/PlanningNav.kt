@@ -11,11 +11,14 @@ data object LowStock
 @Serializable
 data object ReorderSuggestions
 
-fun NavGraphBuilder.planningNav(navController: NavController) {
+fun NavGraphBuilder.planningNav(navController: NavController, onOpenPurchaseOrder: () -> Unit) {
     composable<LowStock> {
         LowStockScreen()
     }
     composable<ReorderSuggestions> {
-        ReorderSuggestionsScreen(onBack = { navController.popBackStack() })
+        ReorderSuggestionsScreen(
+            onBack = { navController.popBackStack() },
+            onOpenPurchaseOrder = onOpenPurchaseOrder,
+        )
     }
 }

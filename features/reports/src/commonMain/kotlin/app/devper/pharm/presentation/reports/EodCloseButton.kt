@@ -57,6 +57,7 @@ internal fun EodCloseButton(
 internal fun EodConfirmCloseModal(
     open: Boolean,
     report: EodReport?,
+    pendingSyncCount: Int,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -65,7 +66,7 @@ internal fun EodConfirmCloseModal(
         open = open,
         onDismiss = onCancel,
         title = s.reportsEodTitle,
-        subtitle = s.reportsEodConfirmMessage,
+        subtitle = if (pendingSyncCount > 0) s.reportsEodPendingSyncWarning(pendingSyncCount) else s.reportsEodConfirmMessage,
         footer = {
             PharmButton(
                 label = s.commonCancel,

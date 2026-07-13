@@ -10,6 +10,8 @@ object LabelsStringsTh : LabelsStrings {
     override val labelsRemoveLine = "ลบบรรทัด"
     override val labelsClear = "ล้าง"
     override val labelsSizeLabel = "ขนาดฉลาก"
+    override val labelsSizeSmall = "38 × 25 มม."
+    override val labelsSizeMedium = "50 × 30 มม."
     override val labelsPreviewLabel: (String) -> String = { size -> "ตัวอย่าง ($size)" }
     override val labelsPrintCount: (Int) -> String = { count -> "พิมพ์ $count ดวง" }
     override val labelsPrinting = "กำลังพิมพ์…"

@@ -20,12 +20,88 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsEditorViewModelTest {
 
-    private fun vm(repo: FakeSettingsRepository, d: app.devper.pharm.common.AppDispatchers) =
+    private class StubPrinter(private val result: Boolean = true) : app.devper.pharm.common.print.ReceiptPrinter {
+        var printed: app.devper.pharm.common.print.ReceiptTemplate? = null
+        override fun print(template: app.devper.pharm.common.print.ReceiptTemplate): Boolean {
+            printed = template
+            return result
+        }
+    }
+
+    private fun sampleTemplate() = app.devper.pharm.common.print.ReceiptTemplate(
+        storeName = "Store", storeAddress = "", storePhone = "", storeTaxId = "",
+        billNo = "TEST", soldAt = "-", customerName = "-", items = emptyList(),
+        subtotal = 0.0, itemDiscountTotal = 0.0, cartDiscount = 0.0, total = 0.0,
+        received = 0.0, change = 0.0, pharmacistName = "", footer = "",
+    )
+
+    private fun vm(repo: FakeSettingsRepository, d: app.devper.pharm.common.AppDispatchers, printer: StubPrinter = StubPrinter()) =
         SettingsEditorViewModel(
             SettingsProvider(repo),
             RefreshSettingsUseCase(repo, d),
             UpdateSettingsUseCase(repo, d),
+            app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase(printer, d),
         )
+
+    @Test
+    fun test_print_sends_template_to_the_printer() = runVmTest { d ->
+        val printer = StubPrinter(result = true)
+        val model = vm(FakeSettingsRepository(), d, printer)
+        advanceUntilIdle()
+        model.testPrint(sampleTemplate())
+        advanceUntilIdle()
+        assertEquals("TEST", printer.printed?.billNo)
+        assertNull(model.state.value.errorState)
+    }
+
+    @Test
+    fun test_print_failure_surfaces_error() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d, StubPrinter(result = false))
+        advanceUntilIdle()
+        model.testPrint(sampleTemplate())
+        advanceUntilIdle()
+        assertIs<app.devper.pharm.presentation.settings.exception.SettingsUiStateError.TestPrintFailed>(model.state.value.errorState)
+    }
+
+    @Test
+    fun enabling_ky_skip_requires_confirmation() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        assertTrue(model.state.value.confirmKySkip)
+        assertFalse(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
+    fun cancelling_ky_skip_confirmation_keeps_it_off() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        model.cancelKySkipAuto()
+        assertFalse(model.state.value.confirmKySkip)
+        assertFalse(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
+    fun confirming_ky_skip_enables_it() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        model.confirmKySkipAuto()
+        assertFalse(model.state.value.confirmKySkip)
+        assertTrue(model.state.value.form.kySkipAuto)
+    }
+
+    @Test
+    fun disabling_ky_skip_needs_no_confirmation() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onKySkipAuto(true)
+        model.confirmKySkipAuto()
+        model.onKySkipAuto(false)
+        assertFalse(model.state.value.confirmKySkip)
+        assertFalse(model.state.value.form.kySkipAuto)
+    }
 
     @Test
     fun init_finishes_loading_and_refreshes() = runVmTest { d ->

@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.ky.ExportRepository
 
 import app.devper.pharm.domain.param.ky.ExportKyFormParam
@@ -18,14 +20,14 @@ class FakeExportRepository(
 
     override suspend fun exportKyForm(param: ExportKyFormParam): String {
         lastKyParam = param
-        if (throws) throw RuntimeException("export failed")
+        if (throws) throw ServerException("export failed")
         return result
     }
 
     override suspend fun saveCsv(filename: String, bytes: ByteArray): String {
         lastFilename = filename
         lastBytes = bytes
-        if (throws) throw RuntimeException("export failed")
+        if (throws) throw ServerException("export failed")
         return result
     }
 }

@@ -44,7 +44,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.extension.EXPIRY_WARNING_DAYS
+import app.devper.pharm.domain.extension.nextLotDaysLeft
 import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.ui.format.localDateToBuddhist
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -170,6 +176,19 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
             style = PharmText.micro,
             color = t.colors.fg3,
         )
+        val nextLotExpiry = line.drug.nextLotExpiry
+        if (nextLotExpiry != null) {
+            val today = remember { Clock.System.now().toLocalDateTime(TimeZone.of("Asia/Bangkok")).date }
+            val daysLeft = line.drug.nextLotDaysLeft(today)
+            if (daysLeft != null && daysLeft <= EXPIRY_WARNING_DAYS) {
+                Text(
+                    text = pharmStrings.sellLineNextLot(line.drug.nextLotNumber.orEmpty(), localDateToBuddhist(nextLotExpiry)),
+                    style = PharmText.micro,
+                    color = if (daysLeft < 0) t.colors.dangerFg else t.colors.warningFg,
+                    maxLines = 1,
+                )
+            }
+        }
     }
 }
 

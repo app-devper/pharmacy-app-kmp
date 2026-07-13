@@ -2,6 +2,7 @@ package app.devper.pharm.data.repository.internal
 
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
+import app.devper.pharm.data.internal.parseLocalDateOrNull
 import app.devper.pharm.data.internal.toIso
 import app.devper.pharm.data.remote.dto.AltUnitDto
 import app.devper.pharm.data.remote.dto.BulkImportResultDto
@@ -33,6 +34,8 @@ internal fun DrugDto.toDomain(): Drug = Drug(
     minStock = Quantity(minStock),
     unit = unit?.takeIf { it.isNotBlank() },
     regNo = regNo?.takeIf { it.isNotBlank() },
+    nextLotNumber = nextLot?.lotNumber?.takeIf { it.isNotBlank() },
+    nextLotExpiry = nextLot?.expiryDate.parseLocalDateOrNull(),
     prices = prices.orEmpty().mapValues { Money(it.value) },
     altUnits = altUnits.orEmpty().map { it.toDomain() },
     reportTypes = reportTypes.orEmpty(),

@@ -188,8 +188,15 @@ tasks.register("auditArchitecture") {
             "DrugFormUiState.kt",
             "Ky12AddUiState.kt",
             "ImportFormViewModel.kt",
+            "StockAdjustment.kt",
+            "KyForms.kt",
+            "KyManualDraftExt.kt",
+            "BulkImportJsonExt.kt",
+            "DrugParams.kt",
+            "CartLine.kt",
+            "SaleHistory.kt",
         )
-        listOf("core/ui", "features", "composeApp").forEach { topDir ->
+        listOf("core/ui", "core/domain", "features", "composeApp").forEach { topDir ->
             val root = projectRoot.resolve(topDir)
             if (!root.exists()) return@forEach
             root.walkTopDown()

@@ -20,4 +20,11 @@ interface MovementsStrings {
     val movementsPagination: (Int, Int) -> String
     val movementsShownOf: (Int, Int) -> String
     val movementsLoadHistoryFailed: String
+
+    val movementsCsvHeaderAt: String
+    val movementsCsvHeaderType: String
+    val movementsCsvHeaderDrug: String
+    val movementsCsvHeaderQty: String
+    val movementsCsvHeaderRef: String
+    val movementsCsvHeaderNote: String
 }

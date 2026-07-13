@@ -7,6 +7,8 @@ import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.repository.FakeAuthRepository
 import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
+import app.devper.pharm.domain.model.UiPreferences
+import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
 import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,8 +32,27 @@ class LoginViewModelTest {
             login = LoginUseCase(repo, dispatchers),
             uiPreferences = UiPreferencesProvider(uiPrefs),
             setLocale = SetLocalePreferenceUseCase(uiPrefs),
+            setLastUsername = SetLastUsernameUseCase(uiPrefs),
         )
         return Triple(vm, repo, uiPrefs)
+    }
+
+    @Test
+    fun last_username_prefills_when_field_is_blank() = runVmTest { dispatchers ->
+        val prefs = FakeUiPreferencesRepository(initial = UiPreferences(lastUsername = "somsri"))
+        val (vm) = newVm(dispatchers, uiPrefs = prefs)
+        advanceUntilIdle()
+        assertEquals("somsri", vm.state.value.username)
+    }
+
+    @Test
+    fun successful_login_remembers_the_username() = runVmTest { dispatchers ->
+        val (vm, _, prefs) = newVm(dispatchers)
+        vm.onUsernameChange("somsri")
+        vm.onPasswordChange("secret123")
+        vm.submit()
+        advanceUntilIdle()
+        assertEquals("somsri", prefs.state.value.lastUsername)
     }
 
     @Test

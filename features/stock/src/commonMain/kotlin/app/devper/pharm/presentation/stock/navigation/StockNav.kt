@@ -27,6 +27,8 @@ data class DrugAdjust(val drugId: String, val drugName: String)
 fun NavGraphBuilder.stockNav(
     navController: NavController,
     onOpenReorderSuggestions: () -> Unit,
+    onOpenExpiry: () -> Unit,
+    onOpenImports: () -> Unit,
 ) {
     composable<Stock> {
         StockScreen(
@@ -36,6 +38,8 @@ fun NavGraphBuilder.stockNav(
             onOpenAdjust = { id, name -> navController.navigate(DrugAdjust(id, name)) { launchSingleTop = true } },
             onOpenHistory = { id, name -> navController.navigate(DrugHistory(id, name)) { launchSingleTop = true } },
             onOpenReorderSuggestions = onOpenReorderSuggestions,
+            onOpenExpiry = onOpenExpiry,
+            onOpenImports = onOpenImports,
         )
     }
     composable<DrugAdd> {

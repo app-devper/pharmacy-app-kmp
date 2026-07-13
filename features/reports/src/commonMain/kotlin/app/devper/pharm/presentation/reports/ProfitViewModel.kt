@@ -44,7 +44,7 @@ class ProfitViewModel(
     fun onSort(sort: ProfitSort) = setState { copy(sort = sort) }
     fun dismissMessage() = setState { copy(messageState = null) }
 
-    fun onExportExcel() {
+    fun onExportExcel(headers: List<String>) {
         val s = current
         val rows = s.sortedRows
         if (rows.isEmpty()) {
@@ -53,7 +53,16 @@ class ProfitViewModel(
         }
         setState { copy(exporting = true) }
         launchResult(
-            block = { exportProfitCsv(ExportProfitCsvParam(s.dateRange.fromDate, s.dateRange.toDate, rows)) },
+            block = {
+                exportProfitCsv(
+                    ExportProfitCsvParam(
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
+                        rows = rows,
+                        headers = headers,
+                    )
+                )
+            },
             onSuccess = { feedback -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(feedback)) } },
             onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
         )

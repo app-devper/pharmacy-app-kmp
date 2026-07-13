@@ -19,6 +19,7 @@ import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
+import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.ui.common.BaseFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
@@ -28,6 +29,7 @@ class ImportFormViewModel(
     private val updatePurchaseOrder: UpdatePurchaseOrderUseCase,
     private val getDrugs: GetDrugsUseCase,
     private val getSuppliers: GetSuppliersUseCase,
+    private val purchaseDraft: PurchaseDraftProvider,
 ) : BaseFormViewModel<ImportFormUiState>(ImportFormUiState()) {
 
     fun init(mode: ImportFormMode) {
@@ -35,6 +37,25 @@ class ImportFormViewModel(
         loadDrugs()
         loadSuppliers()
         if (mode is ImportFormMode.Edit) hydrateForEdit(mode.importId)
+        else seedFromPurchaseDraft()
+    }
+
+    private fun seedFromPurchaseDraft() {
+        val draft = purchaseDraft.consume()
+        if (draft.isEmpty()) return
+        patchHeader {
+            copy(
+                items = draft.map { line ->
+                    ImportLineFields(
+                        drugId = line.drugId,
+                        drugName = line.drugName,
+                        qty = line.qty.toString(),
+                        costPrice = line.costPrice.cleanPrice(),
+                        sellPrice = line.sellPrice.cleanPrice(),
+                    )
+                },
+            )
+        }
     }
 
     fun onSupplier(v: String) = patchHeader { copy(supplier = v) }

@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.repository
 
+import app.devper.pharm.common.ServerException
+
 import app.devper.pharm.domain.repository.settings.SettingsRepository
 
 import app.devper.pharm.domain.model.Settings
@@ -24,12 +26,12 @@ class FakeSettingsRepository(
 
     override suspend fun refresh(): Settings {
         refreshCallCount++
-        if (refreshThrows) throw RuntimeException("refresh failed")
+        if (refreshThrows) throw ServerException("refresh failed")
         return settingsState.value
     }
 
     override suspend fun update(param: UpdateSettingsParam): Settings {
-        if (updateThrows) throw RuntimeException("update failed")
+        if (updateThrows) throw ServerException("update failed")
         lastUpdate = param
         return settingsState.value
     }

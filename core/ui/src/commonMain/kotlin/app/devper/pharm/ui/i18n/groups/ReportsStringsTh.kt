@@ -59,6 +59,8 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsEodToday = "วันนี้"
     override val reportsEodConfirmTitle = "ยืนยันปิดยอด"
     override val reportsEodConfirmMessage = "ตรวจยอดให้ตรงก่อนยืนยัน — ปิดแล้วไม่สามารถย้อนกลับได้"
+    override val reportsEodPendingSyncBanner: (Int) -> String = { n -> "มีบิลค้างซิงก์ $n ใบ — ยอดวันนี้ยังไม่รวมบิลเหล่านั้น" }
+    override val reportsEodPendingSyncWarning: (Int) -> String = { n -> "มีบิลค้างซิงก์ $n ใบ ยอดยังไม่ครบ — ยืนยันปิดวันทั้งอย่างนี้หรือไม่?" }
     override val reportsEodCloseCta = "ปิดยอด"
     override val reportsEodClosedBadge = "ปิดแล้ว"
     override val reportsEodTryDifferentRange = "ลองเปลี่ยนช่วงวันที่ด้านบน"
@@ -84,4 +86,11 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsLoadReportFailed = "โหลดรายงานไม่สำเร็จ"
     override val reportsEodCloseFailed = "ปิดยอดไม่สำเร็จ"
     override val reportsEodPrintUnsupported = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ"
+
+    override val reportsCsvHeaderDrug = "ชื่อยา"
+    override val reportsCsvHeaderQty = "จำนวนขาย"
+    override val reportsCsvHeaderRevenue = "รายได้"
+    override val reportsCsvHeaderCost = "ต้นทุน"
+    override val reportsCsvHeaderProfit = "กำไร"
+    override val reportsCsvHeaderMargin = "Margin %"
 }

@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +80,10 @@ fun CartPanel(
     @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
     compact: Boolean = false,
     showShortcutHints: Boolean = false,
+    kyCaptured: Boolean = false,
+    kyInvalidated: Boolean = false,
+    kySkipAuto: Boolean = false,
+    onOpenKyPrecapture: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
@@ -116,7 +122,7 @@ fun CartPanel(
             enter = pharmBannerEnter(),
             exit = ExitTransition.None,
         ) {
-            CartComplianceBanner(required = kyRequired)
+            CartComplianceBanner(required = kyRequired, captured = kyCaptured, invalidated = kyInvalidated, skipAuto = kySkipAuto, onClick = onOpenKyPrecapture)
         }
 
         CartSectionDivider()
@@ -307,19 +313,31 @@ private fun CartSectionDivider() {
 }
 
 @Composable
-private fun CartComplianceBanner(required: KyRequired) {
+private fun CartComplianceBanner(required: KyRequired, captured: Boolean, invalidated: Boolean, skipAuto: Boolean, onClick: () -> Unit) {
     val t = pharmTokens
     val forms = buildList {
         if (required.needsKy10) add("10")
         if (required.needsKy11) add("11")
         if (required.needsKy12) add("12")
     }.joinToString(", ")
+    val bg = when {
+        skipAuto -> t.colors.dangerBg
+        captured -> t.colors.successBg
+        else -> t.colors.warningBg
+    }
+    val fg = when {
+        skipAuto -> t.colors.dangerFg
+        captured -> t.colors.successFg
+        else -> t.colors.warningFg
+    }
+    val clickMod = if (skipAuto) Modifier else Modifier.clickable(role = Role.Button, onClick = onClick)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clip(t.shapes.md)
-            .background(t.colors.warningBg)
+            .then(clickMod)
+            .background(bg)
             .padding(horizontal = 12.dp, vertical = 6.dp)
             .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -328,16 +346,21 @@ private fun CartComplianceBanner(required: KyRequired) {
         Icon(
             imageVector = PharmIcons.KyForms,
             contentDescription = null,
-            tint = t.colors.warningFg,
+            tint = fg,
             modifier = Modifier.size(16.dp),
         )
         Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
             Text(
                 text = pharmStrings.sellControlledKy(forms),
-                style = PharmText.micro.copy(color = t.colors.warningFg, fontWeight = FontWeight.SemiBold),
+                style = PharmText.micro.copy(color = fg, fontWeight = FontWeight.SemiBold),
             )
             Text(
-                text = pharmStrings.sellKyCaptureHint,
+                text = when {
+                    skipAuto -> pharmStrings.sellKySkipAutoOn
+                    captured -> pharmStrings.sellKyPrecaptureDone
+                    invalidated -> pharmStrings.sellKyPrecaptureInvalidated
+                    else -> pharmStrings.sellKyPrecaptureNeeded
+                },
                 style = PharmText.bodySm.copy(color = t.colors.warningFg),
             )
         }

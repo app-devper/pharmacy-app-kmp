@@ -23,6 +23,8 @@ interface StockStrings {
     val stockLotDeleteDesc: String
     val stockLotSaveCta: String
     val stockHeaderStock: String
+    val stockHeaderUnit: String
+    val stockHeaderMinStock: String
     val stockBadgeHerb: String
     val stockUnitPlaceholder: String
     val stockDrugSavedToast: String
@@ -76,6 +78,8 @@ interface StockStrings {
     val stockMetricValueByCost: String
     val stockMetricBelowMin: String
     val stockMetricOut: String
+    val stockMetricExpiring: String
+    val stockMetricExpiringSub: String
     val stockMetricBackorder: String
     val stockStatusOut: String
     val stockStatusLow: String
