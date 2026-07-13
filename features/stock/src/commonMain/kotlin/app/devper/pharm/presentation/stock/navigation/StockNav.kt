@@ -28,6 +28,7 @@ fun NavGraphBuilder.stockNav(
     navController: NavController,
     onOpenReorderSuggestions: () -> Unit,
     onOpenExpiry: () -> Unit,
+    onOpenImports: () -> Unit,
 ) {
     composable<Stock> {
         StockScreen(
@@ -38,6 +39,7 @@ fun NavGraphBuilder.stockNav(
             onOpenHistory = { id, name -> navController.navigate(DrugHistory(id, name)) { launchSingleTop = true } },
             onOpenReorderSuggestions = onOpenReorderSuggestions,
             onOpenExpiry = onOpenExpiry,
+            onOpenImports = onOpenImports,
         )
     }
     composable<DrugAdd> {

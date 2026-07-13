@@ -9,11 +9,14 @@ import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeExpiringLotsRepository
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
+import app.devper.pharm.domain.usecase.reports.ExportDrugsCsvUseCase
+import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import app.devper.pharm.common.AppDispatchers
@@ -36,7 +39,12 @@ class StockViewModelTest {
         d: AppDispatchers,
         drugRepo: FakeDrugRepository = FakeDrugRepository(),
         expiringRepo: FakeExpiringLotsRepository = FakeExpiringLotsRepository(),
-    ) = StockViewModel(GetDrugsUseCase(drugRepo, d), GetExpiringLotsUseCase(expiringRepo, d))
+        exportRepo: FakeExportRepository = FakeExportRepository(),
+    ) = StockViewModel(
+        GetDrugsUseCase(drugRepo, d),
+        GetExpiringLotsUseCase(expiringRepo, d),
+        ExportDrugsCsvUseCase(exportRepo, d),
+    )
 
     @Test
     fun init_loads_drugs() = runVmTest { d ->
@@ -72,5 +80,24 @@ class StockViewModelTest {
         advanceUntilIdle()
         assertNull(vm.state.value.expiringSoonCount)
         assertNull(vm.state.value.errorState)
+    }
+
+    @Test
+    fun export_with_no_visible_drugs_emits_empty_message() = runVmTest { d ->
+        val vm = vm(d)
+        advanceUntilIdle()
+        vm.onExportExcel(emptyList())
+        advanceUntilIdle()
+        assertEquals(app.devper.pharm.common.error.CommonUiStateMessage.ExportEmpty, vm.state.value.messageState)
+    }
+
+    @Test
+    fun export_with_drugs_produces_done_message() = runVmTest { d ->
+        val vm = vm(d, drugRepo = FakeDrugRepository(seed = listOf(drug("a"), drug("b"))))
+        advanceUntilIdle()
+        vm.onExportExcel(listOf("name"))
+        advanceUntilIdle()
+        assertIs<app.devper.pharm.common.error.CommonUiStateMessage.ExportDone>(vm.state.value.messageState)
+        assertFalse(vm.state.value.exporting)
     }
 }
