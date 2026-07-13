@@ -4,6 +4,8 @@ object PlanningStringsTh : PlanningStrings {
     override val planningTitle = "คำแนะนำสั่งซื้อ"
     override val planningRefreshCta = "รีเฟรช"
     override val planningAddPoCta = "เพิ่มใบสั่งซื้อ"
+    override val planningAddAllCta = "เพิ่มทั้งหมด"
+    override val planningOpenPoCta: (Int) -> String = { n -> "สร้างใบสั่งซื้อ ($n)" }
     override val planningLowStockTitle = "ยาใกล้หมด"
     override val planningBelowMinTitle = "ยาที่ต่ำกว่าระดับสต็อกขั้นต่ำ"
     override val planningReorderTitle = "รายการที่แนะนำให้สั่งซื้อเพิ่ม"

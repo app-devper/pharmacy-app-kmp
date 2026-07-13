@@ -5,6 +5,8 @@ interface PlanningStrings {
     val planningTitle: String
     val planningRefreshCta: String
     val planningAddPoCta: String
+    val planningAddAllCta: String
+    val planningOpenPoCta: (Int) -> String
     val planningLowStockTitle: String
     val planningBelowMinTitle: String
     val planningReorderTitle: String

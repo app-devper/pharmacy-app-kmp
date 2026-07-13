@@ -46,6 +46,23 @@ fun ReorderSuggestionsContent(
             title = s.planningTitle,
             onBack = onBack,
             actions = {
+                if (state.suggestions.isNotEmpty()) {
+                    PharmButton(
+                        label = s.planningAddAllCta,
+                        onClick = callbacks.onAddAll,
+                        size = PharmButtonSize.Sm,
+                        variant = PharmButtonVariant.Outline,
+                        leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
+                    )
+                }
+                if (state.draftCount > 0) {
+                    PharmButton(
+                        label = s.planningOpenPoCta(state.draftCount),
+                        onClick = callbacks.onOpenPurchaseOrder,
+                        size = PharmButtonSize.Sm,
+                        leadingIcon = { Icon(PharmIcons.Imports, contentDescription = null) },
+                    )
+                }
                 PharmButton(
                     label = s.planningRefreshCta,
                     onClick = callbacks.onReload,
