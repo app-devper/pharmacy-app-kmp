@@ -4,6 +4,7 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.model.ReorderSuggestion
+import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.usecase.inventory.GetReorderSuggestionsUseCase
 import app.devper.pharm.ui.common.runVmTest
@@ -26,7 +27,7 @@ class ReorderSuggestionsViewModelTest {
     @Test
     fun init_loads_suggestions() = runVmTest { d ->
         val repo = FakeDrugRepository(reorderSeed = listOf(suggestion("a"), suggestion("b")))
-        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d))
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), PurchaseDraftProvider())
         advanceUntilIdle()
         assertEquals(2, vm.state.value.suggestions.size)
         assertFalse(vm.state.value.loading)
@@ -34,7 +35,7 @@ class ReorderSuggestionsViewModelTest {
 
     @Test
     fun empty_seed_yields_empty_list() = runVmTest { d ->
-        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(FakeDrugRepository(), d))
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(FakeDrugRepository(), d), PurchaseDraftProvider())
         advanceUntilIdle()
         assertEquals(0, vm.state.value.suggestions.size)
         assertFalse(vm.state.value.loading)
@@ -43,7 +44,7 @@ class ReorderSuggestionsViewModelTest {
     @Test
     fun load_failure_sets_error_state_and_clears_loading() = runVmTest { d ->
         val repo = FakeDrugRepository(reorderThrows = true)
-        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d))
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), PurchaseDraftProvider())
         advanceUntilIdle()
         assertNotNull(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
@@ -52,12 +53,36 @@ class ReorderSuggestionsViewModelTest {
     @Test
     fun reload_refreshes_list_from_repo() = runVmTest { d ->
         val repo = FakeDrugRepository(reorderSeed = listOf(suggestion("a")))
-        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d))
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), PurchaseDraftProvider())
         advanceUntilIdle()
         assertEquals(1, vm.state.value.suggestions.size)
         vm.reload()
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertNotNull(repo.lastReorderParam)
+    }
+
+    @Test
+    fun add_to_purchase_order_seeds_draft_and_updates_count() = runVmTest { d ->
+        val repo = FakeDrugRepository(reorderSeed = listOf(suggestion("a"), suggestion("b")))
+        val draft = PurchaseDraftProvider()
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), draft)
+        advanceUntilIdle()
+        vm.addToPurchaseOrder(vm.state.value.suggestions.first())
+        advanceUntilIdle()
+        assertEquals(1, draft.state.value.size)
+        assertEquals(1, vm.state.value.draftCount)
+    }
+
+    @Test
+    fun add_all_seeds_every_suggestion_deduplicated() = runVmTest { d ->
+        val repo = FakeDrugRepository(reorderSeed = listOf(suggestion("a"), suggestion("b")))
+        val draft = PurchaseDraftProvider()
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), draft)
+        advanceUntilIdle()
+        vm.addAllToPurchaseOrder()
+        vm.addAllToPurchaseOrder()
+        advanceUntilIdle()
+        assertEquals(2, draft.state.value.size)
     }
 }

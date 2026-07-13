@@ -4,6 +4,8 @@ object PlanningStringsEn : PlanningStrings {
     override val planningTitle = "Order recommendations"
     override val planningRefreshCta = "Refresh"
     override val planningAddPoCta = "Add PO"
+    override val planningAddAllCta = "Add all"
+    override val planningOpenPoCta: (Int) -> String = { n -> "Create purchase order ($n)" }
     override val planningLowStockTitle = "Low stock"
     override val planningBelowMinTitle = "Below minimum stock"
     override val planningReorderTitle = "Suggested reorder list"

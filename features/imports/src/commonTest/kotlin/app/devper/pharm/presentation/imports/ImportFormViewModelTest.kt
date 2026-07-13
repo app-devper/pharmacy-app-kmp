@@ -12,6 +12,8 @@ import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
 import app.devper.pharm.domain.repository.FakeSupplierRepository
 import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
+import app.devper.pharm.domain.model.PurchaseDraftLine
+import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
@@ -81,6 +83,7 @@ class ImportFormViewModelTest {
     private data class Bundle(
         val vm: ImportFormViewModel,
         val poRepo: FakePurchaseOrderRepository,
+        val draft: PurchaseDraftProvider,
     )
 
     private fun newVm(
@@ -88,6 +91,7 @@ class ImportFormViewModelTest {
         poRepo: FakePurchaseOrderRepository = FakePurchaseOrderRepository(),
         drugRepo: FakeDrugRepository = FakeDrugRepository(),
         supplierRepo: FakeSupplierRepository = FakeSupplierRepository(),
+        draft: PurchaseDraftProvider = PurchaseDraftProvider(),
     ): Bundle {
         val vm = ImportFormViewModel(
             getPurchaseOrder = GetPurchaseOrderUseCase(poRepo, dispatchers),
@@ -95,8 +99,28 @@ class ImportFormViewModelTest {
             updatePurchaseOrder = UpdatePurchaseOrderUseCase(poRepo, dispatchers),
             getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
             getSuppliers = GetSuppliersUseCase(supplierRepo, dispatchers),
+            purchaseDraft = draft,
         )
-        return Bundle(vm, poRepo)
+        return Bundle(vm, poRepo, draft)
+    }
+
+    @Test
+    fun add_mode_seeds_line_items_from_purchase_draft() = runVmTest { dispatchers ->
+        val draft = PurchaseDraftProvider()
+        draft.addUnique(
+            listOf(
+                PurchaseDraftLine("d1", "Amoxicillin", 100, 2.5, 5.0),
+                PurchaseDraftLine("d2", "Paracetamol", 200, 1.2, 2.0),
+            ),
+        )
+        val (vm, _, consumed) = newVm(dispatchers, draft = draft)
+        vm.init(app.devper.pharm.presentation.imports.ImportFormMode.Add)
+        advanceUntilIdle()
+        val items = vm.state.value.form.items
+        assertEquals(2, items.size)
+        assertEquals("Amoxicillin", items[0].drugName)
+        assertEquals("100", items[0].qty)
+        assertTrue(consumed.state.value.isEmpty())
     }
 
     @Test

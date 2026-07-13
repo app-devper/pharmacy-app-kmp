@@ -278,7 +278,7 @@ fun MainShell(appViewModel: AppViewModel) {
             stockCountsNav(nestedNav)
             expiryNav()
             labelPrintNav()
-            planningNav(nestedNav)
+            planningNav(nestedNav, onOpenPurchaseOrder = { nestedNav.navigate(ImportNew) { launchSingleTop = true } })
             reportsNav(nestedNav)
             kyNav(nestedNav)
             offlineSyncNav()
