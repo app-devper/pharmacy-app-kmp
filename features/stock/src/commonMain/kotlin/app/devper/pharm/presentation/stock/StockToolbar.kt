@@ -26,6 +26,19 @@ internal fun StockToolbar(
     callbacks: StockCallbacks,
     modifier: Modifier = Modifier,
 ) {
+    val s = pharmStrings
+    val exportHeaders = listOf(
+        s.stockHeaderName,
+        s.stockHeaderGeneric,
+        s.stockHeaderCategory,
+        s.stockHeaderBarcode,
+        s.stockHeaderStock,
+        s.stockHeaderUnit,
+        s.stockHeaderMinStock,
+        s.stockHeaderCostPrice,
+        s.stockHeaderSellPrice,
+        s.stockHeaderRegistration,
+    )
     PharmListToolbar(
         modifier = modifier,
         searchValue = query,
@@ -45,7 +58,7 @@ internal fun StockToolbar(
             ) {
                 PharmButton(
                     label = "Excel",
-                    onClick = callbacks.onExportExcel,
+                    onClick = { callbacks.onExportExcel(exportHeaders) },
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },

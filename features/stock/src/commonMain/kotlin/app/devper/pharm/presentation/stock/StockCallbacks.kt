@@ -10,7 +10,7 @@ data class StockCallbacks(
     val onOpenLots: (Drug) -> Unit = {},
     val onOpenAdjust: (Drug) -> Unit = {},
     val onOpenHistory: (Drug) -> Unit = {},
-    val onExportExcel: () -> Unit = {},
+    val onExportExcel: (List<String>) -> Unit = {},
     val onImport: () -> Unit = {},
     val onOpenReorderSuggestions: () -> Unit = {},
     val onOpenExpiry: () -> Unit = {},

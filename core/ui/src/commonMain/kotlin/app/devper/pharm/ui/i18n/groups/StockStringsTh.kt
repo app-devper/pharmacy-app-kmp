@@ -23,6 +23,8 @@ object StockStringsTh : StockStrings {
     override val stockLotDeleteDesc = "ลบล็อต"
     override val stockLotSaveCta = "บันทึกล็อต"
     override val stockHeaderStock = "สต็อก"
+    override val stockHeaderUnit = "หน่วย"
+    override val stockHeaderMinStock = "สต็อกขั้นต่ำ"
     override val stockBadgeHerb = "สมุนไพร"
     override val stockUnitPlaceholder = "เม็ด / แคปซูล / ขวด"
     override val stockDrugSavedToast = "บันทึกข้อมูลยาเรียบร้อย"

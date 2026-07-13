@@ -23,6 +23,8 @@ object StockStringsEn : StockStrings {
     override val stockLotDeleteDesc = "Delete lot"
     override val stockLotSaveCta = "Save lot"
     override val stockHeaderStock = "Stock"
+    override val stockHeaderUnit = "Unit"
+    override val stockHeaderMinStock = "Min stock"
     override val stockBadgeHerb = "Herbal"
     override val stockUnitPlaceholder = "tablet / capsule / bottle"
     override val stockDrugSavedToast = "Drug saved"
