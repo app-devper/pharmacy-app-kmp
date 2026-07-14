@@ -11,9 +11,13 @@ data object LowStock
 @Serializable
 data object ReorderSuggestions
 
-fun NavGraphBuilder.planningNav(navController: NavController, onOpenPurchaseOrder: () -> Unit) {
+fun NavGraphBuilder.planningNav(
+    navController: NavController,
+    onOpenPurchaseOrder: () -> Unit,
+    onOpenDrug: (drugId: String) -> Unit,
+) {
     composable<LowStock> {
-        LowStockScreen()
+        LowStockScreen(onOpenDrug = onOpenDrug)
     }
     composable<ReorderSuggestions> {
         ReorderSuggestionsScreen(

@@ -90,7 +90,6 @@ private fun HelpBody(
     }
 
     val onSelect: (String) -> Unit = { id ->
-        callbacks.onTocClick(id)
         val idx = sections.indexOfFirst { it.id == id }
         if (idx >= 0) {
             scope.launch { listState.animateScrollToItem(idx + PINNED_ITEMS_BEFORE_SECTIONS) }
