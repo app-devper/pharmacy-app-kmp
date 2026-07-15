@@ -3,6 +3,7 @@ package app.devper.pharm.ui.designsystem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -58,34 +60,18 @@ fun PharmDatePicker(
         onDismiss = { onPick(null) },
         size = PharmModalSize.Sm,
         footer = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                PharmButton(
-                    label = s.calendarToday,
-                    onClick = {
-                        selected = today
-                        visibleMonth = CalendarMonth.of(today)
-                    },
-                    size = PharmButtonSize.Sm,
-                    variant = PharmButtonVariant.Outline,
-                )
-                Box(modifier = Modifier.weight(1f))
-                PharmButton(
-                    label = s.commonCancel,
-                    onClick = { onPick(null) },
-                    size = PharmButtonSize.Sm,
-                    variant = PharmButtonVariant.Ghost,
-                )
-                PharmButton(
-                    label = s.commonConfirm,
-                    onClick = { onPick(selected?.toUtcStartOfDayMillis()) },
-                    size = PharmButtonSize.Sm,
-                    enabled = selected != null,
-                )
-            }
+            DatePickerFooter(
+                todayLabel = s.calendarToday,
+                cancelLabel = s.commonCancel,
+                confirmLabel = s.commonConfirm,
+                confirmEnabled = selected != null,
+                onToday = {
+                    selected = today
+                    visibleMonth = CalendarMonth.of(today)
+                },
+                onCancel = { onPick(null) },
+                onConfirm = { onPick(selected?.toUtcStartOfDayMillis()) },
+            )
         },
     ) {
         Column(
@@ -116,6 +102,81 @@ fun PharmDatePicker(
         }
     }
 }
+
+@Composable
+private fun DatePickerFooter(
+    todayLabel: String,
+    cancelLabel: String,
+    confirmLabel: String,
+    confirmEnabled: Boolean,
+    onToday: () -> Unit,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        if (shouldStackDatePickerFooter(maxWidth)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                PharmButton(
+                    label = todayLabel,
+                    onClick = onToday,
+                    modifier = Modifier.fillMaxWidth(),
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Outline,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    PharmButton(
+                        label = cancelLabel,
+                        onClick = onCancel,
+                        modifier = Modifier.weight(1f),
+                        size = PharmButtonSize.Sm,
+                        variant = PharmButtonVariant.Ghost,
+                    )
+                    PharmButton(
+                        label = confirmLabel,
+                        onClick = onConfirm,
+                        modifier = Modifier.weight(1f),
+                        size = PharmButtonSize.Sm,
+                        enabled = confirmEnabled,
+                    )
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PharmButton(
+                    label = todayLabel,
+                    onClick = onToday,
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Outline,
+                )
+                Box(modifier = Modifier.weight(1f))
+                PharmButton(
+                    label = cancelLabel,
+                    onClick = onCancel,
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Ghost,
+                )
+                PharmButton(
+                    label = confirmLabel,
+                    onClick = onConfirm,
+                    size = PharmButtonSize.Sm,
+                    enabled = confirmEnabled,
+                )
+            }
+        }
+    }
+}
+
+internal fun shouldStackDatePickerFooter(width: Dp): Boolean = width < 300.dp
 
 @Composable
 private fun CalendarHeader(
