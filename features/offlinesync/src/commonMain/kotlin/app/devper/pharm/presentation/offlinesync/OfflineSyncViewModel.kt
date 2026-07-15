@@ -22,53 +22,98 @@ class OfflineSyncViewModel(
 
     init {
         offlineQueue.pending
-            .onEach { pending -> setState { copy(pending = pending.sortedBy { it.enqueuedAt }) } }
+            .onEach { pending ->
+                setState {
+                    copy(
+                        pending = pending.sortedBy { it.enqueuedAt },
+                        confirmDiscardId = confirmDiscardId?.takeIf { id -> pending.any { it.id == id } },
+                    )
+                }
+            }
             .catch { e -> setState { copy(errorState = OfflineSyncUiStateError.LoadFailed(e)) } }
             .launchIn(viewModelScope)
     }
 
-    fun refresh() = setState { copy(messageState = OfflineSyncUiStateMessage.Refreshed) }
-
     fun syncAll() {
-        val snapshot = current.pending
-        if (snapshot.isEmpty()) return
-        setState { copy(messageState = OfflineSyncUiStateMessage.SyncStarted(snapshot.size)) }
+        val s = current
+        val snapshot = s.pending
+        if (snapshot.isEmpty() || s.busy) return
+        val ids = snapshot.map { it.id }.toSet()
+        setState {
+            copy(
+                syncingAll = true,
+                syncingIds = ids,
+                errorState = null,
+                messageState = OfflineSyncUiStateMessage.SyncStarted(snapshot.size),
+            )
+        }
         viewModelScope.launch {
             var failed = 0
             snapshot.forEach { item ->
                 retrySale(item.id).onFailure { failed++ }
             }
-            if (failed > 0) {
-                setState { copy(errorState = OfflineSyncUiStateError.SyncPartialFailed(failed, snapshot.size)) }
+            setState {
+                copy(
+                    syncingAll = false,
+                    syncingIds = emptySet(),
+                    errorState = if (failed > 0) OfflineSyncUiStateError.SyncPartialFailed(failed, snapshot.size) else null,
+                )
             }
         }
     }
 
     fun retry(id: String) {
-        if (current.pending.none { it.id == id }) return
-        setState { copy(messageState = OfflineSyncUiStateMessage.RetryStarted(id.take(8))) }
+        val s = current
+        if (s.pending.none { it.id == id } || s.busy) return
+        setState {
+            copy(
+                syncingIds = syncingIds + id,
+                errorState = null,
+                messageState = OfflineSyncUiStateMessage.RetryStarted(id.take(8)),
+            )
+        }
         retryOne(id)
     }
 
     private fun retryOne(id: String) {
         launchResult(
             block = { retrySale(id) },
-            onSuccess = { },
+            onSuccess = { setState { copy(syncingIds = syncingIds - id) } },
             onFailure = { e ->
-                setState { copy(errorState = OfflineSyncUiStateError.RetryFailed(id.take(8), e)) }
+                setState {
+                    copy(
+                        syncingIds = syncingIds - id,
+                        errorState = OfflineSyncUiStateError.RetryFailed(id.take(8), e),
+                    )
+                }
             },
         )
     }
 
-    fun askDiscard(id: String) = setState { copy(confirmDiscardId = id) }
+    fun askDiscard(id: String) = setState {
+        if (!busy && pending.any { it.id == id }) copy(confirmDiscardId = id) else this
+    }
     fun cancelDiscard() = setState { copy(confirmDiscardId = null) }
 
     fun discardConfirmed() {
-        val id = current.confirmDiscardId ?: return
+        val s = current
+        val id = s.confirmDiscardId ?: return
+        if (s.busy || s.pending.none { it.id == id }) return
+        setState { copy(discarding = true, errorState = null) }
         launchResult(
             block = { markSynced(id) },
-            onSuccess = { setState { copy(confirmDiscardId = null, messageState = OfflineSyncUiStateMessage.Discarded) } },
-            onFailure = { e -> setState { copy(errorState = OfflineSyncUiStateError.DiscardFailed(e)) } },
+            onSuccess = {
+                setState {
+                    copy(
+                        discarding = false,
+                        confirmDiscardId = null,
+                        messageState = OfflineSyncUiStateMessage.Discarded,
+                    )
+                }
+            },
+            onFailure = { e ->
+                setState { copy(discarding = false, errorState = OfflineSyncUiStateError.DiscardFailed(e)) }
+            },
         )
     }
 

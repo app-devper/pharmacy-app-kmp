@@ -42,6 +42,7 @@ internal fun ProfitTable(
         PharmTableColumn<DrugProfit>(
             header = s.reportsHeaderDrugName,
             weight = 2.2f,
+            compactTitle = true,
             cell = { row -> NameCell(row.drugName) },
         ),
         PharmTableColumn(
@@ -54,12 +55,14 @@ internal fun ProfitTable(
             header = s.reportsHeaderRevenue,
             weight = 1.2f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { row -> MoneyCell(row.revenue) },
         ),
         PharmTableColumn(
             header = s.reportsHeaderCost,
             weight = 1.2f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { row -> MoneyCell(row.cost, muted = true) },
         ),
         PharmTableColumn(
@@ -69,7 +72,7 @@ internal fun ProfitTable(
             cell = { row -> MoneyCell(row.profit, bold = true) },
         ),
         PharmTableColumn(
-            header = "Margin %",
+            header = s.reportsCsvHeaderMargin,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { row -> MarginCell(row.margin) },

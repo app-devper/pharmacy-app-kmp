@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import app.devper.pharm.ui.components.RegisterUnsavedChanges
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -11,6 +12,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    RegisterUnsavedChanges(state.hasUnsavedChanges)
 
     LaunchedEffect(state.saved) {
         if (state.saved) {

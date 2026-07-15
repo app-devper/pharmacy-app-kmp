@@ -3,8 +3,6 @@ package app.devper.pharm.presentation.stock.form
 import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,6 +32,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.common.pharmToggleable
 
 private val kyForms = listOf(9, 10, 11, 12)
 private fun kyCode(form: Int) = "ky$form"
@@ -42,9 +42,20 @@ fun DrugFormDrugInfoSection(
     form: DrugFormFields,
     callbacks: DrugFormCallbacks,
     modifier: Modifier = Modifier,
+    showValidation: Boolean = false,
+    nameFocusRequester: FocusRequester = FocusRequester.Default,
+    costPriceFocusRequester: FocusRequester = FocusRequester.Default,
+    sellPriceFocusRequester: FocusRequester = FocusRequester.Default,
 ) {
     PharmFormCard(modifier = modifier, title = pharmStrings.importsFormInfoSection) {
-        DrugInfoGrid(form = form, callbacks = callbacks)
+        DrugInfoGrid(
+            form = form,
+            callbacks = callbacks,
+            showValidation = showValidation,
+            nameFocusRequester = nameFocusRequester,
+            costPriceFocusRequester = costPriceFocusRequester,
+            sellPriceFocusRequester = sellPriceFocusRequester,
+        )
         KyChecklist(
             selected = form.reportTypes,
             onToggle = callbacks.onToggleReportType,
@@ -56,13 +67,17 @@ fun DrugFormDrugInfoSection(
 private fun DrugInfoGrid(
     form: DrugFormFields,
     callbacks: DrugFormCallbacks,
+    showValidation: Boolean,
+    nameFocusRequester: FocusRequester,
+    costPriceFocusRequester: FocusRequester,
+    sellPriceFocusRequester: FocusRequester,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val twoCol = maxWidth >= PharmBreakpoint.FormTwoCol
         if (twoCol) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 GridRow(
-                    left = { TradeNameField(form, callbacks) },
+                    left = { TradeNameField(form, callbacks, showValidation, nameFocusRequester) },
                     right = { GenericNameField(form, callbacks) },
                 )
                 GridRow(
@@ -75,24 +90,24 @@ private fun DrugInfoGrid(
                 )
                 GridRow(
                     left = { BarcodeField(form, callbacks) },
-                    right = { CostPriceField(form, callbacks) },
+                    right = { CostPriceField(form, callbacks, costPriceFocusRequester) },
                 )
                 GridRow(
-                    left = { SellPriceField(form, callbacks) },
+                    left = { SellPriceField(form, callbacks, showValidation, sellPriceFocusRequester) },
                     right = { MinStockField(form, callbacks) },
                 )
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                TradeNameField(form, callbacks)
+                TradeNameField(form, callbacks, showValidation, nameFocusRequester)
                 GenericNameField(form, callbacks)
                 StrengthField(form, callbacks)
                 UnitField(form, callbacks)
                 TypeField(form, callbacks)
                 RegNoField(form, callbacks)
                 BarcodeField(form, callbacks)
-                CostPriceField(form, callbacks)
-                SellPriceField(form, callbacks)
+                CostPriceField(form, callbacks, costPriceFocusRequester)
+                SellPriceField(form, callbacks, showValidation, sellPriceFocusRequester)
                 MinStockField(form, callbacks)
             }
         }
@@ -111,12 +126,25 @@ private fun GridRow(
 }
 
 @Composable
-private fun TradeNameField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = pharmStrings.stockHeaderName, required = true) {
+private fun TradeNameField(
+    form: DrugFormFields,
+    callbacks: DrugFormCallbacks,
+    showValidation: Boolean,
+    focusRequester: FocusRequester,
+) {
+    val s = pharmStrings
+    val isError = showValidation && form.name.isBlank()
+    FormField(
+        label = s.stockHeaderName,
+        required = true,
+        error = if (isError) s.validationRequired(s.stockHeaderName) else null,
+    ) {
         PharmTextField(
             value = form.name,
             onValueChange = callbacks.onName,
-            placeholder = pharmStrings.stockExampleBrand,
+            placeholder = s.stockExampleBrand,
+            isError = isError,
+            focusRequester = focusRequester,
         )
     }
 }
@@ -188,25 +216,55 @@ private fun BarcodeField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
 }
 
 @Composable
-private fun CostPriceField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = pharmStrings.stockHeaderCostPrice) {
+private fun CostPriceField(
+    form: DrugFormFields,
+    callbacks: DrugFormCallbacks,
+    focusRequester: FocusRequester,
+) {
+    val s = pharmStrings
+    val parsed = form.costPrice.toDoubleOrNull()
+    val error = when {
+        form.costPrice.isBlank() -> null
+        parsed == null || !parsed.isFinite() -> s.validationNotANumber(s.stockHeaderCostPrice)
+        parsed < 0 -> s.validationMustBeNonNegative(s.stockHeaderCostPrice)
+        else -> null
+    }
+    FormField(label = s.stockHeaderCostPrice, error = error) {
         PharmTextField(
             value = form.costPrice,
             onValueChange = callbacks.onCostPrice,
             keyboardType = KeyboardType.Decimal,
             placeholder = "0.00",
+            isError = error != null,
+            focusRequester = focusRequester,
         )
     }
 }
 
 @Composable
-private fun SellPriceField(form: DrugFormFields, callbacks: DrugFormCallbacks) {
-    FormField(label = pharmStrings.stockHeaderSellPrice, required = true) {
+private fun SellPriceField(
+    form: DrugFormFields,
+    callbacks: DrugFormCallbacks,
+    showValidation: Boolean,
+    focusRequester: FocusRequester,
+) {
+    val s = pharmStrings
+    val parsed = form.sellPrice.toDoubleOrNull()
+    val error = when {
+        showValidation && form.sellPrice.isBlank() -> s.validationRequired(s.stockHeaderSellPrice)
+        form.sellPrice.isBlank() -> null
+        parsed == null || !parsed.isFinite() -> s.validationNotANumber(s.stockHeaderSellPrice)
+        parsed < 0 -> s.validationMustBeNonNegative(s.stockHeaderSellPrice)
+        else -> null
+    }
+    FormField(label = s.stockHeaderSellPrice, required = true, error = error) {
         PharmTextField(
             value = form.sellPrice,
             onValueChange = callbacks.onSellPrice,
             keyboardType = KeyboardType.Decimal,
             placeholder = "0.00",
+            isError = error != null,
+            focusRequester = focusRequester,
         )
     }
 }
@@ -261,7 +319,12 @@ private fun KyChip(
             .clip(t.shapes.pill)
             .background(bg, t.shapes.pill)
             .border(1.dp, borderColor, t.shapes.pill)
-            .toggleable(value = checked, role = Role.Checkbox, onValueChange = { onToggle() })
+            .pharmToggleable(
+                value = checked,
+                role = Role.Checkbox,
+                shape = t.shapes.pill,
+                onValueChange = { onToggle() },
+            )
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -302,4 +365,3 @@ private fun CheckMark(checked: Boolean) {
         }
     }
 }
-

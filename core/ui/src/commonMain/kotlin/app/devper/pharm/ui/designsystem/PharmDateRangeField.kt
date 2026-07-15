@@ -2,7 +2,6 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 
 data class PharmDateRange(
@@ -133,7 +133,7 @@ private fun DateField(
             .clip(t.shapes.md)
             .border(1.dp, t.colors.border, t.shapes.md)
             .background(t.colors.surface)
-            .clickable(role = Role.Button, onClick = onClick)
+            .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onClick)
             .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -162,7 +162,7 @@ private fun QuickPeriodChip(label: String, onClick: () -> Unit) {
             .clip(t.shapes.md)
             .border(1.dp, t.colors.border, t.shapes.md)
             .background(t.colors.bgPage)
-            .clickable(role = Role.Button, onClick = onClick)
+            .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {

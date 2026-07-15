@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +24,7 @@ import app.devper.pharm.domain.extension.resolvePrice
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,7 +82,7 @@ private fun UnitRow(label: String, factorHint: String?, price: Double, onClick: 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onClick)
+            .pharmClickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,

@@ -17,6 +17,7 @@ fun ReportsScreen(
         state = state,
         callbacks = ReportsCallbacks(
             onSelectWindow = viewModel::selectWindow,
+            onReload = viewModel::reload,
             onCloseEod = onCloseEod,
             onDismissError = viewModel::dismissError,
         ),

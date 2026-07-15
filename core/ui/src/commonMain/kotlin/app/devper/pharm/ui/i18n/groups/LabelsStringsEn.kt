@@ -5,10 +5,15 @@ object LabelsStringsEn : LabelsStrings {
 
     override val labelsSubtitle = "Design and print drug labels"
     override val labelsSearchPlaceholder = "Search drugs (add one per line)…"
+    override val labelsNoDrugs = "No drugs available"
+    override val labelsNoSearchResults = "No matching drugs"
     override val labelsEmpty = "No items yet — pick drugs on the left to add"
     override val labelsListTitle: (Int) -> String = { count -> "Label list ($count line(s))" }
     override val labelsRemoveLine = "Remove line"
     override val labelsClear = "Clear"
+    override val labelsClearTitle = "Clear label list?"
+    override val labelsClearSubtitle = "All prepared label lines will be removed."
+    override val labelsClearConfirm = "Clear list"
     override val labelsSizeLabel = "Label size"
     override val labelsSizeSmall = "38 × 25 mm"
     override val labelsSizeMedium = "50 × 30 mm"

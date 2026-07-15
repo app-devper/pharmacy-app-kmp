@@ -26,6 +26,9 @@ data class Ky11AddUiState(
     override val canSubmit: Boolean
         get() = !saving && isKy11DraftValid(draft.date, draft.drugName, draft.unit, draft.qty)
 
+    override val hasUnsavedChanges: Boolean
+        get() = draft != Ky11Draft()
+
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState

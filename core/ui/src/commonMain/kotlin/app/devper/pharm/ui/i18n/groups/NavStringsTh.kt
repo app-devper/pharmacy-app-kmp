@@ -3,6 +3,10 @@ package app.devper.pharm.ui.i18n.groups
 object NavStringsTh : NavStrings {
     override val navBulkImport = "นำเข้ายาด้วย JSON"
     override val navLowStock = "ยาใกล้หมด"
+    override val navGroupSales = "งานขาย"
+    override val navGroupInventory = "คลังสินค้า"
+    override val navGroupReports = "รายงานและกำกับ"
+    override val navGroupSystem = "ระบบ"
 
     override val navSell = "หน้าขายยา"
     override val navSalesHistory = "ประวัติการขาย"

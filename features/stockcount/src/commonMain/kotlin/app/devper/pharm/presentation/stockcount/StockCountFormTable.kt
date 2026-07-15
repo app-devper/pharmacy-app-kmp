@@ -14,7 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +38,7 @@ data class StockCountFormRow(
     val counted: Int?,
     val delta: Int?,
     val highlighted: Boolean,
+    val invalid: Boolean,
 )
 
 @Composable
@@ -42,9 +47,12 @@ internal fun StockCountFormTable(
     callbacks: StockCountFormCallbacks,
     modifier: Modifier = Modifier,
     emptySearching: Boolean = false,
+    enabled: Boolean = true,
+    firstInputDrugId: String? = null,
+    firstInputFocusRequester: FocusRequester? = null,
 ) {
     val s = pharmStrings
-    val columns = remember(callbacks, s) {
+    val columns = remember(callbacks, s, enabled, firstInputDrugId, firstInputFocusRequester) {
         listOf(
             PharmTableColumn<StockCountFormRow>(
                 header = s.expiryHeaderDrugName,
@@ -61,7 +69,14 @@ internal fun StockCountFormTable(
                 header = s.stockCountFormCounted,
                 weight = 1.1f,
                 align = PharmColumnAlign.End,
-                cell = { row -> StockCountInputCell(row = row, callbacks = callbacks) },
+                cell = { row ->
+                    StockCountInputCell(
+                        row = row,
+                        callbacks = callbacks,
+                        enabled = enabled,
+                        focusRequester = firstInputFocusRequester.takeIf { row.drug.id == firstInputDrugId },
+                    )
+                },
             ),
             PharmTableColumn(
                 header = s.stockCountFormDelta,
@@ -77,7 +92,7 @@ internal fun StockCountFormTable(
         columns = columns,
         key = { it.drug.id },
         modifier = modifier,
-        rowHeight = 52.dp,
+        rowHeight = 76.dp,
         emptyContent = {
             Text(
                 text = if (emptySearching) s.stockCountFormEmptySearching else s.stockCountFormEmptyDefault,
@@ -136,7 +151,12 @@ private fun StockCountSystemCell(row: StockCountFormRow) {
 }
 
 @Composable
-private fun StockCountInputCell(row: StockCountFormRow, callbacks: StockCountFormCallbacks) {
+private fun StockCountInputCell(
+    row: StockCountFormRow,
+    callbacks: StockCountFormCallbacks,
+    enabled: Boolean,
+    focusRequester: FocusRequester?,
+) {
     val t = pharmTokens
     val bg = if (row.highlighted) t.colors.warningBg.copy(alpha = 0.35f) else Color.Transparent
     Box(
@@ -146,13 +166,29 @@ private fun StockCountInputCell(row: StockCountFormRow, callbacks: StockCountFor
             .padding(horizontal = 8.dp, vertical = 8.dp),
         contentAlignment = Alignment.CenterEnd,
     ) {
-        Box(modifier = Modifier.widthIn(min = 72.dp, max = 110.dp)) {
+        Column(
+            modifier = Modifier.widthIn(min = 96.dp, max = 140.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
             PharmTextField(
                 value = row.countedText,
                 onValueChange = { callbacks.onCountedChange(row.drug.id, it) },
                 placeholder = "—",
                 keyboardType = KeyboardType.Number,
+                isError = row.invalid,
+                enabled = enabled,
+                focusRequester = focusRequester,
             )
+            if (row.invalid) {
+                Text(
+                    text = pharmStrings.stockCountFormInvalidCount,
+                    style = PharmText.micro.copy(color = t.colors.dangerFg),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
         }
     }
 }

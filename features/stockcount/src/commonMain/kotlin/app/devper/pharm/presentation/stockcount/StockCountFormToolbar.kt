@@ -49,6 +49,7 @@ internal fun StockCountFormToolbar(
                     value = state.query,
                     onValueChange = callbacks.onSearchChange,
                     placeholder = s.stockCountFormSearchPlaceholder,
+                    enabled = !state.saving,
                 )
             }
             PharmButton(
@@ -56,22 +57,15 @@ internal fun StockCountFormToolbar(
                 onClick = callbacks.onFillFromSystem,
                 variant = PharmButtonVariant.Outline,
                 size = PharmButtonSize.Sm,
-                enabled = state.drugs.isNotEmpty(),
+                enabled = state.drugs.isNotEmpty() && !state.saving,
                 leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-            )
-            PharmButton(
-                label = s.bulkImportClearCta,
-                onClick = callbacks.onClear,
-                variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Sm,
-                enabled = state.counts.isNotEmpty(),
             )
             PharmButton(
                 label = s.stockCountFormClearDraftCta,
                 onClick = callbacks.onClearDraft,
-                variant = PharmButtonVariant.Ghost,
+                variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Sm,
-                enabled = state.counts.isNotEmpty() || state.note.isNotBlank(),
+                enabled = (state.counts.isNotEmpty() || state.note.isNotBlank()) && !state.saving,
             )
         }
         StockCountFormStatusLine(state = state)

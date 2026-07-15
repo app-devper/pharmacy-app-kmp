@@ -6,7 +6,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -39,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 enum class PharmModalSize { Sm, Md, Lg, Xl }
 
@@ -50,6 +50,7 @@ fun PharmModal(
     title: String? = null,
     subtitle: String? = null,
     size: PharmModalSize = PharmModalSize.Md,
+    dismissEnabled: Boolean = true,
     dismissOnBackPress: Boolean = true,
     dismissOnClickOutside: Boolean = true,
     footer: (@Composable () -> Unit)? = null,
@@ -64,10 +65,10 @@ fun PharmModal(
         PharmModalSize.Xl -> 896.dp
     }
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (dismissEnabled) onDismiss() },
         properties = DialogProperties(
-            dismissOnBackPress = dismissOnBackPress,
-            dismissOnClickOutside = dismissOnClickOutside,
+            dismissOnBackPress = dismissEnabled && dismissOnBackPress,
+            dismissOnClickOutside = dismissEnabled && dismissOnClickOutside,
             usePlatformDefaultWidth = false,
         ),
     ) {
@@ -95,7 +96,7 @@ fun PharmModal(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 20.dp, top = 16.dp, end = 52.dp, bottom = 16.dp),
+                            .padding(start = 20.dp, top = 16.dp, end = 68.dp, bottom = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(2.dp),
                     ) {
                         Text(title, style = PharmText.h2)
@@ -106,11 +107,16 @@ fun PharmModal(
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(top = 9.dp, end = 9.dp)
-                            .size(32.dp)
+                            .padding(top = 4.dp, end = 4.dp)
+                            .size(t.dimens.controlHeight)
                             .clip(CircleShape)
                             .border(1.dp, t.colors.border, CircleShape)
-                            .clickable(role = Role.Button, onClick = onDismiss)
+                            .pharmClickable(
+                                enabled = dismissEnabled,
+                                role = Role.Button,
+                                shape = CircleShape,
+                                onClick = onDismiss,
+                            )
                             .semantics(mergeDescendants = true) {
                                 contentDescription = closeDesc
                             },

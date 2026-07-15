@@ -17,6 +17,7 @@ fun LowStockScreen(
         state = state,
         callbacks = LowStockCallbacks(
             onReload = viewModel::reload,
+            onQueryChange = viewModel::onQueryChange,
             onRowClick = { onOpenDrug(it.id) },
             onDismissError = viewModel::dismissError,
         ),

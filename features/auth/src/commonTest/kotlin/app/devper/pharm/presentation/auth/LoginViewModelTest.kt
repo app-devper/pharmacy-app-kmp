@@ -62,6 +62,8 @@ class LoginViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertIs<LoginUiStateError.RequiredFields>(vm.state.value.errorState)
+        assertEquals(true, vm.state.value.usernameMissing)
+        assertEquals(false, vm.state.value.passwordMissing)
         assertNull(repo.lastLogin)
         assertFalse(vm.state.value.loading)
     }
@@ -73,6 +75,8 @@ class LoginViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertIs<LoginUiStateError.RequiredFields>(vm.state.value.errorState)
+        assertEquals(false, vm.state.value.usernameMissing)
+        assertEquals(true, vm.state.value.passwordMissing)
         assertNull(repo.lastLogin)
     }
 
@@ -90,6 +94,7 @@ class LoginViewModelTest {
         assertEquals("PHARMACY", captured.system)
         assertNotNull(vm.state.value.loggedInUser)
         assertEquals("admin", vm.state.value.loggedInUser?.username)
+        assertFalse(vm.state.value.validationRequested)
         assertFalse(vm.state.value.loading)
         assertNull(vm.state.value.errorState)
     }

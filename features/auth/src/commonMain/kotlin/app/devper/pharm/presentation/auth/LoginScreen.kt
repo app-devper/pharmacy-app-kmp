@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,27 +13,31 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.devper.pharm.common.AppVersion
+import app.devper.pharm.presentation.auth.exception.LoginUiStateError
 import app.devper.pharm.presentation.auth.i18n.localizeLogin
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmFilterChip
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -40,10 +45,7 @@ import app.devper.pharm.ui.theme.Black
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.White
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.designsystem.PharmIcons
-import androidx.compose.material3.Icon
 import org.koin.compose.viewmodel.koinViewModel
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun LoginScreen(
@@ -52,6 +54,15 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val t = pharmTokens
+    val usernameFocus = remember { FocusRequester() }
+    val passwordFocus = remember { FocusRequester() }
+    val submit = {
+        viewModel.submit()
+        when {
+            state.username.isBlank() -> usernameFocus.requestFocus()
+            state.password.isBlank() -> passwordFocus.requestFocus()
+        }
+    }
 
     LaunchedEffect(state.loggedInUser) {
         if (state.loggedInUser != null) onLoggedIn()
@@ -86,6 +97,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .clip(t.shapes.xl)
                     .background(t.colors.surface, t.shapes.xl)
+                    .border(1.dp, t.colors.borderSubtle, t.shapes.xl)
                     .padding(32.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
@@ -96,67 +108,65 @@ fun LoginScreen(
                 )
                 BrandHeader(strings = strings)
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FormField(label = strings.loginUsernameLabel) {
+                    FormField(
+                        label = strings.loginUsernameLabel,
+                        required = true,
+                        error = if (state.usernameMissing) strings.loginUsernameRequired else null,
+                    ) {
                         PharmTextField(
                             value = state.username,
                             onValueChange = viewModel::onUsernameChange,
                             placeholder = strings.loginUsernamePlaceholder,
                             enabled = !state.loading,
-                            keyboardType = KeyboardType.Email,
+                            isError = state.usernameMissing,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
+                            onImeAction = passwordFocus::requestFocus,
+                            focusRequester = usernameFocus,
                         )
                     }
-                    FormField(label = strings.loginPasswordLabel) {
+                    FormField(
+                        label = strings.loginPasswordLabel,
+                        required = true,
+                        error = if (state.passwordMissing) strings.loginPasswordRequired else null,
+                    ) {
                         PharmTextField(
                             value = state.password,
                             onValueChange = viewModel::onPasswordChange,
                             placeholder = strings.loginPasswordPlaceholder,
                             enabled = !state.loading,
+                            isError = state.passwordMissing,
                             keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done,
+                            onImeAction = submit,
+                            focusRequester = passwordFocus,
                             visualTransformation = PasswordVisualTransformation(),
                         )
                     }
                 }
                 PharmButton(
-                    onClick = viewModel::submit,
+                    label = if (state.loading) strings.loginSubmitting else strings.loginSubmit,
+                    onClick = submit,
                     modifier = Modifier.fillMaxWidth(),
                     size = PharmButtonSize.Lg,
-                    enabled = !state.loading,
-                ) {
-                    if (state.loading) {
-                        Box(
-                            modifier = Modifier.size(16.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            PharmCircularProgress(
-                                color = t.colors.surface,
-                                strokeWidth = 2.dp,
-                                modifier = Modifier.size(14.dp),
-                            )
-                        }
-                        Text(
-                            text = strings.loginSubmitting,
-                            style = PharmText.buttonMd.copy(color = t.colors.surface),
-                        )
-                    } else {
-                        Text(
-                            text = strings.loginSubmit,
-                            style = PharmText.buttonMd.copy(color = t.colors.surface),
-                        )
-                    }
-                }
+                    loading = state.loading,
+                )
                 Text(
                     text = "v${AppVersion.name} · ${strings.loginVersionPrefix}",
                     style = PharmText.micro.copy(color = t.colors.fgMuted),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 )
             }
         }
     }
 
     ErrorBottomSheet(
-        message = state.errorState?.localizeLogin(pharmStrings),
+        message = state.errorState
+            ?.takeUnless { it is LoginUiStateError.RequiredFields }
+            ?.localizeLogin(pharmStrings),
         onDismiss = viewModel::dismissError,
     )
 }
@@ -189,11 +199,7 @@ private fun BrandHeader(strings: app.devper.pharm.ui.i18n.PharmStrings) {
         }
         Text(
             text = strings.loginBrandName,
-            style = PharmText.body.copy(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = t.colors.fg1,
-            ),
+            style = PharmText.h1.copy(color = t.colors.fg1),
         )
         Text(
             text = strings.loginBrandTagline,

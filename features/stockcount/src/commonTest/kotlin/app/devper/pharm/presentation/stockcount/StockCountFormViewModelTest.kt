@@ -262,7 +262,7 @@ class StockCountFormViewModelTest {
     }
 
     @Test
-    fun onClearDraft_resets_counts_and_note() = runVmTest { dispatchers ->
+    fun clear_draft_requires_confirmation_before_resetting_counts_and_note() = runVmTest { dispatchers ->
         val (vm, _, _, drafts) = newVm(
             dispatchers,
             drugs = FakeDrugRepository(seed = listOf(drug("d1"))),
@@ -273,12 +273,51 @@ class StockCountFormViewModelTest {
         advanceTimeBy(600)
         advanceUntilIdle()
         assertTrue(drafts.stored.counts.isNotEmpty())
-        vm.onClearDraft()
+        vm.requestClearDraft()
+        assertEquals(StockCountDraftAction.ClearDraft, vm.state.value.pendingDraftAction)
+        assertEquals("5", vm.state.value.counts["d1"])
+        assertEquals("note", vm.state.value.note)
+
+        vm.confirmDraftAction()
         advanceTimeBy(600)
         advanceUntilIdle()
+        assertNull(vm.state.value.pendingDraftAction)
         assertTrue(vm.state.value.counts.isEmpty())
         assertEquals("", vm.state.value.note)
         assertTrue(drafts.stored.isEmpty)
+    }
+
+    @Test
+    fun fill_from_system_requires_confirmation_before_overwriting_counts() = runVmTest { dispatchers ->
+        val (vm, _, _, _) = newVm(
+            dispatchers,
+            drugs = FakeDrugRepository(seed = listOf(drug("d1", stock = Quantity(100)))),
+        )
+        advanceUntilIdle()
+        vm.onCountChange("d1", "5")
+
+        vm.requestFillFromSystem()
+        assertEquals(StockCountDraftAction.FillFromSystem, vm.state.value.pendingDraftAction)
+        assertEquals("5", vm.state.value.counts["d1"])
+
+        vm.confirmDraftAction()
+        assertNull(vm.state.value.pendingDraftAction)
+        assertEquals("100", vm.state.value.counts["d1"])
+    }
+
+    @Test
+    fun cancelling_draft_action_preserves_entered_values() = runVmTest { dispatchers ->
+        val (vm, _, _, _) = newVm(
+            dispatchers,
+            drugs = FakeDrugRepository(seed = listOf(drug("d1"))),
+        )
+        advanceUntilIdle()
+        vm.onCountChange("d1", "5")
+        vm.requestClearDraft()
+        vm.cancelDraftAction()
+
+        assertNull(vm.state.value.pendingDraftAction)
+        assertEquals("5", vm.state.value.counts["d1"])
     }
 
     @Test

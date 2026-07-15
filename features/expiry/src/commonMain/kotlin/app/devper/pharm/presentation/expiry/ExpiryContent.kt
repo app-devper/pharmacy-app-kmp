@@ -43,10 +43,13 @@ fun ExpiryContent(
     state: ExpiryUiState,
     callbacks: ExpiryCallbacks = ExpiryCallbacks(),
 ) {
+    val visible = state.filteredLots
+    val searching = state.query.isNotBlank()
     PharmListScaffold(
         toolbar = {
             ExpiryToolbar(
                 window = state.window,
+                query = state.query,
                 selectedCount = state.totalSelected,
                 writingOff = state.writingOff,
                 callbacks = callbacks,
@@ -56,7 +59,9 @@ fun ExpiryContent(
             PharmListResultLine(
                 total = state.lots.size,
                 noun = pharmStrings.expiryCountNoun,
-                trailing = { ExpiryRemainingStat(totalRemaining = state.totalRemaining) },
+                visible = visible.size,
+                searching = searching,
+                trailing = { ExpiryRemainingStat(totalRemaining = state.filteredRemaining) },
             )
         },
     ) {
@@ -67,10 +72,14 @@ fun ExpiryContent(
                 icon = PharmIcons.Expiry,
                 title = pharmStrings.expiryEmpty,
             )
+            visible.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.Search,
+                title = pharmStrings.expirySearchNotFound,
+            )
             else -> ExpiryTable(
-                lots = state.lots,
+                lots = visible,
                 selected = state.selected,
-                allSelected = state.allSelected,
+                allSelected = state.allVisibleSelected,
                 callbacks = callbacks,
             )
         }

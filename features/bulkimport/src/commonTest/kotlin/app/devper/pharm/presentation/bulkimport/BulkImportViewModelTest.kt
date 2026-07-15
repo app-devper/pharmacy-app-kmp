@@ -23,6 +23,12 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class BulkImportViewModelTest {
 
+    @Test
+    fun actions_stay_enabled_until_import_starts() {
+        assertTrue(BulkImportUiState().actionsEnabled)
+        assertFalse(BulkImportUiState(submitting = true).actionsEnabled)
+    }
+
     private object NoopFilePicker : FilePicker {
         override suspend fun pickJsonFile(): Result<String?> = Result.success(null)
     }

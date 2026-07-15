@@ -2,7 +2,6 @@ package app.devper.pharm.ui.designsystem
 
 import app.devper.pharm.ui.i18n.pharmStrings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 private val TITLE_MIN_WIDTH = 600.dp
 
@@ -63,7 +63,7 @@ fun PharmListToolbar(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(t.shapes.md)
-                            .clickable(role = Role.Button, onClick = onBack),
+                            .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onBack),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(

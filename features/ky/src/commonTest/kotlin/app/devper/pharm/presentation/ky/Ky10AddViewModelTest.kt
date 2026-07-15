@@ -52,4 +52,13 @@ class Ky10AddViewModelTest {
         assertFalse(vm.state.value.saved)
         assertTrue(repo.ky10Submissions.isEmpty())
     }
+
+    @Test
+    fun canSubmit_rejects_invalid_date_and_balance() {
+        val validDraft = Ky10Draft(date = "2026-06-01", drugName = "Drug", unit = "unit", qty = "1")
+
+        assertFalse(Ky10AddUiState(draft = validDraft.copy(date = "invalid")).canSubmit)
+        assertFalse(Ky10AddUiState(draft = validDraft.copy(balance = "invalid")).canSubmit)
+        assertTrue(Ky10AddUiState(draft = validDraft.copy(balance = "0")).canSubmit)
+    }
 }

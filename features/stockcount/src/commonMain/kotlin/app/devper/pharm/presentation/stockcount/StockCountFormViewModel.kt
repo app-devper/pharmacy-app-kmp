@@ -69,13 +69,27 @@ class StockCountFormViewModel(
         }
     }
 
-    fun onFillFromSystem() = setState {
-        copy(counts = drugs.associate { it.id to it.stock.value.coerceAtLeast(0).toString() })
+    fun requestFillFromSystem() {
+        if (current.counts.isEmpty()) fillFromSystem()
+        else setState { copy(pendingDraftAction = StockCountDraftAction.FillFromSystem) }
     }
 
-    fun onClear() = setState { copy(counts = emptyMap()) }
+    fun requestClearDraft() {
+        if (current.counts.isNotEmpty() || current.note.isNotBlank()) {
+            setState { copy(pendingDraftAction = StockCountDraftAction.ClearDraft) }
+        }
+    }
 
-    fun onClearDraft() = setState { copy(counts = emptyMap(), note = "") }
+    fun confirmDraftAction() {
+        val action = current.pendingDraftAction ?: return
+        setState { copy(pendingDraftAction = null) }
+        when (action) {
+            StockCountDraftAction.FillFromSystem -> fillFromSystem()
+            StockCountDraftAction.ClearDraft -> clearDraft()
+        }
+    }
+
+    fun cancelDraftAction() = setState { copy(pendingDraftAction = null) }
 
     fun requestSubmit() {
         if (!current.canSubmit) return
@@ -120,6 +134,12 @@ class StockCountFormViewModel(
         if (draft.isEmpty) return
         setState { copy(counts = draft.counts, note = draft.note) }
     }
+
+    private fun fillFromSystem() = setState {
+        copy(counts = drugs.associate { it.id to it.stock.value.coerceAtLeast(0).toString() })
+    }
+
+    private fun clearDraft() = setState { copy(counts = emptyMap(), note = "") }
 
     private data class DraftSnapshot(val counts: Map<String, String>, val note: String)
 

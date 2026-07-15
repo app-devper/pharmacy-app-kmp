@@ -44,6 +44,7 @@ class CustomerFormViewModelTest {
         assertEquals("", s.form.phone)
         assertFalse(s.loading)
         assertFalse(s.canSubmit)
+        assertFalse(s.hasUnsavedChanges)
     }
 
     @Test
@@ -65,6 +66,7 @@ class CustomerFormViewModelTest {
         assertEquals("regular", s.form.priceTier)
         assertFalse(s.loading)
         assertTrue(s.canSubmit)
+        assertFalse(s.hasUnsavedChanges)
     }
 
     @Test
@@ -85,6 +87,7 @@ class CustomerFormViewModelTest {
         assertFalse(vm.state.value.canSubmit)
         vm.onName("Foo")
         assertTrue(vm.state.value.canSubmit)
+        assertTrue(vm.state.value.hasUnsavedChanges)
     }
 
     @Test

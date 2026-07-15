@@ -3,7 +3,6 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -164,7 +164,7 @@ private fun <T> PharmTableCard(
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
-    val clickable = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
+    val clickable = if (onClick != null) Modifier.pharmClickable(role = Role.Button, onClick = onClick) else Modifier
     Column(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -245,7 +245,7 @@ private fun <T> PharmTableRow(
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
-    val clickable = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
+    val clickable = if (onClick != null) Modifier.pharmClickable(role = Role.Button, onClick = onClick) else Modifier
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(

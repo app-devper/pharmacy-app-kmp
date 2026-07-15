@@ -3,7 +3,6 @@ package app.devper.pharm.ui.designsystem
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 enum class PharmActionTone { Default, Primary, Success, Danger }
 
@@ -57,13 +57,13 @@ fun PharmActionMenu(
     Box(modifier = modifier) {
         Box(
             modifier = Modifier
-                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
                 .clip(t.shapes.pill)
                 .semantics(mergeDescendants = true) {
                     contentDescription = openMenuDesc
                     role = Role.Button
                 }
-                .clickable(role = Role.Button) { expanded = true },
+                .pharmClickable(role = Role.Button, shape = t.shapes.pill) { expanded = true },
             contentAlignment = Alignment.Center,
         ) {
             Box(
@@ -119,8 +119,8 @@ private fun PharmActionRow(action: PharmAction, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(36.dp)
-            .clickable(enabled = action.enabled, onClick = onClick)
+            .height(t.dimens.controlHeight)
+            .pharmClickable(enabled = action.enabled, onClick = onClick)
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),

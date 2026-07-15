@@ -11,6 +11,8 @@ object ExpiryStringsEn : ExpiryStrings {
     override val expiryWindowExpired = "Expired"
 
     override val expirySubtitle = "Check near-expiry lots and write off"
+    override val expirySearchPlaceholder = "Search drug or lot number…"
+    override val expirySearchNotFound = "No lots match your search"
     override val expirySelectAll = "Select all"
     override val expirySelectPartial = "Partial selection · tap to clear"
     override val expiryWriteoffCta = "Write off"

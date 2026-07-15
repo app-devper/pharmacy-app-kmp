@@ -57,6 +57,7 @@ interface ReportsStrings {
     val reportsDrugWord: String
     val reportsSortBy: String
     val reportsDatePlaceholder: String
+    val reportsEodDateInvalid: String
     val reportsEodTitle: String
     val reportsEodSubtitle: String
     val reportsEodDate: String

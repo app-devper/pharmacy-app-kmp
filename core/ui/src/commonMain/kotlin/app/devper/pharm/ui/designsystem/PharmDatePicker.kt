@@ -1,12 +1,12 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 import androidx.compose.foundation.shape.CircleShape
 import kotlin.time.Clock
@@ -129,7 +130,7 @@ private fun CalendarHeader(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onPrev, modifier = Modifier.size(36.dp)) {
+        IconButton(onClick = onPrev, modifier = Modifier.size(t.dimens.controlHeight)) {
             Icon(
                 Icons.Rounded.KeyboardArrowLeft,
                 contentDescription = prevDesc,
@@ -143,7 +144,7 @@ private fun CalendarHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = onNext, modifier = Modifier.size(36.dp)) {
+        IconButton(onClick = onNext, modifier = Modifier.size(t.dimens.controlHeight)) {
             Icon(
                 Icons.Rounded.KeyboardArrowRight,
                 contentDescription = nextDesc,
@@ -178,7 +179,18 @@ private fun DayCell(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
-    Box(modifier = modifier.padding(2.dp), contentAlignment = Alignment.Center) {
+    val clickModifier = if (date != null) {
+        Modifier.pharmClickable(role = Role.Button, shape = CircleShape, onClick = onClick)
+    } else {
+        Modifier
+    }
+    Box(
+        modifier = modifier
+            .heightIn(min = 44.dp)
+            .then(clickModifier)
+            .padding(2.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         if (date != null) {
             Box(
                 modifier = Modifier
@@ -190,8 +202,7 @@ private fun DayCell(
                             isToday -> t.colors.accentBgSoft
                             else -> t.colors.surface
                         },
-                    )
-                    .clickable(role = Role.Button, onClick = onClick),
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(

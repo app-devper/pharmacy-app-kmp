@@ -4,7 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,8 +16,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.stock.AltUnitDraft
@@ -44,6 +50,23 @@ fun DrugFormContent(
     callbacks: DrugFormCallbacks,
 ) {
     val t = pharmTokens
+    var validationRequested by remember(state.mode) { mutableStateOf(false) }
+    val nameFocusRequester = remember { FocusRequester() }
+    val costPriceFocusRequester = remember { FocusRequester() }
+    val sellPriceFocusRequester = remember { FocusRequester() }
+    val lotNumberFocusRequester = remember { FocusRequester() }
+    val lotExpiryFocusRequester = remember { FocusRequester() }
+    val lotCostPriceFocusRequester = remember { FocusRequester() }
+    val lotSellPriceFocusRequester = remember { FocusRequester() }
+    val tierPriceFocusRequesters = remember { TierPriceFocusRequesters() }
+    val altUnitFocusRequesters = remember(state.form.altUnits.size) {
+        List(state.form.altUnits.size) { AltUnitFocusRequesters() }
+    }
+    val firstInvalidAltUnitIndex = state.form.altUnits.indices.firstOrNull { index ->
+        !state.form.altUnitNameValid(index) ||
+            !state.form.altUnits[index].factorValid ||
+            !state.form.altUnits[index].sellPriceValid
+    }
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         SubPageBar(
             title = if (state.mode is DrugFormMode.Edit) pharmStrings.stockFormTitleEdit else pharmStrings.stockFormTitleAdd,
@@ -53,6 +76,33 @@ fun DrugFormContent(
                     saving = state.saving,
                     canSubmit = state.canSubmit,
                     onSubmit = callbacks.onSubmit,
+                    onInvalidSubmit = if (state.loading) null else {
+                        {
+                            validationRequested = true
+                            when {
+                                !state.form.nameValid -> nameFocusRequester.requestFocus()
+                                !state.form.costPriceValid -> costPriceFocusRequester.requestFocus()
+                                !state.form.sellPriceValid -> sellPriceFocusRequester.requestFocus()
+                                !state.form.tierRetailValid -> tierPriceFocusRequesters.retail.requestFocus()
+                                !state.form.tierRegularValid -> tierPriceFocusRequesters.regular.requestFocus()
+                                !state.form.tierWholesaleValid -> tierPriceFocusRequesters.wholesale.requestFocus()
+                                firstInvalidAltUnitIndex != null -> {
+                                    val index = firstInvalidAltUnitIndex
+                                    val unit = state.form.altUnits[index]
+                                    val focus = altUnitFocusRequesters[index]
+                                    when {
+                                        !state.form.altUnitNameValid(index) -> focus.name.requestFocus()
+                                        !unit.factorValid -> focus.factor.requestFocus()
+                                        !unit.sellPriceValid -> focus.sellPrice.requestFocus()
+                                    }
+                                }
+                                !state.form.initialLotNumberValid -> lotNumberFocusRequester.requestFocus()
+                                !state.form.initialLotExpiryValid -> lotExpiryFocusRequester.requestFocus()
+                                !state.form.initialLotCostPriceValid -> lotCostPriceFocusRequester.requestFocus()
+                                !state.form.initialLotSellPriceValid -> lotSellPriceFocusRequester.requestFocus()
+                            }
+                        }
+                    },
                 )
             },
         )
@@ -73,10 +123,32 @@ fun DrugFormContent(
                     PharmCircularProgress(color = t.colors.accent)
                 }
             } else {
-                DrugFormDrugInfoSection(form = state.form, callbacks = callbacks)
+                DrugFormDrugInfoSection(
+                    form = state.form,
+                    callbacks = callbacks,
+                    showValidation = validationRequested,
+                    nameFocusRequester = nameFocusRequester,
+                    costPriceFocusRequester = costPriceFocusRequester,
+                    sellPriceFocusRequester = sellPriceFocusRequester,
+                )
+                DrugFormPricingSections(
+                    form = state.form,
+                    callbacks = callbacks,
+                    showValidation = validationRequested,
+                    tierFocus = tierPriceFocusRequesters,
+                    altUnitFocus = altUnitFocusRequesters,
+                )
                 when (val mode = state.mode) {
                     is DrugFormMode.Add ->
-                        DrugFormInitialStockSection(form = state.form, callbacks = callbacks)
+                        DrugFormInitialStockSection(
+                            form = state.form,
+                            callbacks = callbacks,
+                            showValidation = validationRequested,
+                            lotNumberFocusRequester = lotNumberFocusRequester,
+                            lotExpiryFocusRequester = lotExpiryFocusRequester,
+                            lotCostPriceFocusRequester = lotCostPriceFocusRequester,
+                            lotSellPriceFocusRequester = lotSellPriceFocusRequester,
+                        )
                     is DrugFormMode.Edit ->
                         DrugFormLotsAndAdjustmentsCard(
                             drugId = mode.drugId,
@@ -92,6 +164,7 @@ fun DrugFormContent(
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 private fun DrugFormLotsAndAdjustmentsCard(
     drugId: String,
     drugName: String,
@@ -102,9 +175,10 @@ private fun DrugFormLotsAndAdjustmentsCard(
         title = pharmStrings.stockLotsTitle,
         subtitle = pharmStrings.stockLotsSubtitle,
     ) {
-        Row(
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PharmButton(
                 label = pharmStrings.stockSeeAllLots,

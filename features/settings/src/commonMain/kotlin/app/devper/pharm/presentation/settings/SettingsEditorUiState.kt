@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.settings
 
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.error.CommonUiStateMessage
+import app.devper.pharm.domain.validation.isValidTimeZoneId
 import app.devper.pharm.ui.common.LoadableUiState
 
 data class SettingsFormFields(
@@ -28,7 +29,35 @@ data class SettingsFormFields(
     val kyDefaultBuyerAddress: String = "",
 
     val timezone: String = "Asia/Bangkok",
-)
+) {
+    val storeNameValid: Boolean get() = storeName.isNotBlank()
+    val timezoneValid: Boolean get() = timezone.isValidTimeZoneId()
+    val receiptPaperWidthValid: Boolean get() = receiptPaperWidth in setOf("58", "80")
+    val stockLowThresholdValid: Boolean get() = stockLowThreshold.toIntOrNull()?.let { it >= 0 } == true
+    val stockReorderDaysValid: Boolean get() = stockReorderDays.toIntOrNull()?.let { it in 1..365 } == true
+    val stockReorderLookaheadValid: Boolean get() = stockReorderLookahead.toIntOrNull()?.let { it in 1..180 } == true
+    val stockExpiringDaysValid: Boolean get() = stockExpiringDays.toIntOrNull()?.let { it in 1..365 } == true
+
+    val valid: Boolean
+        get() = storeNameValid &&
+            timezoneValid &&
+            receiptPaperWidthValid &&
+            stockLowThresholdValid &&
+            stockReorderDaysValid &&
+            stockReorderLookaheadValid &&
+            stockExpiringDaysValid
+
+    val firstInvalidTab: SettingsTab?
+        get() = when {
+            !storeNameValid || !timezoneValid -> SettingsTab.Store
+            !receiptPaperWidthValid -> SettingsTab.Receipt
+            !stockLowThresholdValid ||
+                !stockReorderDaysValid ||
+                !stockReorderLookaheadValid ||
+                !stockExpiringDaysValid -> SettingsTab.Stock
+            else -> null
+        }
+}
 
 data class SettingsEditorUiState(
     val baseline: SettingsFormFields = SettingsFormFields(),
@@ -47,9 +76,7 @@ data class SettingsEditorUiState(
 
     val dirty: Boolean get() = form != baseline
     val canSave: Boolean
-        get() = !saving && !loading && dirty &&
-            form.storeName.isNotBlank() &&
-            form.receiptPaperWidth in setOf("58", "80")
+        get() = !saving && !loading && dirty && form.valid
 }
 
 enum class SettingsTab {

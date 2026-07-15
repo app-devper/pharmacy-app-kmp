@@ -53,6 +53,10 @@ object CommonStringsTh : CommonStrings {
     override val commonCost = "ต้นทุน"
 
     override val commonCancel = "ยกเลิก"
+    override val commonUnsavedChangesTitle = "ยังไม่ได้บันทึกการเปลี่ยนแปลง"
+    override val commonUnsavedChangesMessage = "หากออกตอนนี้ การเปลี่ยนแปลงจะหายไป"
+    override val commonKeepEditing = "แก้ไขต่อ"
+    override val commonDiscardChanges = "ทิ้งการเปลี่ยนแปลง"
     override val commonSave = "บันทึก"
     override val commonDelete = "ลบ"
     override val commonEdit = "แก้ไข"

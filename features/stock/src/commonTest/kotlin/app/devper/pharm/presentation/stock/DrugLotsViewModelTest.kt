@@ -104,7 +104,7 @@ class DrugLotsViewModelTest {
     }
 
     @Test
-    fun canSubmitDraft_requires_lotNumber_expiryDate_and_positive_quantity() = runVmTest { dispatchers ->
+    fun canSubmitDraft_requires_valid_lot_expiry_quantity_and_optional_prices() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers)
         vm.open(drugId = "d1", drugName = "X")
         advanceUntilIdle()
@@ -114,13 +114,31 @@ class DrugLotsViewModelTest {
         vm.onLotNumber("L-1")
         assertFalse(vm.state.value.canSubmitDraft)
 
-        vm.onExpiryDate("2026-12-31")
+        vm.onExpiryDate("not-a-date")
         assertFalse(vm.state.value.canSubmitDraft)
 
         vm.onQuantity("0")
         assertFalse(vm.state.value.canSubmitDraft)
 
         vm.onQuantity("50")
+        assertFalse(vm.state.value.canSubmitDraft)
+
+        vm.onExpiryDate("2026-12-31-extra")
+        assertFalse(vm.state.value.canSubmitDraft)
+
+        vm.onExpiryDate("2026-12-31")
+        assertTrue(vm.state.value.canSubmitDraft)
+
+        vm.onCostPrice(".")
+        assertFalse(vm.state.value.canSubmitDraft)
+
+        vm.onCostPrice("12.50")
+        assertTrue(vm.state.value.canSubmitDraft)
+
+        vm.onSellPrice(".")
+        assertFalse(vm.state.value.canSubmitDraft)
+
+        vm.onSellPrice("18.00")
         assertTrue(vm.state.value.canSubmitDraft)
     }
 

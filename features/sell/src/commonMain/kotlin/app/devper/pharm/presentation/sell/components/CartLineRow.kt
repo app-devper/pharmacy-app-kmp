@@ -7,7 +7,6 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,15 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,9 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,9 +56,13 @@ import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.designsystem.LocalPharmDensity
 import app.devper.pharm.ui.designsystem.PharmDensity
+import app.devper.pharm.ui.designsystem.PharmIconButton
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -81,7 +81,7 @@ fun CartLineRow(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onTapForDiscount)
+            .pharmClickable(role = Role.Button, onClick = onTapForDiscount)
             .padding(horizontal = 12.dp, vertical = rowVerticalPadding),
     ) {
         if (narrow) {
@@ -233,6 +233,20 @@ private fun priceMetaLabel(line: CartLine, s: PharmStrings): String {
 
 private const val MAX_QTY = 9999
 
+internal sealed interface CartQtyEditResult {
+    data class Quantity(val value: Int) : CartQtyEditResult
+    data object Remove : CartQtyEditResult
+}
+
+internal fun resolveCartQtyEdit(draft: String, currentQty: Int): CartQtyEditResult {
+    val parsed = draft.toIntOrNull() ?: currentQty
+    return if (parsed <= 0) {
+        CartQtyEditResult.Remove
+    } else {
+        CartQtyEditResult.Quantity(parsed.coerceAtMost(MAX_QTY))
+    }
+}
+
 @Composable
 private fun QtyStepper(
     qty: Int,
@@ -240,15 +254,28 @@ private fun QtyStepper(
     onRequestRemove: () -> Unit,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
     var editing by remember { mutableStateOf(false) }
     var draft by remember(qty) { mutableStateOf(qty.toString()) }
+    val quantityFocus = remember { FocusRequester() }
+
+    LaunchedEffect(editing) {
+        if (editing) quantityFocus.requestFocus()
+    }
 
     fun commit() {
-        val parsed = draft.toIntOrNull() ?: qty
-        val clamped = parsed.coerceIn(0, MAX_QTY)
-        if (clamped != qty) onQtyChange(clamped)
-        draft = clamped.toString()
-        editing = false
+        when (val result = resolveCartQtyEdit(draft, qty)) {
+            is CartQtyEditResult.Quantity -> {
+                if (result.value != qty) onQtyChange(result.value)
+                draft = result.value.toString()
+                editing = false
+            }
+            CartQtyEditResult.Remove -> {
+                draft = qty.toString()
+                editing = false
+                onRequestRemove()
+            }
+        }
     }
 
     Row(
@@ -259,38 +286,35 @@ private fun QtyStepper(
             onClick = { if (qty > 1) onQtyChange(qty - 1) else onRequestRemove() },
             container = t.colors.dangerBg,
             iconTint = t.colors.dangerFg,
-            icon = Icons.Outlined.Remove,
-            description = if (qty > 1) pharmStrings.sellQtyDecrease else pharmStrings.sellRemoveLineDesc,
+            icon = PharmIcons.Minus,
+            description = if (qty > 1) s.sellQtyDecrease else s.sellRemoveLineDesc,
             enabled = true,
         )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(36.dp)
-                .height(36.dp)
+                .width(64.dp)
+                .height(48.dp)
                 .then(
                     if (editing) Modifier
-                    else Modifier.clickable(role = Role.Button) { editing = true },
+                    else Modifier
+                        .pharmClickable(role = Role.Button) { editing = true }
+                        .semantics {
+                            contentDescription = "${s.commonQty}: $qty"
+                        },
                 ),
         ) {
             if (editing) {
-                BasicTextField(
+                PharmTextField(
                     value = draft,
                     onValueChange = { draft = it.filter(Char::isDigit).take(4) },
-                    singleLine = true,
-                    textStyle = PharmText.bodySm.tabular().copy(
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                        color = t.colors.fg1,
-                    ),
-                    cursorBrush = SolidColor(t.colors.accent),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .onFocusChanged { if (!it.isFocused) commit() },
+                    accessibilityLabel = s.commonQty,
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
+                    onImeAction = ::commit,
+                    onFocusLost = ::commit,
+                    focusRequester = quantityFocus,
+                    textAlign = TextAlign.Center,
                 )
             } else {
                 Text(
@@ -304,8 +328,8 @@ private fun QtyStepper(
             onClick = { onQtyChange((qty + 1).coerceAtMost(MAX_QTY)) },
             container = t.colors.accent,
             iconTint = t.colors.surface,
-            icon = Icons.Outlined.Add,
-            description = pharmStrings.sellQtyIncrease,
+            icon = PharmIcons.Plus,
+            description = s.sellQtyIncrease,
             enabled = qty < MAX_QTY,
         )
     }
@@ -316,15 +340,16 @@ private fun StepperCircle(
     onClick: () -> Unit,
     container: Color,
     iconTint: Color,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     description: String,
     enabled: Boolean,
 ) {
     val t = pharmTokens
-    IconButton(
+    PharmIconButton(
+        contentDescription = description,
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier.size(36.dp),
+        modifier = Modifier.size(48.dp),
     ) {
         Box(
             modifier = Modifier
@@ -338,7 +363,7 @@ private fun StepperCircle(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = description,
+                contentDescription = null,
                 tint = if (enabled) iconTint
                        else t.colors.fg2,
                 modifier = Modifier.size(13.dp),

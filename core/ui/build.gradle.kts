@@ -11,6 +11,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.savedstate)
             implementation(libs.androidx.navigation.compose)
+            implementation(libs.compose.ui.backhandler)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)

@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.stock
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.LoadableUiState
+import kotlinx.datetime.LocalDate
 
 data class LotDraft(
     val lotNumber: String = "",
@@ -10,7 +11,15 @@ data class LotDraft(
     val quantity: String = "",
     val costPrice: String = "",
     val sellPrice: String = "",
-)
+) {
+    val lotNumberValid: Boolean get() = lotNumber.isNotBlank()
+    val expiryDateValid: Boolean get() = runCatching { LocalDate.parse(expiryDate.trim()) }.isSuccess
+    val quantityValid: Boolean get() = (quantity.toIntOrNull() ?: 0) > 0
+    val costPriceValid: Boolean get() = costPrice.isValidOptionalPrice()
+    val sellPriceValid: Boolean get() = sellPrice.isValidOptionalPrice()
+    val valid: Boolean
+        get() = lotNumberValid && expiryDateValid && quantityValid && costPriceValid && sellPriceValid
+}
 
 data class DrugLotsUiState(
     val drugId: String = "",
@@ -29,8 +38,13 @@ data class DrugLotsUiState(
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val canSubmitDraft: Boolean
-        get() = !saving &&
-            draft.lotNumber.isNotBlank() &&
-            draft.expiryDate.isNotBlank() &&
-            (draft.quantity.toIntOrNull() ?: 0) > 0
+        get() = !saving && draft.valid
+
+    val canAttemptSubmit: Boolean get() = !saving
+}
+
+private fun String.isValidOptionalPrice(): Boolean {
+    if (isBlank()) return true
+    val parsed = toDoubleOrNull() ?: return false
+    return parsed.isFinite() && parsed >= 0.0
 }

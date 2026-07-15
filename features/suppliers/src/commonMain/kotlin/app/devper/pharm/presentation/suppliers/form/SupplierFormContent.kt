@@ -11,8 +11,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.suppliers.SupplierFormFields
 import app.devper.pharm.presentation.suppliers.SupplierFormMode
@@ -34,6 +39,8 @@ fun SupplierFormContent(
 ) {
     val t = pharmTokens
     val s = pharmStrings
+    var validationRequested by remember(state.mode) { mutableStateOf(false) }
+    val nameFocusRequester = remember { FocusRequester() }
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         SubPageBar(
             title = if (state.isEdit) s.suppliersFormEditTitle else s.suppliersFormAddTitle,
@@ -43,6 +50,12 @@ fun SupplierFormContent(
                     saving = state.saving,
                     canSubmit = state.canSubmit,
                     onSubmit = callbacks.onSubmit,
+                    onInvalidSubmit = if (state.loading) null else {
+                        {
+                            validationRequested = true
+                            nameFocusRequester.requestFocus()
+                        }
+                    },
                 )
             },
         )
@@ -63,7 +76,12 @@ fun SupplierFormContent(
                     PharmCircularProgress(color = t.colors.accent)
                 }
             } else {
-                SupplierFormInfoSection(form = state.form, callbacks = callbacks)
+                SupplierFormInfoSection(
+                    form = state.form,
+                    callbacks = callbacks,
+                    showValidation = validationRequested,
+                    nameFocusRequester = nameFocusRequester,
+                )
             }
         }
     }

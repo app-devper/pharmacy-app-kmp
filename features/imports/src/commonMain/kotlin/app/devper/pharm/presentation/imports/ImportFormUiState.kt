@@ -33,6 +33,7 @@ data class ImportFormFields(
 data class ImportFormUiState(
     val mode: ImportFormMode = ImportFormMode.Add,
     val form: ImportFormFields = ImportFormFields(),
+    val baselineForm: ImportFormFields = ImportFormFields(),
     val drugs: List<Drug> = emptyList(),
     val suppliers: List<Supplier> = emptyList(),
     val readOnly: Boolean = false,
@@ -53,6 +54,9 @@ data class ImportFormUiState(
                     qty = it.qty,
                 )
             }
+
+    override val hasUnsavedChanges: Boolean
+        get() = !readOnly && form != baselineForm
 
     val isEdit: Boolean get() = mode is ImportFormMode.Edit
 

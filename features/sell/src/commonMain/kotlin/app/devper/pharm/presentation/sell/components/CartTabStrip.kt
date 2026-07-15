@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.sell.components
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,6 +27,7 @@ import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 internal fun CartTabStrip(
@@ -39,7 +39,7 @@ internal fun CartTabStrip(
     val t = pharmTokens
     Box(modifier = modifier.fillMaxWidth()) {
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.TopCenter))
-        Row(modifier = Modifier.fillMaxWidth().height(44.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().height(48.dp)) {
             slots.forEachIndexed { index, parked ->
                 if (index > 0) {
                     Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(t.colors.divider))
@@ -71,7 +71,7 @@ private fun TabChip(
         modifier = modifier
             .fillMaxHeight()
             .background(if (selected) t.colors.sidebarItemActive else t.colors.bgPage)
-            .clickable(role = Role.Button, onClick = onClick)
+            .pharmClickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,
     ) {

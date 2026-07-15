@@ -15,9 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -26,7 +29,6 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.i18n.pharmStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,11 +40,23 @@ fun VoidReasonSheet(
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var reason by remember { mutableStateOf("") }
+    var reason by rememberSaveable(billNo) { mutableStateOf("") }
+    var validationRequested by rememberSaveable(billNo) { mutableStateOf(false) }
+    val reasonFocus = remember(billNo) { FocusRequester() }
+    val reasonError = validationRequested && reason.isBlank()
+    val submitReason: () -> Unit = {
+        if (reason.isNotBlank()) {
+            onConfirm(reason.trim())
+        } else {
+            validationRequested = true
+            reasonFocus.requestFocus()
+            Unit
+        }
+    }
     val t = pharmTokens
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!submitting) onDismiss() },
         sheetState = sheetState,
         containerColor = t.colors.surface,
     ) {
@@ -59,12 +73,20 @@ fun VoidReasonSheet(
                 style = PharmText.meta,
             )
 
-            FormField(label = pharmStrings.sellCancelBillReason, required = true) {
+            FormField(
+                label = pharmStrings.sellCancelBillReason,
+                required = true,
+                error = if (reasonError) pharmStrings.sellVoidReasonRequired else null,
+            ) {
                 PharmTextField(
                     value = reason,
                     onValueChange = { reason = it },
                     placeholder = pharmStrings.sellCancelBillReasonExample,
                     singleLine = false,
+                    imeAction = ImeAction.Done,
+                    onImeAction = submitReason,
+                    isError = reasonError,
+                    focusRequester = reasonFocus,
                 )
             }
 
@@ -81,24 +103,13 @@ fun VoidReasonSheet(
                     enabled = !submitting,
                 )
                 PharmButton(
-                    onClick = { onConfirm(reason.trim()) },
+                    label = pharmStrings.sellCancelBillTitle,
+                    onClick = submitReason,
                     variant = PharmButtonVariant.Danger,
                     size = PharmButtonSize.Md,
-                    enabled = reason.isNotBlank() && !submitting,
-                ) {
-                    if (submitting) {
-                        PharmCircularProgress(
-                            color = t.colors.surface,
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.height(18.dp),
-                        )
-                    } else {
-                        Text(
-                            pharmStrings.sellCancelBillTitle,
-                            style = PharmText.buttonMd.copy(color = t.colors.surface),
-                        )
-                    }
-                }
+                    enabled = !submitting,
+                    loading = submitting,
+                )
             }
         }
     }

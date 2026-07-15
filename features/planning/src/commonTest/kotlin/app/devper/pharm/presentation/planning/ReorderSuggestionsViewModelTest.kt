@@ -13,7 +13,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReorderSuggestionsViewModelTest {
@@ -72,6 +74,13 @@ class ReorderSuggestionsViewModelTest {
         advanceUntilIdle()
         assertEquals(1, draft.state.value.size)
         assertEquals(1, vm.state.value.draftCount)
+        assertEquals(setOf("a"), vm.state.value.draftDrugIds)
+        assertEquals(listOf("b"), vm.state.value.remainingSuggestions.map { it.drugId })
+        assertEquals(1, assertIs<ReorderSuggestionsMessage.Added>(vm.state.value.messageState).count)
+
+        vm.dismissMessage()
+        vm.addToPurchaseOrder(vm.state.value.suggestions.first())
+        assertNull(vm.state.value.messageState)
     }
 
     @Test
@@ -84,5 +93,18 @@ class ReorderSuggestionsViewModelTest {
         vm.addAllToPurchaseOrder()
         advanceUntilIdle()
         assertEquals(2, draft.state.value.size)
+        assertEquals(0, vm.state.value.remainingSuggestions.size)
+        assertEquals(2, assertIs<ReorderSuggestionsMessage.Added>(vm.state.value.messageState).count)
+    }
+
+    @Test
+    fun dismiss_suggestion_removes_only_the_selected_row() = runVmTest { d ->
+        val repo = FakeDrugRepository(reorderSeed = listOf(suggestion("a"), suggestion("b")))
+        val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), PurchaseDraftProvider())
+        advanceUntilIdle()
+
+        vm.dismissSuggestion(vm.state.value.suggestions.first())
+
+        assertEquals(listOf("b"), vm.state.value.suggestions.map { it.drugId })
     }
 }

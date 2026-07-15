@@ -104,6 +104,7 @@ class EodViewModelTest {
         val vm = newVm(dispatchers)
         advanceUntilIdle()
         assertEquals(sampleReport, vm.state.value.report)
+        assertEquals("2026-05-19", vm.state.value.date)
         assertFalse(vm.state.value.loading)
         assertNull(vm.state.value.errorState)
     }
@@ -235,5 +236,24 @@ class EodViewModelTest {
         vm.onDateChange("2026-05-18")
         assertFalse(vm.state.value.closed)
         assertNull(vm.state.value.closeResult)
+        assertNull(vm.state.value.report)
+    }
+
+    @Test
+    fun invalid_date_does_not_load_or_open_close_confirmation() = runVmTest { dispatchers ->
+        val reports = FakeReportsRepository(eodResult = sampleReport)
+        val vm = newVm(dispatchers, reports = reports)
+        advanceUntilIdle()
+        val loadedParam = reports.lastEodParam
+
+        vm.onDateChange("2026-99-99")
+        vm.applyDate()
+        advanceUntilIdle()
+
+        assertEquals(loadedParam, reports.lastEodParam)
+        assertTrue(vm.state.value.dateErrorVisible)
+        assertNull(vm.state.value.report)
+        vm.requestCloseDay()
+        assertFalse(vm.state.value.confirmClose)
     }
 }

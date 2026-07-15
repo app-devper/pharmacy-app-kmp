@@ -50,9 +50,8 @@ internal fun ExpiryTable(
     val columns = remember(callbacks, selected, t, s) {
         listOf(
         PharmTableColumn<ExpiringLot>(
-            header = "",
+            header = s.commonPick,
             weight = 0.4f,
-            hideInCompact = true,
             cell = { lot ->
                 PharmCheckbox(
                     checked = lot.id in selected,

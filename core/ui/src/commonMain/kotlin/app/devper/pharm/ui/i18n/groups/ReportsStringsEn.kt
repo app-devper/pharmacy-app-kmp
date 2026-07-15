@@ -53,6 +53,7 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsDrugWord = "drug"
     override val reportsSortBy = "Sort by"
     override val reportsDatePlaceholder = "YYYY-MM-DD (blank = today)"
+    override val reportsEodDateInvalid = "Enter a date as YYYY-MM-DD, for example 2026-07-15"
     override val reportsEodTitle = "End-of-day close"
     override val reportsEodSubtitle = "Sales / discount / cash summary — verify before closing"
     override val reportsEodDate = "Date"

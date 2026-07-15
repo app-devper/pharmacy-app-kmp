@@ -1,7 +1,6 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 data class BottomNavItem(
     val id: String,
@@ -93,7 +93,7 @@ private fun BottomNavCell(
         modifier = modifier
             .fillMaxHeight()
             .clip(t.shapes.sm)
-            .clickable(role = Role.Tab, onClick = onClick)
+            .pharmClickable(role = Role.Tab, shape = t.shapes.sm, onClick = onClick)
             .padding(vertical = 6.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

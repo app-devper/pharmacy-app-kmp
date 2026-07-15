@@ -18,6 +18,7 @@ data class CustomerFormFields(
 data class CustomerFormUiState(
     val mode: CustomerFormMode = CustomerFormMode.Add,
     val form: CustomerFormFields = CustomerFormFields(),
+    val baselineForm: CustomerFormFields = CustomerFormFields(),
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,
@@ -25,6 +26,9 @@ data class CustomerFormUiState(
 ) : BaseFormUiState<CustomerFormUiState> {
     override val canSubmit: Boolean
         get() = !saving && !loading && form.name.isNotBlank()
+
+    override val hasUnsavedChanges: Boolean
+        get() = form != baselineForm
 
     val isEdit: Boolean
         get() = mode is CustomerFormMode.Edit

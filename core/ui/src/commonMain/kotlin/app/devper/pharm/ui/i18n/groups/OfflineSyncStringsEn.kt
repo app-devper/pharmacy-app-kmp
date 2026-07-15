@@ -6,12 +6,13 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
     override val offlineSyncEmptyTitle = "No pending sync items"
     override val offlineSyncEmpty = "All bills are synced with the backend"
     override val offlineSyncMetricsTotal = "Pending total"
-    override val offlineSyncMetricsLocation = "In IndexedDB"
+    override val offlineSyncMetricsLocation = "On this device"
     override val offlineSyncMetricsAttempts = "Total attempts"
     override val offlineSyncMetricsAttemptsSuffix = "attempts"
     override val offlineSyncMetricsFailed = "Sync failed"
     override val offlineSyncStatusFailed = "Failed"
     override val offlineSyncStatusPending = "Pending sync"
+    override val offlineSyncStatusSyncing = "Syncing…"
     override val offlineSyncStatusRetry = "Awaiting retry"
     override val offlineSyncAttemptsLabel: (Int) -> String = { attempts -> "$attempts attempt(s)" }
     override val offlineSyncRetryRowCta = "Retry"
@@ -24,7 +25,6 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
     override val offlineSyncSyncPartialFailed: (Int, Int) -> String = { failed, total -> "$failed of $total bills failed to send" }
     override val offlineSyncRetryFailed: (String) -> String = { billId -> "Failed to send bill $billId" }
     override val offlineSyncDiscardFailed = "Failed to remove item"
-    override val offlineSyncRefreshed = "Pulled latest queue status"
     override val offlineSyncSyncStarted: (Int) -> String = { count -> "Syncing $count item(s)" }
     override val offlineSyncRetryStarted: (String) -> String = { billId -> "Retrying bill $billId" }
     override val offlineSyncDiscarded = "Pending sync item removed"

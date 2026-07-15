@@ -31,6 +31,7 @@ internal fun LowStockTable(
             PharmTableColumn<Drug>(
                 header = s.expiryHeaderDrugName,
                 weight = 2.4f,
+                compactTitle = true,
                 cell = { drug -> LowStockNameCell(drug) },
             ),
             PharmTableColumn(
@@ -43,11 +44,13 @@ internal fun LowStockTable(
                 header = s.planningHeaderMin,
                 weight = 0.9f,
                 align = PharmColumnAlign.End,
+                hideInCompact = true,
                 cell = { drug -> LowStockMinCell(drug) },
             ),
             PharmTableColumn(
                 header = s.commonUnit,
                 weight = 0.8f,
+                hideInCompact = true,
                 cell = { drug -> LowStockUnitCell(drug) },
             ),
             PharmTableColumn(

@@ -7,6 +7,7 @@ import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.common.platform.SecureStorage
+import app.devper.pharm.common.platform.UnsavedChangesHandler
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
@@ -17,6 +18,7 @@ import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.FilePickerImpl
 import app.devper.pharm.platform.MotionPreferencesImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
+import app.devper.pharm.platform.UnsavedChangesHandlerImpl
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 import io.ktor.client.engine.okhttp.OkHttp
@@ -47,6 +49,7 @@ class PharmacyApplication : Application() {
             single<FilePicker> { FilePickerImpl() }
             single<ReceiptPrinter> { ReceiptPrinterImpl() }
             single<MotionPreferences> { MotionPreferencesImpl(applicationContext) }
+            single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
         }
 
         startKoin {

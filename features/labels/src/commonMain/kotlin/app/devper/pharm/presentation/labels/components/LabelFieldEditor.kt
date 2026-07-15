@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.labels.components
 import app.devper.pharm.ui.components.PharmBreakpoint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,9 +32,11 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.common.pharmToggleable
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 internal fun LabelFieldEditor(
@@ -205,9 +205,10 @@ private fun IncludePriceToggle(
     val t = pharmTokens
     Row(
         modifier = modifier
-            .toggleable(
+            .pharmToggleable(
                 value = line.includePrice,
                 role = Role.Checkbox,
+                shape = t.shapes.md,
                 onValueChange = { onIncludePriceChange(it) },
             ),
         verticalAlignment = Alignment.CenterVertically,
@@ -243,9 +244,9 @@ private fun RemoveButton(onRemove: () -> Unit) {
     val s = pharmStrings
     Box(
         modifier = Modifier
-            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
             .clip(t.shapes.sm)
-            .clickable(role = Role.Button, onClick = onRemove)
+            .pharmClickable(role = Role.Button, onClick = onRemove)
             .semantics {
                 contentDescription = s.labelsRemoveLine
                 role = Role.Button

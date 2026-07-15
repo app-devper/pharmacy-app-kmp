@@ -40,11 +40,12 @@ class LoginViewModel(
 
     fun submit() {
         val s = current
+        if (s.loading) return
         if (s.username.isBlank() || s.password.isBlank()) {
-            setState { copy(errorState = LoginUiStateError.RequiredFields()) }
+            setState { copy(validationRequested = true, errorState = LoginUiStateError.RequiredFields()) }
             return
         }
-        setState { copy(loading = true, errorState = null) }
+        setState { copy(loading = true, validationRequested = false, errorState = null) }
         launchResult(
             block = { login(s.username, s.password) },
             onSuccess = { user ->

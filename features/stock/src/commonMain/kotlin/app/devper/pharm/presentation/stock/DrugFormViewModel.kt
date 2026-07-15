@@ -80,7 +80,8 @@ class DrugFormViewModel(
                 if (drug == null) {
                     setState { copy(loading = false, errorState = DrugFormUiStateError.NotFound()) }
                 } else {
-                    setState { copy(loading = false, form = drug.toForm()) }
+                    val hydratedForm = drug.toForm()
+                    setState { copy(loading = false, form = hydratedForm, baselineForm = hydratedForm) }
                 }
             },
             onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },

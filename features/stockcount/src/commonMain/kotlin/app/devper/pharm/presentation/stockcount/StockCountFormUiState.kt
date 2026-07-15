@@ -16,6 +16,7 @@ data class StockCountFormUiState(
     val note: String = "",
     val query: String = "",
     val showSubmitConfirm: Boolean = false,
+    val pendingDraftAction: StockCountDraftAction? = null,
     val errorState: AppException? = null,
 ) : BaseFormUiState<StockCountFormUiState> {
     private val drugById: Map<String, Drug> = drugs.associateBy { it.id }
@@ -23,6 +24,11 @@ data class StockCountFormUiState(
     val filtered: List<Drug> = drugs.searchByQuery(query)
 
     val pendingLines: List<Pair<String, Int>> = parsePendingStockCounts(counts)
+
+    val invalidCountIds: Set<String> = counts.mapNotNullTo(mutableSetOf()) { (id, raw) ->
+        val parsed = raw.toIntOrNull()
+        id.takeIf { raw.isNotBlank() && (parsed == null || parsed < 0) }
+    }
 
     val changedLines: List<Pair<String, Int>> = pendingLines.filter { (id, counted) ->
         val drug = drugById[id] ?: return@filter false
@@ -53,12 +59,17 @@ data class StockCountFormUiState(
         .sortedByDescending { kotlin.math.abs(it.delta) }
         .take(5)
 
-    override val canSubmit: Boolean = !saving && !loading && pendingLines.isNotEmpty()
+    override val canSubmit: Boolean = !saving && !loading && pendingLines.isNotEmpty() && invalidCountIds.isEmpty()
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+}
+
+enum class StockCountDraftAction {
+    FillFromSystem,
+    ClearDraft,
 }
 
 data class StockCountDiscrepancy(

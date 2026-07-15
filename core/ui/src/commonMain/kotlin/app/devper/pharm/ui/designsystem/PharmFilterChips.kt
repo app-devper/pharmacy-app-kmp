@@ -2,6 +2,8 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmFocusRing
 
 data class PharmFilterChip(
     val id: String,
@@ -86,6 +90,7 @@ private fun PharmFilterChipItem(
     val bg = if (active) t.colors.surface else t.colors.bgPage
     val fg = if (active) t.colors.accent else t.colors.fg2
     val border = if (active) t.colors.accent else t.colors.border
+    val interaction = remember { MutableInteractionSource() }
 
     Row(
         modifier = Modifier
@@ -93,7 +98,14 @@ private fun PharmFilterChipItem(
             .clip(t.shapes.pill)
             .background(bg)
             .border(1.dp, border, t.shapes.pill)
-            .selectable(selected = active, role = role, onClick = onClick)
+            .pharmFocusRing(interactionSource = interaction, shape = t.shapes.pill)
+            .selectable(
+                selected = active,
+                role = role,
+                onClick = onClick,
+                interactionSource = interaction,
+                indication = LocalIndication.current,
+            )
             .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,

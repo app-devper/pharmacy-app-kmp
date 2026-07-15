@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.imports
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +33,7 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 fun ImportSupplierPickerDialog(
@@ -94,7 +94,7 @@ fun ImportSupplierPickerDialog(
                                 .fillMaxWidth()
                                 .clip(t.shapes.md)
                                 .background(t.colors.surface, t.shapes.md)
-                                .clickable(role = Role.Button) { onPick(supplier) }
+                                .pharmClickable(role = Role.Button) { onPick(supplier) }
                                 .padding(horizontal = 12.dp, vertical = 10.dp),
                         ) {
                             Text(supplier.name, style = PharmText.body.copy(color = t.colors.fg1))

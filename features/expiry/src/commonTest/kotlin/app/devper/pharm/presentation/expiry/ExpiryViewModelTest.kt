@@ -76,6 +76,7 @@ class ExpiryViewModelTest {
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
         val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
         advanceUntilIdle()
+        vm.toggleSelected("a")
         vm.askConfirm()
         assertTrue(vm.state.value.confirmDialog)
         vm.cancelConfirm()
@@ -120,5 +121,30 @@ class ExpiryViewModelTest {
         assertNotNull(vm.state.value.writeoffResult)
         vm.dismissResult()
         assertNull(vm.state.value.writeoffResult)
+    }
+
+    @Test
+    fun query_filters_by_drug_or_lot_and_select_all_affects_visible_rows_only() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("a"), lot("b"), lot("c")))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+
+        vm.onQueryChange("Lb")
+        assertEquals(listOf("b"), vm.state.value.filteredLots.map { it.id })
+        vm.toggleAll()
+
+        assertEquals(setOf("b"), vm.state.value.selected)
+        assertTrue(vm.state.value.allVisibleSelected)
+    }
+
+    @Test
+    fun confirm_cannot_open_without_a_selection() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+
+        vm.askConfirm()
+
+        assertFalse(vm.state.value.confirmDialog)
     }
 }

@@ -3,15 +3,20 @@ package app.devper.pharm.ui.common
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.pharmTokens
@@ -39,4 +44,65 @@ fun Modifier.pharmFocusRing(
         label = "pharmFocusRing",
     )
     return this.border(width = ringWidth, color = ringColor, shape = shape)
+}
+
+@Composable
+fun Modifier.pharmClickable(
+    enabled: Boolean = true,
+    role: Role = Role.Button,
+    shape: Shape = pharmTokens.shapes.md,
+    onClick: () -> Unit,
+): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+    return this
+        .pharmFocusRing(interactionSource = interactionSource, shape = shape)
+        .clickable(
+            interactionSource = interactionSource,
+            indication = LocalIndication.current,
+            enabled = enabled,
+            role = role,
+            onClick = onClick,
+        )
+}
+
+@Composable
+fun Modifier.pharmToggleable(
+    value: Boolean,
+    enabled: Boolean = true,
+    role: Role = Role.Checkbox,
+    shape: Shape = pharmTokens.shapes.md,
+    onValueChange: (Boolean) -> Unit,
+): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+    return this
+        .pharmFocusRing(interactionSource = interactionSource, shape = shape)
+        .toggleable(
+            value = value,
+            interactionSource = interactionSource,
+            indication = LocalIndication.current,
+            enabled = enabled,
+            role = role,
+            onValueChange = onValueChange,
+        )
+}
+
+@Composable
+fun Modifier.pharmSelectable(
+    selected: Boolean,
+    enabled: Boolean = true,
+    role: Role = Role.RadioButton,
+    shape: Shape = pharmTokens.shapes.md,
+    onClick: () -> Unit,
+): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+    return this
+        .pharmFocusRing(interactionSource = interactionSource, shape = shape)
+        .selectable(
+            selected = selected,
+            interactionSource = interactionSource,
+            indication = LocalIndication.current,
+            enabled = enabled,
+            role = role,
+            onClick = onClick,
+        )
 }

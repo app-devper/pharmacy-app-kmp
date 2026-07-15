@@ -6,7 +6,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -45,11 +43,13 @@ import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmIconButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
@@ -210,14 +210,15 @@ private fun CartPanelHeader(
             )
         }
         val canClear = hasItems && !checkingOut
-        IconButton(
+        PharmIconButton(
+            contentDescription = s.sellClearCartCta,
             onClick = onRequestClearCart,
             enabled = canClear,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(48.dp),
         ) {
             Icon(
                 PharmIcons.Trash,
-                contentDescription = s.sellClearCartCta,
+                contentDescription = null,
                 tint = if (canClear) t.colors.dangerFg else t.colors.fgMuted,
                 modifier = Modifier.size(18.dp),
             )
@@ -330,7 +331,7 @@ private fun CartComplianceBanner(required: KyRequired, captured: Boolean, invali
         captured -> t.colors.successFg
         else -> t.colors.warningFg
     }
-    val clickMod = if (skipAuto) Modifier else Modifier.clickable(role = Role.Button, onClick = onClick)
+    val clickMod = if (skipAuto) Modifier else Modifier.pharmClickable(role = Role.Button, onClick = onClick)
     Row(
         modifier = Modifier
             .fillMaxWidth()

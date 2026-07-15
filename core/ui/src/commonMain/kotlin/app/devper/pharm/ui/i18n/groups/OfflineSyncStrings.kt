@@ -12,6 +12,7 @@ interface OfflineSyncStrings {
     val offlineSyncMetricsFailed: String
     val offlineSyncStatusFailed: String
     val offlineSyncStatusPending: String
+    val offlineSyncStatusSyncing: String
     val offlineSyncStatusRetry: String
     val offlineSyncAttemptsLabel: (Int) -> String
     val offlineSyncRetryRowCta: String
@@ -21,7 +22,6 @@ interface OfflineSyncStrings {
     val offlineSyncSyncPartialFailed: (Int, Int) -> String
     val offlineSyncRetryFailed: (String) -> String
     val offlineSyncDiscardFailed: String
-    val offlineSyncRefreshed: String
     val offlineSyncSyncStarted: (Int) -> String
     val offlineSyncRetryStarted: (String) -> String
     val offlineSyncDiscarded: String

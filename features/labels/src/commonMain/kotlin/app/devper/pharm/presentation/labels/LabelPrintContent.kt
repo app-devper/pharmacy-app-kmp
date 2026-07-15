@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
@@ -22,6 +23,13 @@ import app.devper.pharm.presentation.labels.components.LabelPrintToolbar
 import app.devper.pharm.presentation.labels.i18n.localizeLabels
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.designsystem.PharmModal
+import app.devper.pharm.ui.designsystem.PharmModalSize
+import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,9 +46,14 @@ fun LabelPrintContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
+        PharmListToolbar(
+            title = pharmStrings.navLabelPrint,
+            subtitle = pharmStrings.labelsSubtitle,
+        )
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .weight(1f)
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
             val sideBySide = maxWidth >= PharmBreakpoint.Medium
@@ -85,6 +98,28 @@ fun LabelPrintContent(
     state.errorState?.let { err ->
         ErrorBottomSheet(message = err.localizeLabels(pharmStrings), onDismiss = callbacks.onDismissError)
     }
+    PharmModal(
+        open = state.confirmClear,
+        onDismiss = callbacks.onCancelClearAll,
+        title = pharmStrings.labelsClearTitle,
+        size = PharmModalSize.Sm,
+        footer = {
+            PharmButton(
+                label = pharmStrings.commonCancel,
+                onClick = callbacks.onCancelClearAll,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Sm,
+            )
+            PharmButton(
+                label = pharmStrings.labelsClearConfirm,
+                onClick = callbacks.onConfirmClearAll,
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Sm,
+            )
+        },
+    ) {
+        Text(text = pharmStrings.labelsClearSubtitle, style = PharmText.body)
+    }
 }
 
 @Composable
@@ -101,9 +136,10 @@ private fun EditorPane(
             size = state.size,
             totalCopies = state.totalCopies,
             canPrint = state.canPrint,
+            canClear = state.canClear,
             printing = state.printing,
             onSizeChange = callbacks.onSizeChange,
-            onClearAll = callbacks.onClearAll,
+            onClearAll = callbacks.onAskClearAll,
             onPrint = callbacks.onPrint,
         )
         LabelFieldEditor(

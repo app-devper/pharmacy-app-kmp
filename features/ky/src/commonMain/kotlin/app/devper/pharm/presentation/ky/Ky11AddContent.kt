@@ -10,6 +10,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -45,6 +49,9 @@ fun Ky11AddContent(
     callbacks: Ky11AddCallbacks = Ky11AddCallbacks(),
 ) {
     val t = pharmTokens
+    val s = pharmStrings
+    var validationRequested by remember { mutableStateOf(false) }
+    val commonFocus = rememberKyCommonFocusRequesters()
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         SubPageBar(
             title = pharmStrings.kyAddCtaWithNumber(11),
@@ -54,6 +61,15 @@ fun Ky11AddContent(
                     saving = state.saving,
                     canSubmit = state.canSubmit,
                     onSubmit = callbacks.onSubmit,
+                    onInvalidSubmit = {
+                        validationRequested = true
+                        commonFocus.requestFirstInvalid(
+                            date = state.draft.date,
+                            drugName = state.draft.drugName,
+                            unit = state.draft.unit,
+                            qty = state.draft.qty,
+                        )
+                    },
                 )
             },
         )
@@ -70,14 +86,24 @@ fun Ky11AddContent(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     KyTwoUp(
                         left = {
-                            FormField(label = pharmStrings.kyDateYmd, required = true) {
-                                PharmTextField(value = state.draft.date, onValueChange = callbacks.onDate)
-                            }
+                            KyValidatedField(
+                                label = s.kyDateYmd,
+                                value = state.draft.date,
+                                onValueChange = callbacks.onDate,
+                                showValidation = validationRequested,
+                                focusRequester = commonFocus.date,
+                                rule = KyValidationRule.Date,
+                            )
                         },
                         right = {
-                            FormField(label = pharmStrings.kyHeaderItem, required = true) {
-                                PharmTextField(value = state.draft.drugName, onValueChange = callbacks.onDrugName)
-                            }
+                            KyValidatedField(
+                                label = s.kyHeaderItem,
+                                value = state.draft.drugName,
+                                onValueChange = callbacks.onDrugName,
+                                showValidation = validationRequested,
+                                focusRequester = commonFocus.drugName,
+                                rule = KyValidationRule.Required,
+                            )
                         },
                     )
                     KyTwoUp(
@@ -87,18 +113,25 @@ fun Ky11AddContent(
                             }
                         },
                         right = {
-                            FormField(label = pharmStrings.commonUnit, required = true) {
-                                PharmTextField(value = state.draft.unit, onValueChange = callbacks.onUnit)
-                            }
+                            KyValidatedField(
+                                label = s.commonUnit,
+                                value = state.draft.unit,
+                                onValueChange = callbacks.onUnit,
+                                showValidation = validationRequested,
+                                focusRequester = commonFocus.unit,
+                                rule = KyValidationRule.Required,
+                            )
                         },
                     )
-                    FormField(label = pharmStrings.commonQty, required = true) {
-                        PharmTextField(
-                            value = state.draft.qty,
-                            onValueChange = callbacks.onQty,
-                            keyboardType = KeyboardType.Number,
-                        )
-                    }
+                    KyValidatedField(
+                        label = s.commonQty,
+                        value = state.draft.qty,
+                        onValueChange = callbacks.onQty,
+                        showValidation = validationRequested,
+                        focusRequester = commonFocus.qty,
+                        rule = KyValidationRule.PositiveInt,
+                        keyboardType = KeyboardType.Number,
+                    )
                     FormField(label = pharmStrings.kyBuyerName) {
                         PharmTextField(value = state.draft.buyerName, onValueChange = callbacks.onBuyerName)
                     }

@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.presentation.suppliers.form.SupplierFormCallbacks
 import app.devper.pharm.presentation.suppliers.form.SupplierFormContent
+import app.devper.pharm.ui.components.RegisterUnsavedChanges
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -15,6 +16,7 @@ fun SupplierFormScreen(
     viewModel: SupplierFormViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    RegisterUnsavedChanges(state.hasUnsavedChanges)
 
     LaunchedEffect(supplierId) {
         viewModel.init(

@@ -31,6 +31,8 @@ import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -62,12 +64,32 @@ fun ReportsContent(
                 )
             }
             PharmListToolbar(
+                title = s.reportsTabSummary,
+                subtitle = s.reportsSubtitle,
+                filters = {
+                    ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
+                },
                 actions = {
-                    PharmButton(
-                        label = s.reportsTabEod,
-                        onClick = callbacks.onCloseEod,
-                        size = PharmButtonSize.Md,
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        PharmButton(
+                            label = s.commonRefresh,
+                            onClick = callbacks.onReload,
+                            size = PharmButtonSize.Md,
+                            variant = PharmButtonVariant.Outline,
+                            loading = state.loading,
+                        )
+                        PharmButton(
+                            label = s.reportsTabEod,
+                            onClick = callbacks.onCloseEod,
+                            size = PharmButtonSize.Md,
+                            leadingIcon = {
+                                androidx.compose.material3.Icon(
+                                    imageVector = PharmIcons.Reports,
+                                    contentDescription = null,
+                                )
+                            },
+                        )
+                    }
                 },
             )
 
@@ -79,9 +101,6 @@ fun ReportsContent(
                     contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    item("window") {
-                        ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
-                    }
                     state.dashboard?.daily?.let { daily ->
                         item("daily") { ReportsDailyBarChart(daily = daily) }
                     }

@@ -9,7 +9,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -192,7 +191,7 @@ private fun ToastCard(
                 modifier = Modifier
                     .heightIn(min = 48.dp)
                     .clip(t.shapes.sm)
-                    .clickable(role = Role.Button, onClick = onAction)
+                    .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onAction)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
@@ -206,7 +205,7 @@ private fun ToastCard(
             modifier = Modifier
                 .size(48.dp)
                 .clip(t.shapes.pill)
-                .clickable(role = Role.Button, onClick = onClose),
+                .pharmClickable(role = Role.Button, shape = t.shapes.pill, onClick = onClose),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

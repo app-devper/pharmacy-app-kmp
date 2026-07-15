@@ -77,6 +77,17 @@ class StockCountFormUiStateTest {
     }
 
     @Test
+    fun canSubmit_false_when_any_count_is_invalid() {
+        val state = StockCountFormUiState(
+            drugs = listOf(drug("a"), drug("b")),
+            counts = mapOf("a" to "10", "b" to "invalid"),
+        )
+
+        assertEquals(setOf("b"), state.invalidCountIds)
+        assertFalse(state.canSubmit)
+    }
+
+    @Test
     fun filtered_searches_name_barcode_genericName() {
         val drugs = listOf(
             drug("1", "Paracetamol").copy(genericName = "acetaminophen", barcode = "8851001"),

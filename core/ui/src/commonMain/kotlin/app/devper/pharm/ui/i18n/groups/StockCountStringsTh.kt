@@ -24,6 +24,9 @@ object StockCountStringsTh : StockCountStrings {
     override val stockCountFormUnitLabel: (String) -> String = { unit -> "หน่วย: $unit" }
     override val stockCountFormChangedItems = "รายการที่เปลี่ยน"
     override val stockCountFormFillSystem = "เติมตามระบบ"
+    override val stockCountFormFillConfirmTitle = "แทนที่จำนวนที่นับไว้?"
+    override val stockCountFormFillConfirmMessage = "จำนวนที่กรอกไว้ทั้งหมดจะถูกแทนด้วยยอดสต็อกปัจจุบันในระบบ"
+    override val stockCountFormFillConfirmCta = "แทนที่ทั้งหมด"
     override val stockCountFormSummaryAll = "ทั้งหมด"
     override val stockCountFormSummaryAdjusted = "ปรับแล้ว"
     override val stockCountFormSummaryNotAdjusted = "ไม่ปรับ"
@@ -32,6 +35,9 @@ object StockCountStringsTh : StockCountStrings {
     override val stockCountFormDiscrepancyTotal = "ส่วนต่างรวม (abs)"
     override val stockCountFormTopDiscrepancy: (Int) -> String = { n -> "ส่วนต่างสูงสุด $n อันดับ" }
     override val stockCountFormClearDraftCta = "ล้าง draft"
+    override val stockCountFormClearConfirmTitle = "ล้าง draft รอบนี้?"
+    override val stockCountFormClearConfirmMessage = "จำนวนที่นับและหมายเหตุทั้งหมดจะถูกลบ การดำเนินการนี้ย้อนกลับไม่ได้"
+    override val stockCountFormClearConfirmCta = "ล้าง draft"
     override val stockCountFormSaveRoundCta = "บันทึกรอบนี้"
     override val stockCountFormResultLine: (Int, Int, Int) -> String = { total, printed, counted -> "ทั้งหมด $total รายการ · พิมพ์แล้ว $printed · นับได้ $counted" }
     override val stockCountFormStatusLine: (Int, Int, Int, Int) -> String = { total, printed, changed, absDelta -> "ทั้งหมด $total รายการ · พิมพ์แล้ว $printed · แก้ไข $changed · ส่วนต่างรวม $absDelta" }
@@ -39,6 +45,7 @@ object StockCountStringsTh : StockCountStrings {
     override val stockCountFormSummaryDelta: (Int, Int) -> String = { changed, total -> "แก้ไข $changed · ส่วนต่างรวม $total" }
     override val stockCountFormEmptySearching = "ไม่พบยาที่ค้นหา"
     override val stockCountFormEmptyDefault = "ยังไม่มีรายการยา"
+    override val stockCountFormInvalidCount = "ใส่จำนวน 0 ขึ้นไป"
     override val stockCountFormConfirmTitle = "ยืนยันการปรับสต็อก"
     override val stockCountFormConfirmMessage = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้"
     override val stockCountFormConfirmCta = "ยืนยัน"

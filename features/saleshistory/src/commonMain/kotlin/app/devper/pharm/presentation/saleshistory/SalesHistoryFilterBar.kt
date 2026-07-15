@@ -40,6 +40,8 @@ internal fun SalesHistoryListToolbar(
 
     PharmListToolbar(
         modifier = modifier,
+        title = s.navSalesHistory,
+        subtitle = s.salesHistorySubtitle,
         searchValue = state.query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = s.salesHistorySearchPlaceholder,
@@ -67,6 +69,7 @@ internal fun SalesHistoryListToolbar(
                 label = s.commonSearch,
                 onClick = callbacks.onApplyFilter,
                 size = PharmButtonSize.Sm,
+                loading = state.loading,
             )
         },
     )

@@ -121,4 +121,18 @@ interface StockStrings {
     val stockExampleReg: String
     val stockExampleBarcode: String
     val stockBarcodeScanHint: String
+    val stockPricingTitle: String
+    val stockPricingSubtitle: String
+    val stockAltUnitsTitle: String
+    val stockAltUnitsSubtitle: String
+    val stockAltUnitAdd: String
+    val stockAltUnitEmpty: String
+    val stockAltUnitTitle: (Int) -> String
+    val stockAltUnitName: String
+    val stockAltUnitFactor: String
+    val stockAltUnitFactorHint: String
+    val stockAltUnitHidden: String
+    val stockAltUnitNameDuplicate: String
+    val stockAltUnitNameMatchesBase: String
+    val stockAltUnitFactorInvalid: String
 }

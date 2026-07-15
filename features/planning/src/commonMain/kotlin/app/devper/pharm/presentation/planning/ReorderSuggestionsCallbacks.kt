@@ -8,6 +8,5 @@ data class ReorderSuggestionsCallbacks(
     val onAddAll: () -> Unit = {},
     val onOpenPurchaseOrder: () -> Unit = {},
     val onDismiss: (ReorderSuggestion) -> Unit = {},
-    val onRowClick: (ReorderSuggestion) -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

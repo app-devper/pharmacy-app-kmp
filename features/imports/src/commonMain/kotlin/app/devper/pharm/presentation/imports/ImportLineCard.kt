@@ -1,9 +1,9 @@
 package app.devper.pharm.presentation.imports
 
 import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.domain.validation.Check
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,6 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 internal fun ImportLineCard(
@@ -40,8 +41,14 @@ internal fun ImportLineCard(
     onCost: (String) -> Unit,
     onSell: (String) -> Unit,
     onRemove: () -> Unit,
+    showValidation: Boolean = false,
 ) {
     val t = pharmTokens
+    val s = pharmStrings
+    val drugError = showValidation && fields.drugId.isBlank()
+    val lotError = showValidation && fields.lotNumber.isBlank()
+    val expiryError = showValidation && !Check.localDate(fields.expiryDate)
+    val qtyError = showValidation && !Check.positiveInt(fields.qty)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,11 +69,11 @@ internal fun ImportLineCard(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = 40.dp)
+                    .heightIn(min = 48.dp)
                     .clip(t.shapes.md)
                     .background(if (readOnly) t.colors.borderSubtle else t.colors.bgPage, t.shapes.md)
-                    .border(1.dp, t.colors.border, t.shapes.md)
-                    .clickable(enabled = !readOnly, onClick = onPickDrug)
+                    .border(1.dp, if (drugError) t.colors.dangerFg else t.colors.border, t.shapes.md)
+                    .pharmClickable(enabled = !readOnly, onClick = onPickDrug)
                     .padding(horizontal = 12.dp, vertical = 10.dp),
             ) {
                 Text(
@@ -90,22 +97,39 @@ internal fun ImportLineCard(
                 }
             }
         }
-        val s = pharmStrings
+        if (drugError) {
+            Text(
+                text = s.validationRequired(s.fieldDrug),
+                style = PharmText.micro.copy(color = t.colors.dangerFg),
+            )
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ImportLabeledField(label = s.importsFormHeaderLotNumber, required = true, modifier = Modifier.weight(1f)) {
+            ImportLabeledField(
+                label = s.importsFormHeaderLotNumber,
+                required = true,
+                error = if (lotError) s.validationRequired(s.importsFormHeaderLotNumber) else null,
+                modifier = Modifier.weight(1f),
+            ) {
                 ImportFormField(
                     value = fields.lotNumber,
                     onValueChange = onLot,
                     placeholder = s.importsFormHeaderLotNumberPlaceholder,
                     enabled = !readOnly,
+                    isError = lotError,
                 )
             }
-            ImportLabeledField(label = s.importsExpiryDateLabel, required = true, modifier = Modifier.weight(1f)) {
+            ImportLabeledField(
+                label = s.importsExpiryDateLabel,
+                required = true,
+                error = if (expiryError) s.validationInvalidDate(s.importsExpiryDateLabel) else null,
+                modifier = Modifier.weight(1f),
+            ) {
                 ImportFormField(
                     value = fields.expiryDate,
                     onValueChange = onExpiry,
                     placeholder = "YYYY-MM-DD",
                     enabled = !readOnly,
+                    isError = expiryError,
                 )
             }
         }
@@ -113,8 +137,13 @@ internal fun ImportLineCard(
             val threeCol = maxWidth >= PharmBreakpoint.Medium
             if (threeCol) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ImportLabeledField(label = s.commonQty, required = true, modifier = Modifier.weight(1f)) {
-                        QtyField(fields, onQty, readOnly)
+                    ImportLabeledField(
+                        label = s.commonQty,
+                        required = true,
+                        error = if (qtyError) s.validationMustBePositive(s.commonQty) else null,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        QtyField(fields, onQty, readOnly, qtyError)
                     }
                     ImportLabeledField(label = s.importsFormHeaderCostPrice, modifier = Modifier.weight(1f)) {
                         CostField(fields, onCost, readOnly)
@@ -125,8 +154,12 @@ internal fun ImportLineCard(
                 }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ImportLabeledField(label = s.commonQty, required = true) {
-                        QtyField(fields, onQty, readOnly)
+                    ImportLabeledField(
+                        label = s.commonQty,
+                        required = true,
+                        error = if (qtyError) s.validationMustBePositive(s.commonQty) else null,
+                    ) {
+                        QtyField(fields, onQty, readOnly, qtyError)
                     }
                     ImportLabeledField(label = s.importsFormHeaderCostPrice) {
                         CostField(fields, onCost, readOnly)
@@ -141,13 +174,14 @@ internal fun ImportLineCard(
 }
 
 @Composable
-private fun QtyField(fields: ImportLineFields, onQty: (String) -> Unit, readOnly: Boolean) {
+private fun QtyField(fields: ImportLineFields, onQty: (String) -> Unit, readOnly: Boolean, isError: Boolean) {
     ImportFormField(
         value = fields.qty,
         onValueChange = onQty,
         placeholder = "0",
         keyboardType = KeyboardType.Number,
         enabled = !readOnly,
+        isError = isError,
     )
 }
 
