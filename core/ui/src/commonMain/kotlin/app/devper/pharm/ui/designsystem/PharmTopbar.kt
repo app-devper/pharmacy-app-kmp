@@ -5,6 +5,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmText
@@ -54,80 +56,89 @@ fun PharmTopbar(
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val t = pharmTokens
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(t.dimens.topbarHeight)
-            .background(t.colors.surface)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        if (onBack != null) {
-            BackButton(onClick = onBack)
-        } else if (showHamburger) {
-            HamburgerButton(onClick = onHamburger)
-        }
-        Text(text = title, style = PharmText.h1)
-        Box(modifier = Modifier.weight(1f))
-        if (onBack != null) {
-            actions?.invoke()
-        }
-        if (onBack == null && showThemeToggle) {
-            ThemeToggleButton()
-        }
-        if (onBack == null && showStatus && online) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(t.shapes.pill)
-                        .background(t.colors.successFg),
-                )
-                Text(pharmStrings.commonOnline, style = PharmText.meta)
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val horizontalPadding = if (maxWidth < 360.dp) 8.dp else 16.dp
+        val itemSpacing = if (maxWidth < 360.dp) 6.dp else 12.dp
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(t.dimens.topbarHeight)
+                .background(t.colors.surface)
+                .padding(horizontal = horizontalPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(itemSpacing),
+        ) {
+            if (onBack != null) {
+                BackButton(onClick = onBack)
+            } else if (showHamburger) {
+                HamburgerButton(onClick = onHamburger)
             }
-        }
-        if (onBack == null && user != null) {
-            if (compactUserMenu) {
-                PharmActionMenu(
-                    actions = buildList {
-                        if (onProfileClick != null) {
-                            add(
-                                PharmAction(
-                                    label = pharmStrings.profileTitle,
-                                    icon = PharmIcons.Person,
-                                    onClick = onProfileClick,
-                                ),
-                            )
-                        }
-                        if (onLogout != null) {
-                            add(
-                                PharmAction(
-                                    label = pharmStrings.commonLogout,
-                                    icon = PharmIcons.Logout,
-                                    tone = PharmActionTone.Danger,
-                                    onClick = onLogout,
-                                ),
-                            )
-                        }
-                    },
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .padding(vertical = 12.dp)
-                        .background(t.colors.border),
-                )
-                UserChip(user = user, onLogout = onLogout, onProfileClick = onProfileClick)
+            Text(
+                text = title,
+                style = PharmText.h1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            if (onBack != null) {
+                actions?.invoke()
             }
+            if (onBack == null && showThemeToggle) {
+                ThemeToggleButton()
+            }
+            if (onBack == null && showStatus && online) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(t.shapes.pill)
+                            .background(t.colors.successFg),
+                    )
+                    Text(pharmStrings.commonOnline, style = PharmText.meta)
+                }
+            }
+            if (onBack == null && user != null) {
+                if (compactUserMenu) {
+                    PharmActionMenu(
+                        actions = buildList {
+                            if (onProfileClick != null) {
+                                add(
+                                    PharmAction(
+                                        label = pharmStrings.profileTitle,
+                                        icon = PharmIcons.Person,
+                                        onClick = onProfileClick,
+                                    ),
+                                )
+                            }
+                            if (onLogout != null) {
+                                add(
+                                    PharmAction(
+                                        label = pharmStrings.commonLogout,
+                                        icon = PharmIcons.Logout,
+                                        tone = PharmActionTone.Danger,
+                                        onClick = onLogout,
+                                    ),
+                                )
+                            }
+                        }
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .padding(vertical = 12.dp)
+                            .background(t.colors.border),
+                    )
+                    UserChip(user = user, onLogout = onLogout, onProfileClick = onProfileClick)
+                }
+            }
+            trailing?.invoke()
         }
-        trailing?.invoke()
     }
 
     Box(

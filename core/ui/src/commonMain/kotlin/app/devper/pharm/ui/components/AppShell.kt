@@ -94,6 +94,8 @@ fun AppShell(
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val size = remember(maxWidth) { WindowSize.fromWidth(maxWidth) }
+        val useCompactShell = size.isCompact ||
+            (maxHeight < PharmBreakpoint.ShortViewport && maxWidth < PharmBreakpoint.DashboardCap)
 
         val sidebarItems = remember(items, role) {
             items
@@ -128,7 +130,7 @@ fun AppShell(
             LocalUnsavedChangesController provides unsavedChangesController,
         ) {
             GuardedSystemBack(isSubPage, onSubPageBack)
-            if (size.isCompact) {
+            if (useCompactShell) {
                 CompactShell(
                     title = title,
                     sidebarItems = sidebarItems,
@@ -178,6 +180,8 @@ private fun GuardedSystemBack(isSubPage: Boolean, onSubPageBack: (() -> Unit)?) 
 }
 
 @Composable
+@Suppress("DEPRECATION")
+@OptIn(ExperimentalComposeUiApi::class)
 private fun CompactShell(
     title: String,
     sidebarItems: List<SidebarNavItem>,
@@ -208,6 +212,7 @@ private fun CompactShell(
     val guardedProfileClick = onProfileClick?.let { action ->
         { unsavedChanges?.request(action) ?: action() }
     }
+    BackHandler(enabled = drawerOpen) { drawerOpen = false }
 
     Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
 

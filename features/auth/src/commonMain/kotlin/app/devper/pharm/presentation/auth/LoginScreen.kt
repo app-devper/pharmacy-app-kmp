@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,18 +77,19 @@ fun LoginScreen(
         }
     )
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundBrush),
     ) {
         val strings = pharmStrings
+        val compact = maxWidth < 360.dp
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(if (compact) 12.dp else 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -98,8 +100,8 @@ fun LoginScreen(
                     .clip(t.shapes.xl)
                     .background(t.colors.surface, t.shapes.xl)
                     .border(1.dp, t.colors.borderSubtle, t.shapes.xl)
-                    .padding(32.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
+                    .padding(if (compact) 20.dp else 32.dp),
+                verticalArrangement = Arrangement.spacedBy(if (compact) 16.dp else 20.dp),
             ) {
                 LocaleSwitcherRow(
                     strings = strings,

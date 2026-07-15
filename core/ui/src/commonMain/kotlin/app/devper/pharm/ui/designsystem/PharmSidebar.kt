@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -283,6 +284,7 @@ private fun SidebarFooter(
     onToggleCollapse: (() -> Unit)?,
 ) {
     val t = pharmTokens
+    val toggleLabel = if (collapsed) pharmStrings.commonExpandMenu else pharmStrings.commonCollapseMenu
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -294,6 +296,7 @@ private fun SidebarFooter(
             modifier = Modifier
                 .fillMaxWidth()
                 .pharmClickable(onClick = onToggleCollapse)
+                .semantics { contentDescription = toggleLabel }
                 .height(48.dp)
                 .padding(horizontal = if (collapsed) 0.dp else 16.dp),
             horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
@@ -301,7 +304,7 @@ private fun SidebarFooter(
         ) {
             Icon(
                 imageVector = PharmIcons.ChevronLeft,
-                contentDescription = if (collapsed) pharmStrings.commonExpandMenu else pharmStrings.commonCollapseMenu,
+                contentDescription = null,
                 tint = t.colors.sidebarFgMuted,
                 modifier = Modifier.size(18.dp).rotate(if (collapsed) 180f else 0f),
             )

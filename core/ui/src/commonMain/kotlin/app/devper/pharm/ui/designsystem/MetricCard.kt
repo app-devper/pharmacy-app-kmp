@@ -2,24 +2,16 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
@@ -31,54 +23,41 @@ import app.devper.pharm.ui.common.pharmClickable
 
 enum class MetricTint { Neutral, Success, Warning, Danger }
 
-private val METRIC_CARD_MIN_WIDTH = 150.dp
 private val METRIC_CARD_GAP = 8.dp
+private val METRIC_CARD_FOUR_COLUMN_WIDTH = 720.dp
 
 @Composable
 fun MetricCardRow(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val scrollState = rememberScrollState()
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val viewportPx = with(LocalDensity.current) { maxWidth.roundToPx() }
         Layout(
             content = content,
-            modifier = Modifier.horizontalScroll(scrollState),
         ) { measurables, _ ->
             val count = measurables.size
             if (count == 0) return@Layout layout(0, 0) {}
+            val columns = if (maxWidth >= METRIC_CARD_FOUR_COLUMN_WIDTH) minOf(4, count) else minOf(2, count)
+            val rows = (count + columns - 1) / columns
             val gapPx = METRIC_CARD_GAP.roundToPx()
-            val minWidthPx = METRIC_CARD_MIN_WIDTH.roundToPx()
-            val totalGap = gapPx * (count - 1)
-            val fillWidth = (viewportPx - totalGap) / count
-            val cardWidth = maxOf(minWidthPx, fillWidth)
+            val cardWidth = (viewportPx - gapPx * (columns - 1)) / columns
 
             val tallest = measurables.maxOf { it.maxIntrinsicHeight(cardWidth) }
             val placeables = measurables.map {
                 it.measure(Constraints.fixed(cardWidth, tallest))
             }
-            val rowWidth = cardWidth * count + totalGap
-            layout(rowWidth, tallest) {
-                var x = 0
-                placeables.forEach { placeable ->
-                    placeable.placeRelative(x, 0)
-                    x += cardWidth + gapPx
+            val rowHeight = tallest + gapPx
+            val totalHeight = tallest * rows + gapPx * (rows - 1)
+            layout(viewportPx, totalHeight) {
+                placeables.forEachIndexed { index, placeable ->
+                    val column = index % columns
+                    val row = index / columns
+                    placeable.placeRelative(
+                        x = column * (cardWidth + gapPx),
+                        y = row * rowHeight,
+                    )
                 }
-            }
-        }
-        if (scrollState.canScrollForward) {
-            val fadeTo = pharmTokens.colors.bgPage
-            val fadeBrush = remember(fadeTo) {
-                Brush.horizontalGradient(listOf(Color.Transparent, fadeTo))
-            }
-            Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(24.dp)
-                        .background(fadeBrush),
-                )
             }
         }
     }
