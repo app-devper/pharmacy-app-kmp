@@ -11,11 +11,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -35,7 +41,9 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -111,28 +119,44 @@ fun PharmSnackbarHostUi(
         }
     }
 
-    Box(
-        modifier = modifier.fillMaxSize().padding(24.dp),
-        contentAlignment = Alignment.BottomCenter,
-    ) {
-        AnimatedVisibility(
-            visible = current != null,
-            enter = fadeIn() + slideInVertically { it / 2 },
-            exit = fadeOut() + slideOutVertically { it / 2 },
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(
+                    start = snackbarHorizontalPadding(maxWidth),
+                    top = 24.dp,
+                    end = snackbarHorizontalPadding(maxWidth),
+                    bottom = snackbarBottomPadding(maxWidth),
+                ),
+            contentAlignment = Alignment.BottomCenter,
         ) {
-            current?.let { toast ->
-                ToastCard(
-                    toast = toast,
-                    onAction = {
-                        toast.action?.onClick?.invoke()
-                        current = null
-                    },
-                    onClose = { current = null },
-                )
+            AnimatedVisibility(
+                visible = current != null,
+                enter = fadeIn() + slideInVertically { it / 2 },
+                exit = fadeOut() + slideOutVertically { it / 2 },
+            ) {
+                current?.let { toast ->
+                    ToastCard(
+                        toast = toast,
+                        onAction = {
+                            toast.action?.onClick?.invoke()
+                            current = null
+                        },
+                        onClose = { current = null },
+                    )
+                }
             }
         }
     }
 }
+
+internal fun snackbarHorizontalPadding(width: Dp): Dp =
+    if (width < PharmBreakpoint.Stack) 12.dp else 24.dp
+
+internal fun snackbarBottomPadding(width: Dp): Dp =
+    if (width < PharmBreakpoint.Medium) 136.dp else 24.dp
 
 private data class ToastColors(
     val bg: Color,
@@ -159,61 +183,137 @@ private fun ToastCard(
 ) {
     val t = pharmTokens
     val colors = toastColors(toast)
-    Row(
+    BoxWithConstraints(
         modifier = Modifier
-            .widthIn(min = 240.dp, max = 480.dp)
+            .widthIn(max = 480.dp)
+            .fillMaxWidth()
             .clip(t.shapes.lg)
             .background(colors.bg)
             .border(1.dp, colors.fg.copy(alpha = 0.35f), t.shapes.lg)
             .padding(horizontal = 16.dp, vertical = 12.dp)
-            .semantics(mergeDescendants = true) {
+            .semantics {
                 liveRegion = when (toast) {
                     is PharmToast.Error, is PharmToast.Warning -> LiveRegionMode.Assertive
                     else -> LiveRegionMode.Polite
                 }
             },
+    ) {
+        if (shouldStackToast(maxWidth)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                ToastMessageRow(
+                    toast = toast,
+                    colors = colors,
+                    onClose = onClose,
+                )
+                toast.action?.let { action ->
+                    ToastActionButton(
+                        action = action,
+                        colors = colors,
+                        onClick = onAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                ToastIcon(colors)
+                ToastMessage(toast, colors, Modifier.weight(1f))
+                toast.action?.let { action ->
+                    ToastActionButton(action, colors, onAction)
+                }
+                ToastCloseButton(colors, onClose)
+            }
+        }
+    }
+}
+
+internal fun shouldStackToast(width: Dp): Boolean = width < PharmBreakpoint.Stack
+
+@Composable
+private fun ToastMessageRow(
+    toast: PharmToast,
+    colors: ToastColors,
+    onClose: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(
-            imageVector = colors.icon,
-            contentDescription = null,
-            tint = colors.fg,
-            modifier = Modifier.size(20.dp),
-        )
+        ToastIcon(colors)
+        ToastMessage(toast, colors, Modifier.weight(1f))
+        ToastCloseButton(colors, onClose)
+    }
+}
+
+@Composable
+private fun ToastIcon(colors: ToastColors) {
+    Icon(
+        imageVector = colors.icon,
+        contentDescription = null,
+        tint = colors.fg,
+        modifier = Modifier.size(20.dp),
+    )
+}
+
+@Composable
+private fun ToastMessage(
+    toast: PharmToast,
+    colors: ToastColors,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = toast.message,
+        style = PharmText.bodySm.copy(color = colors.fg),
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun ToastActionButton(
+    action: ToastAction,
+    colors: ToastColors,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val t = pharmTokens
+    Box(
+        modifier = modifier
+            .heightIn(min = 48.dp)
+            .clip(t.shapes.sm)
+            .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         Text(
-            text = toast.message,
-            style = PharmText.bodySm.copy(color = colors.fg),
-            modifier = Modifier.weight(1f),
+            text = action.label,
+            style = PharmText.buttonSm.copy(color = colors.fg),
         )
-        toast.action?.let { action ->
-            Box(
-                modifier = Modifier
-                    .heightIn(min = 48.dp)
-                    .clip(t.shapes.sm)
-                    .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onAction)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = action.label,
-                    style = PharmText.buttonSm.copy(color = colors.fg),
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(t.shapes.pill)
-                .pharmClickable(role = Role.Button, shape = t.shapes.pill, onClick = onClose),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = PharmIcons.Close,
-                contentDescription = pharmStrings.commonClose,
-                tint = colors.fg.copy(alpha = 0.7f),
-                modifier = Modifier.size(18.dp),
-            )
-        }
+    }
+}
+
+@Composable
+private fun ToastCloseButton(colors: ToastColors, onClose: () -> Unit) {
+    val t = pharmTokens
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(t.shapes.pill)
+            .pharmClickable(role = Role.Button, shape = t.shapes.pill, onClick = onClose),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = PharmIcons.Close,
+            contentDescription = pharmStrings.commonClose,
+            tint = colors.fg.copy(alpha = 0.7f),
+            modifier = Modifier.size(18.dp),
+        )
     }
 }

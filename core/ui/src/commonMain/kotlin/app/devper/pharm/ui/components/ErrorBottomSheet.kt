@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,7 +48,9 @@ fun ErrorBottomSheet(
     ) {
         Column(
             modifier = Modifier
+                .widthIn(max = 480.dp)
                 .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 24.dp)
                 .padding(top = 8.dp, bottom = 32.dp)
                 .semantics(mergeDescendants = true) {

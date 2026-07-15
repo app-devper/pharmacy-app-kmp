@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -24,6 +25,8 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -58,25 +61,49 @@ fun PharmDateRangeField(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            DateField(
-                label = fromLabel,
-                valueMillis = range.fromMillis,
-                formatDate = formatDate,
-                onClick = { pickingFrom = true },
-                modifier = Modifier.weight(1f),
-            )
-            DateField(
-                label = toLabel,
-                valueMillis = range.toMillis,
-                formatDate = formatDate,
-                onClick = { pickingTo = true },
-                modifier = Modifier.weight(1f),
-            )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            if (shouldStackDateRange(maxWidth)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    DateField(
+                        label = fromLabel,
+                        valueMillis = range.fromMillis,
+                        formatDate = formatDate,
+                        onClick = { pickingFrom = true },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    DateField(
+                        label = toLabel,
+                        valueMillis = range.toMillis,
+                        formatDate = formatDate,
+                        onClick = { pickingTo = true },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    DateField(
+                        label = fromLabel,
+                        valueMillis = range.fromMillis,
+                        formatDate = formatDate,
+                        onClick = { pickingFrom = true },
+                        modifier = Modifier.weight(1f),
+                    )
+                    DateField(
+                        label = toLabel,
+                        valueMillis = range.toMillis,
+                        formatDate = formatDate,
+                        onClick = { pickingTo = true },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
         }
         if (quickPeriods.isNotEmpty()) {
             FlowRow(
@@ -115,6 +142,8 @@ fun PharmDateRangeField(
         )
     }
 }
+
+internal fun shouldStackDateRange(width: Dp): Boolean = width < PharmBreakpoint.Stack
 
 @Composable
 private fun DateField(

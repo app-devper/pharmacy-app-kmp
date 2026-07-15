@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -88,7 +89,7 @@ fun PharmActionMenu(
         ) {
             Column(
                 modifier = Modifier
-                    .width(180.dp)
+                    .widthIn(min = 180.dp, max = 280.dp)
                     .padding(vertical = 4.dp),
             ) {
                 actions.forEach { action ->
@@ -119,9 +120,9 @@ private fun PharmActionRow(action: PharmAction, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(t.dimens.controlHeight)
+            .heightIn(min = t.dimens.controlHeight)
             .pharmClickable(enabled = action.enabled, onClick = onClick)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -136,6 +137,8 @@ private fun PharmActionRow(action: PharmAction, onClick: () -> Unit) {
         Text(
             text = action.label,
             style = PharmText.bodySm.copy(color = fg.copy(alpha = alpha)),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
