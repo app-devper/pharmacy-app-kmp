@@ -35,6 +35,8 @@ internal fun MovementsListToolbar(
 
     PharmListToolbar(
         modifier = modifier,
+        title = s.navMovements,
+        subtitle = s.movementsSubtitle,
         searchValue = state.drugName,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.movementsSearchPlaceholder,
@@ -62,6 +64,7 @@ internal fun MovementsListToolbar(
                     label = s.commonSearch,
                     onClick = callbacks.onApplyFilter,
                     size = PharmButtonSize.Sm,
+                    loading = state.loading,
                 )
                 PharmButton(
                     label = "Excel",
@@ -80,6 +83,7 @@ internal fun MovementsListToolbar(
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
                     loading = state.exporting,
+                    enabled = !state.loading,
                     leadingIcon = {
                         Icon(
                             imageVector = PharmIcons.Excel,

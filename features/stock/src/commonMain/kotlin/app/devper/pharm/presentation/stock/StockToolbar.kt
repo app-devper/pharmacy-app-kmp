@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmAction
+import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -56,19 +58,19 @@ internal fun StockToolbar(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                PharmButton(
-                    label = "Excel",
-                    onClick = { callbacks.onExportExcel(exportHeaders) },
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
-                )
-                PharmButton(
-                    label = pharmStrings.stockActionImport,
-                    onClick = callbacks.onImport,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.Imports, contentDescription = null) },
+                PharmActionMenu(
+                    actions = listOf(
+                        PharmAction(
+                            label = "Excel",
+                            onClick = { callbacks.onExportExcel(exportHeaders) },
+                            icon = PharmIcons.Excel,
+                        ),
+                        PharmAction(
+                            label = pharmStrings.stockActionImport,
+                            onClick = callbacks.onImport,
+                            icon = PharmIcons.Imports,
+                        ),
+                    ),
                 )
                 PharmButton(
                     label = pharmStrings.stockActionPurchase,

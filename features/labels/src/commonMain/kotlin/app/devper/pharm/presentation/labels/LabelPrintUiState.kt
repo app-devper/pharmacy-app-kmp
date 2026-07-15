@@ -14,6 +14,7 @@ data class LabelPrintUiState(
     val lines: List<LabelLine> = emptyList(),
     override val loading: Boolean = false,
     val printing: Boolean = false,
+    val confirmClear: Boolean = false,
     val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
 ) : LoadableUiState<LabelPrintUiState> {
@@ -30,6 +31,7 @@ data class LabelPrintUiState(
 
     val totalCopies: Int = lines.sumOf { it.copies.coerceAtLeast(0) }
     val canPrint: Boolean = !printing && totalCopies > 0
+    val canClear: Boolean = !printing && lines.isNotEmpty()
     val previewLine: LabelLine? = lines.firstOrNull()
 
     private fun Drug.matches(q: String): Boolean =

@@ -96,11 +96,13 @@ internal fun StockTable(
         PharmTableColumn(
             header = s.stockHeaderCategory,
             weight = 1.0f,
+            hideInCompact = true,
             cell = { drug -> TypeBadge(drug) },
         ),
         PharmTableColumn(
             header = s.stockHeaderReports,
             weight = 1.2f,
+            hideInCompact = true,
             cell = { drug -> KyBadgesCell(drug) },
         ),
         PharmTableColumn(
@@ -119,6 +121,7 @@ internal fun StockTable(
             header = s.importsFormHeaderSellPrice,
             weight = 0.8f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { drug ->
                 Text(
                     text = fmtBaht(drug.sellPrice.amount),

@@ -31,13 +31,10 @@ class ProfitViewModel(
 
     init { reload() }
 
-    fun onFromMillisChange(millis: Long?) {
-        setState { copy(dateRange = dateRange.withFromMillis(millis)) }
-        reload()
-    }
-
-    fun onToMillisChange(millis: Long?) {
-        setState { copy(dateRange = dateRange.withToMillis(millis)) }
+    fun onDateRangeChange(fromMillis: Long?, toMillis: Long?) {
+        val next = current.dateRange.withFromMillis(fromMillis).withToMillis(toMillis)
+        if (next == current.dateRange) return
+        setState { copy(dateRange = next) }
         reload()
     }
 

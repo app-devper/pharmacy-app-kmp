@@ -91,6 +91,7 @@ private fun SummaryCard(state: StockCountFormUiState, callbacks: StockCountFormC
                 onValueChange = callbacks.onNotesChange,
                 placeholder = s.stockCountFormNotePlaceholder,
                 singleLine = false,
+                enabled = !state.saving,
             )
         }
     }

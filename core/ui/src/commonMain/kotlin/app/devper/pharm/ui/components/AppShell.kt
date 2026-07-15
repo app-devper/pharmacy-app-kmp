@@ -26,14 +26,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -47,12 +51,14 @@ import app.devper.pharm.ui.designsystem.SidebarNavItem
 import app.devper.pharm.ui.designsystem.TopbarUser
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 data class NavItem(
     val route: String,
     val label: String,
     val icon: ImageVector,
     val admin: Boolean = false,
+    val sectionLabel: String = "",
 )
 
 @Immutable
@@ -83,6 +89,7 @@ fun AppShell(
     bottomNavItems: List<NavItem> = emptyList(),
     isSubPage: Boolean = false,
     onSubPageBack: (() -> Unit)? = null,
+    onUnsavedChangesChanged: (Boolean) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -91,7 +98,15 @@ fun AppShell(
         val sidebarItems = remember(items, role) {
             items
                 .filter { !it.admin || role.canSeeAdminNav() }
-                .map { SidebarNavItem(id = it.route, icon = it.icon, admin = it.admin, label = it.label) }
+                .map {
+                    SidebarNavItem(
+                        id = it.route,
+                        icon = it.icon,
+                        admin = it.admin,
+                        label = it.label,
+                        sectionLabel = it.sectionLabel,
+                    )
+                }
         }
 
         val bottomItems = remember(bottomNavItems, role) {
@@ -101,7 +116,18 @@ fun AppShell(
         }
 
         val subPageController = remember { SubPageBarController() }
-        CompositionLocalProvider(LocalSubPageBarController provides subPageController) {
+        val unsavedChangesController = remember { UnsavedChangesController() }
+        LaunchedEffect(unsavedChangesController.hasUnsavedChanges) {
+            onUnsavedChangesChanged(unsavedChangesController.hasUnsavedChanges)
+        }
+        DisposableEffect(Unit) {
+            onDispose { onUnsavedChangesChanged(false) }
+        }
+        CompositionLocalProvider(
+            LocalSubPageBarController provides subPageController,
+            LocalUnsavedChangesController provides unsavedChangesController,
+        ) {
+            GuardedSystemBack(isSubPage, onSubPageBack)
             if (size.isCompact) {
                 CompactShell(
                     title = title,
@@ -134,7 +160,20 @@ fun AppShell(
                     content = content,
                 )
             }
+            UnsavedChangesDialog(unsavedChangesController)
         }
+    }
+}
+
+@Suppress("DEPRECATION")
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun GuardedSystemBack(isSubPage: Boolean, onSubPageBack: (() -> Unit)?) {
+    val controller = LocalUnsavedChangesController.current ?: return
+    val subPage = LocalSubPageBarController.current?.content
+    val backAction = subPage?.onBack ?: onSubPageBack
+    BackHandler(enabled = isSubPage && controller.hasUnsavedChanges && backAction != null) {
+        controller.request { backAction?.invoke() }
     }
 }
 
@@ -157,6 +196,18 @@ private fun CompactShell(
     val t = pharmTokens
     var drawerOpen by remember { mutableStateOf(false) }
     val subPage = LocalSubPageBarController.current?.content
+    val unsavedChanges = LocalUnsavedChangesController.current
+    val backAction = subPage?.onBack ?: onSubPageBack
+    val guardedBack = backAction?.let { action ->
+        { unsavedChanges?.request(action) ?: action() }
+    }
+    val guardedNavigate: (String) -> Unit = { id ->
+        unsavedChanges?.request { onNavigate(id) } ?: onNavigate(id)
+    }
+    val guardedLogout = { unsavedChanges?.request(onLogout) ?: onLogout() }
+    val guardedProfileClick = onProfileClick?.let { action ->
+        { unsavedChanges?.request(action) ?: action() }
+    }
 
     Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
 
@@ -174,11 +225,11 @@ private fun CompactShell(
                 showThemeToggle = false,
                 showStatus = false,
                 compactUserMenu = !isSubPage,
-                onBack = if (isSubPage) subPage?.onBack ?: onSubPageBack else null,
+                onBack = if (isSubPage) guardedBack else null,
                 actions = if (isSubPage) subPage?.actions else null,
                 onHamburger = { drawerOpen = true },
-                onLogout = onLogout,
-                onProfileClick = onProfileClick,
+                onLogout = guardedLogout,
+                onProfileClick = guardedProfileClick,
                 trailing = {
                     if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount, onClick = onSyncClick)
                 },
@@ -188,7 +239,7 @@ private fun CompactShell(
                 PharmBottomNav(
                     items = bottomItems,
                     activeId = currentRoute,
-                    onSelect = onNavigate,
+                    onSelect = guardedNavigate,
                     moreLabel = pharmStrings.commonMenu,
                     moreIcon = PharmIcons.Hamburger,
                     onMore = { drawerOpen = true },
@@ -208,7 +259,7 @@ private fun CompactShell(
                 activeId = currentRoute,
                 onSelect = { id ->
                     drawerOpen = false
-                    onNavigate(id)
+                    guardedNavigate(id)
                 },
                 items = sidebarItems,
             )
@@ -234,6 +285,18 @@ private fun ExpandedShell(
     val t = pharmTokens
     val sidebar = LocalSidebarState.current
     val subPage = LocalSubPageBarController.current?.content
+    val unsavedChanges = LocalUnsavedChangesController.current
+    val backAction = subPage?.onBack ?: onSubPageBack
+    val guardedBack = backAction?.let { action ->
+        { unsavedChanges?.request(action) ?: action() }
+    }
+    val guardedNavigate: (String) -> Unit = { id ->
+        unsavedChanges?.request { onNavigate(id) } ?: onNavigate(id)
+    }
+    val guardedLogout = { unsavedChanges?.request(onLogout) ?: onLogout() }
+    val guardedProfileClick = onProfileClick?.let { action ->
+        { unsavedChanges?.request(action) ?: action() }
+    }
 
     Row(
         modifier = Modifier
@@ -243,7 +306,7 @@ private fun ExpandedShell(
 
         PharmSidebar(
             activeId = currentRoute,
-            onSelect = onNavigate,
+            onSelect = guardedNavigate,
             items = sidebarItems,
             collapsed = sidebar.collapsed,
             onToggleCollapse = if (sidebar.canCollapse) sidebar.toggle else null,
@@ -263,10 +326,10 @@ private fun ExpandedShell(
             PharmTopbar(
                 title = if (isSubPage) subPage?.title ?: title else title,
                 user = if (isSubPage) null else user,
-                onBack = if (isSubPage) subPage?.onBack ?: onSubPageBack else null,
+                onBack = if (isSubPage) guardedBack else null,
                 actions = if (isSubPage) subPage?.actions else null,
-                onLogout = onLogout,
-                onProfileClick = onProfileClick,
+                onLogout = guardedLogout,
+                onProfileClick = guardedProfileClick,
                 trailing = {
                     if (pendingSyncCount > 0) PendingSyncBadge(count = pendingSyncCount, onClick = onSyncClick)
                 },
@@ -287,7 +350,7 @@ private fun PendingSyncBadge(count: Int, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .clip(t.shapes.md)
-            .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+            .pharmClickable(role = androidx.compose.ui.semantics.Role.Button, shape = t.shapes.md, onClick = onClick)
             .background(t.colors.dangerBg)
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,

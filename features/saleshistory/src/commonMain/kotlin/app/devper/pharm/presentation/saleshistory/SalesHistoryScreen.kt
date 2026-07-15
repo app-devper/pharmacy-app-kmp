@@ -44,6 +44,7 @@ fun SalesHistoryScreen(
             ReturnSaleSheet(
                 sale = sale,
                 items = state.items,
+                itemsLoading = state.itemsLoading,
                 draft = state.returnDraft,
                 reason = state.returnReason,
                 submitting = state.submittingReturn,

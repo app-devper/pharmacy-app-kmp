@@ -2,25 +2,18 @@ package app.devper.pharm.presentation.sell.components
 
 import app.devper.pharm.ui.i18n.pharmStrings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,9 +21,11 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmIconButton
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 fun CartCustomerPill(
@@ -47,7 +42,7 @@ fun CartCustomerPill(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onPick)
+            .pharmClickable(role = Role.Button, onClick = onPick)
             .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -70,16 +65,14 @@ fun CartCustomerPill(
                     style = PharmText.micro.copy(color = t.colors.fg2),
                 )
             }
-            val clearCustomerDesc = s.sellCustomerClear
             if (customer != null) {
-                IconButton(
+                PharmIconButton(
+                    contentDescription = s.sellCustomerClear,
                     onClick = onClear,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .semantics { contentDescription = clearCustomerDesc },
+                    modifier = Modifier.size(48.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = PharmIcons.Close,
                         contentDescription = null,
                         tint = t.colors.fg2,
                         modifier = Modifier.size(16.dp),
@@ -90,7 +83,7 @@ fun CartCustomerPill(
                     ShortcutHint(label = "F3", modifier = Modifier.padding(end = 6.dp))
                 }
                 Icon(
-                    Icons.Rounded.KeyboardArrowRight,
+                    PharmIcons.ChevronRight,
                     contentDescription = null,
                     tint = t.colors.accent,
                     modifier = Modifier.size(20.dp),

@@ -53,6 +53,10 @@ object CommonStringsEn : CommonStrings {
     override val commonCost = "Cost"
 
     override val commonCancel = "Cancel"
+    override val commonUnsavedChangesTitle = "Unsaved changes"
+    override val commonUnsavedChangesMessage = "Your changes will be lost if you leave now."
+    override val commonKeepEditing = "Keep editing"
+    override val commonDiscardChanges = "Discard changes"
     override val commonSave = "Save"
     override val commonDelete = "Delete"
     override val commonEdit = "Edit"

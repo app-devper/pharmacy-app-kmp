@@ -39,16 +39,40 @@ class EodViewModel(
     }
 
     fun onDateChange(v: String) = setState {
-        copy(date = v, closed = false, closeResult = null, closedTemplate = null)
+        copy(
+            date = v,
+            validationRequested = false,
+            report = null,
+            closed = false,
+            closeResult = null,
+            closedTemplate = null,
+            errorState = null,
+        )
     }
 
-    fun applyDate() = reload()
+    fun applyDate() {
+        if (!current.dateValid) {
+            setState { copy(validationRequested = true) }
+            return
+        }
+        reload()
+    }
 
-    fun requestCloseDay() = setState { copy(confirmClose = true) }
+    fun requestCloseDay() {
+        if (!current.dateValid || current.report == null) {
+            setState { copy(validationRequested = !current.dateValid) }
+            return
+        }
+        setState { copy(confirmClose = true) }
+    }
     fun cancelCloseDay() = setState { copy(confirmClose = false) }
 
     fun confirmCloseDay() {
         val s = current
+        if (!s.dateValid || s.report == null) {
+            setState { copy(confirmClose = false, validationRequested = !s.dateValid) }
+            return
+        }
         setState { copy(confirmClose = false, closing = true, errorState = null) }
         launchResult(
             block = { closeEod(CloseEodParam(date = s.date.toLocalDateOrNull())) },
@@ -94,7 +118,16 @@ class EodViewModel(
         setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
-            onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
+            onSuccess = { rep ->
+                setState {
+                    copy(
+                        date = rep.date.toString(),
+                        validationRequested = false,
+                        loading = false,
+                        report = rep,
+                    )
+                }
+            },
             onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
         )
     }

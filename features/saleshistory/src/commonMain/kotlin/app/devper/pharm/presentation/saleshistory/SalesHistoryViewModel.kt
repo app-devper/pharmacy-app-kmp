@@ -83,7 +83,16 @@ class SalesHistoryViewModel(
     fun onStartReturn(sale: SaleSummary) {
         if (sale.voided) return
         val targetId = sale.id
-        setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
+        setState {
+            copy(
+                selected = sale,
+                items = emptyList(),
+                itemsLoading = true,
+                returnSheetOpen = true,
+                returnDraft = emptyMap(),
+                returnReason = "",
+            )
+        }
         launchResult(
             block = { getItems(targetId) },
             onSuccess = { items ->
@@ -101,7 +110,14 @@ class SalesHistoryViewModel(
             },
             onFailure = { e ->
                 if (current.selected?.id != targetId) return@launchResult
-                setState { copy(itemsLoading = false, errorState = SalesHistoryUiStateError.LoadItemsFailed(e)) }
+                setState {
+                    copy(
+                        itemsLoading = false,
+                        returnSheetOpen = false,
+                        selected = null,
+                        errorState = SalesHistoryUiStateError.LoadItemsFailed(e),
+                    )
+                }
             },
         )
     }
@@ -116,7 +132,14 @@ class SalesHistoryViewModel(
     }
 
     fun onCloseReturnSheet() = setState {
-        copy(returnSheetOpen = false, returnDraft = emptyMap(), returnReason = "")
+        copy(
+            selected = null,
+            items = emptyList(),
+            itemsLoading = false,
+            returnSheetOpen = false,
+            returnDraft = emptyMap(),
+            returnReason = "",
+        )
     }
 
     fun onReturnReasonChange(value: String) = setState { copy(returnReason = value) }
@@ -151,4 +174,3 @@ class SalesHistoryViewModel(
         )
     }
 }
-

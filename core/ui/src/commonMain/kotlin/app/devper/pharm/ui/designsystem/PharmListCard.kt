@@ -2,7 +2,6 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 fun PharmListCard(
@@ -43,7 +43,7 @@ fun PharmListCard(
         .clip(shape)
         .background(t.colors.surface, shape)
         .border(1.dp, borderColor, shape)
-        .let { if (onClick != null) it.clickable(role = Role.Button, onClick = onClick) else it }
+        .let { if (onClick != null) it.pharmClickable(role = Role.Button, shape = shape, onClick = onClick) else it }
 
     Row(
         modifier = surface.padding(12.dp),

@@ -40,10 +40,19 @@ fun LowStockContent(
     callbacks: LowStockCallbacks = LowStockCallbacks(),
 ) {
     val s = pharmStrings
+    val visible = state.filtered
+    val searching = state.query.isNotBlank()
 
     PharmListScaffold(
-        toolbar = { LowStockToolbar(onReload = callbacks.onReload) },
-        resultLine = { PharmListResultLine(total = state.drugs.size, noun = s.planningCountNoun) },
+        toolbar = { LowStockToolbar(state = state, callbacks = callbacks) },
+        resultLine = {
+            PharmListResultLine(
+                total = state.drugs.size,
+                noun = s.planningCountNoun,
+                visible = visible.size,
+                searching = searching,
+            )
+        },
     ) {
         when {
             state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
@@ -53,7 +62,12 @@ fun LowStockContent(
                     title = s.planningLowStockEmpty,
                     subtitle = s.planningBelowMinEmpty,
                 )
-            else -> LowStockTable(drugs = state.drugs, callbacks = callbacks)
+            visible.isEmpty() ->
+                PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = s.planningLowStockNotFound,
+                )
+            else -> LowStockTable(drugs = visible, callbacks = callbacks)
         }
     }
 
@@ -61,15 +75,24 @@ fun LowStockContent(
 }
 
 @Composable
-private fun LowStockToolbar(onReload: () -> Unit) {
+private fun LowStockToolbar(
+    state: LowStockUiState,
+    callbacks: LowStockCallbacks,
+) {
     val s = pharmStrings
     PharmListToolbar(
+        title = s.planningLowStockTitle,
+        subtitle = s.planningBelowMinTitle,
+        searchValue = state.query,
+        onSearchChange = callbacks.onQueryChange,
+        searchPlaceholder = s.planningLowStockSearchPlaceholder,
         actions = {
             PharmButton(
                 label = s.planningRefreshCta,
-                onClick = onReload,
+                onClick = callbacks.onReload,
                 size = PharmButtonSize.Sm,
                 variant = PharmButtonVariant.Outline,
+                loading = state.loading,
                 leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
             )
         },

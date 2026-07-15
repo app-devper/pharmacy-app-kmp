@@ -34,6 +34,7 @@ import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.format.isoDateTimeToBuddhist
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -58,6 +59,16 @@ fun DrugHistoryContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
+            if (state.drugName.isNotBlank()) {
+                Text(
+                    text = state.drugName,
+                    style = PharmText.h2,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            }
             PharmListResultLine(total = state.items.size, noun = pharmStrings.stockHistoryCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
@@ -115,7 +126,7 @@ private fun DrugHistoryTable(items: List<StockMovement>) {
 private fun TimeCell(m: StockMovement) {
     val t = pharmTokens
     Text(
-        text = m.at.take(19).replace('T', ' '),
+        text = isoDateTimeToBuddhist(m.at),
         style = PharmText.micro.copy(color = t.colors.fg3, fontFeatureSettings = "tnum"),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import app.devper.pharm.domain.model.KyFormType
+import app.devper.pharm.common.platform.UnsavedChangesHandler
 import app.devper.pharm.presentation.AppViewModel
 import app.devper.pharm.presentation.bulkimport.BulkImport
 import app.devper.pharm.presentation.bulkimport.bulkImportNav
@@ -83,6 +84,7 @@ import app.devper.pharm.ui.designsystem.TopbarUser
 import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.pharmStrings
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 import kotlin.reflect.KClass
 
 @Serializable
@@ -95,33 +97,40 @@ private data class MainNavEntry(
     val label: (PharmStrings) -> String,
     val icon: ImageVector,
     val admin: Boolean = false,
+    val sectionLabel: (PharmStrings) -> String,
 )
 
 private val MAIN_NAV_TABLE: List<MainNavEntry> = listOf(
-    MainNavEntry(Sell, { it.navSell }, PharmIcons.Sell),
-    MainNavEntry(SalesHistory, { it.navSalesHistory }, PharmIcons.SalesHistory),
-    MainNavEntry(Stock, { it.navStock }, PharmIcons.Stock),
-    MainNavEntry(StockCounts, { it.navStockCounts }, PharmIcons.StockCount, admin = true),
-    MainNavEntry(Expiry, { it.navExpiry }, PharmIcons.Expiry, admin = true),
-    MainNavEntry(LabelPrint, { it.navLabelPrint }, PharmIcons.Print, admin = true),
-    MainNavEntry(Movements, { it.navMovements }, PharmIcons.Movements),
-    MainNavEntry(OfflineSync, { it.navOfflineSync }, PharmIcons.OfflineSync),
-    MainNavEntry(Imports, { it.navImports }, PharmIcons.Imports, admin = true),
-    MainNavEntry(Suppliers, { it.navSuppliers }, PharmIcons.Suppliers, admin = true),
-    MainNavEntry(Customers, { it.navCustomers }, PharmIcons.Customers),
-    MainNavEntry(Reports, { it.navReports }, PharmIcons.Reports),
-    MainNavEntry(Profit, { it.navProfit }, PharmIcons.Profit, admin = true),
-    MainNavEntry(Ky9, { it.navKyForms }, PharmIcons.KyForms, admin = true),
-    MainNavEntry(Users, { it.navUsers }, PharmIcons.Users, admin = true),
-    MainNavEntry(SettingsRoute, { it.navSettings }, PharmIcons.Settings, admin = true),
-    MainNavEntry(Help, { it.navHelp }, PharmIcons.Help),
+    MainNavEntry(Sell, { it.navSell }, PharmIcons.Sell, sectionLabel = { it.navGroupSales }),
+    MainNavEntry(SalesHistory, { it.navSalesHistory }, PharmIcons.SalesHistory, sectionLabel = { it.navGroupSales }),
+    MainNavEntry(Customers, { it.navCustomers }, PharmIcons.Customers, sectionLabel = { it.navGroupSales }),
+    MainNavEntry(Stock, { it.navStock }, PharmIcons.Stock, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(StockCounts, { it.navStockCounts }, PharmIcons.StockCount, admin = true, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(Expiry, { it.navExpiry }, PharmIcons.Expiry, admin = true, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(LabelPrint, { it.navLabelPrint }, PharmIcons.Print, admin = true, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(Movements, { it.navMovements }, PharmIcons.Movements, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(OfflineSync, { it.navOfflineSync }, PharmIcons.OfflineSync, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(Imports, { it.navImports }, PharmIcons.Imports, admin = true, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(Suppliers, { it.navSuppliers }, PharmIcons.Suppliers, admin = true, sectionLabel = { it.navGroupInventory }),
+    MainNavEntry(Reports, { it.navReports }, PharmIcons.Reports, sectionLabel = { it.navGroupReports }),
+    MainNavEntry(Profit, { it.navProfit }, PharmIcons.Profit, admin = true, sectionLabel = { it.navGroupReports }),
+    MainNavEntry(Ky9, { it.navKyForms }, PharmIcons.KyForms, admin = true, sectionLabel = { it.navGroupReports }),
+    MainNavEntry(Users, { it.navUsers }, PharmIcons.Users, admin = true, sectionLabel = { it.navGroupSystem }),
+    MainNavEntry(SettingsRoute, { it.navSettings }, PharmIcons.Settings, admin = true, sectionLabel = { it.navGroupSystem }),
+    MainNavEntry(Help, { it.navHelp }, PharmIcons.Help, sectionLabel = { it.navGroupSystem }),
 )
 
 @Composable
 private fun rememberMainNavItems(): List<NavItem> {
     val strings = pharmStrings
     return MAIN_NAV_TABLE.map { entry ->
-        NavItem(route = k(entry.route::class), label = entry.label(strings), icon = entry.icon, admin = entry.admin)
+        NavItem(
+            route = k(entry.route::class),
+            label = entry.label(strings),
+            icon = entry.icon,
+            admin = entry.admin,
+            sectionLabel = entry.sectionLabel(strings),
+        )
     }
 }
 
@@ -216,6 +225,7 @@ private fun destInfoFor(route: String?): Pair<String, String?> {
 
 @Composable
 fun MainShell(appViewModel: AppViewModel) {
+    val unsavedChangesHandler = koinInject<UnsavedChangesHandler>()
     val state by appViewModel.state.collectAsStateWithLifecycle()
     val nestedNav = rememberNavController()
     val backEntry by nestedNav.currentBackStackEntryAsState()
@@ -259,6 +269,7 @@ fun MainShell(appViewModel: AppViewModel) {
         bottomNavItems = bottomNavItems,
         isSubPage = isSubPage,
         onSubPageBack = { nestedNav.popBackStack() },
+        onUnsavedChangesChanged = unsavedChangesHandler::setHasUnsavedChanges,
     ) {
         NavHost(navController = nestedNav, startDestination = Sell) {
             sellNav(nestedNav)

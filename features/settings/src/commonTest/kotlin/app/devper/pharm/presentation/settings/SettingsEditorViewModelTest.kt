@@ -20,6 +20,18 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsEditorViewModelTest {
 
+    @Test
+    fun form_validation_routes_to_the_first_invalid_tab() {
+        val valid = SettingsFormFields(storeName = "Store")
+        assertTrue(valid.valid)
+
+        assertEquals(SettingsTab.Store, valid.copy(timezone = "Bangkok").firstInvalidTab)
+        assertEquals(SettingsTab.Receipt, valid.copy(receiptPaperWidth = "59").firstInvalidTab)
+        assertEquals(SettingsTab.Stock, valid.copy(stockReorderDays = "0").firstInvalidTab)
+        assertEquals(SettingsTab.Stock, valid.copy(stockReorderLookahead = "181").firstInvalidTab)
+        assertEquals(SettingsTab.Stock, valid.copy(stockExpiringDays = "").firstInvalidTab)
+    }
+
     private class StubPrinter(private val result: Boolean = true) : app.devper.pharm.common.print.ReceiptPrinter {
         var printed: app.devper.pharm.common.print.ReceiptTemplate? = null
         override fun print(template: app.devper.pharm.common.print.ReceiptTemplate): Boolean {
@@ -141,6 +153,21 @@ class SettingsEditorViewModelTest {
         assertNotNull(repo.lastUpdate)
         assertIs<CommonUiStateMessage.Saved>(model.state.value.messageState)
         assertFalse(model.state.value.saving)
+    }
+
+    @Test
+    fun submit_does_not_replace_invalid_stock_values_with_defaults() = runVmTest { d ->
+        val repo = FakeSettingsRepository()
+        val model = vm(repo, d)
+        advanceUntilIdle()
+        model.onStoreName("Valid Store")
+        model.onStockReorderDays("")
+
+        assertFalse(model.state.value.canSave)
+        model.submit()
+        advanceUntilIdle()
+
+        assertNull(repo.lastUpdate)
     }
 
     @Test

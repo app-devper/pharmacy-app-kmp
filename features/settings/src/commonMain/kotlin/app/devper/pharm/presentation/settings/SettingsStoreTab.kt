@@ -13,11 +13,29 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.i18n.pharmStrings
 
 @Composable
-internal fun SettingsStoreTab(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
+internal fun SettingsStoreTab(
+    state: SettingsEditorUiState,
+    editor: SettingsEditorCallbacks,
+    showValidation: Boolean,
+    focus: SettingsFocusRequesters,
+) {
     val f = state.form
     val s = pharmStrings
-    SettingsLabeledField(label = s.settingsStoreNameLabel) {
-        SettingsFormField(value = f.storeName, onValueChange = editor.onStoreName, placeholder = s.settingsStoreNamePlaceholder)
+    val storeNameError = if (showValidation && !f.storeNameValid) {
+        s.validationRequired(s.settingsStoreNameLabel)
+    } else null
+    SettingsLabeledField(
+        label = s.settingsStoreNameLabel,
+        required = true,
+        error = storeNameError,
+    ) {
+        SettingsFormField(
+            value = f.storeName,
+            onValueChange = editor.onStoreName,
+            placeholder = s.settingsStoreNamePlaceholder,
+            isError = storeNameError != null,
+            focusRequester = focus.storeName,
+        )
     }
     SettingsLabeledField(label = s.settingsStoreAddress) {
         SettingsFormField(value = f.storeAddress, onValueChange = editor.onStoreAddress)
@@ -44,7 +62,17 @@ internal fun SettingsStoreTab(state: SettingsEditorUiState, editor: SettingsEdit
             }
         }
     }
-    SettingsLabeledField(label = s.settingsStoreTimezone) {
-        SettingsFormField(value = f.timezone, onValueChange = editor.onTimezone, placeholder = "Asia/Bangkok")
+    val timezoneError = if (showValidation && !f.timezoneValid) s.settingsStoreTimezoneInvalid else null
+    SettingsLabeledField(
+        label = s.settingsStoreTimezone,
+        error = timezoneError,
+    ) {
+        SettingsFormField(
+            value = f.timezone,
+            onValueChange = editor.onTimezone,
+            placeholder = "Asia/Bangkok",
+            isError = timezoneError != null,
+            focusRequester = focus.timezone,
+        )
     }
 }

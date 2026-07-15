@@ -23,6 +23,8 @@ class LowStockViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun onQueryChange(value: String) = setState { copy(query = value) }
+
     fun reload() {
         setState { copy(loading = true, errorState = null) }
         launchResult(

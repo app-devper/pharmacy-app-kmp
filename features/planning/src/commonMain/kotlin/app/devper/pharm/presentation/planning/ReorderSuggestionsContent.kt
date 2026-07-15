@@ -46,12 +46,17 @@ fun ReorderSuggestionsContent(
             title = s.planningTitle,
             onBack = onBack,
             actions = {
-                if (state.suggestions.isNotEmpty()) {
+                if (state.remainingSuggestions.isNotEmpty()) {
                     PharmButton(
-                        label = s.planningAddAllCta,
+                        label = if (state.addedSuggestionCount == 0) {
+                            s.planningAddAllCta
+                        } else {
+                            s.planningAddRemainingCta(state.remainingSuggestions.size)
+                        },
                         onClick = callbacks.onAddAll,
                         size = PharmButtonSize.Sm,
                         variant = PharmButtonVariant.Outline,
+                        enabled = !state.loading,
                         leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
                     )
                 }
@@ -68,6 +73,8 @@ fun ReorderSuggestionsContent(
                     onClick = callbacks.onReload,
                     size = PharmButtonSize.Sm,
                     variant = PharmButtonVariant.Outline,
+                    enabled = !state.loading,
+                    loading = state.loading,
                     leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                 )
             },
@@ -91,7 +98,11 @@ fun ReorderSuggestionsContent(
                         title = s.planningReorderEmptyTitle,
                         subtitle = s.planningReorderEmpty,
                     )
-                else -> ReorderSuggestionsTable(suggestions = state.suggestions, callbacks = callbacks)
+                else -> ReorderSuggestionsTable(
+                    suggestions = state.suggestions,
+                    draftDrugIds = state.draftDrugIds,
+                    callbacks = callbacks,
+                )
             }
         }
     }

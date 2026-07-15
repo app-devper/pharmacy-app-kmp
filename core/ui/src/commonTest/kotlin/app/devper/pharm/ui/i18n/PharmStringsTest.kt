@@ -131,6 +131,8 @@ class PharmStringsTablesTest {
         check("planningRefreshCta", PharmStringsTh.planningRefreshCta, PharmStringsEn.planningRefreshCta, mismatches)
         check("planningAddPoCta", PharmStringsTh.planningAddPoCta, PharmStringsEn.planningAddPoCta, mismatches)
         check("planningLowStockTitle", PharmStringsTh.planningLowStockTitle, PharmStringsEn.planningLowStockTitle, mismatches)
+        check("planningLowStockSearchPlaceholder", PharmStringsTh.planningLowStockSearchPlaceholder, PharmStringsEn.planningLowStockSearchPlaceholder, mismatches)
+        check("planningLowStockNotFound", PharmStringsTh.planningLowStockNotFound, PharmStringsEn.planningLowStockNotFound, mismatches)
         check("planningReorderTitle", PharmStringsTh.planningReorderTitle, PharmStringsEn.planningReorderTitle, mismatches)
         check("planningHeaderMin", PharmStringsTh.planningHeaderMin, PharmStringsEn.planningHeaderMin, mismatches)
         check("planningHeaderRecommend", PharmStringsTh.planningHeaderRecommend, PharmStringsEn.planningHeaderRecommend, mismatches)

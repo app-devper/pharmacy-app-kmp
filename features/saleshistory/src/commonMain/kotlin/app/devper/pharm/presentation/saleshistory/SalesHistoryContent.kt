@@ -25,7 +25,7 @@ fun SalesHistoryContent(
     callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
 ) {
     val s = pharmStrings
-    val searching = state.dateRange.from.isNotBlank() || state.dateRange.to.isNotBlank() || state.query.isNotBlank()
+    val searching = state.query.isNotBlank()
 
     PharmListScaffold(
         toolbar = { SalesHistoryListToolbar(state = state, callbacks = callbacks) },
@@ -41,8 +41,8 @@ fun SalesHistoryContent(
         when {
             state.loading && state.sales.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
             state.sales.isEmpty() -> PharmEmptyState(
-                icon = PharmIcons.SalesHistory,
-                title = s.salesHistoryEmptyDateRange,
+                icon = if (searching) PharmIcons.Search else PharmIcons.SalesHistory,
+                title = if (searching) s.salesHistoryEmptySearching else s.salesHistoryEmptyDateRange,
             )
             else -> SalesHistoryTable(
                 sales = state.sales,

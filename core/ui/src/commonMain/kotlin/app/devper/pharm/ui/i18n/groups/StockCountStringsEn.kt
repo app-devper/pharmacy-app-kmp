@@ -24,6 +24,9 @@ object StockCountStringsEn : StockCountStrings {
     override val stockCountFormUnitLabel: (String) -> String = { unit -> "Unit: $unit" }
     override val stockCountFormChangedItems = "Changed items"
     override val stockCountFormFillSystem = "Fill from system"
+    override val stockCountFormFillConfirmTitle = "Replace counted quantities?"
+    override val stockCountFormFillConfirmMessage = "Every entered quantity will be replaced with the current system stock"
+    override val stockCountFormFillConfirmCta = "Replace all"
     override val stockCountFormSummaryAll = "All"
     override val stockCountFormSummaryAdjusted = "Adjusted"
     override val stockCountFormSummaryNotAdjusted = "Not adjusted"
@@ -32,6 +35,9 @@ object StockCountStringsEn : StockCountStrings {
     override val stockCountFormDiscrepancyTotal = "Total delta (abs)"
     override val stockCountFormTopDiscrepancy: (Int) -> String = { n -> "Top $n discrepancies" }
     override val stockCountFormClearDraftCta = "Clear draft"
+    override val stockCountFormClearConfirmTitle = "Clear this draft?"
+    override val stockCountFormClearConfirmMessage = "All counted quantities and the note will be removed. This cannot be undone"
+    override val stockCountFormClearConfirmCta = "Clear draft"
     override val stockCountFormSaveRoundCta = "Save this round"
     override val stockCountFormResultLine: (Int, Int, Int) -> String = { total, printed, counted -> "Total $total items · printed $printed · counted $counted" }
     override val stockCountFormStatusLine: (Int, Int, Int, Int) -> String = { total, printed, changed, absDelta -> "Total $total items · printed $printed · changed $changed · total delta $absDelta" }
@@ -39,6 +45,7 @@ object StockCountStringsEn : StockCountStrings {
     override val stockCountFormSummaryDelta: (Int, Int) -> String = { changed, total -> "Changed $changed · total delta $total" }
     override val stockCountFormEmptySearching = "No drugs match the search"
     override val stockCountFormEmptyDefault = "No drugs yet"
+    override val stockCountFormInvalidCount = "Enter 0 or more"
     override val stockCountFormConfirmTitle = "Confirm stock adjustment"
     override val stockCountFormConfirmMessage = "The system will adjust stock to the counted quantity — once confirmed this cannot be undone"
     override val stockCountFormConfirmCta = "Confirm"

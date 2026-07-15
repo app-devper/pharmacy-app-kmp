@@ -121,6 +121,7 @@ class ImportFormViewModelTest {
         assertEquals("Amoxicillin", items[0].drugName)
         assertEquals("100", items[0].qty)
         assertTrue(consumed.state.value.isEmpty())
+        assertTrue(vm.state.value.hasUnsavedChanges)
     }
 
     @Test
@@ -156,6 +157,7 @@ class ImportFormViewModelTest {
         assertEquals("100", s.form.items[0].qty)
         assertFalse(s.readOnly)
         assertTrue(s.isEdit)
+        assertFalse(s.hasUnsavedChanges)
     }
 
     @Test
@@ -170,6 +172,7 @@ class ImportFormViewModelTest {
         advanceUntilIdle()
         assertTrue(vm.state.value.readOnly)
         assertFalse(vm.state.value.canSubmit)
+        assertFalse(vm.state.value.hasUnsavedChanges)
     }
 
     @Test

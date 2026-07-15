@@ -53,6 +53,10 @@ interface CommonStrings {
     val commonCost: String
 
     val commonCancel: String
+    val commonUnsavedChangesTitle: String
+    val commonUnsavedChangesMessage: String
+    val commonKeepEditing: String
+    val commonDiscardChanges: String
     val commonSave: String
     val commonDelete: String
     val commonEdit: String

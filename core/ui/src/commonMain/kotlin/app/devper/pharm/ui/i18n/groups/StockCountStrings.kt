@@ -24,6 +24,9 @@ interface StockCountStrings {
     val stockCountFormUnitLabel: (String) -> String
     val stockCountFormChangedItems: String
     val stockCountFormFillSystem: String
+    val stockCountFormFillConfirmTitle: String
+    val stockCountFormFillConfirmMessage: String
+    val stockCountFormFillConfirmCta: String
     val stockCountFormSummaryAll: String
     val stockCountFormSummaryAdjusted: String
     val stockCountFormSummaryNotAdjusted: String
@@ -32,6 +35,9 @@ interface StockCountStrings {
     val stockCountFormDiscrepancyTotal: String
     val stockCountFormTopDiscrepancy: (Int) -> String
     val stockCountFormClearDraftCta: String
+    val stockCountFormClearConfirmTitle: String
+    val stockCountFormClearConfirmMessage: String
+    val stockCountFormClearConfirmCta: String
     val stockCountFormSaveRoundCta: String
     val stockCountFormResultLine: (Int, Int, Int) -> String
     val stockCountFormStatusLine: (Int, Int, Int, Int) -> String
@@ -39,6 +45,7 @@ interface StockCountStrings {
     val stockCountFormSummaryDelta: (Int, Int) -> String
     val stockCountFormEmptySearching: String
     val stockCountFormEmptyDefault: String
+    val stockCountFormInvalidCount: String
     val stockCountFormConfirmTitle: String
     val stockCountFormConfirmMessage: String
     val stockCountFormConfirmCta: String

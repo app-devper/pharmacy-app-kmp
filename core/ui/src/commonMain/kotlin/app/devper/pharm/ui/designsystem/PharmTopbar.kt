@@ -3,7 +3,6 @@ package app.devper.pharm.ui.designsystem
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -28,6 +28,7 @@ import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.common.pharmClickable
 
 data class TopbarUser(
     val initial: String,
@@ -144,9 +145,9 @@ private fun ThemeToggleButton() {
     if (!controller.canToggle) return
     Box(
         modifier = Modifier
-            .size(44.dp)
+            .size(t.dimens.controlHeight)
             .clip(t.shapes.sm)
-            .clickable(role = Role.Button, onClick = controller.toggle),
+            .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = controller.toggle),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -163,9 +164,9 @@ private fun BackButton(onClick: () -> Unit) {
     val t = pharmTokens
     Box(
         modifier = Modifier
-            .size(44.dp)
+            .size(t.dimens.controlHeight)
             .clip(CircleShape)
-            .clickable(role = Role.Button, onClick = onClick),
+            .pharmClickable(role = Role.Button, shape = CircleShape, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -182,9 +183,9 @@ private fun HamburgerButton(onClick: () -> Unit) {
     val t = pharmTokens
     Box(
         modifier = Modifier
-            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
             .clip(t.shapes.sm)
-            .clickable(role = Role.Button, onClick = onClick),
+            .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -221,9 +222,10 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
         }
         val nameModifier = if (onProfileClick != null) {
             Modifier
+                .heightIn(min = t.dimens.controlHeight)
                 .clip(t.shapes.sm)
-                .clickable(role = Role.Button, onClick = onProfileClick)
-                .padding(horizontal = 4.dp, vertical = 2.dp)
+                .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onProfileClick)
+                .padding(horizontal = 6.dp, vertical = 4.dp)
         } else {
             Modifier
         }
@@ -243,8 +245,8 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
             Box(
                 modifier = Modifier
                     .clip(t.shapes.sm)
-                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                    .clickable(role = Role.Button, onClick = onLogout)
+                    .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
+                    .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onLogout)
                     .padding(8.dp),
                 contentAlignment = Alignment.Center,
             ) {

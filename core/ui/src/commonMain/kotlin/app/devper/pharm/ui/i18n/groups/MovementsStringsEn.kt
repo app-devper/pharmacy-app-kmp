@@ -12,6 +12,7 @@ object MovementsStringsEn : MovementsStrings {
     override val movementsSearchPlaceholder = "Search drug name…"
     override val movementsCountNoun = "items"
     override val movementsEmpty = "No items in this period"
+    override val movementsEmptySearching = "No movements match these filters"
     override val movementsHeaderType = "Type"
     override val movementsHeaderRef = "Reference"
     override val movementsHeaderBy = "By"

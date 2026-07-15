@@ -11,6 +11,7 @@ fun HelpScreen(viewModel: HelpViewModel = koinViewModel()) {
     HelpContent(
         state = state,
         callbacks = HelpCallbacks(
+            onReload = viewModel::reload,
             onDismissError = viewModel::dismissError,
         ),
     )

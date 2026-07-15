@@ -53,23 +53,20 @@ fun OfflineSyncContent(
             modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
         )
         PharmListToolbar(
+            title = s.navOfflineSync,
+            subtitle = s.offlineSyncSubtitle,
             actions = {
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     PharmButton(
-                        label = s.commonRefresh,
-                        onClick = callbacks.onRefresh,
-                        variant = PharmButtonVariant.Secondary,
-                        size = PharmButtonSize.Md,
-                    )
-                    PharmButton(
                         label = s.offlineSyncRetryAllCta,
                         onClick = callbacks.onSyncAll,
                         variant = PharmButtonVariant.Primary,
                         size = PharmButtonSize.Md,
                         enabled = state.totalCount > 0,
+                        loading = state.syncingAll,
                         leadingIcon = {
                             Icon(
                                 imageVector = PharmIcons.OfflineSync,
@@ -96,7 +93,13 @@ fun OfflineSyncContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(state.pending, key = { it.id }) { row ->
-                        OfflineSyncCard(row = row, tz = state.tz, callbacks = callbacks)
+                        OfflineSyncCard(
+                            row = row,
+                            tz = state.tz,
+                            syncing = row.id in state.syncingIds,
+                            actionsEnabled = !state.busy,
+                            callbacks = callbacks,
+                        )
                     }
                 }
             }
@@ -114,12 +117,14 @@ fun OfflineSyncContent(
                     onClick = callbacks.onDismissCancel,
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
+                    enabled = !state.discarding,
                 )
                 PharmButton(
                     label = s.commonDelete,
                     onClick = callbacks.onConfirmCancel,
                     variant = PharmButtonVariant.Danger,
                     size = PharmButtonSize.Md,
+                    loading = state.discarding,
                 )
             },
         ) {

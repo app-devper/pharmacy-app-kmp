@@ -50,6 +50,7 @@ class ProfileViewModelTest {
         assertNotNull(state.user)
         assertEquals("สมชาย", state.form.firstName)
         assertEquals("0812345678", state.form.phone)
+        assertFalse(state.hasUnsavedChanges)
     }
 
     @Test
@@ -60,6 +61,7 @@ class ProfileViewModelTest {
         vm.onFirstName("สมหญิง")
         vm.onPhone("0999999999")
         assertTrue(vm.state.value.canSubmit)
+        assertTrue(vm.state.value.hasUnsavedChanges)
         vm.submit()
         advanceUntilIdle()
         val state = vm.state.value
@@ -90,9 +92,30 @@ class ProfileViewModelTest {
         advanceUntilIdle()
         vm.openPasswordPanel()
         vm.onOldPassword("old")
-        vm.onNewPassword("new123")
-        vm.onConfirmPassword("new123")
+        vm.onNewPassword("new12345")
+        vm.onConfirmPassword("new12345")
         assertTrue(vm.state.value.password.canSubmit)
+    }
+
+    @Test
+    fun password_shorter_than_eight_characters_blocks_submit() = runVmTest { dispatchers ->
+        val vm = bundle(FakeProfileRepository(), dispatchers)
+        advanceUntilIdle()
+        vm.openPasswordPanel()
+        vm.onOldPassword("old-password")
+        vm.onNewPassword("short")
+        vm.onConfirmPassword("short")
+        assertFalse(vm.state.value.password.newPasswordValid)
+        assertFalse(vm.state.value.password.canSubmit)
+    }
+
+    @Test
+    fun blank_required_name_can_be_attempted_but_not_submitted() = runVmTest { dispatchers ->
+        val vm = bundle(FakeProfileRepository(), dispatchers)
+        advanceUntilIdle()
+        vm.onFirstName("")
+        assertTrue(vm.state.value.canAttemptSubmit)
+        assertFalse(vm.state.value.canSubmit)
     }
 
     @Test
@@ -222,8 +245,8 @@ class ProfileViewModelTest {
         advanceUntilIdle()
         vm.openPasswordPanel()
         vm.onOldPassword("old")
-        vm.onNewPassword("new123")
-        vm.onConfirmPassword("new123")
+        vm.onNewPassword("new12345")
+        vm.onConfirmPassword("new12345")
         vm.submitPasswordChange()
         advanceUntilIdle()
         assertNotNull(vm.state.value.passwordErrorState)

@@ -23,6 +23,8 @@ import kotlinx.datetime.TimeZone
 internal fun OfflineSyncCard(
     row: PendingSale,
     tz: TimeZone,
+    syncing: Boolean,
+    actionsEnabled: Boolean,
     callbacks: OfflineSyncCallbacks,
     modifier: Modifier = Modifier,
 ) {
@@ -33,7 +35,9 @@ internal fun OfflineSyncCard(
         subtitle = formatEnqueuedAt(row.enqueuedAt, tz),
         modifier = modifier,
         status = {
-            if (row.lastError != null) {
+            if (syncing) {
+                PharmStatusBadge(status = PharmStatus.Pending, label = s.offlineSyncStatusSyncing, size = PharmBadgeSize.Sm)
+            } else if (row.lastError != null) {
                 PharmStatusBadge(status = PharmStatus.Failed, label = s.offlineSyncStatusFailed, size = PharmBadgeSize.Sm)
             } else {
                 PharmStatusBadge(status = PharmStatus.Pending, label = s.offlineSyncStatusPending, size = PharmBadgeSize.Sm)
@@ -62,12 +66,14 @@ internal fun OfflineSyncCard(
                         label = s.offlineSyncRetryRowCta,
                         icon = PharmIcons.OfflineSync,
                         tone = PharmActionTone.Primary,
+                        enabled = actionsEnabled,
                         onClick = { callbacks.onRetry(row) },
                     ),
                     PharmAction(
                         label = s.commonCancel,
                         icon = PharmIcons.Ban,
                         tone = PharmActionTone.Danger,
+                        enabled = actionsEnabled,
                         onClick = { callbacks.onCancel(row) },
                     ),
                 ),

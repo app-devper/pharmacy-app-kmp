@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.sell.components
 
 import app.devper.pharm.common.value.Money
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.common.pharmSelectable
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -153,7 +152,12 @@ private fun SegItem(text: String, active: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .clip(t.shapes.sm)
             .background(bg, t.shapes.sm)
-            .selectable(selected = active, role = Role.RadioButton, onClick = { if (!active) onClick() })
+            .pharmSelectable(
+                selected = active,
+                role = Role.RadioButton,
+                shape = t.shapes.sm,
+                onClick = { if (!active) onClick() },
+            )
             .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         Text(

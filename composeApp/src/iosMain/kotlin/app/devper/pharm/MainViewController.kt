@@ -7,6 +7,7 @@ import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.common.platform.SecureStorage
+import app.devper.pharm.common.platform.UnsavedChangesHandler
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
@@ -17,6 +18,7 @@ import app.devper.pharm.platform.FilePickerImpl
 import app.devper.pharm.platform.KeychainSecureStorage
 import app.devper.pharm.platform.MotionPreferencesImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
+import app.devper.pharm.platform.UnsavedChangesHandlerImpl
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
 import io.ktor.client.engine.darwin.Darwin
@@ -44,6 +46,7 @@ private fun ensureKoinStarted() {
         single<FilePicker> { FilePickerImpl() }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
         single<MotionPreferences> { MotionPreferencesImpl() }
+        single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
     }
     startKoin { modules(iosPlatformModule, appModule) }
     koinStarted = true

@@ -15,6 +15,7 @@ enum class ExpiryWindow(val daysAhead: Int?, val expiredOnly: Boolean) {
 
 data class ExpiryUiState(
     val window: ExpiryWindow = ExpiryWindow.Within60,
+    val query: String = "",
     override val loading: Boolean = false,
     val lots: List<ExpiringLot> = emptyList(),
     val selected: Set<String> = emptySet(),
@@ -31,5 +32,15 @@ data class ExpiryUiState(
     val canWriteoff: Boolean get() = !writingOff && selected.isNotEmpty()
     val totalSelected: Int get() = selected.size
     val totalRemaining: Int get() = lots.sumOf { it.remaining }
-    val allSelected: Boolean get() = lots.isNotEmpty() && selected.size == lots.size
+    val filteredLots: List<ExpiringLot>
+        get() {
+            val needle = query.trim().lowercase()
+            if (needle.isEmpty()) return lots
+            return lots.filter { lot ->
+                lot.drugName.lowercase().contains(needle) || lot.lotNumber.lowercase().contains(needle)
+            }
+        }
+    val filteredRemaining: Int get() = filteredLots.sumOf { it.remaining }
+    val allVisibleSelected: Boolean
+        get() = filteredLots.isNotEmpty() && filteredLots.all { it.id in selected }
 }

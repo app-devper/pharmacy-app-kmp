@@ -12,6 +12,7 @@ import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.common.platform.SecureStorage
+import app.devper.pharm.common.platform.UnsavedChangesHandler
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.storage.TokenStorage
@@ -22,6 +23,7 @@ import app.devper.pharm.platform.FilePickerImpl
 import app.devper.pharm.platform.JvmSecureStorage
 import app.devper.pharm.platform.MotionPreferencesImpl
 import app.devper.pharm.platform.ReceiptPrinterImpl
+import app.devper.pharm.platform.UnsavedChangesHandlerImpl
 import com.russhwolf.settings.PreferencesSettings
 import com.russhwolf.settings.Settings
 import io.ktor.client.engine.java.Java
@@ -45,6 +47,7 @@ fun main() {
         single<FilePicker> { FilePickerImpl() }
         single<ReceiptPrinter> { ReceiptPrinterImpl() }
         single<MotionPreferences> { MotionPreferencesImpl() }
+        single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
     }
 
     startKoin { modules(jvmPlatformModule, appModule) }

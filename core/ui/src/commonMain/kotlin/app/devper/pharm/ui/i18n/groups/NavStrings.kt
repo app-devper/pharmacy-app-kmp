@@ -3,6 +3,10 @@ package app.devper.pharm.ui.i18n.groups
 interface NavStrings {
     val navBulkImport: String
     val navLowStock: String
+    val navGroupSales: String
+    val navGroupInventory: String
+    val navGroupReports: String
+    val navGroupSystem: String
 
     val navSell: String
     val navSalesHistory: String

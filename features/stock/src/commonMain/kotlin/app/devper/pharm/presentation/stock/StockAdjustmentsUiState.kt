@@ -10,7 +10,9 @@ data class AdjustmentDraft(
     val absDelta: String = "",
     val reason: AdjustmentReason = AdjustmentReason.Recount,
     val note: String = "",
-)
+) {
+    val absDeltaValid: Boolean get() = (absDelta.toIntOrNull() ?: 0) > 0
+}
 
 enum class AdjustmentSign { Increase, Decrease }
 
@@ -30,7 +32,9 @@ data class StockAdjustmentsUiState(
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val canSubmitDraft: Boolean
-        get() = !saving && (draft.absDelta.toIntOrNull() ?: 0) > 0
+        get() = !saving && draft.absDeltaValid
+
+    val canAttemptSubmit: Boolean get() = !saving
 
     fun signedDelta(): Int {
         val abs = draft.absDelta.toIntOrNull() ?: 0

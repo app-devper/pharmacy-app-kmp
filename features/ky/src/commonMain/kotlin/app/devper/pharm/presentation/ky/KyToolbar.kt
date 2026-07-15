@@ -17,6 +17,8 @@ import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmAction
+import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTab
@@ -55,20 +57,20 @@ internal fun KyToolbar(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                PharmButton(
-                    label = "Excel",
-                    onClick = onExportExcel,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
-                )
-                PharmButton(
-                    label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
-                    onClick = onExport,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    enabled = !exporting,
-                    leadingIcon = { Icon(PharmIcons.FilePdf, contentDescription = null) },
+                PharmActionMenu(
+                    actions = listOf(
+                        PharmAction(
+                            label = "Excel",
+                            onClick = onExportExcel,
+                            icon = PharmIcons.Excel,
+                        ),
+                        PharmAction(
+                            label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
+                            onClick = onExport,
+                            icon = PharmIcons.FilePdf,
+                            enabled = !exporting,
+                        ),
+                    ),
                 )
                 PharmButton(
                     label = pharmStrings.kyAddCta,

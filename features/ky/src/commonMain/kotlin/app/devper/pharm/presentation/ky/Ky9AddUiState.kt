@@ -21,6 +21,9 @@ data class Ky9AddUiState(
             pricePerUnit = draft.pricePerUnit,
         )
 
+    override val hasUnsavedChanges: Boolean
+        get() = draft != Ky9Draft()
+
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState

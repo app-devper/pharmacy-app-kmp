@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.validation.isKy12DraftValid
+import app.devper.pharm.domain.validation.Check
 import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseFormUiState
 
@@ -27,7 +28,12 @@ data class Ky12AddUiState(
 ) : BaseFormUiState<Ky12AddUiState> {
 
     override val canSubmit: Boolean
-        get() = !saving && isKy12DraftValid(draft.date, draft.drugName, draft.unit, draft.qty)
+        get() = !saving &&
+            isKy12DraftValid(draft.date, draft.drugName, draft.unit, draft.qty) &&
+            (draft.totalValue.isBlank() || Check.nonNegativeDouble(draft.totalValue))
+
+    override val hasUnsavedChanges: Boolean
+        get() = draft != Ky12Draft()
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)

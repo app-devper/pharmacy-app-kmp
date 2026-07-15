@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.suppliers.SupplierFormFields
@@ -28,10 +30,17 @@ fun SupplierFormInfoSection(
     form: SupplierFormFields,
     callbacks: SupplierFormCallbacks,
     modifier: Modifier = Modifier,
+    showValidation: Boolean = false,
+    nameFocusRequester: FocusRequester = FocusRequester.Default,
 ) {
     val s = pharmStrings
     PharmFormCard(modifier = modifier, title = s.suppliersFormInfoSection) {
-        SupplierInfoGrid(form = form, callbacks = callbacks)
+        SupplierInfoGrid(
+            form = form,
+            callbacks = callbacks,
+            showValidation = showValidation,
+            nameFocusRequester = nameFocusRequester,
+        )
         AddressField(value = form.address, onChange = callbacks.onAddress)
         NotesField(value = form.notes, onChange = callbacks.onNotes)
     }
@@ -41,13 +50,15 @@ fun SupplierFormInfoSection(
 private fun SupplierInfoGrid(
     form: SupplierFormFields,
     callbacks: SupplierFormCallbacks,
+    showValidation: Boolean,
+    nameFocusRequester: FocusRequester,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val twoCol = maxWidth >= PharmBreakpoint.FormTwoCol
         if (twoCol) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 GridRow(
-                    left = { NameField(form, callbacks) },
+                    left = { NameField(form, callbacks, showValidation, nameFocusRequester) },
                     right = { ContactNameField(form, callbacks) },
                 )
                 GridRow(
@@ -57,7 +68,7 @@ private fun SupplierInfoGrid(
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                NameField(form, callbacks)
+                NameField(form, callbacks, showValidation, nameFocusRequester)
                 ContactNameField(form, callbacks)
                 PhoneField(form, callbacks)
                 TaxIdField(form, callbacks)
@@ -78,13 +89,25 @@ private fun GridRow(
 }
 
 @Composable
-private fun NameField(form: SupplierFormFields, callbacks: SupplierFormCallbacks) {
+private fun NameField(
+    form: SupplierFormFields,
+    callbacks: SupplierFormCallbacks,
+    showValidation: Boolean,
+    focusRequester: FocusRequester,
+) {
     val s = pharmStrings
-    FormField(label = s.suppliersFormCompanyName, required = true) {
+    val isError = showValidation && form.name.isBlank()
+    FormField(
+        label = s.suppliersFormCompanyName,
+        required = true,
+        error = if (isError) s.validationRequired(s.suppliersFormCompanyName) else null,
+    ) {
         PharmTextField(
             value = form.name,
             onValueChange = callbacks.onName,
             placeholder = s.suppliersFormCompanyPlaceholder,
+            isError = isError,
+            modifier = Modifier.focusRequester(focusRequester),
         )
     }
 }

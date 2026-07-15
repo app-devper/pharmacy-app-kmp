@@ -11,6 +11,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -25,10 +27,17 @@ internal fun ImportFormHeader(
     state: ImportFormUiState,
     callbacks: ImportFormCallbacks,
     onPickSupplier: () -> Unit,
+    showValidation: Boolean = false,
+    supplierFocusRequester: FocusRequester = FocusRequester.Default,
 ) {
     val s = pharmStrings
+    val supplierError = showValidation && state.form.supplier.isBlank()
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ImportLabeledField(label = s.importsFormSupplier, required = true) {
+        ImportLabeledField(
+            label = s.importsFormSupplier,
+            required = true,
+            error = if (supplierError) s.validationRequired(s.importsFormSupplier) else null,
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -40,6 +49,8 @@ internal fun ImportFormHeader(
                         onValueChange = callbacks.onSupplier,
                         placeholder = s.importsFormSupplierPlaceholder,
                         enabled = !state.readOnly,
+                        isError = supplierError,
+                        modifier = Modifier.focusRequester(supplierFocusRequester),
                     )
                 }
                 if (!state.readOnly && state.suppliers.isNotEmpty()) {

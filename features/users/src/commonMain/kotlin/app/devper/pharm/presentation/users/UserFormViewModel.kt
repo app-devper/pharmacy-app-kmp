@@ -71,17 +71,19 @@ class UserFormViewModel(
     }
 
     private fun hydrate(user: UmUser) {
+        val hydratedForm = UserFormFields(
+            firstName = user.firstName,
+            lastName = user.lastName,
+            username = user.username,
+            password = "",
+            phone = user.phone,
+            email = user.email,
+        )
         setState {
             copy(
                 loading = false,
-                form = UserFormFields(
-                    firstName = user.firstName,
-                    lastName = user.lastName,
-                    username = user.username,
-                    password = "",
-                    phone = user.phone,
-                    email = user.email,
-                ),
+                form = hydratedForm,
+                baselineForm = hydratedForm,
             )
         }
     }

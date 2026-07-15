@@ -42,15 +42,17 @@ class CustomerFormViewModel(
                 if (c == null) {
                     setState { copy(loading = false, errorState = CustomerFormUiStateError.NotFound()) }
                 } else {
+                    val hydratedForm = CustomerFormFields(
+                        name = c.name,
+                        phone = c.phone.orEmpty(),
+                        allergyNote = c.allergyNote.orEmpty(),
+                        priceTier = c.priceTier,
+                    )
                     setState {
                         copy(
                             loading = false,
-                            form = CustomerFormFields(
-                                name = c.name,
-                                phone = c.phone.orEmpty(),
-                                allergyNote = c.allergyNote.orEmpty(),
-                                priceTier = c.priceTier,
-                            ),
+                            form = hydratedForm,
+                            baselineForm = hydratedForm,
                         )
                     }
                 }

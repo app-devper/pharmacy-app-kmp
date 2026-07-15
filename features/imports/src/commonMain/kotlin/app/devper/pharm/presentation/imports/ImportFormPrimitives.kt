@@ -11,12 +11,14 @@ internal fun ImportLabeledField(
     label: String,
     modifier: Modifier = Modifier,
     required: Boolean = false,
+    error: String? = null,
     content: @Composable () -> Unit,
 ) {
     FormField(
         label = label,
         modifier = modifier,
         required = required,
+        error = error,
         content = content,
     )
 }
@@ -28,6 +30,8 @@ internal fun ImportFormField(
     placeholder: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     enabled: Boolean = true,
+    isError: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     PharmTextField(
         value = value,
@@ -35,5 +39,7 @@ internal fun ImportFormField(
         placeholder = placeholder,
         enabled = enabled,
         keyboardType = keyboardType,
+        isError = isError,
+        modifier = modifier,
     )
 }

@@ -28,13 +28,15 @@ class UserFormViewModelTest {
         )
 
     @Test
-    fun add_canSubmit_requires_firstName_username_and_password() = runVmTest { dispatchers ->
+    fun add_canSubmit_requires_names_username_and_password() = runVmTest { dispatchers ->
         val fake = FakeUsersRepository()
         val vm = bundle(fake, dispatchers)
         vm.init(UserFormMode.Add)
         advanceUntilIdle()
         assertFalse(vm.state.value.canSubmit)
         vm.onFirstName("สมหมาย")
+        assertFalse(vm.state.value.canSubmit)
+        vm.onLastName("ทดสอบ")
         assertFalse(vm.state.value.canSubmit)
         vm.onUsername("sommai")
         assertFalse(vm.state.value.canSubmit)
@@ -106,6 +108,7 @@ class UserFormViewModelTest {
         vm.init(UserFormMode.Add)
         advanceUntilIdle()
         vm.onFirstName("สมหมาย")
+        vm.onLastName("ทดสอบ")
         vm.onUsername("sommai")
         vm.onPassword("password1")
         vm.submit()

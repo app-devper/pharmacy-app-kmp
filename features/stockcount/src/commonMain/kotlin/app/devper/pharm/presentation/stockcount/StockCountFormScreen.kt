@@ -25,9 +25,10 @@ fun StockCountFormScreen(
         callbacks = StockCountFormCallbacks(
             onSearchChange = viewModel::onQueryChange,
             onCountedChange = viewModel::onCountChange,
-            onFillFromSystem = viewModel::onFillFromSystem,
-            onClear = viewModel::onClear,
-            onClearDraft = viewModel::onClearDraft,
+            onFillFromSystem = viewModel::requestFillFromSystem,
+            onClearDraft = viewModel::requestClearDraft,
+            onConfirmDraftAction = viewModel::confirmDraftAction,
+            onCancelDraftAction = viewModel::cancelDraftAction,
             onSave = viewModel::requestSubmit,
             onConfirmSubmit = viewModel::confirmSubmit,
             onCancelSubmit = viewModel::cancelSubmit,

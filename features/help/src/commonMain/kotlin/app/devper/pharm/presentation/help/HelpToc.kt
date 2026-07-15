@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.help
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
+import app.devper.pharm.ui.designsystem.PharmFilterChip
+import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
 
 @Composable
 internal fun HelpToc(
@@ -45,9 +47,26 @@ internal fun HelpToc(
                     .fillMaxWidth()
                     .clip(t.shapes.md)
                     .background(bg)
-                    .clickable(role = Role.Button) { onSelect(section.id) }
+                    .pharmClickable(role = Role.Button) { onSelect(section.id) }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             )
         }
     }
+}
+
+@Composable
+internal fun HelpCompactToc(
+    sections: List<HelpSection>,
+    activeId: String?,
+    onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PharmSingleSelectChips(
+        chips = sections.map { section ->
+            PharmFilterChip(id = section.id, label = section.title)
+        },
+        activeId = activeId,
+        onSelect = onSelect,
+        modifier = modifier,
+    )
 }

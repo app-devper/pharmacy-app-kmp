@@ -5,7 +5,6 @@ import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -64,7 +64,7 @@ fun ImportDetailContent(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(t.shapes.md)
-                            .clickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }),
+                            .pharmClickable(role = Role.Button, onClick = { callbacks.onEdit(po.id) }),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(PharmIcons.Pencil, contentDescription = s.commonEdit, tint = t.colors.fg2, modifier = Modifier.size(20.dp))

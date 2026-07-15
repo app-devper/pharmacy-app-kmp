@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.OversellShortfall
 import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.common.pharmToggleable
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -109,9 +109,10 @@ fun OversellConfirmSheet(
             )
 
             Row(
-                modifier = Modifier.toggleable(
+                modifier = Modifier.pharmToggleable(
                     value = ack,
                     role = Role.Checkbox,
+                    shape = pharmTokens.shapes.md,
                     onValueChange = { ack = it },
                 ),
                 verticalAlignment = Alignment.CenterVertically,

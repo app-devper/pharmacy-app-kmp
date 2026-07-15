@@ -2,10 +2,12 @@ package app.devper.pharm.presentation.planning
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -13,6 +15,9 @@ import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
+import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PharmBadgeSize
+import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmStatus
@@ -29,16 +34,17 @@ import kotlin.math.roundToInt
 @Composable
 internal fun ReorderSuggestionsTable(
     suggestions: List<ReorderSuggestion>,
+    draftDrugIds: Set<String>,
     callbacks: ReorderSuggestionsCallbacks,
     modifier: Modifier = Modifier,
 ) {
     val s = pharmStrings
-    val columns = remember(callbacks, s) {
+    val columns = remember(callbacks, s, draftDrugIds) {
         listOf(
         PharmTableColumn<ReorderSuggestion>(
             header = s.expiryHeaderDrugName,
             weight = 2.4f,
-            cell = { row -> SuggestionNameCell(row) },
+            cell = { row -> SuggestionNameCell(row, row.drugId in draftDrugIds) },
         ),
         PharmTableColumn(
             header = s.expiryHeaderRemaining,
@@ -62,7 +68,13 @@ internal fun ReorderSuggestionsTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
-            cell = { row -> SuggestionRowActions(row = row, callbacks = callbacks) },
+            cell = { row ->
+                SuggestionRowActions(
+                    row = row,
+                    added = row.drugId in draftDrugIds,
+                    callbacks = callbacks,
+                )
+            },
         ),
         )
     }
@@ -72,7 +84,6 @@ internal fun ReorderSuggestionsTable(
         columns = columns,
         key = { it.drugId },
         modifier = modifier,
-        onRowClick = { callbacks.onRowClick(it) },
         rowHeight = 52.dp,
         emptyContent = {
             Text(text = s.planningReorderEmptyTitle, style = PharmText.meta)
@@ -81,7 +92,7 @@ internal fun ReorderSuggestionsTable(
 }
 
 @Composable
-private fun SuggestionNameCell(row: ReorderSuggestion) {
+private fun SuggestionNameCell(row: ReorderSuggestion, added: Boolean) {
     val t = pharmTokens
     val s = pharmStrings
     val daysLeftText = if (row.isInfiniteDaysLeft) "—" else s.planningDaysLeftLabel(row.daysLeft.roundToInt())
@@ -92,12 +103,25 @@ private fun SuggestionNameCell(row: ReorderSuggestion) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = s.planningMetaLine(formatRate(row.avgDailySale), daysLeftText),
-            style = PharmText.micro.copy(color = t.colors.fg3).tabular(),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = s.planningMetaLine(formatRate(row.avgDailySale), daysLeftText),
+                style = PharmText.micro.copy(color = t.colors.fg3).tabular(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            if (added) {
+                PharmBadge(
+                    text = s.planningAddedBadge,
+                    tone = PharmBadgeTone.Green,
+                    size = PharmBadgeSize.Sm,
+                )
+            }
+        }
     }
 }
 
@@ -150,18 +174,23 @@ private fun SuggestionCostCell(row: ReorderSuggestion) {
 }
 
 @Composable
-private fun SuggestionRowActions(row: ReorderSuggestion, callbacks: ReorderSuggestionsCallbacks) {
+private fun SuggestionRowActions(
+    row: ReorderSuggestion,
+    added: Boolean,
+    callbacks: ReorderSuggestionsCallbacks,
+) {
     val s = pharmStrings
     PharmActionMenu(
         actions = listOf(
             PharmAction(
-                label = s.planningAddPoCta,
-                icon = PharmIcons.Plus,
-                tone = PharmActionTone.Primary,
+                label = if (added) s.planningAddedBadge else s.planningAddPoCta,
+                icon = if (added) PharmIcons.Check else PharmIcons.Plus,
+                tone = if (added) PharmActionTone.Success else PharmActionTone.Primary,
+                enabled = !added,
                 onClick = { callbacks.onAddToPurchaseOrder(row) },
             ),
             PharmAction(
-                label = s.commonClose,
+                label = s.planningDismissCta,
                 icon = PharmIcons.Close,
                 onClick = { callbacks.onDismiss(row) },
             ),

@@ -4,7 +4,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
@@ -29,6 +28,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 fun PharmHelpHint(
@@ -45,7 +45,7 @@ fun PharmHelpHint(
             modifier = Modifier
                 .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
                 .clip(t.shapes.pill)
-                .clickable(role = Role.Button) { open = !open },
+                .pharmClickable(role = Role.Button, shape = t.shapes.pill) { open = !open },
             contentAlignment = Alignment.Center,
         ) {
             Icon(

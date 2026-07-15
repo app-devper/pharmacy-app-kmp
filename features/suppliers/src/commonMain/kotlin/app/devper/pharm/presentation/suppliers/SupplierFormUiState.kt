@@ -20,6 +20,7 @@ data class SupplierFormFields(
 data class SupplierFormUiState(
     val mode: SupplierFormMode = SupplierFormMode.Add,
     val form: SupplierFormFields = SupplierFormFields(),
+    val baselineForm: SupplierFormFields = SupplierFormFields(),
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,
@@ -27,6 +28,9 @@ data class SupplierFormUiState(
 ) : BaseFormUiState<SupplierFormUiState> {
     override val canSubmit: Boolean
         get() = !saving && !loading && form.name.isNotBlank()
+
+    override val hasUnsavedChanges: Boolean
+        get() = form != baselineForm
 
     val isEdit: Boolean
         get() = mode is SupplierFormMode.Edit

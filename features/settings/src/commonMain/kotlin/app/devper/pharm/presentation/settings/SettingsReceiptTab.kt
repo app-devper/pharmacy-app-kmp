@@ -22,7 +22,11 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
-internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEditorCallbacks) {
+internal fun SettingsReceiptTab(
+    state: SettingsEditorUiState,
+    editor: SettingsEditorCallbacks,
+    showValidation: Boolean,
+) {
     val t = pharmTokens
     val s = pharmStrings
     val f = state.form
@@ -40,7 +44,13 @@ internal fun SettingsReceiptTab(state: SettingsEditorUiState, editor: SettingsEd
             placeholder = s.settingsReceiptFooterPlaceholder,
         )
     }
-    SettingsLabeledField(label = s.settingsReceiptPaperWidth) {
+    SettingsLabeledField(
+        label = s.settingsReceiptPaperWidth,
+        required = true,
+        error = if (showValidation && !f.receiptPaperWidthValid) {
+            s.settingsReceiptPaperWidthInvalid
+        } else null,
+    ) {
         PharmSingleSelectChips(
             chips = listOf(
                 PharmFilterChip(id = "58", label = "58 mm"),

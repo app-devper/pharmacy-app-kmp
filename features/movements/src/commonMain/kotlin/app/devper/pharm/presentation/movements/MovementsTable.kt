@@ -1,6 +1,8 @@
 package app.devper.pharm.presentation.movements
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.format.isoDateTimeToBuddhist
 import app.devper.pharm.presentation.movements.i18n.localizedLabel as specLocalizedLabel
 import app.devper.pharm.ui.i18n.localizedLabel
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -74,6 +77,7 @@ internal fun MovementsTable(
             PharmTableColumn(
                 header = s.movementsHeaderBy,
                 weight = 1.0f,
+                hideInCompact = true,
                 cell = { m -> UserCell(m) },
             ),
         )
@@ -101,7 +105,7 @@ internal fun MovementsTable(
 private fun TimeCell(m: StockMovement) {
     val t = pharmTokens
     Text(
-        text = m.at.take(19).replace('T', ' '),
+        text = isoDateTimeToBuddhist(m.at),
         style = PharmText.micro.copy(
             color = t.colors.fg3,
             fontFeatureSettings = "tnum",
@@ -172,10 +176,11 @@ private fun QtyCell(m: StockMovement) {
 @Composable
 private fun ReferenceCell(m: StockMovement) {
     val t = pharmTokens
+    val note = noteWithoutUser(m.note)
     val display = when {
-        m.reference.isNotBlank() && m.note.isNotBlank() -> "${m.reference} · ${m.note}"
+        m.reference.isNotBlank() && note.isNotBlank() -> "${m.reference} · $note"
         m.reference.isNotBlank() -> m.reference
-        m.note.isNotBlank() -> m.note
+        note.isNotBlank() -> note
         else -> "—"
     }
     Text(
@@ -206,9 +211,13 @@ private fun extractUser(note: String): String {
     val marker = "by:"
     val ix = note.indexOf(marker)
     if (ix < 0) return ""
-    return note.substring(ix + marker.length).trim().takeWhile { it != ' ' && it != '·' }
+    return note.substring(ix + marker.length).trim()
 }
 
+private fun noteWithoutUser(note: String): String =
+    note.substringBefore("by:").trim().trimEnd('·').trim()
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MovementsPaginationRow(
     state: MovementsUiState,
@@ -221,12 +230,13 @@ private fun MovementsPaginationRow(
     val hasPrev = state.page > 1
     val hasNext = state.page < state.pageCount
 
-    Row(
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = s.movementsShownOf(shown, total),

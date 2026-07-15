@@ -66,7 +66,14 @@ class LabelPrintViewModel(
 
     fun onSizeChange(size: LabelSize) = setState { copy(size = size) }
 
-    fun onClearAll() = setState { copy(lines = emptyList()) }
+    fun onAskClearAll() {
+        if (!current.canClear) return
+        setState { copy(confirmClear = true) }
+    }
+
+    fun onCancelClearAll() = setState { copy(confirmClear = false) }
+
+    fun onConfirmClearAll() = setState { copy(lines = emptyList(), confirmClear = false) }
 
     fun onPrint() {
         val s = current

@@ -5,9 +5,15 @@ object PlanningStringsEn : PlanningStrings {
     override val planningRefreshCta = "Refresh"
     override val planningAddPoCta = "Add PO"
     override val planningAddAllCta = "Add all"
+    override val planningAddRemainingCta: (Int) -> String = { count -> "Add remaining ($count)" }
+    override val planningAddedBadge = "Added"
+    override val planningAddedMessage: (Int) -> String = { count -> "Added $count item(s) to the purchase order" }
+    override val planningDismissCta = "Hide suggestion"
     override val planningOpenPoCta: (Int) -> String = { n -> "Create purchase order ($n)" }
     override val planningLowStockTitle = "Low stock"
     override val planningBelowMinTitle = "Below minimum stock"
+    override val planningLowStockSearchPlaceholder = "Search drug, generic, or barcode…"
+    override val planningLowStockNotFound = "No low-stock drugs match your search"
     override val planningReorderTitle = "Suggested reorder list"
     override val planningLowStockEmpty = "No drugs running low"
     override val planningBelowMinEmpty = "All drugs above minimum stock"

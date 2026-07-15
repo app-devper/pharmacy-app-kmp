@@ -43,7 +43,7 @@ internal fun EodCloseButton(
         )
     } else {
         PharmButton(
-            label = s.reportsTabEod,
+            label = s.reportsEodCloseCta,
             onClick = onClick,
             enabled = enabled,
             variant = PharmButtonVariant.Primary,
@@ -75,9 +75,9 @@ internal fun EodConfirmCloseModal(
                 size = PharmButtonSize.Md,
             )
             PharmButton(
-                label = s.reportsEodConfirmTitle,
+                label = s.reportsEodCloseCta,
                 onClick = onConfirm,
-                variant = PharmButtonVariant.Primary,
+                variant = PharmButtonVariant.Danger,
                 size = PharmButtonSize.Md,
             )
         },

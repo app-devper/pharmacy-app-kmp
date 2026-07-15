@@ -64,6 +64,8 @@ internal fun ProfitFilterBar(
 
     PharmListToolbar(
         modifier = modifier,
+        title = s.reportsProfitTitle,
+        subtitle = s.reportsProfitSubtitle,
         actions = {
             PharmButton(
                 label = "Excel",
@@ -102,8 +104,7 @@ internal fun ProfitFilterBar(
                 PharmDateRangeField(
                     range = range,
                     onRangeChange = { next ->
-                        if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
-                        if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
+                        callbacks.onDateRangeChange(next.fromMillis, next.toMillis)
                     },
                     formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
                     quickPeriods = quickPeriods,

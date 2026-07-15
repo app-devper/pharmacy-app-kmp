@@ -145,27 +145,29 @@ class ImportFormViewModel(
             block = { getPurchaseOrder(id) },
             onSuccess = { po ->
                 val readOnly = po.status == PurchaseOrderStatus.Confirmed
+                val hydratedForm = ImportFormFields(
+                    supplier = po.supplier,
+                    invoiceNo = po.invoiceNo,
+                    receiveDate = po.receiveDate?.toString() ?: "",
+                    notes = po.notes,
+                    items = po.items.map { item ->
+                        ImportLineFields(
+                            drugId = item.drugId,
+                            drugName = item.drugName,
+                            lotNumber = item.lotNumber,
+                            expiryDate = item.expiryDate?.toString() ?: "",
+                            qty = item.qty.value.toString(),
+                            costPrice = item.costPrice.amount.cleanPrice(),
+                            sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
+                        )
+                    },
+                )
                 setState {
                     copy(
                         loading = false,
                         readOnly = readOnly,
-                        form = ImportFormFields(
-                            supplier = po.supplier,
-                            invoiceNo = po.invoiceNo,
-                            receiveDate = po.receiveDate?.toString() ?: "",
-                            notes = po.notes,
-                            items = po.items.map { item ->
-                                ImportLineFields(
-                                    drugId = item.drugId,
-                                    drugName = item.drugName,
-                                    lotNumber = item.lotNumber,
-                                    expiryDate = item.expiryDate?.toString() ?: "",
-                                    qty = item.qty.value.toString(),
-                                    costPrice = item.costPrice.amount.cleanPrice(),
-                                    sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
-                                )
-                            },
-                        ),
+                        form = hydratedForm,
+                        baselineForm = hydratedForm,
                     )
                 }
             },

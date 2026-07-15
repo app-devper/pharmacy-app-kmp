@@ -176,10 +176,13 @@ class LabelPrintViewModelTest {
         advanceUntilIdle()
         vm.onAddDrug(drug("d1"))
         vm.onAddDrug(drug("d2"))
-        vm.onClearAll()
+        vm.onAskClearAll()
+        assertTrue(vm.state.value.confirmClear)
+        vm.onConfirmClearAll()
         val state = vm.state.value
         assertTrue(state.lines.isEmpty())
         assertEquals(3, state.drugs.size)
+        assertFalse(state.confirmClear)
     }
 
     @Test

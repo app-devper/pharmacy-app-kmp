@@ -44,17 +44,19 @@ class SupplierFormViewModel(
                 if (s == null) {
                     setState { copy(loading = false, errorState = SupplierFormUiStateError.NotFound()) }
                 } else {
+                    val hydratedForm = SupplierFormFields(
+                        name = s.name,
+                        contactName = s.contactName,
+                        phone = s.phone,
+                        address = s.address,
+                        taxId = s.taxId,
+                        notes = s.notes,
+                    )
                     setState {
                         copy(
                             loading = false,
-                            form = SupplierFormFields(
-                                name = s.name,
-                                contactName = s.contactName,
-                                phone = s.phone,
-                                address = s.address,
-                                taxId = s.taxId,
-                                notes = s.notes,
-                            ),
+                            form = hydratedForm,
+                            baselineForm = hydratedForm,
                         )
                     }
                 }

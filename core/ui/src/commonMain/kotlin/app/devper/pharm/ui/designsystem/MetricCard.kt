@@ -2,7 +2,6 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 enum class MetricTint { Neutral, Success, Warning, Danger }
 
@@ -113,14 +113,18 @@ fun MetricCard(
         MetricTint.Danger  -> t.colors.dangerFg.copy(alpha = 0.2f)
     }
     val shape = t.shapes.lg
-    val clickMod = if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
+    val clickMod = if (onClick != null) {
+        Modifier.pharmClickable(role = Role.Button, shape = shape, onClick = onClick)
+    } else {
+        Modifier
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
-            .then(clickMod)
             .background(bg, shape)
             .border(1.dp, borderColor, shape)
+            .then(clickMod)
             .padding(horizontal = t.spacing.s4, vertical = t.spacing.s3),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {

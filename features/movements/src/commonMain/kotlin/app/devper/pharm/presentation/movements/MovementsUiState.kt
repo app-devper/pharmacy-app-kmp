@@ -43,4 +43,7 @@ data class MovementsUiState(
             }
         }
     }
+
+    val hasActiveFilters: Boolean =
+        drugName.isNotBlank() || activeTypeIds != MovementsTypeCatalog.allIds
 }

@@ -2,7 +2,6 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 private const val BACKSPACE_KEY = "backspace"
 
@@ -82,7 +82,7 @@ private fun KeypadKey(
             .clip(t.shapes.md)
             .background(t.colors.surface)
             .border(1.dp, t.colors.border, t.shapes.md)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .pharmClickable(enabled = enabled, role = Role.Button, shape = t.shapes.md, onClick = onClick)
             .semantics { contentDescription = accessibleLabel },
         contentAlignment = Alignment.Center,
     ) {

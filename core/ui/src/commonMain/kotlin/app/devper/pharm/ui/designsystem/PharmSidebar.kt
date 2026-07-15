@@ -5,7 +5,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 private val SidebarRailWidth: Dp = 64.dp
 
@@ -51,6 +50,7 @@ data class SidebarNavItem(
     val icon: ImageVector,
     val admin: Boolean = false,
     val label: String = "",
+    val sectionLabel: String = "",
 )
 
 
@@ -128,13 +128,22 @@ fun PharmSidebar(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(0.dp),
         ) {
-            items(items, key = { it.id }) { item ->
-                SidebarRow(
-                    item = item,
-                    active = item.id == activeId,
-                    collapsed = collapsed,
-                    onClick = { onSelect(item.id) },
-                )
+            items.forEachIndexed { index, item ->
+                val startsSection = item.sectionLabel.isNotBlank() &&
+                    (index == 0 || items[index - 1].sectionLabel != item.sectionLabel)
+                if (startsSection && !collapsed) {
+                    item(key = "section-${item.sectionLabel}") {
+                        SidebarSectionLabel(label = item.sectionLabel)
+                    }
+                }
+                item(key = item.id) {
+                    SidebarRow(
+                        item = item,
+                        active = item.id == activeId,
+                        collapsed = collapsed,
+                        onClick = { onSelect(item.id) },
+                    )
+                }
             }
         }
 
@@ -145,6 +154,20 @@ fun PharmSidebar(
             onToggleCollapse = onToggleCollapse,
         )
     }
+}
+
+@Composable
+private fun SidebarSectionLabel(label: String) {
+    val t = pharmTokens
+    Text(
+        text = label,
+        style = PharmText.micro.copy(
+            color = t.colors.sidebarFgMuted,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.4.sp,
+        ),
+        modifier = Modifier.padding(start = 20.dp, top = 12.dp, end = 12.dp, bottom = 4.dp),
+    )
 }
 
 @Composable
@@ -213,12 +236,12 @@ private fun SidebarRow(
                     )
                 }
             }
-            .clickable(role = Role.Button, onClick = onClick)
+            .pharmClickable(role = Role.Tab, shape = t.shapes.md, onClick = onClick)
             .semantics(mergeDescendants = true) {
                 role = Role.Tab
                 selected = active
             }
-            .height(40.dp)
+            .height(t.dimens.controlHeight)
             .padding(horizontal = if (collapsed) 0.dp else 12.dp),
         horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -270,10 +293,7 @@ private fun SidebarFooter(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(
-                    onClick = onToggleCollapse,
-                    role = Role.Button,
-                )
+                .pharmClickable(onClick = onToggleCollapse)
                 .height(48.dp)
                 .padding(horizontal = if (collapsed) 0.dp else 16.dp),
             horizontalArrangement = if (collapsed) Arrangement.Center else Arrangement.spacedBy(10.dp),
