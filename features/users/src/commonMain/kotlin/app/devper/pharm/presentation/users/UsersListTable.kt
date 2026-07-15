@@ -86,6 +86,7 @@ internal fun UsersListTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { user ->
                 UsersRowActions(
                     user = user,

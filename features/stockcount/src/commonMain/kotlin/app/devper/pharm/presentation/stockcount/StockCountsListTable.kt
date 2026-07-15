@@ -73,6 +73,7 @@ internal fun StockCountsListTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { count -> StockCountRowActions(count = count, callbacks = callbacks) },
         ),
         )

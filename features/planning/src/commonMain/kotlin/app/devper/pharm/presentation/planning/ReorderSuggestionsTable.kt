@@ -68,6 +68,7 @@ internal fun ReorderSuggestionsTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { row ->
                 SuggestionRowActions(
                     row = row,

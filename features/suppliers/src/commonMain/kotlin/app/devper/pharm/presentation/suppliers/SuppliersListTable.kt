@@ -105,6 +105,7 @@ internal fun SuppliersListTable(
         PharmTableColumn(
             header = s.customersHeaderActions,
             weight = 0.6f,
+            compactTrailing = true,
             cell = { supplier -> SupplierRowActions(supplier = supplier, callbacks = callbacks) },
         ),
         )

@@ -43,6 +43,7 @@ data class PharmTableColumn<T>(
     val align: PharmColumnAlign = PharmColumnAlign.Start,
     val hideInCompact: Boolean = false,
     val compactTitle: Boolean = false,
+    val compactTrailing: Boolean = false,
     val hideInCardWhenEmpty: ((row: T) -> Boolean)? = null,
     val cell: @Composable (row: T) -> Unit,
 )
@@ -141,14 +142,15 @@ private fun <T> PharmTableCardList(
 ) {
     val visible = remember(columns) { columns.filterNot { it.hideInCompact } }
     val title = remember(visible) { visible.firstOrNull { it.compactTitle } ?: visible.firstOrNull() }
-    val details = remember(visible, title) { visible.filter { it !== title } }
+    val trailing = remember(visible) { visible.firstOrNull { it.compactTrailing } }
+    val details = remember(visible, title, trailing) { visible.filter { it !== title && it !== trailing } }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = rows, key = key) { row ->
             val onClickRow = remember(row, onRowClick) {
                 onRowClick?.let { cb -> { cb(row) } }
             }
-            PharmTableCard(title = title, details = details, row = row, onClick = onClickRow)
+            PharmTableCard(title = title, details = details, trailing = trailing, row = row, onClick = onClickRow)
         }
         if (bottomRow != null) {
             item { bottomRow() }
@@ -160,35 +162,44 @@ private fun <T> PharmTableCardList(
 private fun <T> PharmTableCard(
     title: PharmTableColumn<T>?,
     details: List<PharmTableColumn<T>>,
+    trailing: PharmTableColumn<T>?,
     row: T,
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
     val clickable = if (onClick != null) Modifier.pharmClickable(role = Role.Button, onClick = onClick) else Modifier
     Column(modifier = Modifier.fillMaxWidth()) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(clickable)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.Top,
         ) {
-            title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
-            details.forEach { col ->
-                if (col.hideInCardWhenEmpty?.invoke(row) == true) return@forEach
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = col.header,
-                        style = PharmText.micro.copy(color = t.colors.fgMuted),
-                        modifier = Modifier.weight(1f),
-                    )
-                    Box(contentAlignment = Alignment.CenterEnd) { col.cell(row) }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .then(clickable),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
+                details.forEach { col ->
+                    if (col.hideInCardWhenEmpty?.invoke(row) == true) return@forEach
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = col.header,
+                            style = PharmText.micro.copy(color = t.colors.fgMuted),
+                            modifier = Modifier.weight(1f),
+                        )
+                        Box(contentAlignment = Alignment.CenterEnd) { col.cell(row) }
+                    }
                 }
             }
+            trailing?.let { Box(contentAlignment = Alignment.TopEnd) { it.cell(row) } }
         }
         Box(
             modifier = Modifier

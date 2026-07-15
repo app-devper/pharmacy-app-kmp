@@ -80,9 +80,7 @@ fun PharmTopbar(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            if (onBack != null) {
-                actions?.invoke()
-            }
+            actions?.invoke()
             if (onBack == null && showThemeToggle) {
                 ThemeToggleButton()
             }
