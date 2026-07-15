@@ -45,57 +45,84 @@ fun PharmListToolbar(
 ) {
     val t = pharmTokens
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val showTitle = title.isNotEmpty() && (onBack != null || maxWidth >= TITLE_MIN_WIDTH)
+        val compact = maxWidth < TITLE_MIN_WIDTH
+        val showTitle = title.isNotEmpty() && !compact
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                itemVerticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (onBack != null) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(t.shapes.md)
-                            .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onBack),
-                        contentAlignment = Alignment.Center,
+            if (compact) {
+                if (searchValue != null && onSearchChange != null) {
+                    PharmTextField(
+                        value = searchValue,
+                        onValueChange = onSearchChange,
+                        placeholder = searchPlaceholder,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                if (badge != null || actions != null) {
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = if (badge == null) {
+                            Arrangement.spacedBy(8.dp, Alignment.End)
+                        } else {
+                            Arrangement.spacedBy(8.dp)
+                        },
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        itemVerticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(
-                            imageVector = PharmIcons.ReturnArrow,
-                            contentDescription = pharmStrings.commonBack,
-                            tint = t.colors.fg1,
-                            modifier = Modifier.size(20.dp),
-                        )
+                        badge?.invoke()
+                        actions?.invoke()
                     }
                 }
-                if (showTitle) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(text = title, style = titleStyle)
-                        if (subtitle != null) {
-                            Text(
-                                text = subtitle,
-                                style = PharmText.micro.copy(color = t.colors.fgMuted),
+            } else {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (onBack != null) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(t.shapes.md)
+                                .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onBack),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = PharmIcons.ReturnArrow,
+                                contentDescription = pharmStrings.commonBack,
+                                tint = t.colors.fg1,
+                                modifier = Modifier.size(20.dp),
                             )
                         }
                     }
-                }
-                badge?.invoke()
-                if (searchValue != null && onSearchChange != null) {
-                    Box(modifier = Modifier.widthIn(min = 160.dp, max = 280.dp)) {
-                        PharmTextField(
-                            value = searchValue,
-                            onValueChange = onSearchChange,
-                            placeholder = searchPlaceholder,
-                        )
+                    if (showTitle) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = title, style = titleStyle)
+                            if (subtitle != null) {
+                                Text(
+                                    text = subtitle,
+                                    style = PharmText.micro.copy(color = t.colors.fgMuted),
+                                )
+                            }
+                        }
                     }
+                    badge?.invoke()
+                    if (searchValue != null && onSearchChange != null) {
+                        Box(modifier = Modifier.widthIn(min = 160.dp, max = 280.dp)) {
+                            PharmTextField(
+                                value = searchValue,
+                                onValueChange = onSearchChange,
+                                placeholder = searchPlaceholder,
+                            )
+                        }
+                    }
+                    actions?.invoke()
                 }
-                actions?.invoke()
             }
             if (filters != null) {
                 FlowRow(

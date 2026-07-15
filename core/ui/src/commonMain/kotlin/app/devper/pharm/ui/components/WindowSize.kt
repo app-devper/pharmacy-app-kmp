@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.dp
 
 object PharmBreakpoint {
     val Stack = 360.dp
+    val ShortViewport = 480.dp
     val FormTwoCol = 560.dp
     val Medium = 600.dp
     val FormThreeCol = 720.dp

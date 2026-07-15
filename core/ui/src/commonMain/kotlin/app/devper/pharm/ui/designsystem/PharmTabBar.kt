@@ -2,7 +2,9 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -19,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.common.pharmFocusRing
 import app.devper.pharm.ui.theme.PharmText
@@ -40,15 +45,17 @@ fun PharmTabBar(
 ) {
     val t = pharmTokens
     val rowMod = if (fillMaxWidth) modifier.fillMaxWidth() else modifier
-    Box(
+    BoxWithConstraints(
         modifier = rowMod
             .background(t.colors.surface),
     ) {
+        val scrollable = tabs.isNotEmpty() && maxWidth < 88.dp * tabs.size
+        val scrollState = rememberScrollState()
         Row(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
+                .then(if (scrollable) Modifier.horizontalScroll(scrollState) else Modifier.fillMaxWidth())
                 .padding(horizontal = 4.dp, vertical = 4.dp),
         ) {
             tabs.forEach { tab ->
@@ -56,7 +63,7 @@ fun PharmTabBar(
                     tab = tab,
                     active = tab.id == activeId,
                     onClick = { onSelect(tab.id) },
-                    modifier = Modifier.weight(1f),
+                    modifier = if (scrollable) Modifier.widthIn(min = 88.dp) else Modifier.weight(1f),
                 )
             }
         }
@@ -106,6 +113,8 @@ private fun PharmTabItem(
                 color = fg,
                 fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
             ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         if (tab.count != null) {
             PharmBadge(
