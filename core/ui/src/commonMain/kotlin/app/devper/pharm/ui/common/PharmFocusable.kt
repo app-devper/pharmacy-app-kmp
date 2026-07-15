@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.LocalReducedMotion
+import app.devper.pharm.ui.designsystem.motionDurationMillis
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
@@ -38,9 +40,10 @@ fun Modifier.pharmFocusRing(
     ringWidth: Dp = 2.dp,
 ): Modifier {
     val isFocused by interactionSource.collectIsFocusedAsState()
+    val reducedMotion = LocalReducedMotion.current
     val ringColor by animateColorAsState(
         targetValue = if (isFocused) pharmTokens.colors.focusRing else Color.Transparent,
-        animationSpec = tween(durationMillis = 120),
+        animationSpec = tween(durationMillis = motionDurationMillis(reducedMotion, 120)),
         label = "pharmFocusRing",
     )
     return this.border(width = ringWidth, color = ringColor, shape = shape)

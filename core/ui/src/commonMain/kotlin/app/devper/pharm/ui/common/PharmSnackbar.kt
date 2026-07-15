@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -109,6 +110,7 @@ fun PharmSnackbarHostUi(
     host: PharmSnackbarHost,
     modifier: Modifier = Modifier,
 ) {
+    val reducedMotion = LocalReducedMotion.current
     var current by remember(host) { mutableStateOf<PharmToast?>(null) }
 
     LaunchedEffect(host) {
@@ -134,8 +136,16 @@ fun PharmSnackbarHostUi(
         ) {
             AnimatedVisibility(
                 visible = current != null,
-                enter = fadeIn() + slideInVertically { it / 2 },
-                exit = fadeOut() + slideOutVertically { it / 2 },
+                enter = if (reducedMotion) {
+                    androidx.compose.animation.EnterTransition.None
+                } else {
+                    fadeIn() + slideInVertically { it / 2 }
+                },
+                exit = if (reducedMotion) {
+                    androidx.compose.animation.ExitTransition.None
+                } else {
+                    fadeOut() + slideOutVertically { it / 2 }
+                },
             ) {
                 current?.let { toast ->
                     ToastCard(

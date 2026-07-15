@@ -39,6 +39,7 @@ import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.ui.common.ShortcutHint
 import app.devper.pharm.ui.designsystem.pharmBannerEnter
+import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -86,6 +87,7 @@ fun CartPanel(
     onOpenKyPrecapture: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val reducedMotion = LocalReducedMotion.current
     val t = pharmTokens
     val cartCount = cart.sumOf { it.qty }
     val hasItems = cart.isNotEmpty()
@@ -135,7 +137,7 @@ fun CartPanel(
                         cart,
                         key = { _, line -> "${line.drug.id}::${line.selectedUnit?.name.orEmpty()}" },
                     ) { index, line ->
-                        Box(modifier = Modifier.animateItem()) {
+                        Box(modifier = if (reducedMotion) Modifier else Modifier.animateItem()) {
                             if (index > 0) CartSectionDivider()
                             CartLineRow(
                                 line = line,

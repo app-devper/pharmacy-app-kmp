@@ -8,6 +8,7 @@ object CommonStringsEn : CommonStrings {
     override val commonOffline = "Offline"
     override val commonErrorIconDesc = "Error"
     override val commonOpenMenu = "Open menu"
+    override val commonCloseMenu = "Close menu"
     override val commonHelp = "Help"
     override val commonResultFound: (Int, String, Int) -> String = { visible, noun, total -> "Found $visible $noun of $total" }
     override val commonResultTotal: (Int, String) -> String = { total, noun -> "All $total $noun" }

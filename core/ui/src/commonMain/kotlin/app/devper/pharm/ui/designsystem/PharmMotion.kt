@@ -22,6 +22,9 @@ object PharmMotion {
 
 val LocalReducedMotion = staticCompositionLocalOf { false }
 
+internal fun motionDurationMillis(reducedMotion: Boolean, durationMillis: Int): Int =
+    if (reducedMotion) 0 else durationMillis
+
 @Composable
 fun pharmBannerEnter(): EnterTransition =
     if (LocalReducedMotion.current) EnterTransition.None
@@ -33,9 +36,10 @@ fun PharmAnimatedBaht(
     modifier: Modifier = Modifier,
     style: TextStyle = PharmText.total,
 ) {
+    val reducedMotion = LocalReducedMotion.current
     val animated by animateFloatAsState(
         targetValue = value.toFloat(),
-        animationSpec = if (LocalReducedMotion.current) snap() else tween(PharmMotion.Medium),
+        animationSpec = if (reducedMotion) snap() else tween(PharmMotion.Medium),
     )
     Text(text = fmtBaht(animated.toDouble()), style = style, modifier = modifier)
 }

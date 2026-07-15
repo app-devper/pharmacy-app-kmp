@@ -87,13 +87,20 @@ fun PharmModal(
         ) {
             val compact = this.maxWidth < PharmBreakpoint.Medium
             val shape = if (compact) RectangleShape else t.shapes.lg
-            val enterProgress = remember { Animatable(0f) }
+            val reducedMotion = LocalReducedMotion.current
+            val enterProgress = remember { Animatable(if (reducedMotion) 1f else 0f) }
             val modalSizeModifier = if (compact) {
                 Modifier.fillMaxSize()
             } else {
                 Modifier.padding(16.dp).widthIn(max = modalMaxWidth).fillMaxWidth()
             }
-            LaunchedEffect(Unit) { enterProgress.animateTo(1f, tween(PharmMotion.Medium)) }
+            LaunchedEffect(reducedMotion) {
+                if (reducedMotion) {
+                    enterProgress.snapTo(1f)
+                } else if (enterProgress.value < 1f) {
+                    enterProgress.animateTo(1f, tween(PharmMotion.Medium))
+                }
+            }
             Column(
                 modifier = modifier
                     .graphicsLayer {

@@ -3,7 +3,6 @@ package app.devper.pharm.ui.components
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -39,7 +38,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.ui.designsystem.BottomNavItem
@@ -256,12 +258,13 @@ private fun CompactShell(
         }
 
         if (drawerOpen) {
-
+            val closeMenuDescription = pharmStrings.commonCloseMenu
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(t.colors.scrim)
-                    .clickable(onClick = { drawerOpen = false }),
+                    .pharmClickable(shape = RectangleShape, onClick = { drawerOpen = false })
+                    .semantics { contentDescription = closeMenuDescription },
             )
             PharmSidebar(
                 activeId = currentRoute,
