@@ -2,25 +2,31 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,21 +56,43 @@ fun PharmTabBar(
             .background(t.colors.surface),
     ) {
         val scrollable = tabs.isNotEmpty() && maxWidth < 88.dp * tabs.size
-        val scrollState = rememberScrollState()
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .then(if (scrollable) Modifier.horizontalScroll(scrollState) else Modifier.fillMaxWidth())
-                .padding(horizontal = 4.dp, vertical = 4.dp),
-        ) {
-            tabs.forEach { tab ->
-                PharmTabItem(
-                    tab = tab,
-                    active = tab.id == activeId,
-                    onClick = { onSelect(tab.id) },
-                    modifier = if (scrollable) Modifier.widthIn(min = 88.dp) else Modifier.weight(1f),
-                )
+        val listState = rememberLazyListState()
+        LaunchedEffect(activeId, scrollable, tabs) {
+            if (!scrollable) return@LaunchedEffect
+            val activeIndex = tabs.indexOfFirst { it.id == activeId }
+            if (activeIndex < 0) return@LaunchedEffect
+            listState.scrollToItem(activeIndex)
+        }
+        if (scrollable) {
+            LazyRow(
+                state = listState,
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                items(items = tabs, key = { it.id }) { tab ->
+                    PharmTabItem(
+                        tab = tab,
+                        active = tab.id == activeId,
+                        onClick = { onSelect(tab.id) },
+                        modifier = Modifier.widthIn(min = 88.dp),
+                    )
+                }
+            }
+        } else {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+            ) {
+                tabs.forEach { tab ->
+                    PharmTabItem(
+                        tab = tab,
+                        active = tab.id == activeId,
+                        onClick = { onSelect(tab.id) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
         Box(
@@ -74,6 +102,32 @@ fun PharmTabBar(
                 .background(t.colors.border)
                 .align(Alignment.BottomStart),
         )
+        if (scrollable && listState.canScrollBackward) {
+            Box(
+                modifier = Modifier
+                    .width(24.dp)
+                    .fillMaxHeight()
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(t.colors.surface, t.colors.surface.copy(alpha = 0f)),
+                        ),
+                    )
+                    .align(Alignment.CenterStart),
+            )
+        }
+        if (scrollable && listState.canScrollForward) {
+            Box(
+                modifier = Modifier
+                    .width(24.dp)
+                    .fillMaxHeight()
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(t.colors.surface.copy(alpha = 0f), t.colors.surface),
+                        ),
+                    )
+                    .align(Alignment.CenterEnd),
+            )
+        }
     }
 }
 

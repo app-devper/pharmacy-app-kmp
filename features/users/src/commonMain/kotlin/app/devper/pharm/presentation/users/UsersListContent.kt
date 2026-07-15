@@ -86,6 +86,7 @@ private fun UsersListToolbar(
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,
         titleStyle = PharmText.h2,
+        compactTopbarActions = true,
         actions = {
             if (state.currentUserRole.canManageUsers()) {
                 PharmButton(

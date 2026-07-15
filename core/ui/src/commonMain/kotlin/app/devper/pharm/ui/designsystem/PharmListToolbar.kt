@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
+import app.devper.pharm.ui.components.CompactPageActions
 
 private val TITLE_MIN_WIDTH = 600.dp
 
@@ -42,11 +43,16 @@ fun PharmListToolbar(
     badge: (@Composable () -> Unit)? = null,
     filters: (@Composable FlowRowScope.() -> Unit)? = null,
     actions: (@Composable () -> Unit)? = null,
+    compactTopbarActions: Boolean = false,
 ) {
     val t = pharmTokens
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val compact = maxWidth < TITLE_MIN_WIDTH
         val showTitle = title.isNotEmpty() && !compact
+        val inlineActions = actions.takeUnless { compact && compactTopbarActions }
+        if (compact && compactTopbarActions && actions != null) {
+            CompactPageActions(actions)
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,7 +68,7 @@ fun PharmListToolbar(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                if (badge != null || actions != null) {
+                if (badge != null || inlineActions != null) {
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = if (badge == null) {
@@ -74,7 +80,7 @@ fun PharmListToolbar(
                         itemVerticalAlignment = Alignment.CenterVertically,
                     ) {
                         badge?.invoke()
-                        actions?.invoke()
+                        inlineActions?.invoke()
                     }
                 }
             } else {

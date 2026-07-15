@@ -78,6 +78,7 @@ internal fun ImportsListTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { row -> ImportRowActions(row = row, callbacks = callbacks) },
         ),
         )

@@ -23,6 +23,7 @@ internal fun StockCountsListToolbar(
         searchPlaceholder = s.stockCountHistorySearchPlaceholder,
         titleStyle = PharmText.h2,
         modifier = modifier,
+        compactTopbarActions = true,
         actions = {
             PharmButton(
                 label = s.stockCountHistoryNewCta,

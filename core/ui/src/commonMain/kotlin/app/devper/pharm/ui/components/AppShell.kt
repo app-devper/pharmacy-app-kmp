@@ -118,6 +118,7 @@ fun AppShell(
         }
 
         val subPageController = remember { SubPageBarController() }
+        val compactPageActionsController = remember { CompactPageActionsController() }
         val unsavedChangesController = remember { UnsavedChangesController() }
         LaunchedEffect(unsavedChangesController.hasUnsavedChanges) {
             onUnsavedChangesChanged(unsavedChangesController.hasUnsavedChanges)
@@ -127,6 +128,7 @@ fun AppShell(
         }
         CompositionLocalProvider(
             LocalSubPageBarController provides subPageController,
+            LocalCompactPageActionsController provides compactPageActionsController,
             LocalUnsavedChangesController provides unsavedChangesController,
         ) {
             GuardedSystemBack(isSubPage, onSubPageBack)
@@ -200,6 +202,7 @@ private fun CompactShell(
     val t = pharmTokens
     var drawerOpen by remember { mutableStateOf(false) }
     val subPage = LocalSubPageBarController.current?.content
+    val pageActions = LocalCompactPageActionsController.current?.content
     val unsavedChanges = LocalUnsavedChangesController.current
     val backAction = subPage?.onBack ?: onSubPageBack
     val guardedBack = backAction?.let { action ->
@@ -231,7 +234,7 @@ private fun CompactShell(
                 showStatus = false,
                 compactUserMenu = !isSubPage,
                 onBack = if (isSubPage) guardedBack else null,
-                actions = if (isSubPage) subPage?.actions else null,
+                actions = if (isSubPage) subPage?.actions else pageActions?.actions,
                 onHamburger = { drawerOpen = true },
                 onLogout = guardedLogout,
                 onProfileClick = guardedProfileClick,

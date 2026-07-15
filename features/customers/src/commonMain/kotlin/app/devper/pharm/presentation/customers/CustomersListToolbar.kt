@@ -23,6 +23,7 @@ internal fun CustomersListToolbar(
         searchPlaceholder = s.customersSearchPlaceholder,
         titleStyle = PharmText.h2,
         modifier = modifier,
+        compactTopbarActions = true,
         actions = {
             PharmButton(
                 label = s.customersAddCta,

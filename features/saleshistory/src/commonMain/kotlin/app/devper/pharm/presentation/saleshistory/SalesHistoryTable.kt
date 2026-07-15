@@ -77,6 +77,7 @@ internal fun SalesHistoryTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { sale -> SalesRowActions(sale = sale, callbacks = callbacks) },
         ),
         )
