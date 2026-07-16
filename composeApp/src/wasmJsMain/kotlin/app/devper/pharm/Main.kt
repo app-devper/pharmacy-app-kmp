@@ -50,10 +50,30 @@ fun main() {
     startKoin { modules(webPlatformModule, appModule) }
 
     ComposeViewport(content = {
-        LaunchedEffect(Unit) { hideBootLoader() }
+        LaunchedEffect(Unit) {
+            installCanvasFocusStyle()
+            hideBootLoader()
+        }
         App()
     })
 }
+
+private fun installCanvasFocusStyle(): Unit = js(
+    """
+    {
+        var hosts = document.querySelectorAll('div');
+        for (var i = 0; i < hosts.length; i++) {
+            var root = hosts[i].shadowRoot;
+            if (root && root.querySelector('canvas')) {
+                var style = document.createElement('style');
+                style.textContent = 'canvas:focus-visible { outline: 2px solid #1B83D8 !important; outline-offset: -2px !important; } @media (prefers-color-scheme: dark) { canvas:focus-visible { outline-color: #64a9e8 !important; } }';
+                root.appendChild(style);
+                break;
+            }
+        }
+    }
+    """,
+)
 
 private fun hideBootLoader(): Unit = js(
     """

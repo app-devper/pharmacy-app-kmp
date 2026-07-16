@@ -14,11 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +33,7 @@ import app.devper.pharm.domain.model.StockAdjustment
 import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -61,7 +59,6 @@ data class StockAdjustmentsCallbacks(
     val onDismissError: () -> Unit = {},
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StockAdjustmentsBottomSheet(
     state: StockAdjustmentsUiState,
@@ -70,17 +67,12 @@ fun StockAdjustmentsBottomSheet(
 ) {
     if (state.drugId.isBlank()) return
 
-    val t = pharmTokens
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = {
-            if (!state.saving) {
-                callbacks.onClose()
-                onDismiss()
-            }
+            callbacks.onClose()
+            onDismiss()
         },
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
+        dismissEnabled = !state.saving,
     ) {
         StockAdjustmentsContent(
             state = state,

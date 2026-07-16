@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +27,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmHelpHint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -39,7 +37,6 @@ import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import app.devper.pharm.ui.i18n.pharmStrings
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KyCaptureSheet(
     required: KyRequired,
@@ -51,15 +48,13 @@ fun KyCaptureSheet(
     onDismiss: () -> Unit,
 ) {
     val t = pharmTokens
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var fields by remember(initial) { mutableStateOf(initial) }
 
     val canSubmit = !submitting && validate(required, fields)
 
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
+        dismissEnabled = !submitting,
     ) {
         Column(
             modifier = Modifier

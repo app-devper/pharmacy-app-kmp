@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +20,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -31,7 +29,6 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.i18n.pharmStrings
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoidReasonSheet(
     billNo: String,
@@ -39,7 +36,6 @@ fun VoidReasonSheet(
     onConfirm: (reason: String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var reason by rememberSaveable(billNo) { mutableStateOf("") }
     var validationRequested by rememberSaveable(billNo) { mutableStateOf(false) }
     val reasonFocus = remember(billNo) { FocusRequester() }
@@ -55,10 +51,9 @@ fun VoidReasonSheet(
     }
     val t = pharmTokens
 
-    ModalBottomSheet(
-        onDismissRequest = { if (!submitting) onDismiss() },
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
+    PharmBottomSheet(
+        onDismissRequest = onDismiss,
+        dismissEnabled = !submitting,
     ) {
         Column(
             modifier = Modifier

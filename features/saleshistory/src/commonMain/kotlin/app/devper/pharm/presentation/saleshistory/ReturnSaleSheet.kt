@@ -15,11 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -50,7 +48,6 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReturnSaleSheet(
     sale: SaleSummary,
@@ -66,7 +63,6 @@ fun ReturnSaleSheet(
     onDismiss: () -> Unit,
 ) {
     val t = pharmTokens
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val anyDraft = draft.values.any { it > 0 }
     val canSubmit = anyDraft && reason.isNotBlank() && !submitting && !itemsLoading
     var validationRequested by rememberSaveable(sale.id) { mutableStateOf(false) }
@@ -83,7 +79,10 @@ fun ReturnSaleSheet(
         }
     }
 
-    ModalBottomSheet(onDismissRequest = { if (!submitting) onDismiss() }, sheetState = sheetState) {
+    PharmBottomSheet(
+        onDismissRequest = onDismiss,
+        dismissEnabled = !submitting,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
