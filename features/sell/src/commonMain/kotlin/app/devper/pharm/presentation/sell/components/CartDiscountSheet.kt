@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -38,7 +36,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 private enum class Kind { Flat, Percent }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartDiscountSheet(
     current: CartDiscount,
@@ -46,7 +43,6 @@ fun CartDiscountSheet(
     onApply: (CartDiscount) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val t = pharmTokens
     var kind by remember(current) {
         mutableStateOf(when (current) {
@@ -73,10 +69,8 @@ fun CartDiscountSheet(
         Kind.Percent -> value < 0 || value > 100
     }
 
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
     ) {
         Column(
             modifier = Modifier
