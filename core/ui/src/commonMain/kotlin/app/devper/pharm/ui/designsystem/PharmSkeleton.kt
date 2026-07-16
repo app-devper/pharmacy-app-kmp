@@ -28,15 +28,21 @@ fun PharmSkeleton(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(6.dp),
 ) {
-    val transition = rememberInfiniteTransition()
-    val alpha by transition.animateFloat(
-        initialValue = 0.35f,
-        targetValue = 0.85f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 900),
-            repeatMode = RepeatMode.Reverse,
-        ),
-    )
+    val alpha = if (LocalReducedMotion.current) {
+        0.6f
+    } else {
+        val transition = rememberInfiniteTransition(label = "skeleton")
+        val animatedAlpha by transition.animateFloat(
+            initialValue = 0.35f,
+            targetValue = 0.85f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 900),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "skeletonAlpha",
+        )
+        animatedAlpha
+    }
     androidx.compose.foundation.layout.Box(
         modifier = modifier.background(
             color = pharmTokens.colors.borderSubtle.copy(alpha = alpha),

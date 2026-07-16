@@ -4,6 +4,8 @@ import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -109,7 +111,12 @@ fun PharmSidebar(
 ) {
     val t = pharmTokens
     val borderColor = t.colors.border
-    val width by animateDpAsState(if (collapsed) SidebarRailWidth else t.dimens.sidebarWidth)
+    val reducedMotion = LocalReducedMotion.current
+    val width by animateDpAsState(
+        targetValue = if (collapsed) SidebarRailWidth else t.dimens.sidebarWidth,
+        animationSpec = if (reducedMotion) snap() else tween(PharmMotion.Medium),
+        label = "sidebarWidth",
+    )
     Column(
         modifier = modifier
             .width(width)

@@ -22,6 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
@@ -72,6 +75,7 @@ fun PharmBottomNav(
                 icon = moreIcon,
                 label = moreLabel,
                 active = false,
+                role = Role.Button,
                 onClick = onMore,
                 modifier = Modifier.weight(1f),
             )
@@ -84,6 +88,7 @@ private fun BottomNavCell(
     icon: ImageVector,
     label: String,
     active: Boolean,
+    role: Role = Role.Tab,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -93,7 +98,11 @@ private fun BottomNavCell(
         modifier = modifier
             .fillMaxHeight()
             .clip(t.shapes.sm)
-            .pharmClickable(role = Role.Tab, shape = t.shapes.sm, onClick = onClick)
+            .pharmClickable(role = role, shape = t.shapes.sm, onClick = onClick)
+            .semantics(mergeDescendants = true) {
+                this.role = role
+                if (role == Role.Tab) selected = active
+            }
             .padding(vertical = 6.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

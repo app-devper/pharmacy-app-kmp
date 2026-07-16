@@ -21,9 +21,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.common.pharmFocusRing
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,6 +54,7 @@ fun PharmButton(
     val interactive = enabled && !loading
     val interaction = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
+    val loadingDescription = pharmStrings.commonLoading
 
     Row(
         modifier = modifier
@@ -61,7 +64,10 @@ fun PharmButton(
             .alpha(if (enabled || loading) 1f else 0.5f)
             .then(if (border != null) Modifier.border(1.dp, border, shape) else Modifier)
             .background(bg, shape)
-            .semantics { role = Role.Button }
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                if (loading) stateDescription = loadingDescription
+            }
             .clickable(
                 enabled = interactive,
                 onClick = onClick,
