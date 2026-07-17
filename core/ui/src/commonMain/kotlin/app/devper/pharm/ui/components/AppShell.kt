@@ -129,6 +129,7 @@ fun AppShell(
             onDispose { onUnsavedChangesChanged(false) }
         }
         CompositionLocalProvider(
+            LocalWindowSize provides size,
             LocalSubPageBarController provides subPageController,
             LocalCompactPageActionsController provides compactPageActionsController,
             LocalUnsavedChangesController provides unsavedChangesController,

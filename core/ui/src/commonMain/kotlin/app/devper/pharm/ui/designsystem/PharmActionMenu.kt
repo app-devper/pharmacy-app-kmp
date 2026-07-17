@@ -17,21 +17,34 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.components.LocalWindowSize
+import app.devper.pharm.ui.components.WindowSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -53,18 +66,38 @@ fun PharmActionMenu(
 ) {
     val t = pharmTokens
     var expanded by remember { mutableStateOf(false) }
+    var restoreFocusOnClose by remember { mutableStateOf(false) }
+    val triggerFocus = remember { FocusRequester() }
+    val useBottomSheet = usesActionBottomSheet(LocalWindowSize.current)
+
+    LaunchedEffect(expanded) {
+        if (!expanded && restoreFocusOnClose) {
+            triggerFocus.requestFocus()
+            restoreFocusOnClose = false
+        }
+    }
+
+    fun dismiss() {
+        restoreFocusOnClose = true
+        expanded = false
+    }
 
     val openMenuDesc = pharmStrings.commonOpenMenu
     Box(modifier = modifier) {
         Box(
             modifier = Modifier
+                .focusRequester(triggerFocus)
                 .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
                 .clip(t.shapes.pill)
                 .semantics(mergeDescendants = true) {
                     contentDescription = openMenuDesc
                     role = Role.Button
                 }
-                .pharmClickable(role = Role.Button, shape = t.shapes.pill) { expanded = true },
+                .pharmClickable(
+                    enabled = actions.isNotEmpty(),
+                    role = Role.Button,
+                    shape = t.shapes.pill,
+                ) { expanded = true },
             contentAlignment = Alignment.Center,
         ) {
             Box(
@@ -82,24 +115,37 @@ fun PharmActionMenu(
                 )
             }
         }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(t.colors.surface),
-        ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(min = 180.dp, max = 280.dp)
-                    .padding(vertical = 4.dp),
+        if (useBottomSheet) {
+            if (expanded) {
+                PharmActionBottomSheet(
+                    actions = actions,
+                    onDismissRequest = ::dismiss,
+                    onAction = { action ->
+                        dismiss()
+                        if (action.enabled) action.onClick()
+                    },
+                )
+            }
+        } else {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = ::dismiss,
+                modifier = Modifier.background(t.colors.surface),
             ) {
-                actions.forEach { action ->
-                    PharmActionRow(
-                        action = action,
-                        onClick = {
-                            expanded = false
-                            if (action.enabled) action.onClick()
-                        },
-                    )
+                Column(
+                    modifier = Modifier
+                        .widthIn(min = 180.dp, max = 280.dp)
+                        .padding(vertical = 4.dp),
+                ) {
+                    actions.forEach { action ->
+                        PharmActionRow(
+                            action = action,
+                            onClick = {
+                                dismiss()
+                                if (action.enabled) action.onClick()
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -107,7 +153,74 @@ fun PharmActionMenu(
 }
 
 @Composable
-private fun PharmActionRow(action: PharmAction, onClick: () -> Unit) {
+@OptIn(ExperimentalComposeUiApi::class)
+private fun PharmActionBottomSheet(
+    actions: List<PharmAction>,
+    onDismissRequest: () -> Unit,
+    onAction: (PharmAction) -> Unit,
+) {
+    val t = pharmTokens
+    val title = pharmStrings.commonMenu
+    val itemFocusRequesters = remember(actions.size) { List(actions.size) { FocusRequester() } }
+    var focusedIndex by remember { mutableStateOf(-1) }
+
+    PharmBottomSheet(
+        onDismissRequest = onDismissRequest,
+        modifier = Modifier.onPreviewKeyEvent { event ->
+            if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+            when (event.key) {
+                Key.DirectionDown, Key.DirectionUp -> {
+                    val direction = if (event.key == Key.DirectionDown) 1 else -1
+                    val next = nextEnabledActionIndex(
+                        enabled = actions.map { it.enabled },
+                        currentIndex = focusedIndex,
+                        direction = direction,
+                    )
+                    if (next >= 0) {
+                        itemFocusRequesters[next].requestFocus()
+                        focusedIndex = next
+                    }
+                    next >= 0
+                }
+                Key.Escape -> {
+                    onDismissRequest()
+                    true
+                }
+                else -> false
+            }
+        },
+    ) {
+        Text(
+            text = title,
+            style = PharmText.h2,
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                .semantics { heading() },
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
+        ) {
+            actions.forEachIndexed { index, action ->
+                PharmActionRow(
+                    action = action,
+                    modifier = Modifier
+                        .focusRequester(itemFocusRequesters[index])
+                        .onFocusChanged { if (it.isFocused) focusedIndex = index },
+                    onClick = { onAction(action) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PharmActionRow(
+    action: PharmAction,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     val t = pharmTokens
     val fg = when (action.tone) {
         PharmActionTone.Default -> t.colors.fg1
@@ -118,7 +231,7 @@ private fun PharmActionRow(action: PharmAction, onClick: () -> Unit) {
     val alpha = if (action.enabled) 1f else 0.4f
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = t.dimens.controlHeight)
             .pharmClickable(enabled = action.enabled, onClick = onClick)
@@ -141,4 +254,21 @@ private fun PharmActionRow(action: PharmAction, onClick: () -> Unit) {
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+internal fun usesActionBottomSheet(windowSize: WindowSize): Boolean = windowSize.isCompact
+
+internal fun nextEnabledActionIndex(
+    enabled: List<Boolean>,
+    currentIndex: Int,
+    direction: Int,
+): Int {
+    if (enabled.none { it }) return -1
+    val step = if (direction < 0) -1 else 1
+    var index = if (currentIndex in enabled.indices) currentIndex else if (step > 0) -1 else 0
+    repeat(enabled.size) {
+        index = (index + step + enabled.size) % enabled.size
+        if (enabled[index]) return index
+    }
+    return -1
 }
