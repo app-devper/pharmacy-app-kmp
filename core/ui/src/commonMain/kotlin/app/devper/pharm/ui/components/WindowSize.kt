@@ -1,5 +1,6 @@
 package app.devper.pharm.ui.components
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -30,3 +31,5 @@ enum class WindowSize {
         }
     }
 }
+
+val LocalWindowSize = staticCompositionLocalOf { WindowSize.Expanded }
