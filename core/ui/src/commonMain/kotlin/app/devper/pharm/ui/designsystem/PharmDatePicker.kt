@@ -11,10 +11,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -191,10 +190,14 @@ private fun CalendarHeader(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onPrev, modifier = Modifier.size(t.dimens.controlHeight)) {
+        PharmIconButton(
+            contentDescription = prevDesc,
+            onClick = onPrev,
+            modifier = Modifier.size(t.dimens.controlHeight),
+        ) {
             Icon(
-                Icons.Rounded.KeyboardArrowLeft,
-                contentDescription = prevDesc,
+                Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                contentDescription = null,
                 tint = pharmTokens.colors.fg2,
                 modifier = Modifier.size(22.dp),
             )
@@ -205,10 +208,14 @@ private fun CalendarHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = onNext, modifier = Modifier.size(t.dimens.controlHeight)) {
+        PharmIconButton(
+            contentDescription = nextDesc,
+            onClick = onNext,
+            modifier = Modifier.size(t.dimens.controlHeight),
+        ) {
             Icon(
-                Icons.Rounded.KeyboardArrowRight,
-                contentDescription = nextDesc,
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                contentDescription = null,
                 tint = pharmTokens.colors.fg2,
                 modifier = Modifier.size(22.dp),
             )
