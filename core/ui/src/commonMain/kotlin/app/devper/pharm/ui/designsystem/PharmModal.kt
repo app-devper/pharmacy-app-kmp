@@ -29,15 +29,22 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,6 +56,8 @@ import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
 
 enum class PharmModalSize { Sm, Md, Lg, Xl }
+
+internal enum class PharmModalInitialFocusTarget { Custom, Close, None }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -62,11 +71,32 @@ fun PharmModal(
     dismissEnabled: Boolean = true,
     dismissOnBackPress: Boolean = true,
     dismissOnClickOutside: Boolean = true,
+    initialFocusRequester: FocusRequester? = null,
+    returnFocusRequester: FocusRequester? = null,
     footer: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     if (!open) return
     val t = pharmTokens
+    val closeFocusRequester = remember { FocusRequester() }
+    val currentReturnFocusRequester by rememberUpdatedState(returnFocusRequester)
+    val initialFocusTarget = modalInitialFocusTarget(
+        hasCustomRequester = initialFocusRequester != null,
+        hasDismissibleClose = title != null && dismissEnabled,
+    )
+    LaunchedEffect(initialFocusTarget, initialFocusRequester) {
+        val requester = when (initialFocusTarget) {
+            PharmModalInitialFocusTarget.Custom -> initialFocusRequester
+            PharmModalInitialFocusTarget.Close -> closeFocusRequester
+            PharmModalInitialFocusTarget.None -> null
+        }
+        requester?.let { runCatching { it.requestFocus() } }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            currentReturnFocusRequester?.let { runCatching { it.requestFocus() } }
+        }
+    }
     val modalMaxWidth: Dp = when (size) {
         PharmModalSize.Sm -> 384.dp
         PharmModalSize.Md -> 448.dp
@@ -113,7 +143,8 @@ fun PharmModal(
                     .clip(shape)
                     .background(t.colors.surface, shape)
                     .border(1.dp, t.colors.borderSubtle, shape)
-                    .then(if (compact) Modifier.windowInsetsPadding(WindowInsets.safeDrawing) else Modifier),
+                    .then(if (compact) Modifier.windowInsetsPadding(WindowInsets.safeDrawing) else Modifier)
+                    .semantics { title?.let { paneTitle = it } },
             ) {
                 if (title != null) {
                     val closeDesc = pharmStrings.commonClose
@@ -124,7 +155,11 @@ fun PharmModal(
                                 .padding(start = 20.dp, top = 16.dp, end = 68.dp, bottom = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(2.dp),
                         ) {
-                            Text(title, style = PharmText.h2)
+                            Text(
+                                text = title,
+                                style = PharmText.h2,
+                                modifier = Modifier.semantics { heading() },
+                            )
                             if (subtitle != null) {
                                 Text(subtitle, style = PharmText.meta)
                             }
@@ -134,6 +169,7 @@ fun PharmModal(
                                 .align(Alignment.TopEnd)
                                 .padding(top = 4.dp, end = 4.dp)
                                 .size(t.dimens.controlHeight)
+                                .focusRequester(closeFocusRequester)
                                 .clip(CircleShape)
                                 .border(1.dp, t.colors.border, CircleShape)
                                 .pharmClickable(
@@ -195,4 +231,13 @@ fun PharmModal(
             }
         }
     }
+}
+
+internal fun modalInitialFocusTarget(
+    hasCustomRequester: Boolean,
+    hasDismissibleClose: Boolean,
+): PharmModalInitialFocusTarget = when {
+    hasCustomRequester -> PharmModalInitialFocusTarget.Custom
+    hasDismissibleClose -> PharmModalInitialFocusTarget.Close
+    else -> PharmModalInitialFocusTarget.None
 }

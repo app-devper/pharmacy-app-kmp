@@ -23,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +47,7 @@ import kotlinx.datetime.toLocalDateTime
 fun PharmDatePicker(
     initialMillis: Long?,
     onPick: (Long?) -> Unit,
+    returnFocusRequester: FocusRequester? = null,
 ) {
     val s = pharmStrings
     val today = remember { Clock.System.now().toLocalDateTime(TimeZone.of("Asia/Bangkok")).date }
@@ -53,11 +56,14 @@ fun PharmDatePicker(
     var visibleMonth by remember(initialMillis) {
         mutableStateOf(CalendarMonth.of(initialDate ?: today))
     }
+    val previousMonthFocusRequester = remember { FocusRequester() }
 
     PharmModal(
         open = true,
         onDismiss = { onPick(null) },
         size = PharmModalSize.Sm,
+        initialFocusRequester = previousMonthFocusRequester,
+        returnFocusRequester = returnFocusRequester,
         footer = {
             DatePickerFooter(
                 todayLabel = s.calendarToday,
@@ -83,6 +89,7 @@ fun PharmDatePicker(
                 onNext = { visibleMonth = visibleMonth.next() },
                 prevDesc = s.calendarPrevMonth,
                 nextDesc = s.calendarNextMonth,
+                previousFocusRequester = previousMonthFocusRequester,
             )
             WeekdayHeaderRow(labels = weekdayHeaders(s))
             visibleMonth.weeks().forEach { week ->
@@ -184,6 +191,7 @@ private fun CalendarHeader(
     onNext: () -> Unit,
     prevDesc: String,
     nextDesc: String,
+    previousFocusRequester: FocusRequester,
 ) {
     val t = pharmTokens
     Row(
@@ -193,7 +201,9 @@ private fun CalendarHeader(
         PharmIconButton(
             contentDescription = prevDesc,
             onClick = onPrev,
-            modifier = Modifier.size(t.dimens.controlHeight),
+            modifier = Modifier
+                .focusRequester(previousFocusRequester)
+                .size(t.dimens.controlHeight),
         ) {
             Icon(
                 Icons.AutoMirrored.Rounded.KeyboardArrowLeft,

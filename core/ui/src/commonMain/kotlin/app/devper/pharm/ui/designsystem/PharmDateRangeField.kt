@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
@@ -56,6 +58,8 @@ fun PharmDateRangeField(
 ) {
     var pickingFrom by remember { mutableStateOf(false) }
     var pickingTo by remember { mutableStateOf(false) }
+    val fromFocusRequester = remember { FocusRequester() }
+    val toFocusRequester = remember { FocusRequester() }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -72,14 +76,18 @@ fun PharmDateRangeField(
                         valueMillis = range.fromMillis,
                         formatDate = formatDate,
                         onClick = { pickingFrom = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .focusRequester(fromFocusRequester)
+                            .fillMaxWidth(),
                     )
                     DateField(
                         label = toLabel,
                         valueMillis = range.toMillis,
                         formatDate = formatDate,
                         onClick = { pickingTo = true },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .focusRequester(toFocusRequester)
+                            .fillMaxWidth(),
                     )
                 }
             } else {
@@ -93,14 +101,18 @@ fun PharmDateRangeField(
                         valueMillis = range.fromMillis,
                         formatDate = formatDate,
                         onClick = { pickingFrom = true },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .focusRequester(fromFocusRequester)
+                            .weight(1f),
                     )
                     DateField(
                         label = toLabel,
                         valueMillis = range.toMillis,
                         formatDate = formatDate,
                         onClick = { pickingTo = true },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .focusRequester(toFocusRequester)
+                            .weight(1f),
                     )
                 }
             }
@@ -126,6 +138,7 @@ fun PharmDateRangeField(
     if (pickingFrom) {
         DatePickerSheet(
             initialMillis = range.fromMillis,
+            returnFocusRequester = fromFocusRequester,
             onPick = { millis ->
                 pickingFrom = false
                 if (millis != null) onRangeChange(range.copy(fromMillis = millis))
@@ -135,6 +148,7 @@ fun PharmDateRangeField(
     if (pickingTo) {
         DatePickerSheet(
             initialMillis = range.toMillis,
+            returnFocusRequester = toFocusRequester,
             onPick = { millis ->
                 pickingTo = false
                 if (millis != null) onRangeChange(range.copy(toMillis = millis))
@@ -202,7 +216,12 @@ private fun QuickPeriodChip(label: String, onClick: () -> Unit) {
 @Composable
 private fun DatePickerSheet(
     initialMillis: Long?,
+    returnFocusRequester: FocusRequester,
     onPick: (Long?) -> Unit,
 ) {
-    PharmDatePicker(initialMillis = initialMillis, onPick = onPick)
+    PharmDatePicker(
+        initialMillis = initialMillis,
+        onPick = onPick,
+        returnFocusRequester = returnFocusRequester,
+    )
 }
