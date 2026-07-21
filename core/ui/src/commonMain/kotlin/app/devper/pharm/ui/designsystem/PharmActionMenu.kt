@@ -132,28 +132,23 @@ fun PharmActionMenu(
                 onDismissRequest = ::dismiss,
                 modifier = Modifier.background(t.colors.surface),
             ) {
-                Column(
+                PharmActionList(
+                    actions = actions,
                     modifier = Modifier
                         .widthIn(min = 180.dp, max = 280.dp)
                         .padding(vertical = 4.dp),
-                ) {
-                    actions.forEach { action ->
-                        PharmActionRow(
-                            action = action,
-                            onClick = {
-                                dismiss()
-                                if (action.enabled) action.onClick()
-                            },
-                        )
-                    }
-                }
+                    onDismissRequest = ::dismiss,
+                    onAction = { action ->
+                        dismiss()
+                        if (action.enabled) action.onClick()
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 private fun PharmActionBottomSheet(
     actions: List<PharmAction>,
     onDismissRequest: () -> Unit,
@@ -161,34 +156,9 @@ private fun PharmActionBottomSheet(
 ) {
     val t = pharmTokens
     val title = pharmStrings.commonMenu
-    val itemFocusRequesters = remember(actions.size) { List(actions.size) { FocusRequester() } }
-    var focusedIndex by remember { mutableStateOf(-1) }
 
     PharmBottomSheet(
         onDismissRequest = onDismissRequest,
-        modifier = Modifier.onPreviewKeyEvent { event ->
-            if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
-            when (event.key) {
-                Key.DirectionDown, Key.DirectionUp -> {
-                    val direction = if (event.key == Key.DirectionDown) 1 else -1
-                    val next = nextEnabledActionIndex(
-                        enabled = actions.map { it.enabled },
-                        currentIndex = focusedIndex,
-                        direction = direction,
-                    )
-                    if (next >= 0) {
-                        itemFocusRequesters[next].requestFocus()
-                        focusedIndex = next
-                    }
-                    next >= 0
-                }
-                Key.Escape -> {
-                    onDismissRequest()
-                    true
-                }
-                else -> false
-            }
-        },
     ) {
         Text(
             text = title,
@@ -197,20 +167,77 @@ private fun PharmActionBottomSheet(
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                 .semantics { heading() },
         )
-        Column(
+        PharmActionList(
+            actions = actions,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
-        ) {
-            actions.forEachIndexed { index, action ->
-                PharmActionRow(
-                    action = action,
-                    modifier = Modifier
-                        .focusRequester(itemFocusRequesters[index])
-                        .onFocusChanged { if (it.isFocused) focusedIndex = index },
-                    onClick = { onAction(action) },
-                )
+            onDismissRequest = onDismissRequest,
+            onAction = onAction,
+        )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalComposeUiApi::class)
+private fun PharmActionList(
+    actions: List<PharmAction>,
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit,
+    onAction: (PharmAction) -> Unit,
+) {
+    val enabled = actions.map { it.enabled }
+    val itemFocusRequesters = remember(actions.size) { List(actions.size) { FocusRequester() } }
+    var focusedIndex by remember { mutableStateOf(-1) }
+
+    fun requestActionFocus(index: Int): Boolean {
+        if (index !in itemFocusRequesters.indices) return false
+        itemFocusRequesters[index].requestFocus()
+        focusedIndex = index
+        return true
+    }
+
+    LaunchedEffect(enabled) {
+        requestActionFocus(
+            actionFocusTargetIndex(
+                enabled = enabled,
+                currentIndex = -1,
+                move = PharmActionFocusMove.First,
+            ),
+        )
+    }
+
+    Column(
+        modifier = modifier.onPreviewKeyEvent { event ->
+            if (event.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+            val move = when (event.key) {
+                Key.DirectionDown -> PharmActionFocusMove.Next
+                Key.DirectionUp -> PharmActionFocusMove.Previous
+                Key.MoveHome -> PharmActionFocusMove.First
+                Key.MoveEnd -> PharmActionFocusMove.Last
+                Key.Escape -> {
+                    onDismissRequest()
+                    return@onPreviewKeyEvent true
+                }
+                else -> return@onPreviewKeyEvent false
             }
+            requestActionFocus(
+                actionFocusTargetIndex(
+                    enabled = enabled,
+                    currentIndex = focusedIndex,
+                    move = move,
+                ),
+            )
+        },
+    ) {
+        actions.forEachIndexed { index, action ->
+            PharmActionRow(
+                action = action,
+                modifier = Modifier
+                    .focusRequester(itemFocusRequesters[index])
+                    .onFocusChanged { if (it.isFocused) focusedIndex = index },
+                onClick = { onAction(action) },
+            )
         }
     }
 }
@@ -257,6 +284,19 @@ private fun PharmActionRow(
 }
 
 internal fun usesActionBottomSheet(windowSize: WindowSize): Boolean = windowSize.isCompact
+
+internal enum class PharmActionFocusMove { Next, Previous, First, Last }
+
+internal fun actionFocusTargetIndex(
+    enabled: List<Boolean>,
+    currentIndex: Int,
+    move: PharmActionFocusMove,
+): Int = when (move) {
+    PharmActionFocusMove.Next -> nextEnabledActionIndex(enabled, currentIndex, direction = 1)
+    PharmActionFocusMove.Previous -> nextEnabledActionIndex(enabled, currentIndex, direction = -1)
+    PharmActionFocusMove.First -> enabled.indexOfFirst { it }
+    PharmActionFocusMove.Last -> enabled.indexOfLast { it }
+}
 
 internal fun nextEnabledActionIndex(
     enabled: List<Boolean>,
