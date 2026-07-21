@@ -65,4 +65,52 @@ class PharmActionMenuTest {
             ),
         )
     }
+
+    @Test
+    fun firstFocusSkipsDisabledActions() {
+        assertEquals(
+            expected = 2,
+            actual = actionFocusTargetIndex(
+                enabled = listOf(false, false, true, true),
+                currentIndex = -1,
+                move = PharmActionFocusMove.First,
+            ),
+        )
+    }
+
+    @Test
+    fun homeAndEndSelectBoundaryEnabledActions() {
+        val enabled = listOf(false, true, false, true, false)
+
+        assertEquals(
+            expected = 1,
+            actual = actionFocusTargetIndex(
+                enabled = enabled,
+                currentIndex = 3,
+                move = PharmActionFocusMove.First,
+            ),
+        )
+        assertEquals(
+            expected = 3,
+            actual = actionFocusTargetIndex(
+                enabled = enabled,
+                currentIndex = 1,
+                move = PharmActionFocusMove.Last,
+            ),
+        )
+    }
+
+    @Test
+    fun everyFocusMoveReturnsNoSelectionWhenActionsAreDisabled() {
+        PharmActionFocusMove.entries.forEach { move ->
+            assertEquals(
+                expected = -1,
+                actual = actionFocusTargetIndex(
+                    enabled = listOf(false, false),
+                    currentIndex = -1,
+                    move = move,
+                ),
+            )
+        }
+    }
 }
