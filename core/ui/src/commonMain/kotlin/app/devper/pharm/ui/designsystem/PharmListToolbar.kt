@@ -18,13 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.components.CompactPageActions
 
 private val TITLE_MIN_WIDTH = 600.dp
@@ -91,16 +88,16 @@ fun PharmListToolbar(
                     itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (onBack != null) {
-                        Box(
+                        PharmIconButton(
+                            contentDescription = pharmStrings.commonBack,
+                            onClick = onBack,
                             modifier = Modifier
-                                .size(48.dp)
-                                .clip(t.shapes.md)
-                                .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onBack),
-                            contentAlignment = Alignment.Center,
+                                .size(48.dp),
+                            shape = t.shapes.md,
                         ) {
                             Icon(
                                 imageVector = PharmIcons.ReturnArrow,
-                                contentDescription = pharmStrings.commonBack,
+                                contentDescription = null,
                                 tint = t.colors.fg1,
                                 modifier = Modifier.size(20.dp),
                             )

@@ -36,10 +36,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -84,21 +81,15 @@ fun PharmActionMenu(
 
     val openMenuDesc = pharmStrings.commonOpenMenu
     Box(modifier = modifier) {
-        Box(
+        PharmIconButton(
+            contentDescription = openMenuDesc,
+            onClick = { expanded = true },
+            enabled = actions.isNotEmpty(),
+            minSize = t.dimens.controlHeight,
+            shape = t.shapes.pill,
             modifier = Modifier
                 .focusRequester(triggerFocus)
-                .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
-                .clip(t.shapes.pill)
-                .semantics(mergeDescendants = true) {
-                    contentDescription = openMenuDesc
-                    role = Role.Button
-                }
-                .pharmClickable(
-                    enabled = actions.isNotEmpty(),
-                    role = Role.Button,
-                    shape = t.shapes.pill,
-                ) { expanded = true },
-            contentAlignment = Alignment.Center,
+                .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
         ) {
             Box(
                 modifier = Modifier

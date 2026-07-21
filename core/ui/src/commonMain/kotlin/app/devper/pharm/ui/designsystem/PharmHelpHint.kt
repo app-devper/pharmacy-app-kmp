@@ -21,14 +21,12 @@ import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 fun PharmHelpHint(
@@ -41,16 +39,16 @@ fun PharmHelpHint(
     val offsetY = with(LocalDensity.current) { 22.dp.roundToPx() }
 
     Box(modifier = modifier) {
-        Box(
+        PharmIconButton(
+            contentDescription = label,
+            onClick = { open = !open },
             modifier = Modifier
-                .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
-                .clip(t.shapes.pill)
-                .pharmClickable(role = Role.Button, shape = t.shapes.pill) { open = !open },
-            contentAlignment = Alignment.Center,
+                .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp),
+            shape = t.shapes.pill,
         ) {
             Icon(
                 imageVector = PharmIcons.Info,
-                contentDescription = label,
+                contentDescription = null,
                 tint = t.colors.fgMuted,
                 modifier = Modifier.size(16.dp),
             )

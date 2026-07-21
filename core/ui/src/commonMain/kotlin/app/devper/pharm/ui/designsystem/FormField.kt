@@ -36,7 +36,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -51,7 +50,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.common.pharmClickable
 
 private val LocalFormFieldLabel = staticCompositionLocalOf<String?> { null }
 
@@ -229,16 +227,17 @@ fun PharmTextField(
                 contentAlignment = Alignment.Center,
             ) {
                 if (showClear) {
-                    Box(
+                    PharmIconButton(
+                        contentDescription = pharmStrings.commonClearInput,
+                        onClick = onClear,
+                        minSize = t.dimens.controlHeight,
+                        shape = t.shapes.sm,
                         modifier = Modifier
-                            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
-                            .clip(t.shapes.sm)
-                            .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onClear),
-                        contentAlignment = Alignment.Center,
+                            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
                     ) {
                         Icon(
                             imageVector = PharmIcons.Close,
-                            contentDescription = pharmStrings.commonClearInput,
+                            contentDescription = null,
                             tint = t.colors.fgMuted,
                             modifier = Modifier.size(16.dp),
                         )

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -152,16 +151,22 @@ private fun ThemeToggleButton() {
     val t = pharmTokens
     val controller = LocalThemeController.current
     if (!controller.canToggle) return
-    Box(
+    val description = if (controller.isDark) {
+        pharmStrings.commonSwitchToLightTheme
+    } else {
+        pharmStrings.commonSwitchToDarkTheme
+    }
+    PharmIconButton(
+        contentDescription = description,
+        onClick = controller.toggle,
+        minSize = t.dimens.controlHeight,
+        shape = t.shapes.sm,
         modifier = Modifier
-            .size(t.dimens.controlHeight)
-            .clip(t.shapes.sm)
-            .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = controller.toggle),
-        contentAlignment = Alignment.Center,
+            .size(t.dimens.controlHeight),
     ) {
         Icon(
             imageVector = if (controller.isDark) PharmIcons.Sun else PharmIcons.Moon,
-            contentDescription = if (controller.isDark) pharmStrings.commonSwitchToLightTheme else pharmStrings.commonSwitchToDarkTheme,
+            contentDescription = null,
             tint = t.colors.fg2,
             modifier = Modifier.size(18.dp),
         )
@@ -171,16 +176,16 @@ private fun ThemeToggleButton() {
 @Composable
 private fun BackButton(onClick: () -> Unit) {
     val t = pharmTokens
-    Box(
+    PharmIconButton(
+        contentDescription = pharmStrings.commonBack,
+        onClick = onClick,
+        minSize = t.dimens.controlHeight,
         modifier = Modifier
-            .size(t.dimens.controlHeight)
-            .clip(CircleShape)
-            .pharmClickable(role = Role.Button, shape = CircleShape, onClick = onClick),
-        contentAlignment = Alignment.Center,
+            .size(t.dimens.controlHeight),
     ) {
         Icon(
             imageVector = PharmIcons.ChevronLeft,
-            contentDescription = pharmStrings.commonBack,
+            contentDescription = null,
             tint = t.colors.fg1,
             modifier = Modifier.size(22.dp),
         )
@@ -190,16 +195,17 @@ private fun BackButton(onClick: () -> Unit) {
 @Composable
 private fun HamburgerButton(onClick: () -> Unit) {
     val t = pharmTokens
-    Box(
+    PharmIconButton(
+        contentDescription = pharmStrings.commonMenu,
+        onClick = onClick,
+        minSize = t.dimens.controlHeight,
+        shape = t.shapes.sm,
         modifier = Modifier
-            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
-            .clip(t.shapes.sm)
-            .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onClick),
-        contentAlignment = Alignment.Center,
+            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
     ) {
         Icon(
             imageVector = PharmIcons.Hamburger,
-            contentDescription = pharmStrings.commonMenu,
+            contentDescription = null,
             tint = t.colors.fg2,
             modifier = Modifier.size(20.dp),
         )
@@ -251,17 +257,17 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
             Text(text = user.role, style = PharmText.micro)
         }
         if (onLogout != null) {
-            Box(
+            PharmIconButton(
+                contentDescription = pharmStrings.commonLogout,
+                onClick = onLogout,
+                minSize = t.dimens.controlHeight,
+                shape = t.shapes.sm,
                 modifier = Modifier
-                    .clip(t.shapes.sm)
-                    .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
-                    .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onLogout)
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center,
+                    .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
             ) {
                 Icon(
                     imageVector = PharmIcons.Logout,
-                    contentDescription = pharmStrings.commonLogout,
+                    contentDescription = null,
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(16.dp),
                 )
