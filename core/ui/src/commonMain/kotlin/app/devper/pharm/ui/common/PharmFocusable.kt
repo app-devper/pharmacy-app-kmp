@@ -104,9 +104,9 @@ fun Modifier.pharmClickable(
     enabled: Boolean = true,
     role: Role = Role.Button,
     shape: Shape = pharmTokens.shapes.md,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onClick: () -> Unit,
 ): Modifier {
-    val interactionSource = remember { MutableInteractionSource() }
     return this
         .pharmFocusRing(interactionSource = interactionSource, shape = shape)
         .clickable(

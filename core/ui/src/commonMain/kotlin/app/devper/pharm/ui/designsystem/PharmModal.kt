@@ -41,8 +41,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
@@ -53,7 +51,6 @@ import androidx.compose.ui.window.DialogProperties
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.common.pharmClickable
 
 enum class PharmModalSize { Sm, Md, Lg, Xl }
 
@@ -164,24 +161,18 @@ fun PharmModal(
                                 Text(subtitle, style = PharmText.meta)
                             }
                         }
-                        Box(
+                        PharmIconButton(
+                            contentDescription = closeDesc,
+                            onClick = onDismiss,
+                            enabled = dismissEnabled,
+                            minSize = t.dimens.controlHeight,
+                            shape = CircleShape,
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(top = 4.dp, end = 4.dp)
                                 .size(t.dimens.controlHeight)
                                 .focusRequester(closeFocusRequester)
-                                .clip(CircleShape)
-                                .border(1.dp, t.colors.border, CircleShape)
-                                .pharmClickable(
-                                    enabled = dismissEnabled,
-                                    role = Role.Button,
-                                    shape = CircleShape,
-                                    onClick = onDismiss,
-                                )
-                                .semantics(mergeDescendants = true) {
-                                    contentDescription = closeDesc
-                                },
-                            contentAlignment = Alignment.Center,
+                                .border(1.dp, t.colors.border, CircleShape),
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Close,
