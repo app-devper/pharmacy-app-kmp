@@ -297,6 +297,7 @@ private fun ExpandedShell(
     val t = pharmTokens
     val sidebar = LocalSidebarState.current
     val subPage = LocalSubPageBarController.current?.content
+    val pageActions = LocalCompactPageActionsController.current?.content
     val unsavedChanges = LocalUnsavedChangesController.current
     val backAction = subPage?.onBack ?: onSubPageBack
     val guardedBack = backAction?.let { action ->
@@ -339,7 +340,7 @@ private fun ExpandedShell(
                 title = if (isSubPage) subPage?.title ?: title else title,
                 user = if (isSubPage) null else user,
                 onBack = if (isSubPage) guardedBack else null,
-                actions = if (isSubPage) subPage?.actions else null,
+                actions = if (isSubPage) subPage?.actions else pageActions?.actions,
                 onLogout = guardedLogout,
                 onProfileClick = guardedProfileClick,
                 trailing = {

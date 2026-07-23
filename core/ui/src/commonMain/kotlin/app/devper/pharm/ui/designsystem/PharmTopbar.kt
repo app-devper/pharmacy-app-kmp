@@ -58,6 +58,7 @@ fun PharmTopbar(
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val horizontalPadding = if (maxWidth < 360.dp) 8.dp else 16.dp
         val itemSpacing = if (maxWidth < 360.dp) 6.dp else 12.dp
+        val useCompactUserMenu = compactUserMenu || maxWidth < 520.dp
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -98,7 +99,7 @@ fun PharmTopbar(
                 }
             }
             if (onBack == null && user != null) {
-                if (compactUserMenu) {
+                if (useCompactUserMenu) {
                     PharmActionMenu(
                         actions = buildList {
                             if (onProfileClick != null) {

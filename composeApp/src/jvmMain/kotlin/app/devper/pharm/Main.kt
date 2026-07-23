@@ -50,7 +50,7 @@ fun main() {
         single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
     }
 
-    startKoin { modules(jvmPlatformModule, appModule) }
+    startKoin { modules(jvmPlatformModule, appModule()) }
 
     application {
         val windowState = rememberWindowState(width = 1100.dp, height = 760.dp)

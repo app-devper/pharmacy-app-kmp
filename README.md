@@ -39,7 +39,20 @@ Single host for both um-api and pharmacy-app/backend: `https://api.devper.app`
 - `/api/um/v1/*` — auth (login, user info, logout)
 - `/api/pharmacy/v1/*` — pharmacy POS endpoints
 
-To point at a local backend, override `ApiConfig(apiBaseUrl = "http://10.0.2.2:8087")` in the platform Koin module.
+To point native clients at a local backend, pass `ApiConfig(apiBaseUrl = "http://10.0.2.2:8087")` to `appModule(...)` in the platform entry point.
+
+For local web QA, run the standalone Python service in [`mock-api/`](mock-api/). It can serve the Wasm build and mock routes from the same origin:
+
+```bash
+./gradlew :composeApp:wasmJsBrowserDevelopmentExecutableDistribution
+MOCK_API_PORT=8088 \
+MOCK_API_STATIC_DIR=composeApp/build/dist/wasmJs/developmentExecutable \
+mock-api/.venv/bin/pharmacy-mock-api
+```
+
+Open `http://localhost:8088/?apiBaseUrl=http://localhost:8088`. Other projects can call the mock API directly at its configured port through CORS.
+
+The runtime override is accepted only when the web app itself is served from localhost, so production remains pinned to `https://api.devper.app`.
 
 ## Docs
 

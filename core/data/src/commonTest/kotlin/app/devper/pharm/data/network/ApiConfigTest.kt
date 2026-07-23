@@ -47,4 +47,29 @@ class ApiConfigTest {
         val b = ApiConfig(apiBaseUrl = "y")
         assertEquals(a, b)
     }
+
+    @Test
+    fun local_qa_base_url_reads_explicit_query_on_localhost() {
+        assertEquals(
+            "http://localhost:8787",
+            localQaApiBaseUrl("localhost", "?apiBaseUrl=http://localhost:8787/"),
+        )
+        assertEquals(
+            "http://127.0.0.1:8787",
+            localQaApiBaseUrl("127.0.0.1", "?mode=qa&apiBaseUrl=http://127.0.0.1:8787"),
+        )
+    }
+
+    @Test
+    fun local_qa_base_url_cannot_override_production_host() {
+        assertEquals(
+            null,
+            localQaApiBaseUrl("pharm-app.web.app", "?apiBaseUrl=http://localhost:8787"),
+        )
+    }
+
+    @Test
+    fun local_qa_base_url_rejects_unsupported_schemes() {
+        assertEquals(null, localQaApiBaseUrl("localhost", "?apiBaseUrl=file:///tmp/mock"))
+    }
 }

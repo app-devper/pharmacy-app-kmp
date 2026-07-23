@@ -51,8 +51,10 @@ fun PharmTabBar(
 ) {
     val t = pharmTokens
     val rowMod = if (fillMaxWidth) modifier.fillMaxWidth() else modifier
+    val tabBarHeight = t.dimens.controlHeight + 8.dp
     BoxWithConstraints(
         modifier = rowMod
+            .height(tabBarHeight)
             .background(t.colors.surface),
     ) {
         val scrollable = tabs.isNotEmpty() && maxWidth < 88.dp * tabs.size
