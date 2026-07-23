@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pharmacy-mock-api"
+version = "0.1.0"
+description = "Reusable mock HTTP API for Pharmacy clients and responsive QA"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.116,<1",
+    "uvicorn[standard]>=0.35,<1",
+]
+
+[project.optional-dependencies]
+test = [
+    "httpx>=0.28,<1",
+    "pytest>=8.4,<9",
+]
+
+[project.scripts]
+pharmacy-mock-api = "pharmacy_mock_api.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pharmacy_mock_api"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

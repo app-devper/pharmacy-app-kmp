@@ -46,6 +46,7 @@ import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
+import app.devper.pharm.data.network.ApiConfig
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -57,6 +58,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 private class MemorySettings : Settings {
     private val store = mutableMapOf<String, Any?>()
@@ -131,9 +133,12 @@ class AppModuleWiringTest {
 
     @Test
     fun every_view_model_resolves_from_app_module() {
+        val qaApiConfig = ApiConfig("http://localhost:8787")
         val koin = startKoin {
-            modules(testPlatformModule, appModule)
+            modules(testPlatformModule, appModule(qaApiConfig))
         }.koin
+
+        assertEquals(qaApiConfig, koin.get<ApiConfig>())
 
         koin.get<AppViewModel>()
 

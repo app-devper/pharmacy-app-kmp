@@ -2,6 +2,7 @@ package app.devper.pharm.di
 
 import app.devper.pharm.common.di.commonModule
 import app.devper.pharm.data.di.dataModule
+import app.devper.pharm.data.network.ApiConfig
 import app.devper.pharm.domain.di.domainModule
 import app.devper.pharm.presentation.AppViewModel
 import app.devper.pharm.presentation.help.MarkdownLoader
@@ -11,13 +12,13 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val appModule = module {
+fun appModule(apiConfig: ApiConfig = ApiConfig()) = module {
     singleOf(::ResMarkdownLoader) bind MarkdownLoader::class
 
     includes(
         commonModule,
         domainModule,
-        dataModule,
+        dataModule(apiConfig),
 
         authModule,
 

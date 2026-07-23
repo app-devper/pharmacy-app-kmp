@@ -73,8 +73,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val dataModule = module {
-    single { ApiConfig() }
+fun dataModule(apiConfig: ApiConfig = ApiConfig()) = module {
+    single { apiConfig }
     single { AppJson }
 
     single { TokenStorage(get()) }

@@ -4,12 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,7 +107,7 @@ fun SettingsContent(
             onSelect = { id -> editor.onSelectTab(SettingsTab.valueOf(id)) },
         )
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (state.loading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     PharmCircularProgress()
@@ -161,23 +161,21 @@ private fun SettingsTabBody(
     showValidation: Boolean,
     focus: SettingsFocusRequesters,
 ) {
-    val scroll = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .fillMaxWidth()
-            .verticalScroll(scroll)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        PharmFormCard(title = labelFor(state.tab, strings)) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                when (state.tab) {
-                    SettingsTab.Store      -> SettingsStoreTab(state, editor, showValidation, focus)
-                    SettingsTab.Receipt    -> SettingsReceiptTab(state, editor, showValidation)
-                    SettingsTab.Stock      -> SettingsStockTab(state, editor, showValidation, focus)
-                    SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
-                    SettingsTab.Ky         -> SettingsKyTab(state, editor)
+        item(key = state.tab.name) {
+            PharmFormCard(title = labelFor(state.tab, strings)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    when (state.tab) {
+                        SettingsTab.Store      -> SettingsStoreTab(state, editor, showValidation, focus)
+                        SettingsTab.Receipt    -> SettingsReceiptTab(state, editor, showValidation)
+                        SettingsTab.Stock      -> SettingsStockTab(state, editor, showValidation, focus)
+                        SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
+                        SettingsTab.Ky         -> SettingsKyTab(state, editor)
+                    }
                 }
             }
         }

@@ -48,7 +48,7 @@ private fun ensureKoinStarted() {
         single<MotionPreferences> { MotionPreferencesImpl() }
         single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
     }
-    startKoin { modules(iosPlatformModule, appModule) }
+    startKoin { modules(iosPlatformModule, appModule()) }
     koinStarted = true
 }
 

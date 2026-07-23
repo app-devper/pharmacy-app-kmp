@@ -11,7 +11,9 @@ import app.devper.pharm.common.platform.MotionPreferences
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.platform.UnsavedChangesHandler
 import app.devper.pharm.common.print.ReceiptPrinter
+import app.devper.pharm.data.network.ApiConfig
 import app.devper.pharm.data.network.buildHttpClient
+import app.devper.pharm.data.network.localQaApiBaseUrl
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
 import app.devper.pharm.platform.ConnectivityObserverImpl
@@ -24,6 +26,7 @@ import app.devper.pharm.platform.UnsavedChangesHandlerImpl
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.StorageSettings
 import io.ktor.client.engine.js.Js
+import kotlinx.browser.window
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -47,7 +50,7 @@ fun main() {
         single<MotionPreferences> { MotionPreferencesImpl() }
         single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
     }
-    startKoin { modules(webPlatformModule, appModule) }
+    startKoin { modules(webPlatformModule, appModule(resolveApiConfig())) }
 
     ComposeViewport(content = {
         LaunchedEffect(Unit) {
@@ -56,6 +59,15 @@ fun main() {
         }
         App()
     })
+}
+
+private fun resolveApiConfig(): ApiConfig {
+    val apiBaseUrl = localQaApiBaseUrl(
+        pageHost = window.location.hostname,
+        rawQuery = window.location.search,
+    )
+    if (apiBaseUrl != null) println("Using local QA API: $apiBaseUrl")
+    return apiBaseUrl?.let(::ApiConfig) ?: ApiConfig()
 }
 
 private fun installCanvasFocusStyle(): Unit = js(

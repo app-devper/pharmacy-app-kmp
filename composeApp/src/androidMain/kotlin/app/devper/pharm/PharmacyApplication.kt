@@ -54,7 +54,7 @@ class PharmacyApplication : Application() {
 
         startKoin {
             androidContext(this@PharmacyApplication)
-            modules(androidPlatformModule, appModule)
+            modules(androidPlatformModule, appModule())
         }
     }
 }
