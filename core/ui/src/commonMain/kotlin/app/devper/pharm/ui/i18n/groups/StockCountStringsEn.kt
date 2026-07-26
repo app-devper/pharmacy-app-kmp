@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object StockCountStringsEn : StockCountStrings {
+    override val stockCountLoadRoundsFailed = "Could not load stock count history"
+    override val stockCountLoadDrugsFailed = "Could not load the drug list"
     override val stockCountHistoryTitle = "Stock count history"
     override val stockCountHistorySubtitle = "Past stock-count rounds and adjustment records"
     override val stockCountHistorySearchPlaceholder = "Search round number / note…"

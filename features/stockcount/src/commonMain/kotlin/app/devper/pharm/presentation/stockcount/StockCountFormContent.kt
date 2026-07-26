@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.stockcount.components.DraftActionConfirmModal
 import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
-import app.devper.pharm.ui.i18n.localizeCommon
+import app.devper.pharm.presentation.stockcount.i18n.localizeStockCount
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
@@ -101,7 +101,7 @@ fun StockCountFormContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeCommon(s), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeStockCount(s), onDismiss = callbacks.onDismissError)
 
     SubmitConfirmModal(
         open = state.showSubmitConfirm,
