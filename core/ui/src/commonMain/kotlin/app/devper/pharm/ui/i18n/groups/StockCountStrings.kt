@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface StockCountStrings {
+    val stockCountLoadRoundsFailed: String
+    val stockCountLoadDrugsFailed: String
     val stockCountHistoryTitle: String
     val stockCountHistorySubtitle: String
     val stockCountHistorySearchPlaceholder: String

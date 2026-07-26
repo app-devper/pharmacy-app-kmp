@@ -21,6 +21,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -83,7 +85,7 @@ class StockCountFormViewModelTest {
     fun init_failure_surfaces_error() = runVmTest { dispatchers ->
         val (vm, _, _, _) = newVm(dispatchers, drugs = FakeDrugRepository(listThrows = true))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.errorState)
+        assertIs<StockCountUiStateError.LoadDrugsFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
         assertTrue(vm.state.value.drugs.isEmpty())
     }

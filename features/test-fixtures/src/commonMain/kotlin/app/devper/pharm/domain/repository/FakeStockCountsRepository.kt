@@ -11,6 +11,7 @@ import app.devper.pharm.domain.param.inventory.CreateStockCountParam
 class FakeStockCountsRepository(
     private val seed: List<StockCount> = emptyList(),
     private val addThrows: Boolean = false,
+    private val listThrows: Boolean = false,
 ) : StockCountsRepository {
 
     var lastAdd: CreateStockCountParam? = null
@@ -20,6 +21,7 @@ class FakeStockCountsRepository(
 
     override suspend fun list(limit: Int): List<StockCount> {
         listCallCount++
+        if (listThrows) throw ServerException("list failed")
         return seed.take(limit)
     }
 

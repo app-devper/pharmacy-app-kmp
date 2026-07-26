@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
-import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.StockCountDraft
@@ -114,7 +114,7 @@ class StockCountFormViewModel(
                     copy(loading = false, drugs = list, counts = pruned)
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = StockCountUiStateError.LoadDrugsFailed(e)) } },
         )
     }
 
