@@ -256,4 +256,24 @@ class EodViewModelTest {
         vm.requestCloseDay()
         assertFalse(vm.state.value.confirmClose)
     }
+
+    @Test
+    fun reload_refreshes_the_report_without_discarding_a_closed_day() = runVmTest { dispatchers ->
+        val reports = FakeReportsRepository(eodResult = sampleReport, closeResult = sampleCloseResult)
+        val vm = newVm(dispatchers, reports = reports)
+        advanceUntilIdle()
+        vm.requestCloseDay()
+        vm.confirmCloseDay()
+        advanceUntilIdle()
+        assertTrue(vm.state.value.closed)
+
+        val callsBefore = reports.eodCallCount
+        vm.reload()
+        advanceUntilIdle()
+
+        assertEquals(callsBefore + 1, reports.eodCallCount)
+        assertTrue(vm.state.value.closed)
+        assertNotNull(vm.state.value.closeResult)
+        assertFalse(vm.state.value.loading)
+    }
 }
