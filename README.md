@@ -68,3 +68,4 @@ The runtime override is accepted only when the web app itself is served from loc
 
 - [`CLAUDE.md`](CLAUDE.md) — project conventions, module rules, verify command
 - [`MODULE_GRAPH.md`](MODULE_GRAPH.md) — full 26-module dep matrix, what lives where, per-feature recipe
+- [`VISUAL_QA.md`](VISUAL_QA.md) — manual pass over every feature against the mock API
