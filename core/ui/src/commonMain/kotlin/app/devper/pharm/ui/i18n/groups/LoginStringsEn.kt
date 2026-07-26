@@ -12,6 +12,7 @@ object LoginStringsEn : LoginStrings {
     override val loginBrandName = "Healthy Pharm"
     override val loginBrandTagline = "Pharmacy POS"
     override val loginVersionPrefix = "Connected to UM API"
+    override val loginSessionExpired = "Your session expired — please sign in again"
     override val loginRequiredFields = "Please enter username and password"
     override val loginFailed = "Sign-in failed"
 }

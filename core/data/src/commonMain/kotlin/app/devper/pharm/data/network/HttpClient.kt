@@ -3,6 +3,7 @@ package app.devper.pharm.data.network
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.AuthException
+import app.devper.pharm.domain.observer.SessionExpiryProvider
 import app.devper.pharm.common.ConflictException
 import app.devper.pharm.common.ForbiddenException
 import app.devper.pharm.common.NetworkException
@@ -36,6 +37,7 @@ private const val SOCKET_TIMEOUT_MS = 30_000L
 fun <T : HttpClientEngineConfig> buildHttpClient(
     engine: HttpClientEngineFactory<T>,
     tokenStorage: TokenStorage,
+    sessionExpiry: SessionExpiryProvider,
     json: Json = AppJson,
     enableLogging: Boolean = false,
     installTimeout: Boolean = true,
@@ -76,8 +78,8 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
             val body = response.bodyAsText()
             throw when (status) {
                 HttpStatusCode.Unauthorized -> {
-
                     tokenStorage.clear()
+                    sessionExpiry.markExpired()
                     AuthException()
                 }
                 HttpStatusCode.Forbidden     -> ForbiddenException()

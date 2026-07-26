@@ -109,6 +109,17 @@ fun LoginScreen(
                     onLocaleChange = viewModel::onLocaleChange,
                 )
                 BrandHeader(strings = strings)
+                if (state.sessionExpired) {
+                    Text(
+                        text = strings.loginSessionExpired,
+                        style = PharmText.micro.copy(color = t.colors.warningFg),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(t.shapes.md)
+                            .background(t.colors.warningBg)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    )
+                }
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     FormField(
                         label = strings.loginUsernameLabel,

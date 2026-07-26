@@ -40,7 +40,7 @@ fun main() {
     val webPlatformModule = module {
         single<Settings> { settings }
         single<SecureStorage> { WebSecureStorage() }
-        single { buildHttpClient(Js, get<TokenStorage>()) }
+        single { buildHttpClient(Js, get<TokenStorage>(), get()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
         single<FileDownloader> { FileDownloaderImpl() }

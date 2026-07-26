@@ -2,6 +2,7 @@ package app.devper.pharm.presentation.auth
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.LocalePreference
+import app.devper.pharm.domain.observer.SessionExpiryProvider
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
 import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
@@ -16,6 +17,7 @@ class LoginViewModel(
     uiPreferences: UiPreferencesProvider,
     private val setLocale: SetLocalePreferenceUseCase,
     private val setLastUsername: SetLastUsernameUseCase,
+    private val sessionExpiry: SessionExpiryProvider,
 ) : BaseLoadableViewModel<LoginUiState>(LoginUiState()) {
 
     init {
@@ -26,6 +28,9 @@ class LoginViewModel(
                     else copy(locale = prefs.locale.wire)
                 }
             }
+            .launchIn(viewModelScope)
+        sessionExpiry.state
+            .onEach { expired -> setState { copy(sessionExpired = expired) } }
             .launchIn(viewModelScope)
     }
 
@@ -50,6 +55,7 @@ class LoginViewModel(
             block = { login(s.username, s.password) },
             onSuccess = { user ->
                 setLastUsername(s.username)
+                sessionExpiry.acknowledge()
                 setState { copy(loading = false, loggedInUser = user, password = "") }
             },
             onFailure = { e ->

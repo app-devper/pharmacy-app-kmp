@@ -41,7 +41,7 @@ class PharmacyApplication : Application() {
                 SharedPreferencesSettings(prefs)
             }
             single<SecureStorage> { AndroidKeystoreSecureStorage(applicationContext) }
-            single { buildHttpClient(OkHttp, get<TokenStorage>(), enableLogging = BuildConfig.DEBUG) }
+            single { buildHttpClient(OkHttp, get<TokenStorage>(), get(), enableLogging = BuildConfig.DEBUG) }
 
             single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }
             single<FileDownloader> { FileDownloaderImpl(applicationContext) }

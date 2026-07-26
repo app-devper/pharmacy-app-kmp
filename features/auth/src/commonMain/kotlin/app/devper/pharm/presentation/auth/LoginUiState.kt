@@ -9,6 +9,7 @@ data class LoginUiState(
     val password: String = "",
     val locale: String = "th",
     val validationRequested: Boolean = false,
+    val sessionExpired: Boolean = false,
     override val loading: Boolean = false,
     val errorState: AppException? = null,
     val loggedInUser: User? = null,
