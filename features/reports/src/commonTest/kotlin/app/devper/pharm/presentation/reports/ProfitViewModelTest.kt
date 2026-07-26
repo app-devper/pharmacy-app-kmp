@@ -45,8 +45,8 @@ class ProfitViewModelTest {
     fun date_range_change_updates_both_ends_before_reloading() = runVmTest { d ->
         val model = vm(d)
         advanceUntilIdle()
-        val from = app.devper.pharm.presentation.reports.internal.ymdToMillis("2026-06-01", model.state.value.dateRange.tz)
-        val to = app.devper.pharm.presentation.reports.internal.ymdToMillis("2026-06-30", model.state.value.dateRange.tz)
+        val from = app.devper.pharm.ui.format.ymdToMillis("2026-06-01", model.state.value.dateRange.tz)
+        val to = app.devper.pharm.ui.format.ymdToMillis("2026-06-30", model.state.value.dateRange.tz)
 
         model.onDateRangeChange(from, to)
         advanceUntilIdle()
