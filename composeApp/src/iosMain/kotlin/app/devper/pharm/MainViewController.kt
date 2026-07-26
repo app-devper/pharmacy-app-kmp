@@ -38,7 +38,7 @@ private fun ensureKoinStarted() {
     val iosPlatformModule = module {
         single<Settings> { NSUserDefaultsSettings(defaults) }
         single<SecureStorage> { KeychainSecureStorage() }
-        single { buildHttpClient(Darwin, get<TokenStorage>()) }
+        single { buildHttpClient(Darwin, get<TokenStorage>(), get()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
         single<FileDownloader> { FileDownloaderImpl(logger = get()) }

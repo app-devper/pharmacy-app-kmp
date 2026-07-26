@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface LoginStrings {
+    val loginSessionExpired: String
     val loginRequiredFields: String
     val loginFailed: String
     val loginUsernameLabel: String

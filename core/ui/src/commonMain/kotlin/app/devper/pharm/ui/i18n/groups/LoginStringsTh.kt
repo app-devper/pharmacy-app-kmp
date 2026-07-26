@@ -12,6 +12,7 @@ object LoginStringsTh : LoginStrings {
     override val loginBrandName = "ร้านยา เฮลท์ตี้ฟาร์ม"
     override val loginBrandTagline = "ระบบ POS ร้านขายยา"
     override val loginVersionPrefix = "เชื่อมต่อกับ Um-Api"
+    override val loginSessionExpired = "เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่"
     override val loginRequiredFields = "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน"
     override val loginFailed = "เข้าสู่ระบบไม่สำเร็จ"
 }
