@@ -9,8 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.presentation.movements.internal.formatYmdDisplay
-import app.devper.pharm.presentation.movements.internal.ymdToMillis
+import app.devper.pharm.ui.format.millisToBuddhistDisplay
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -47,7 +46,7 @@ internal fun MovementsListToolbar(
                     if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
                     if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                 },
-                formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
+                formatDate = { millis -> millisToBuddhistDisplay(millis, state.dateRange.tz) },
                 modifier = Modifier.widthIn(min = 220.dp),
             )
             MovementsTypeChips(

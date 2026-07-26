@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.reports.internal
 
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -9,32 +8,8 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
-import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import app.devper.pharm.ui.format.millisToBuddhistDisplay
-import app.devper.pharm.ui.format.millisToYmd as sharedMillisToYmd
-import app.devper.pharm.ui.format.ymdToMillis as sharedYmdToMillis
-
-internal fun millisToYmd(millis: Long?, tz: TimeZone): String = sharedMillisToYmd(millis, tz)
-
-internal fun ymdToMillis(ymd: String, tz: TimeZone): Long? = sharedYmdToMillis(ymd, tz)
-
-internal fun formatYmdDisplay(millis: Long, tz: TimeZone): String = millisToBuddhistDisplay(millis, tz)
-
-internal fun LocalDate.startOfMonth(): LocalDate = LocalDate(year, month, 1)
-
-internal fun LocalDate.toYmd(): String = buildString {
-    append(year)
-    append('-')
-    append(month.number.toString().padStart(2, '0'))
-    append('-')
-    append(day.toString().padStart(2, '0'))
-}
-
-@OptIn(ExperimentalTime::class)
-internal fun todayDate(tz: TimeZone): LocalDate =
-    Clock.System.now().toLocalDateTime(tz).date
+import app.devper.pharm.ui.format.todayLocalDate
 
 @OptIn(ExperimentalTime::class)
 @Suppress("UNUSED_PARAMETER")
@@ -60,7 +35,7 @@ fun ProfitQuickPeriod.localized(s: app.devper.pharm.ui.i18n.PharmStrings): Strin
 internal data class ProfitDateRange(val fromMillis: Long, val toMillis: Long)
 
 internal fun ProfitQuickPeriod.resolve(tz: TimeZone): ProfitDateRange {
-    val today = todayDate(tz)
+    val today = todayLocalDate(tz)
     return when (this) {
         ProfitQuickPeriod.Today -> ProfitDateRange(today.toStartOfDayMillis(tz), today.toStartOfDayMillis(tz))
         ProfitQuickPeriod.ThisWeek -> {

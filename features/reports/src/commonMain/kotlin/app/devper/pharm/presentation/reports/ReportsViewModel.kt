@@ -11,8 +11,8 @@ import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
 import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
 import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
 import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
-import app.devper.pharm.presentation.reports.internal.startOfMonth
-import app.devper.pharm.presentation.reports.internal.todayDate
+import app.devper.pharm.ui.format.startOfMonth
+import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.FlowPreview
@@ -54,7 +54,7 @@ class ReportsViewModel(
         val days = current.window.days
         reloadJob?.cancel()
         setState { copy(loading = true, errorState = null) }
-        val today = todayDate(timeZoneProvider.current)
+        val today = todayLocalDate(timeZoneProvider.current)
         val monthRange = ReportRangeParam(from = today.startOfMonth(), to = today)
         reloadJob = viewModelScope.launch {
             coroutineScope {

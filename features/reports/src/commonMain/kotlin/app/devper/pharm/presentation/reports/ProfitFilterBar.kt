@@ -15,11 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.reports.internal.ProfitQuickPeriod
-import app.devper.pharm.presentation.reports.internal.formatYmdDisplay
+import app.devper.pharm.ui.format.millisToBuddhistDisplay
 import app.devper.pharm.presentation.reports.internal.localized
 import app.devper.pharm.presentation.reports.internal.resolve
-import app.devper.pharm.presentation.reports.internal.todayDate
-import app.devper.pharm.presentation.reports.internal.ymdToMillis
+import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -47,7 +46,7 @@ internal fun ProfitFilterBar(
         toMillis = state.dateRange.toMillis,
     )
     val s0 = pharmStrings
-    val quickPeriods = remember(todayDate(state.dateRange.tz), s0) {
+    val quickPeriods = remember(todayLocalDate(state.dateRange.tz), s0) {
         ProfitQuickPeriod.entries.map { period ->
             val resolved = period.resolve(state.dateRange.tz)
             PharmDateQuickPeriod(
@@ -106,7 +105,7 @@ internal fun ProfitFilterBar(
                     onRangeChange = { next ->
                         callbacks.onDateRangeChange(next.fromMillis, next.toMillis)
                     },
-                    formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
+                    formatDate = { millis -> millisToBuddhistDisplay(millis, state.dateRange.tz) },
                     quickPeriods = quickPeriods,
                     modifier = Modifier.widthIn(min = 220.dp),
                 )

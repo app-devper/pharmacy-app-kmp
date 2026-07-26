@@ -35,6 +35,20 @@ fun ymdToMillis(ymd: String, tz: TimeZone = TimeZone.UTC): Long? {
 
 fun formatYmdDisplay(millis: Long, tz: TimeZone = DEFAULT_ZONE): String = millisToYmd(millis, tz)
 
+@OptIn(ExperimentalTime::class)
+fun todayLocalDate(tz: TimeZone = DEFAULT_ZONE): LocalDate =
+    Clock.System.now().toLocalDateTime(tz).date
+
+fun LocalDate.toYmd(): String = buildString {
+    append(year)
+    append('-')
+    append(month.number.toString().padStart(2, '0'))
+    append('-')
+    append(day.toString().padStart(2, '0'))
+}
+
+fun LocalDate.startOfMonth(): LocalDate = LocalDate(year, month, 1)
+
 fun toBuddhistEraDisplay(date: LocalDate): String {
     val dd = date.day.toString().padStart(2, '0')
     val mm = date.month.number.toString().padStart(2, '0')

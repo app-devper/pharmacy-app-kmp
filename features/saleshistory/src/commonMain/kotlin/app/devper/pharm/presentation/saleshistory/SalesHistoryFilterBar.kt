@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.presentation.saleshistory.internal.formatYmdDisplay
+import app.devper.pharm.ui.format.millisToBuddhistDisplay
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmDateRange
@@ -58,7 +58,7 @@ internal fun SalesHistoryListToolbar(
                         if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
                         if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                     },
-                    formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
+                    formatDate = { millis -> millisToBuddhistDisplay(millis, state.dateRange.tz) },
                     modifier = Modifier.widthIn(min = 220.dp),
                 )
                 SalesHistoryRangeChips(state = state, onSelectRange = callbacks.onSelectRange)
