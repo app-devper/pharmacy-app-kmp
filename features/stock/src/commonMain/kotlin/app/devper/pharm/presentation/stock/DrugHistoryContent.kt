@@ -31,7 +31,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.format.isoDateTimeToBuddhist
@@ -49,7 +49,11 @@ fun DrugHistoryContent(
     val t = pharmTokens
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(title = pharmStrings.stockHistoryTitle, onBack = onBack)
+        PharmListToolbar(
+            title = pharmStrings.stockHistoryTitle,
+            subtitle = state.drugName.takeIf { it.isNotBlank() },
+            onBack = onBack,
+        )
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -59,16 +63,6 @@ fun DrugHistoryContent(
                 .background(t.colors.surface)
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
-            if (state.drugName.isNotBlank()) {
-                Text(
-                    text = state.drugName,
-                    style = PharmText.h2,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                )
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-            }
             PharmListResultLine(total = state.items.size, noun = pharmStrings.stockHistoryCountNoun)
             Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 

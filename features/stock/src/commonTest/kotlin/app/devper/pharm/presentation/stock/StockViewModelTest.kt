@@ -20,6 +20,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.presentation.stock.exception.StockUiStateError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StockViewModelTest {
@@ -80,6 +81,14 @@ class StockViewModelTest {
         advanceUntilIdle()
         assertNull(vm.state.value.expiringSoonCount)
         assertNull(vm.state.value.errorState)
+    }
+
+    @Test
+    fun drug_load_failure_uses_stock_specific_error() = runVmTest { d ->
+        val vm = vm(d, drugRepo = FakeDrugRepository(listThrows = true))
+        advanceUntilIdle()
+        assertIs<StockUiStateError.LoadStockFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
     }
 
     @Test

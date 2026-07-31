@@ -8,6 +8,7 @@ import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.presentation.suppliers.exception.SuppliersListUiStateError
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -50,7 +51,7 @@ class SuppliersListViewModelTest {
     fun load_failure_sets_error_state_and_clears_loading() = runVmTest { d ->
         val model = vm(FakeSupplierRepository(listThrows = true), d)
         advanceUntilIdle()
-        assertIs<CommonUiStateError.LoadFailed>(model.state.value.errorState)
+        assertIs<SuppliersListUiStateError.LoadSuppliersFailed>(model.state.value.errorState)
         assertFalse(model.state.value.loading)
     }
 

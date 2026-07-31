@@ -1,7 +1,9 @@
 package app.devper.pharm.ui.i18n.groups
 
 object UsersStringsEn : UsersStrings {
-    override val usersListSubtitle = "User Management accounts"
+    override val usersListLoadFailed = "Failed to load users"
+    override val usersFormLoadFailed = "Failed to load user details"
+    override val usersListSubtitle = "Manage user accounts and access roles"
     override val usersSearchPlaceholder = "Search name / username / email…"
     override val usersAddCta = "Add user"
     override val usersAddFirstCta = "Add the first user"
@@ -11,6 +13,13 @@ object UsersStringsEn : UsersStrings {
     override val usersListNotFound = "No users match the search"
     override val usersCannotEdit = "Cannot be edited"
     override val usersHeaderName = "Full name"
+    override val usersHeaderUsername = "Username"
+    override val usersHeaderRole = "Role"
+    override val usersRoleSuper = "Super Admin"
+    override val usersRoleAdmin = "Admin"
+    override val usersRoleManager = "Manager"
+    override val usersRoleUser = "User"
+    override val usersRoleUnknown = "Unknown"
     override val usersStatusActive = "Active"
     override val usersStatusSuspended = "Suspended"
     override val usersActionChangeRole = "Change role"

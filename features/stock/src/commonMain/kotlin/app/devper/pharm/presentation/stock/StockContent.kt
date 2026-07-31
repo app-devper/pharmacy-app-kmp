@@ -12,6 +12,8 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.theme.PharmacyTheme
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -50,6 +52,13 @@ fun StockContent(
             state.drugs.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.Stock,
                 title = pharmStrings.stockListEmpty,
+                action = {
+                    PharmButton(
+                        label = pharmStrings.stockAddDrugCta,
+                        onClick = callbacks.onAddDrug,
+                        size = PharmButtonSize.Sm,
+                    )
+                },
             )
             else -> StockTable(
                 drugs = visible,

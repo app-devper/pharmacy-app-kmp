@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface ExpiryStrings {
+    val expiryLoadLotsFailed: String
     val expiryWriteoffFailures: (Int) -> String
     val expiryMoreFailures: (Int) -> String
 

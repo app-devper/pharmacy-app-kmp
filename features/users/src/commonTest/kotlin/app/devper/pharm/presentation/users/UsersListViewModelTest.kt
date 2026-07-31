@@ -18,6 +18,7 @@ import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
 import app.devper.pharm.domain.extension.canManage
 import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.domain.extension.canViewUsers
+import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -155,7 +156,7 @@ class UsersListViewModelTest {
         val state = vm.state.value
         assertFalse(state.loading)
         assertEquals(0, state.users.size)
-        assertIs<CommonUiStateError.LoadFailed>(state.errorState)
+        assertIs<UsersUiStateError.LoadUsersFailed>(state.errorState)
     }
 
     @Test

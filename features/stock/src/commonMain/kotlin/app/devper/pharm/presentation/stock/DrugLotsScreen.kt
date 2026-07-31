@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.i18n.pharmStrings
 import org.koin.compose.viewmodel.koinViewModel
@@ -46,7 +46,11 @@ fun DrugLotsScreen(
     )
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(title = pharmStrings.stockActionLots, onBack = onBack)
+        PharmListToolbar(
+            title = pharmStrings.stockActionLots,
+            subtitle = state.drugName.ifBlank { drugName },
+            onBack = onBack,
+        )
         Column(
             modifier = Modifier
                 .weight(1f)

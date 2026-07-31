@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.customers
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.customers.CustomerInput
 import app.devper.pharm.domain.param.customers.UpdateCustomerParam
 import app.devper.pharm.domain.usecase.customers.AddCustomerUseCase
@@ -57,7 +56,7 @@ class CustomerFormViewModel(
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CustomerFormUiStateError.LoadCustomerFailed(e)) } },
         )
     }
 

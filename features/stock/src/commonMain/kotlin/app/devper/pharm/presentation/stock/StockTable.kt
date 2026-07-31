@@ -26,6 +26,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -171,6 +172,7 @@ internal fun StockTable(
         columns = columns,
         key = { it.id },
         modifier = modifier,
+        cardModeMaxWidth = PharmBreakpoint.Expanded,
         onRowClick = { drug -> callbacks.onEditDrug(drug) },
         rowHeight = 52.dp,
         emptyContent = {

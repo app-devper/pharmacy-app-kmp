@@ -82,7 +82,7 @@ object SellStringsTh : SellStrings {
     override val sellTierRetailLabel = "ราคาปลีก"
 
     override val sellCart = "ตะกร้า"
-    override val sellSearchPlaceholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)"
+    override val sellSearchPlaceholder = "ค้นหาด้วยชื่อการค้า ชื่อสามัญ หรือบาร์โค้ด (F2)…"
     override val sellNoResults = "ไม่พบยาที่ค้นหา"
     override val sellEmptyCart = "ตะกร้าว่าง"
     override val sellEmptyCartHint = "แตะรายการยาด้านบนเพื่อเริ่มขาย"
@@ -113,7 +113,7 @@ object SellStringsTh : SellStrings {
     override val sellCustomerWalkIn = "ลูกค้าทั่วไป"
     override val sellCustomerSelect = "เลือกลูกค้า"
     override val sellCustomerClear = "ล้างลูกค้า"
-    override val sellCustomerSearchPlaceholder = "ค้นหาชื่อ / เบอร์โทร"
+    override val sellCustomerSearchPlaceholder = "ค้นหาชื่อลูกค้า / เบอร์โทร…"
     override val sellCustomerEmpty = "ยังไม่มีรายชื่อลูกค้า"
     override val sellCustomerNotFound = "ไม่พบลูกค้าที่ค้นหา"
     override val sellPharmacist = "เภสัชกรผู้จ่าย"
@@ -156,6 +156,7 @@ object SellStringsTh : SellStrings {
     override val sellVoidMissingBillId = "ไม่สามารถยกเลิกบิลนี้: ไม่พบรหัสบิล"
     override val sellVoidReasonRequired = "กรุณาระบุเหตุผลการยกเลิก"
     override val sellVoidFailed = "ยกเลิกบิลไม่สำเร็จ"
+    override val sellLoadDrugsFailed = "โหลดรายการยาสำหรับขายไม่สำเร็จ"
     override val sellBarcodeNotFound: (String) -> String = { code -> "ไม่พบยาสำหรับบาร์โค้ด $code" }
     override val sellLoadCustomersFailed = "โหลดรายการลูกค้าไม่สำเร็จ"
     override val sellPrintReceiptUnsupported = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ"

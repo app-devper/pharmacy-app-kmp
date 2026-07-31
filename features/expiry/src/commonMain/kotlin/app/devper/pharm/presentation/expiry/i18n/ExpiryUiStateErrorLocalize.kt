@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeExpiry(s: PharmStrings): String = when (this) {
+    is ExpiryUiStateError.LoadLotsFailed -> s.expiryLoadLotsFailed
     is ExpiryUiStateError.WriteoffFailed -> s.expiryWriteoffFailed
     else -> localizeCommon(s)
 }

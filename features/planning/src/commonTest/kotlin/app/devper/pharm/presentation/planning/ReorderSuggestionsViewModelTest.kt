@@ -7,6 +7,7 @@ import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.usecase.inventory.GetReorderSuggestionsUseCase
+import app.devper.pharm.presentation.planning.exception.ReorderSuggestionsUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -48,7 +49,7 @@ class ReorderSuggestionsViewModelTest {
         val repo = FakeDrugRepository(reorderThrows = true)
         val vm = ReorderSuggestionsViewModel(GetReorderSuggestionsUseCase(repo, d), PurchaseDraftProvider())
         advanceUntilIdle()
-        assertNotNull(vm.state.value.errorState)
+        assertIs<ReorderSuggestionsUiStateError.LoadFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 

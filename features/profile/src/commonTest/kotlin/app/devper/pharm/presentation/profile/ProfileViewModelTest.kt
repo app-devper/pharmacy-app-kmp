@@ -176,7 +176,7 @@ class ProfileViewModelTest {
         assertFalse(state.loading)
         assertNull(state.user)
         val loadErr = state.errorState
-        assertIs<CommonUiStateError.LoadFailed>(loadErr)
+        assertIs<ProfileUiStateError.LoadProfileFailed>(loadErr)
         assertEquals("token expired", loadErr.cause?.message)
     }
 

@@ -21,6 +21,7 @@ interface ProfileStrings {
     val profilePasswordChange: String
     val profilePasswordChanging: String
     val profilePasswordChanged: String
+    val profileLoadFailed: String
     val profilePasswordChangeFailed: String
     val profileDisplayTheme: String
     val profileDisplayFontSize: String

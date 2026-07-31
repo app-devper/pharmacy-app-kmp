@@ -7,5 +7,6 @@ import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeSupplierForm(s: PharmStrings): String = when (this) {
     is SupplierFormUiStateError.NotFound -> s.suppliersFormNotFound
+    is SupplierFormUiStateError.LoadSupplierFailed -> s.suppliersFormLoadFailed
     else -> localizeCommon(s)
 }

@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.reports
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.presentation.reports.exception.EodUiStateError
 
 import androidx.lifecycle.viewModelScope
@@ -128,7 +127,7 @@ class EodViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = EodUiStateError.LoadReportFailed(e)) } },
         )
     }
 }

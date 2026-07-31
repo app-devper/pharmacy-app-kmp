@@ -21,7 +21,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.i18n.localizeCommon
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmFormCard
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -53,7 +53,7 @@ fun Ky11AddContent(
     var validationRequested by remember { mutableStateOf(false) }
     val commonFocus = rememberKyCommonFocusRequesters()
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = pharmStrings.kyAddCtaWithNumber(11),
             onBack = callbacks.onBack,
             actions = {

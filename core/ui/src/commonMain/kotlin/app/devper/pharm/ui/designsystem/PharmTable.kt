@@ -54,6 +54,7 @@ fun <T> PharmTable(
     columns: List<PharmTableColumn<T>>,
     key: ((T) -> Any)? = null,
     modifier: Modifier = Modifier,
+    cardModeMaxWidth: Dp = PharmBreakpoint.Medium,
     rowHeight: Dp = Dp.Unspecified,
     headerHeight: Dp = Dp.Unspecified,
     onRowClick: ((T) -> Unit)? = null,
@@ -78,7 +79,7 @@ fun <T> PharmTable(
             .fillMaxSize()
             .background(t.colors.surface),
     ) {
-        if (maxWidth < CARD_MODE_MAX_WIDTH) {
+        if (maxWidth < cardModeMaxWidth) {
             PharmTableCardList(
                 rows = rows,
                 columns = columns,
@@ -130,8 +131,6 @@ fun <T> PharmTable(
 }
 
 private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
-private val CARD_MODE_MAX_WIDTH: Dp = PharmBreakpoint.Medium
-
 @Composable
 private fun <T> PharmTableCardList(
     rows: List<T>,

@@ -7,6 +7,7 @@ import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
+import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -21,9 +22,11 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class KyListViewModelTest {
 
-    private fun vm(export: FakeExportRepository = FakeExportRepository()): (d: app.devper.pharm.common.AppDispatchers) -> KyListViewModel =
+    private fun vm(
+        export: FakeExportRepository = FakeExportRepository(),
+        repo: FakeKyRepository = FakeKyRepository(),
+    ): (d: app.devper.pharm.common.AppDispatchers) -> KyListViewModel =
         { d ->
-            val repo = FakeKyRepository()
             KyListViewModel(
                 GetKy10EntriesUseCase(repo, d),
                 GetKy11EntriesUseCase(repo, d),
@@ -40,6 +43,15 @@ class KyListViewModelTest {
         assertEquals(KyFormType.Ky10, model.state.value.formType)
         assertFalse(model.state.value.loading)
         assertNull(model.state.value.errorState)
+    }
+
+    @Test
+    fun init_failure_surfaces_entries_specific_error() = runVmTest { d ->
+        val model = vm(repo = FakeKyRepository(listThrows = true))(d)
+        model.init(KyFormType.Ky10)
+        advanceUntilIdle()
+        assertIs<KyUiStateError.LoadEntriesFailed>(model.state.value.errorState)
+        assertFalse(model.state.value.loading)
     }
 
     @Test

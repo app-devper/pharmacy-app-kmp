@@ -88,6 +88,15 @@ class SupplierFormViewModelTest {
     }
 
     @Test
+    fun edit_mode_load_failure_uses_supplier_specific_error() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeSupplierRepository(listThrows = true))
+        vm.init(SupplierFormMode.Edit("s1"))
+        advanceUntilIdle()
+        assertIs<SupplierFormUiStateError.LoadSupplierFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
     fun canSubmit_false_until_name_filled() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers)
         vm.init(SupplierFormMode.Add)

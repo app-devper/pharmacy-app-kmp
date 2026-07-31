@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.sell.flow
 
-import app.devper.pharm.common.error.CommonUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
@@ -48,7 +47,9 @@ class DrugPickerViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(drugsLoading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(drugsLoading = false, errorState = DrugPickerUiStateError.LoadDrugsFailed(e)) }
+            },
         )
     }
 

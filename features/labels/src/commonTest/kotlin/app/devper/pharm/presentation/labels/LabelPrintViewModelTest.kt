@@ -6,7 +6,6 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.common.AppDispatchers
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelSize
@@ -254,7 +253,7 @@ class LabelPrintViewModelTest {
         )
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
-        assertIs<CommonUiStateError.LoadFailed>(vm.state.value.errorState)
+        assertIs<LabelPrintUiStateError.LoadDrugsFailed>(vm.state.value.errorState)
     }
 
     @Test

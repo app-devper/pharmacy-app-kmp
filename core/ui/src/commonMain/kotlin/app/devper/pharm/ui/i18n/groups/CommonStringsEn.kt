@@ -68,7 +68,7 @@ object CommonStringsEn : CommonStrings {
     override val commonBackspace = "Backspace"
     override val commonClearInput = "Clear text"
     override val commonBack = "Back"
-    override val commonLoading = "Loading"
+    override val commonLoading = "Loading…"
     override val commonRetry = "Retry"
     override val commonMore = "More"
     override val commonTotal = "Total"

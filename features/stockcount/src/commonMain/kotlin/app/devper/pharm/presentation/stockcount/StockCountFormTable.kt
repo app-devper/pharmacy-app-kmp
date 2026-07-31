@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -108,9 +107,8 @@ private fun StockCountDrugCell(row: StockCountFormRow) {
     val bg = if (row.highlighted) t.colors.warningBg.copy(alpha = 0.35f) else Color.Transparent
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(bg)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         contentAlignment = Alignment.CenterStart,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -138,9 +136,8 @@ private fun StockCountSystemCell(row: StockCountFormRow) {
     val bg = if (row.highlighted) t.colors.warningBg.copy(alpha = 0.35f) else Color.Transparent
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(bg)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         contentAlignment = Alignment.CenterEnd,
     ) {
         Text(
@@ -161,7 +158,6 @@ private fun StockCountInputCell(
     val bg = if (row.highlighted) t.colors.warningBg.copy(alpha = 0.35f) else Color.Transparent
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(bg)
             .padding(horizontal = 8.dp, vertical = 8.dp),
         contentAlignment = Alignment.CenterEnd,
@@ -212,9 +208,8 @@ private fun StockCountDeltaCell(row: StockCountFormRow) {
     }
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(bg)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         contentAlignment = Alignment.CenterEnd,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

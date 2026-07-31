@@ -98,7 +98,7 @@ private fun RoleDialogBody(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { role ->
             PharmButton(
-                label = role.label(),
+                label = role.label(s),
                 onClick = { callbacks.onSubmitRoleChange(role) },
                 variant = if (role == target.role) PharmButtonVariant.Primary else PharmButtonVariant.Outline,
                 enabled = !state.actionBusy,

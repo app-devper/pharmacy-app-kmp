@@ -4,7 +4,7 @@ object SalesHistoryStringsEn : SalesHistoryStrings {
     override val salesHistoryReturnTitle: (String) -> String = { bill -> "Return items from bill $bill" }
     override val salesHistoryReturnSubtitle = "Pick quantities to return — the refund is calculated automatically"
     override val salesHistoryReasonLabel = "Reason"
-    override val salesHistoryReturnReasonPlaceholder = "Return reason, e.g. customer changed mind, defective"
+    override val salesHistoryReturnReasonPlaceholder = "Return reason, e.g. customer changed mind, defective…"
     override val salesHistoryReturnConfirmCta = "Confirm return"
     override val salesHistorySoldRemaining: (Int, String, Int) -> String = { q, u, r -> "Sold $q $u · returnable $r" }
     override val salesHistoryReturnCapHint: (Int, Int) -> String = { max, pending -> "Returnable up to $max — $pending unit(s) not lot-bound" }

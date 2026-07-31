@@ -7,13 +7,14 @@ import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.usecase.inventory.GetLowStockDrugsUseCase
+import app.devper.pharm.presentation.planning.exception.LowStockUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,7 +52,7 @@ class LowStockViewModelTest {
         val repo = FakeDrugRepository(lowStockThrows = true)
         val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
         advanceUntilIdle()
-        assertNotNull(vm.state.value.errorState)
+        assertIs<LowStockUiStateError.LoadFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 

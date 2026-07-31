@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.profile
 
 import app.devper.pharm.presentation.profile.exception.ProfileUiStateError
 
-import app.devper.pharm.common.error.CommonUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.DensityPreference
@@ -133,7 +132,7 @@ class ProfileViewModel(
                 hydrate(user)
                 setState { copy(loading = false) }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = ProfileUiStateError.LoadProfileFailed(e)) } },
         )
     }
 

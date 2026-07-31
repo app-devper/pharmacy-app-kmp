@@ -3,6 +3,7 @@ package app.devper.pharm.ui.i18n.groups
 object LabelsStringsEn : LabelsStrings {
     override val labelsAddCta = "+ Add"
 
+    override val labelsLoadDrugsFailed = "Failed to load drugs for labels"
     override val labelsSubtitle = "Design and print drug labels"
     override val labelsSearchPlaceholder = "Search drugs (add one per line)…"
     override val labelsNoDrugs = "No drugs available"

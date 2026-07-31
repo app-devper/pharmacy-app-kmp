@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface PlanningStrings {
+    val planningLoadLowStockFailed: String
+    val planningLoadReorderFailed: String
     val planningTrackStockFailed: String
     val planningTitle: String
     val planningRefreshCta: String
