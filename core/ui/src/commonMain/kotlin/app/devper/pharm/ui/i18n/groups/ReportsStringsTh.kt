@@ -52,7 +52,7 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsCostBasis = "ตามล็อตที่ตัด"
     override val reportsDrugWord = "ยา"
     override val reportsSortBy = "เรียงตาม"
-    override val reportsDatePlaceholder = "รูปแบบ YYYY-MM-DD (ว่าง = วันนี้)"
+    override val reportsDatePlaceholder = "รูปแบบ YYYY-MM-DD (ว่าง = วันนี้)…"
     override val reportsEodDateInvalid = "กรอกวันที่รูปแบบ YYYY-MM-DD เช่น 2026-07-15"
     override val reportsEodTitle = "ปิดยอดสิ้นวัน"
     override val reportsEodSubtitle = "สรุปยอดขาย / ส่วนลด / เงินสดของวัน — ยืนยันก่อนปิดรอบ"

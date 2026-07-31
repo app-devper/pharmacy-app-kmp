@@ -3,6 +3,8 @@ package app.devper.pharm.ui.i18n.groups
 interface SuppliersStrings {
     val suppliersTaxIdPlaceholder: String
 
+    val suppliersListLoadFailed: String
+    val suppliersFormLoadFailed: String
     val suppliersFormNotFound: String
     val suppliersListSubtitle: String
     val suppliersSearchPlaceholder: String

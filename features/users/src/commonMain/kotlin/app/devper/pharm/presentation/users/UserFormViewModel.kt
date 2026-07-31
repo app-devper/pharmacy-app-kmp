@@ -1,7 +1,5 @@
 package app.devper.pharm.presentation.users
 
-import app.devper.pharm.common.error.CommonUiStateError
-
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.UpdateUserParam
@@ -66,7 +64,9 @@ class UserFormViewModel(
                     hydrate(user)
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = UserFormUiStateError.LoadUserFailed(e)) }
+            },
         )
     }
 

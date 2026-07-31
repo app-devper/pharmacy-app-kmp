@@ -22,7 +22,10 @@ import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.presentation.imports.i18n.localizeImports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -56,6 +59,17 @@ fun ImportsListContent(
     ) {
         when {
             state.loading && state.orders.isEmpty() -> PharmListSkeleton()
+            state.orders.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.Imports,
+                title = pharmStrings.importsListEmpty,
+                action = {
+                    PharmButton(
+                        label = pharmStrings.importsAddCta,
+                        onClick = callbacks.onCreateImport,
+                        size = PharmButtonSize.Sm,
+                    )
+                },
+            )
             else -> ImportsListTable(
                 orders = visible,
                 callbacks = callbacks,

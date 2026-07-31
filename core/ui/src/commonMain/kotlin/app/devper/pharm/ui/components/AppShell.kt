@@ -119,7 +119,6 @@ fun AppShell(
                 .map { BottomNavItem(id = it.route, label = it.label, icon = it.icon) }
         }
 
-        val subPageController = remember { SubPageBarController() }
         val compactPageActionsController = remember { CompactPageActionsController() }
         val unsavedChangesController = remember { UnsavedChangesController() }
         LaunchedEffect(unsavedChangesController.hasUnsavedChanges) {
@@ -130,7 +129,6 @@ fun AppShell(
         }
         CompositionLocalProvider(
             LocalWindowSize provides size,
-            LocalSubPageBarController provides subPageController,
             LocalCompactPageActionsController provides compactPageActionsController,
             LocalUnsavedChangesController provides unsavedChangesController,
         ) {
@@ -147,8 +145,6 @@ fun AppShell(
                     onSyncClick = onSyncClick,
                     user = user,
                     onProfileClick = onProfileClick,
-                    isSubPage = isSubPage,
-                    onSubPageBack = onSubPageBack,
                     content = content,
                 )
             } else {
@@ -162,8 +158,6 @@ fun AppShell(
                     onSyncClick = onSyncClick,
                     user = user,
                     onProfileClick = onProfileClick,
-                    isSubPage = isSubPage,
-                    onSubPageBack = onSubPageBack,
                     content = content,
                 )
             }
@@ -177,10 +171,8 @@ fun AppShell(
 @Composable
 private fun GuardedSystemBack(isSubPage: Boolean, onSubPageBack: (() -> Unit)?) {
     val controller = LocalUnsavedChangesController.current ?: return
-    val subPage = LocalSubPageBarController.current?.content
-    val backAction = subPage?.onBack ?: onSubPageBack
-    BackHandler(enabled = isSubPage && controller.hasUnsavedChanges && backAction != null) {
-        controller.request { backAction?.invoke() }
+    BackHandler(enabled = isSubPage && controller.hasUnsavedChanges && onSubPageBack != null) {
+        controller.request { onSubPageBack?.invoke() }
     }
 }
 
@@ -198,19 +190,12 @@ private fun CompactShell(
     onSyncClick: () -> Unit,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
-    isSubPage: Boolean,
-    onSubPageBack: (() -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
     var drawerOpen by remember { mutableStateOf(false) }
-    val subPage = LocalSubPageBarController.current?.content
     val pageActions = LocalCompactPageActionsController.current?.content
     val unsavedChanges = LocalUnsavedChangesController.current
-    val backAction = subPage?.onBack ?: onSubPageBack
-    val guardedBack = backAction?.let { action ->
-        { unsavedChanges?.request(action) ?: action() }
-    }
     val guardedNavigate: (String) -> Unit = { id ->
         unsavedChanges?.request { onNavigate(id) } ?: onNavigate(id)
     }
@@ -230,14 +215,13 @@ private fun CompactShell(
                     .background(t.colors.surface),
             )
             PharmTopbar(
-                title = if (isSubPage) subPage?.title ?: title else title,
-                user = if (isSubPage) null else user,
-                showHamburger = !isSubPage,
+                title = title,
+                user = user,
+                showHamburger = true,
                 showThemeToggle = false,
                 showStatus = false,
-                compactUserMenu = !isSubPage,
-                onBack = if (isSubPage) guardedBack else null,
-                actions = if (isSubPage) subPage?.actions else pageActions?.actions,
+                compactUserMenu = true,
+                actions = pageActions?.actions,
                 onHamburger = { drawerOpen = true },
                 onLogout = guardedLogout,
                 onProfileClick = guardedProfileClick,
@@ -290,19 +274,12 @@ private fun ExpandedShell(
     onSyncClick: () -> Unit,
     user: TopbarUser?,
     onProfileClick: (() -> Unit)?,
-    isSubPage: Boolean,
-    onSubPageBack: (() -> Unit)?,
     content: @Composable () -> Unit,
 ) {
     val t = pharmTokens
     val sidebar = LocalSidebarState.current
-    val subPage = LocalSubPageBarController.current?.content
     val pageActions = LocalCompactPageActionsController.current?.content
     val unsavedChanges = LocalUnsavedChangesController.current
-    val backAction = subPage?.onBack ?: onSubPageBack
-    val guardedBack = backAction?.let { action ->
-        { unsavedChanges?.request(action) ?: action() }
-    }
     val guardedNavigate: (String) -> Unit = { id ->
         unsavedChanges?.request { onNavigate(id) } ?: onNavigate(id)
     }
@@ -337,10 +314,9 @@ private fun ExpandedShell(
                     .background(t.colors.surface),
             )
             PharmTopbar(
-                title = if (isSubPage) subPage?.title ?: title else title,
-                user = if (isSubPage) null else user,
-                onBack = if (isSubPage) guardedBack else null,
-                actions = if (isSubPage) subPage?.actions else pageActions?.actions,
+                title = title,
+                user = user,
+                actions = pageActions?.actions,
                 onLogout = guardedLogout,
                 onProfileClick = guardedProfileClick,
                 trailing = {

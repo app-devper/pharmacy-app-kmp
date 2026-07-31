@@ -33,6 +33,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -56,7 +57,8 @@ fun ReportsContent(
 
         Column(modifier = contentModifier) {
             val s = pharmStrings
-            state.dashboard?.summary?.let {
+            val dashboard = state.dashboard
+            dashboard?.summary?.let {
                 ReportsMetricsRow(
                     summary = it,
                     monthProfit = state.monthProfit,
@@ -93,38 +95,47 @@ fun ReportsContent(
                 },
             )
 
-            if (state.loading && state.dashboard == null) {
-                PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    state.dashboard?.daily?.let { daily ->
-                        item("daily") { ReportsDailyBarChart(daily = daily) }
-                    }
-                    state.dashboard?.monthly?.let { monthly ->
-                        item("monthly") { ReportsMonthlyGroupedBars(monthly = monthly) }
-                    }
-                    item("top-and-slow") {
-                        if (stackTopAndSlow) {
-                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
-                                ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
-                            }
-                        } else {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
-                                ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+            when {
+                state.loading && dashboard == null ->
+                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
+                dashboard == null ->
+                    PharmEmptyState(
+                        icon = PharmIcons.Reports,
+                        title = s.reportsEmptyNoData,
+                        subtitle = s.reportsEmptyChartHint,
+                        action = {
+                            PharmButton(
+                                label = s.commonRetry,
+                                onClick = callbacks.onReload,
+                                size = PharmButtonSize.Sm,
+                            )
+                        },
+                    )
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        item("daily") { ReportsDailyBarChart(daily = dashboard.daily) }
+                        item("monthly") { ReportsMonthlyGroupedBars(monthly = dashboard.monthly) }
+                        item("top-and-slow") {
+                            if (stackTopAndSlow) {
+                                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                    ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
+                                    ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                ) {
+                                    ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
+                                    ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+                                }
                             }
                         }
-                    }
-                    state.dashboard?.recentSales?.let { recent ->
-                        item("recent") { ReportsRecentSalesSection(recent = recent) }
+                        item("recent") { ReportsRecentSalesSection(recent = dashboard.recentSales) }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
+import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -24,6 +25,17 @@ class Ky9ViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertNull(vm.state.value.errorState)
+    }
+
+    @Test
+    fun init_failure_surfaces_entries_specific_error() = runVmTest { d ->
+        val vm = Ky9ViewModel(
+            GetKy9EntriesUseCase(FakeKyRepository(listThrows = true), d),
+            ExportKyFormUseCase(FakeExportRepository(), d),
+        )
+        advanceUntilIdle()
+        assertIs<KyUiStateError.LoadEntriesFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
     }
 
     @Test

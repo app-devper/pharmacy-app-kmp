@@ -110,6 +110,15 @@ class EodViewModelTest {
     }
 
     @Test
+    fun init_failure_surfaces_report_specific_error() = runVmTest { dispatchers ->
+        val reports = FakeReportsRepository(eodThrows = app.devper.pharm.common.ServerException("eod failed"))
+        val vm = newVm(dispatchers, reports = reports)
+        advanceUntilIdle()
+        assertIs<EodUiStateError.LoadReportFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
     fun confirmCloseDay_success_marks_closed_and_stores_result() = runVmTest { dispatchers ->
         val reports = FakeReportsRepository(
             eodResult = sampleReport,

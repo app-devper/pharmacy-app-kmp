@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CustomersStringsEn : CustomersStrings {
+    override val customersListLoadFailed = "Failed to load customers"
+    override val customersFormLoadFailed = "Failed to load customer for editing"
     override val customersListSubtitle = "Manage customer data and purchase history"
     override val customersSearchPlaceholder = "Search name / phone…"
     override val customersAddCta = "Add customer"
@@ -19,7 +21,7 @@ object CustomersStringsEn : CustomersStrings {
     override val customersFormEditTitle = "Edit customer"
     override val customersFormInfoSection = "Customer info"
     override val customersFormFullName = "Full name"
-    override val customersFormNamePlaceholder = "e.g. Somsri Jaidee"
+    override val customersFormNamePlaceholder = "e.g. Somsri Jaidee…"
     override val customersFormAllergyHint = "Shown as a red warning banner in the cart"
     override val customersTierLabel = "Price tier"
     override val customersTierHint = "Default price tier for this customer. Sales use this tier; if a drug has no tier price, the store price is used instead."

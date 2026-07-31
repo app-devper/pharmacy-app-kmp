@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.presentation.stock.exception.DrugFormUiStateError
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -84,7 +83,9 @@ class DrugFormViewModel(
                     setState { copy(loading = false, form = hydratedForm, baselineForm = hydratedForm) }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = DrugFormUiStateError.LoadDrugFailed(e)) }
+            },
         )
     }
 

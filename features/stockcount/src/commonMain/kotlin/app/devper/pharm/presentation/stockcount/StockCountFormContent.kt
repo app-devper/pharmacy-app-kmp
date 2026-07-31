@@ -32,7 +32,7 @@ import app.devper.pharm.presentation.stockcount.components.DraftActionConfirmMod
 import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.presentation.stockcount.i18n.localizeStockCount
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -59,7 +59,7 @@ fun StockCountFormContent(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = s.stockCountHistoryNewCta,
             onBack = callbacks.onBack,
             actions = {

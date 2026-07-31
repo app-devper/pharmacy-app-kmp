@@ -5,8 +5,6 @@ import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
-import app.devper.pharm.common.error.CommonUiStateError
-
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.PurchaseOrderStatus
@@ -171,7 +169,7 @@ class ImportFormViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = ImportFormUiStateError.LoadOrderFailed(e)) } },
         )
     }
 

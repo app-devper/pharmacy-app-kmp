@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeLabels(s: PharmStrings): String = when (this) {
+    is LabelPrintUiStateError.LoadDrugsFailed -> s.labelsLoadDrugsFailed
     is LabelPrintUiStateError.PrintFailed -> s.labelsPrintFailed
     else -> localizeCommon(s)
 }

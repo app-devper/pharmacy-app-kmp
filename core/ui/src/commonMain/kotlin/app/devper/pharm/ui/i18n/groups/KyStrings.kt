@@ -8,6 +8,7 @@ interface KyStrings {
 
     val kyTabLabel: (Int) -> String
 
+    val kyLoadEntriesFailed: String
     val kyDownloadPdfFailed: String
     val kyToolbarSubtitle: String
     val kyEmptyMonth: String

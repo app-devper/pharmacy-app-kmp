@@ -17,6 +17,7 @@ class FakeKyRepository(
     private val ky11Throws: Boolean = false,
     private val ky12Throws: Boolean = false,
     private val ky9Throws: Boolean = false,
+    private val listThrows: Boolean = false,
 ) : KyRepository {
 
     val ky10Submissions = mutableListOf<KyForm.Ky10>()
@@ -44,8 +45,23 @@ class FakeKyRepository(
         ky9Adds += param
     }
 
-    override suspend fun listKy9(filter: KyMonthFilterParam): List<Ky9Entry> = emptyList()
-    override suspend fun listKy10(filter: KyMonthFilterParam): List<Ky10Entry> = emptyList()
-    override suspend fun listKy11(filter: KyMonthFilterParam): List<Ky11Entry> = emptyList()
-    override suspend fun listKy12(filter: KyMonthFilterParam): List<Ky12Entry> = emptyList()
+    override suspend fun listKy9(filter: KyMonthFilterParam): List<Ky9Entry> {
+        if (listThrows) throw ServerException("list ky9 failed")
+        return emptyList()
+    }
+
+    override suspend fun listKy10(filter: KyMonthFilterParam): List<Ky10Entry> {
+        if (listThrows) throw ServerException("list ky10 failed")
+        return emptyList()
+    }
+
+    override suspend fun listKy11(filter: KyMonthFilterParam): List<Ky11Entry> {
+        if (listThrows) throw ServerException("list ky11 failed")
+        return emptyList()
+    }
+
+    override suspend fun listKy12(filter: KyMonthFilterParam): List<Ky12Entry> {
+        if (listThrows) throw ServerException("list ky12 failed")
+        return emptyList()
+    }
 }

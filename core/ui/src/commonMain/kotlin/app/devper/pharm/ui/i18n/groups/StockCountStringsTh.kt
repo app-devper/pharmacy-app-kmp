@@ -18,7 +18,7 @@ object StockCountStringsTh : StockCountStrings {
     override val stockCountStatusNotAdjusted = "ไม่ปรับ"
     override val stockCountHeaderNote = "หมายเหตุ"
     override val stockCountActionDetails = "ดูรายละเอียด"
-    override val stockCountFormSearchPlaceholder = "ค้นหายา / barcode…"
+    override val stockCountFormSearchPlaceholder = "ค้นหายา / บาร์โค้ด…"
     override val stockCountFormNotePlaceholder = "เช่น ตรวจประจำเดือน…"
     override val stockCountFormCounted = "นับได้"
     override val stockCountFormInSystem = "ในระบบ"

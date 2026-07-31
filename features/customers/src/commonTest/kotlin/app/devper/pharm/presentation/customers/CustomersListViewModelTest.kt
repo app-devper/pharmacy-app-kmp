@@ -4,11 +4,13 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.repository.FakeCustomerRepository
 import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.ui.common.runVmTest
+import app.devper.pharm.presentation.customers.exception.CustomersListUiStateError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,5 +36,13 @@ class CustomersListViewModelTest {
         advanceUntilIdle()
         vm.onQueryChange("สมศรี")
         assertEquals("สมศรี", vm.state.value.query)
+    }
+
+    @Test
+    fun load_failure_uses_customer_specific_error() = runVmTest { d ->
+        val vm = CustomersListViewModel(GetCustomersUseCase(FakeCustomerRepository(listThrows = true), d))
+        advanceUntilIdle()
+        assertIs<CustomersListUiStateError.LoadCustomersFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
     }
 }

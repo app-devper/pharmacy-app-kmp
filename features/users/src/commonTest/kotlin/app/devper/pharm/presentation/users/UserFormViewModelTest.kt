@@ -8,6 +8,7 @@ import app.devper.pharm.domain.repository.FakeUsersRepository
 import app.devper.pharm.domain.usecase.users.CreateUserUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
+import app.devper.pharm.presentation.users.exception.UserFormUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -81,6 +82,16 @@ class UserFormViewModelTest {
         assertEquals("ใจดี", state.form.lastName)
         assertEquals("somchai", state.form.username)
         assertFalse(state.loading)
+    }
+
+    @Test
+    fun edit_load_failure_uses_user_specific_error() = runVmTest { dispatchers ->
+        val fake = FakeUsersRepository(listFailsWith = RuntimeException("network down"))
+        val vm = bundle(fake, dispatchers)
+        vm.init(UserFormMode.Edit("u-1"))
+        advanceUntilIdle()
+        assertIs<UserFormUiStateError.LoadUserFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
     }
 
     @Test

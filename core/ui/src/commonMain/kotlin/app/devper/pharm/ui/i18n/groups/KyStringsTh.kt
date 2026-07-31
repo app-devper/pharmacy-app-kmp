@@ -11,7 +11,7 @@ object KyStringsTh : KyStrings {
     override val kyToolbarSubtitle = "ส่งออกเป็นไฟล์ Excel/PDF สำหรับยื่น อย. ตามแบบฟอร์ม กระทรวงสาธารณสุข"
     override val kyEmptyMonth = "ไม่มีรายการในเดือนนี้"
     override val kyCountNoun = "รายการ"
-    override val kySearchPlaceholder = "ค้นหา"
+    override val kySearchPlaceholder = "ค้นหารายการ…"
     override val kyAddCta = "เพิ่มรายการ"
     override val kyAddCtaWithNumber: (Int) -> String = { n -> "เพิ่มรายการ ขย.$n" }
     override val kyHeaderDate = "วันที่"
@@ -21,7 +21,7 @@ object KyStringsTh : KyStrings {
     override val kyHeaderQty = "จำนวน"
     override val kyHeaderValue = "มูลค่า"
     override val kyHeaderPricePerUnit = "ราคา/หน่วย"
-    override val kyHeaderStatusPlaceholder = "เช่น จ่ายแล้ว / รอจ่าย"
+    override val kyHeaderStatusPlaceholder = "เช่น จ่ายแล้ว / รอจ่าย…"
     override val kyExportingPdf = "กำลังส่งออก…"
     override val kyExportPdfSuccess = "ส่งออก PDF สำเร็จ"
     override val kyExportPdfFailed = "ดาวน์โหลด PDF ไม่สำเร็จ"
@@ -55,5 +55,6 @@ object KyStringsTh : KyStrings {
     override val kyTotalAll = "รวมทั้งหมด"
     override val kyDateYmd = "วันที่ (YYYY-MM-DD)"
     override val kyMonthLabel = "เดือน"
+    override val kyLoadEntriesFailed = "โหลดรายการแบบฟอร์ม ขย. ไม่สำเร็จ"
     override val kyDownloadPdfFailed = "ดาวน์โหลด PDF ไม่สำเร็จ"
 }

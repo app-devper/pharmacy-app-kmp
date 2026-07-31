@@ -4,6 +4,7 @@ import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
 import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
+import app.devper.pharm.presentation.suppliers.exception.SuppliersListUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class SuppliersListViewModel(
@@ -20,7 +21,9 @@ class SuppliersListViewModel(
         launchResult(
             block = { getSuppliers() },
             onSuccess = { list -> setState { copy(loading = false, suppliers = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = SuppliersListUiStateError.LoadSuppliersFailed(e)) }
+            },
         )
     }
 

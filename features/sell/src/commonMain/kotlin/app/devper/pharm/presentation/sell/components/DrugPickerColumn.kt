@@ -64,6 +64,8 @@ fun DrugPickerColumn(
     visible: List<Drug>,
     loading: Boolean,
     activeTier: String,
+    addedDrugName: String?,
+    onAddedDrugMessageDismiss: () -> Unit,
     onAdd: (Drug) -> Unit,
     modifier: Modifier = Modifier,
     searchFocusRequester: FocusRequester? = null,
@@ -77,16 +79,14 @@ fun DrugPickerColumn(
         if (gridState.isScrollInProgress) focusManager.clearFocus()
     }
     var armedDrugId by remember(query) { mutableStateOf<String?>(null) }
-    var addedDrugName by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(addedDrugName) {
         if (addedDrugName != null) {
             delay(2000)
-            addedDrugName = null
+            onAddedDrugMessageDismiss()
         }
     }
     val addAndClear = { drug: Drug ->
         onAdd(drug)
-        addedDrugName = drug.name
         onQueryChange("")
     }
     val onSubmitSearch = {

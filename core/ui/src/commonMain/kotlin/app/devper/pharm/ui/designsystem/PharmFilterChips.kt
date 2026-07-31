@@ -6,6 +6,8 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -35,6 +37,7 @@ data class PharmFilterChip(
 )
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 fun PharmFilterChips(
     chips: List<PharmFilterChip>,
     activeIds: Set<String>,
@@ -44,19 +47,37 @@ fun PharmFilterChips(
     role: Role = Role.Checkbox,
 ) {
     val scrollState = rememberScrollState()
-    val rowMod = if (scrollable) modifier.horizontalScroll(scrollState) else modifier
-    Row(
-        modifier = rowMod.selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        chips.forEach { chip ->
-            PharmFilterChipItem(
-                chip = chip,
-                active = chip.id in activeIds,
-                onClick = { onToggle(chip.id) },
-                role = role,
-            )
+    val groupModifier = modifier.selectableGroup()
+    if (scrollable) {
+        Row(
+            modifier = groupModifier.horizontalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            chips.forEach { chip ->
+                PharmFilterChipItem(
+                    chip = chip,
+                    active = chip.id in activeIds,
+                    onClick = { onToggle(chip.id) },
+                    role = role,
+                )
+            }
+        }
+    } else {
+        FlowRow(
+            modifier = groupModifier,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            itemVerticalAlignment = Alignment.CenterVertically,
+        ) {
+            chips.forEach { chip ->
+                PharmFilterChipItem(
+                    chip = chip,
+                    active = chip.id in activeIds,
+                    onClick = { onToggle(chip.id) },
+                    role = role,
+                )
+            }
         }
     }
 }

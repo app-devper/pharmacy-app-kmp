@@ -30,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
+import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -52,7 +53,7 @@ internal fun UsersListTable(
             cell = { user -> UserNameCell(user = user, isSelf = user.id == currentUserId) },
         ),
         PharmTableColumn(
-            header = "Username",
+            header = s.usersHeaderUsername,
             weight = 1.2f,
             cell = { user -> UserUsernameCell(user) },
         ),
@@ -62,11 +63,11 @@ internal fun UsersListTable(
             cell = { user -> UserPhoneCell(user) },
         ),
         PharmTableColumn(
-            header = "Role",
+            header = s.usersHeaderRole,
             weight = 0.9f,
             cell = { user ->
                 PharmBadge(
-                    text = user.role.label(),
+                    text = user.role.label(s),
                     tone = user.role.tone(),
                     size = PharmBadgeSize.Sm,
                 )
@@ -236,12 +237,12 @@ private fun UsersRowActions(
     PharmActionMenu(actions = actions)
 }
 
-internal fun Role.label(): String = when (this) {
-    Role.SUPER   -> "Super Admin"
-    Role.ADMIN   -> "Admin"
-    Role.MANAGER -> "Manager"
-    Role.USER    -> "User"
-    Role.UNKNOWN -> "-"
+internal fun Role.label(s: PharmStrings): String = when (this) {
+    Role.SUPER   -> s.usersRoleSuper
+    Role.ADMIN   -> s.usersRoleAdmin
+    Role.MANAGER -> s.usersRoleManager
+    Role.USER    -> s.usersRoleUser
+    Role.UNKNOWN -> s.usersRoleUnknown
 }
 
 internal fun Role.tone(): PharmBadgeTone = when (this) {

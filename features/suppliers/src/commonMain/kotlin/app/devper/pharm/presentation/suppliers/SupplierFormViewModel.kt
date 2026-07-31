@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.suppliers
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.suppliers.SupplierInput
 import app.devper.pharm.domain.param.suppliers.UpdateSupplierParam
 import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
@@ -61,7 +60,9 @@ class SupplierFormViewModel(
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = SupplierFormUiStateError.LoadSupplierFailed(e)) }
+            },
         )
     }
 

@@ -29,11 +29,12 @@ import app.devper.pharm.domain.model.PurchaseOrderItem
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.presentation.imports.i18n.localizeImports
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.components.SubPageBar
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
@@ -55,7 +56,7 @@ fun ImportDetailContent(
     val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = state.po?.docNo ?: s.importsTitle,
             onBack = callbacks.onBack,
             actions = {
@@ -85,9 +86,11 @@ fun ImportDetailContent(
                 state.loading && state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     PharmCircularProgress()
                 }
-                state.po == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(s.importsListEmpty, style = PharmText.body.copy(color = t.colors.fg2))
-                }
+                state.po == null -> PharmEmptyState(
+                    icon = PharmIcons.Imports,
+                    title = s.importsDetailLoadFailed,
+                    subtitle = s.commonRetry,
+                )
                 else -> Body(po = state.po)
             }
         }

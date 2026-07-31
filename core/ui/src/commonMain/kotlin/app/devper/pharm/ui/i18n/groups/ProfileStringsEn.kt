@@ -21,6 +21,7 @@ object ProfileStringsEn : ProfileStrings {
     override val profilePasswordChange = "Change"
     override val profilePasswordChanging = "Changing…"
     override val profilePasswordChanged = "Password changed successfully"
+    override val profileLoadFailed = "Failed to load profile"
     override val profilePasswordChangeFailed = "Password change failed"
     override val profileDisplayTheme = "Theme"
     override val profileDisplayFontSize = "Font size"

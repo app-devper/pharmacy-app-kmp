@@ -3,6 +3,7 @@ package app.devper.pharm.ui.i18n.groups
 object LabelsStringsTh : LabelsStrings {
     override val labelsAddCta = "+ เพิ่ม"
 
+    override val labelsLoadDrugsFailed = "โหลดรายการยาสำหรับพิมพ์ฉลากไม่สำเร็จ"
     override val labelsSubtitle = "ออกแบบและพิมพ์ฉลากยา"
     override val labelsSearchPlaceholder = "ค้นหายา (เพิ่มทีละบรรทัด)…"
     override val labelsNoDrugs = "ยังไม่มียาให้เลือก"

@@ -1,11 +1,11 @@
 package app.devper.pharm.presentation.planning
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.PurchaseDraftLine
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.domain.usecase.inventory.GetReorderSuggestionsUseCase
+import app.devper.pharm.presentation.planning.exception.ReorderSuggestionsUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -58,7 +58,9 @@ class ReorderSuggestionsViewModel(
         launchResult(
             block = { getReorderSuggestions() },
             onSuccess = { list -> setState { copy(loading = false, suggestions = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = ReorderSuggestionsUiStateError.LoadFailed(e)) }
+            },
         )
     }
 }

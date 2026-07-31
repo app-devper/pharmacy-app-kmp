@@ -11,6 +11,7 @@ sealed class ProfitUiStateError(message: String, cause: Throwable? = null) : App
 }
 
 sealed class EodUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
+    class LoadReportFailed(cause: Throwable? = null) : EodUiStateError("reports.eod_load_failed", cause)
     class CloseFailed(cause: Throwable? = null) : EodUiStateError("reports.eod_close_failed", cause)
     class PrintReceiptUnsupported(cause: Throwable? = null) : EodUiStateError("reports.eod_print_unsupported", cause)
 }

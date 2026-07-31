@@ -68,7 +68,7 @@ object CommonStringsTh : CommonStrings {
     override val commonBackspace = "ลบหลัง"
     override val commonClearInput = "ล้างข้อความ"
     override val commonBack = "กลับ"
-    override val commonLoading = "กำลังโหลด"
+    override val commonLoading = "กำลังโหลด…"
     override val commonRetry = "ลองอีกครั้ง"
     override val commonMore = "เพิ่มเติม"
     override val commonTotal = "ทั้งหมด"

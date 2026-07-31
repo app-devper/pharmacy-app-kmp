@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.components.CompactPageActions
+import app.devper.pharm.ui.components.LocalUnsavedChangesController
 
 private val TITLE_MIN_WIDTH = 600.dp
 
@@ -43,9 +45,13 @@ fun PharmListToolbar(
     compactTopbarActions: Boolean = false,
 ) {
     val t = pharmTokens
+    val unsavedChanges = LocalUnsavedChangesController.current
+    val guardedBack = onBack?.let { action ->
+        { unsavedChanges?.request(action) ?: action() }
+    }
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val compact = maxWidth < TITLE_MIN_WIDTH
-        val showTitle = title.isNotEmpty() && !compact
+        val showTitle = title.isNotEmpty()
         val inlineActions = actions.takeUnless { compact && compactTopbarActions }
         if (compact && compactTopbarActions && actions != null) {
             CompactPageActions(actions)
@@ -57,6 +63,40 @@ fun PharmListToolbar(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (compact) {
+                if (guardedBack != null || showTitle) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (guardedBack != null) {
+                            PharmIconButton(
+                                contentDescription = pharmStrings.commonBack,
+                                onClick = guardedBack,
+                                modifier = Modifier.size(48.dp),
+                                shape = t.shapes.md,
+                            ) {
+                                Icon(
+                                    imageVector = PharmIcons.ReturnArrow,
+                                    contentDescription = null,
+                                    tint = t.colors.fg1,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                        }
+                        if (showTitle) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = title, style = titleStyle)
+                                if (subtitle != null) {
+                                    Text(
+                                        text = subtitle,
+                                        style = PharmText.micro.copy(color = t.colors.fgMuted),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 if (searchValue != null && onSearchChange != null) {
                     PharmTextField(
                         value = searchValue,
@@ -87,10 +127,10 @@ fun PharmListToolbar(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (onBack != null) {
+                    if (guardedBack != null) {
                         PharmIconButton(
                             contentDescription = pharmStrings.commonBack,
-                            onClick = onBack,
+                            onClick = guardedBack,
                             modifier = Modifier
                                 .size(48.dp),
                             shape = t.shapes.md,

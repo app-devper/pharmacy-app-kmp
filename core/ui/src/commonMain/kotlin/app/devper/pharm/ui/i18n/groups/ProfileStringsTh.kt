@@ -21,6 +21,7 @@ object ProfileStringsTh : ProfileStrings {
     override val profilePasswordChange = "เปลี่ยน"
     override val profilePasswordChanging = "กำลังเปลี่ยน…"
     override val profilePasswordChanged = "เปลี่ยนรหัสผ่านสำเร็จแล้ว"
+    override val profileLoadFailed = "โหลดข้อมูลโปรไฟล์ไม่สำเร็จ"
     override val profilePasswordChangeFailed = "เปลี่ยนรหัสผ่านไม่สำเร็จ"
     override val profileDisplayTheme = "ธีม"
     override val profileDisplayFontSize = "ขนาดตัวอักษร"

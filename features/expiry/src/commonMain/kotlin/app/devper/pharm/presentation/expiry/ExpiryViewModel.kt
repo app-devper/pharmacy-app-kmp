@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.expiry
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
@@ -72,7 +71,9 @@ class ExpiryViewModel(
                     )
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = ExpiryUiStateError.LoadLotsFailed(e)) }
+            },
         )
     }
 }

@@ -4,4 +4,5 @@ import app.devper.pharm.common.AppException
 
 sealed class UserFormUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
     class NotFound : UserFormUiStateError("users.form_not_found")
+    class LoadUserFailed(cause: Throwable? = null) : UserFormUiStateError("users.form_load_failed", cause)
 }

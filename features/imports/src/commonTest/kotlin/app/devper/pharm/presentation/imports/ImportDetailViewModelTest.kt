@@ -9,6 +9,7 @@ import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
 import app.devper.pharm.domain.usecase.purchasing.ConfirmPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.purchasing.DeletePurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
+import app.devper.pharm.presentation.imports.exception.ImportsUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -16,6 +17,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ImportDetailViewModelTest {
@@ -41,6 +43,15 @@ class ImportDetailViewModelTest {
         assertEquals("po1", model.state.value.po?.id)
         assertFalse(model.state.value.loading)
         assertNull(model.state.value.errorState)
+    }
+
+    @Test
+    fun init_failure_surfaces_detail_specific_error() = runVmTest { d ->
+        val model = vm(FakePurchaseOrderRepository(getThrows = true), d)
+        model.init("po1")
+        advanceUntilIdle()
+        assertIs<ImportsUiStateError.LoadOrderFailed>(model.state.value.errorState)
+        assertFalse(model.state.value.loading)
     }
 
     @Test

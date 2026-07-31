@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ExpiryStringsEn : ExpiryStrings {
+    override val expiryLoadLotsFailed = "Failed to load expiry lots"
     override val expiryWriteoffFailures: (Int) -> String = { n -> "$n lot(s) failed — please retry" }
     override val expiryMoreFailures: (Int) -> String = { n -> "(+$n more)" }
 

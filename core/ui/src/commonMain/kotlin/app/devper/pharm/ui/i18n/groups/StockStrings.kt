@@ -39,6 +39,8 @@ interface StockStrings {
     val stockDrugFormLotExpiryInvalid: String
 
     val stockDrugFormNotFound: String
+    val stockDrugFormLoadFailed: String
+    val stockLoadFailed: String
     val stockLoadHistoryFailed: String
     val stockLoadLotsFailed: String
     val stockInvalidExpiry: String

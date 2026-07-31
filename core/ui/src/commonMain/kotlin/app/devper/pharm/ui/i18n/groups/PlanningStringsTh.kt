@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object PlanningStringsTh : PlanningStrings {
+    override val planningLoadLowStockFailed = "โหลดยาใกล้หมดไม่สำเร็จ"
+    override val planningLoadReorderFailed = "โหลดคำแนะนำสั่งซื้อไม่สำเร็จ"
     override val planningTitle = "คำแนะนำสั่งซื้อ"
     override val planningRefreshCta = "รีเฟรช"
     override val planningAddPoCta = "เพิ่มใบสั่งซื้อ"

@@ -107,6 +107,15 @@ class DrugFormViewModelTest {
     }
 
     @Test
+    fun edit_mode_load_failure_uses_drug_specific_error() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeDrugRepository(listThrows = true))
+        vm.init(DrugFormMode.Edit("d1"))
+        advanceUntilIdle()
+        assertIs<DrugFormUiStateError.LoadDrugFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
     fun onSellPrice_strips_non_numeric_chars_and_caps_one_dot() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers)
         vm.init(DrugFormMode.Add)

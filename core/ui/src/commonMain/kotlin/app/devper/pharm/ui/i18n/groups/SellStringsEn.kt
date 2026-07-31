@@ -82,7 +82,7 @@ object SellStringsEn : SellStrings {
     override val sellTierRetailLabel = "Retail"
 
     override val sellCart = "Cart"
-    override val sellSearchPlaceholder = "Search by brand, generic, or barcode (F2)"
+    override val sellSearchPlaceholder = "Search by brand, generic, or barcode (F2)…"
     override val sellNoResults = "No drugs match the search"
     override val sellEmptyCart = "Cart is empty"
     override val sellEmptyCartHint = "Tap a drug above to start selling"
@@ -113,7 +113,7 @@ object SellStringsEn : SellStrings {
     override val sellCustomerWalkIn = "Walk-in"
     override val sellCustomerSelect = "Pick customer"
     override val sellCustomerClear = "Clear customer"
-    override val sellCustomerSearchPlaceholder = "Search name / phone"
+    override val sellCustomerSearchPlaceholder = "Search customer name / phone…"
     override val sellCustomerEmpty = "No customers yet"
     override val sellCustomerNotFound = "No customers match the search"
     override val sellPharmacist = "Pharmacist"
@@ -156,6 +156,7 @@ object SellStringsEn : SellStrings {
     override val sellVoidMissingBillId = "Cannot void this bill: bill ID not found"
     override val sellVoidReasonRequired = "Please provide a void reason"
     override val sellVoidFailed = "Failed to void the bill"
+    override val sellLoadDrugsFailed = "Failed to load drugs for sale"
     override val sellBarcodeNotFound: (String) -> String = { code -> "No drug found for barcode $code" }
     override val sellLoadCustomersFailed = "Failed to load customers"
     override val sellPrintReceiptUnsupported = "Failed to print receipt — not supported on this platform"

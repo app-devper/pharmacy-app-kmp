@@ -17,6 +17,7 @@ import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
 class FakePurchaseOrderRepository(
     private val seed: Map<String, PurchaseOrder> = emptyMap(),
     private val listSeed: List<PurchaseOrderSummary> = emptyList(),
+    private val listThrows: Boolean = false,
     private val getThrows: Boolean = false,
     private val addThrowsOn: String? = null,
 ) : PurchaseOrderRepository {
@@ -30,7 +31,10 @@ class FakePurchaseOrderRepository(
     var lastDelete: String? = null
         private set
 
-    override suspend fun list(): List<PurchaseOrderSummary> = listSeed
+    override suspend fun list(): List<PurchaseOrderSummary> {
+        if (listThrows) throw ServerException("list failed")
+        return listSeed
+    }
 
     override suspend fun get(id: String): PurchaseOrder {
         if (getThrows) throw ServerException("get failed")

@@ -1,8 +1,10 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SuppliersStringsEn : SuppliersStrings {
-    override val suppliersTaxIdPlaceholder = "13 digits"
+    override val suppliersTaxIdPlaceholder = "13 digits…"
 
+    override val suppliersListLoadFailed = "Failed to load suppliers"
+    override val suppliersFormLoadFailed = "Failed to load supplier details"
     override val suppliersListSubtitle = "Manage suppliers and partner companies"
     override val suppliersSearchPlaceholder = "Search name / contact / phone…"
     override val suppliersAddCta = "Add supplier"
@@ -20,11 +22,11 @@ object SuppliersStringsEn : SuppliersStrings {
     override val suppliersFormEditTitle = "Edit supplier"
     override val suppliersFormInfoSection = "Supplier info"
     override val suppliersFormCompanyName = "Company / supplier name"
-    override val suppliersFormCompanyPlaceholder = "e.g. ABC Pharma Co., Ltd."
+    override val suppliersFormCompanyPlaceholder = "e.g. ABC Pharma Co., Ltd.…"
     override val suppliersFormContactName = "Sales contact"
     override val suppliersFormAddress = "Address"
-    override val suppliersFormAddressPlaceholder = "Street / sub-district / district / province"
+    override val suppliersFormAddressPlaceholder = "Street / sub-district / district / province…"
     override val suppliersFormTaxId = "Tax identification number"
-    override val suppliersFormNotesPlaceholder = "Order terms / discounts / additional details"
+    override val suppliersFormNotesPlaceholder = "Order terms / discounts / additional details…"
     override val suppliersFormNotFound = "Supplier not found"
 }
