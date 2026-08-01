@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -54,7 +55,9 @@ fun PharmListToolbar(
         val showTitle = title.isNotEmpty()
         val inlineActions = actions.takeUnless { compact && compactTopbarActions }
         if (compact && compactTopbarActions && actions != null) {
-            CompactPageActions(actions)
+            CompositionLocalProvider(LocalCompactIconOnlyActions provides true) {
+                CompactPageActions(actions)
+            }
         }
         Column(
             modifier = Modifier
@@ -117,7 +120,9 @@ fun PharmListToolbar(
                         itemVerticalAlignment = Alignment.CenterVertically,
                     ) {
                         badge?.invoke()
-                        inlineActions?.invoke()
+                        CompositionLocalProvider(LocalCompactIconOnlyActions provides true) {
+                            inlineActions?.invoke()
+                        }
                     }
                 }
             } else {

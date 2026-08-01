@@ -64,6 +64,7 @@ internal fun MovementsListToolbar(
                     onClick = callbacks.onApplyFilter,
                     size = PharmButtonSize.Sm,
                     loading = state.loading,
+                    leadingIcon = { Icon(PharmIcons.Search, contentDescription = null) },
                 )
                 PharmButton(
                     label = "Excel",

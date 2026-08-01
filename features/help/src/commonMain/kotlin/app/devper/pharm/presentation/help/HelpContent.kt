@@ -36,6 +36,7 @@ import app.devper.pharm.ui.theme.pharmTokens
 import kotlinx.coroutines.launch
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import androidx.compose.material3.Icon
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -64,6 +65,7 @@ fun HelpContent(
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Sm,
                     loading = state.loading,
+                    leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                 )
             },
         )
