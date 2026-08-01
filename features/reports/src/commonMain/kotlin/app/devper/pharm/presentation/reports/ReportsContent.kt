@@ -29,6 +29,7 @@ import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import androidx.compose.material3.Icon
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -79,6 +80,7 @@ fun ReportsContent(
                             size = PharmButtonSize.Md,
                             variant = PharmButtonVariant.Outline,
                             loading = state.loading,
+                            leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                         )
                         PharmButton(
                             label = s.reportsTabEod,

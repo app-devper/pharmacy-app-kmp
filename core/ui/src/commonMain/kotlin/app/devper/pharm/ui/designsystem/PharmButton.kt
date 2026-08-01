@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -103,23 +104,28 @@ fun PharmButton(
     enabled: Boolean = true,
     loading: Boolean = false,
     leadingIcon: (@Composable () -> Unit)? = null,
-) = PharmButton(
-    onClick = onClick,
-    modifier = modifier,
-    variant = variant,
-    size = size,
-    enabled = enabled,
-    loading = loading,
-    leadingIcon = leadingIcon,
 ) {
-    val style = if (size == PharmButtonSize.Sm) PharmText.buttonSm else PharmText.buttonMd
-    Text(
-        text = label,
-        style = style,
-        textAlign = TextAlign.Center,
-        maxLines = 1,
-        softWrap = false,
-    )
+    val iconOnly = LocalCompactIconOnlyActions.current && leadingIcon != null
+    PharmButton(
+        onClick = onClick,
+        modifier = if (iconOnly) modifier.semantics { contentDescription = label } else modifier,
+        variant = variant,
+        size = size,
+        enabled = enabled,
+        loading = loading,
+        leadingIcon = leadingIcon,
+    ) {
+        if (!iconOnly) {
+            val style = if (size == PharmButtonSize.Sm) PharmText.buttonSm else PharmText.buttonMd
+            Text(
+                text = label,
+                style = style,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                softWrap = false,
+            )
+        }
+    }
 }
 
 @Composable

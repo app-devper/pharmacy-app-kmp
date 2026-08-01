@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.format.millisToBuddhistDisplay
+import androidx.compose.material3.Icon
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmDateRange
@@ -70,6 +72,7 @@ internal fun SalesHistoryListToolbar(
                 onClick = callbacks.onApplyFilter,
                 size = PharmButtonSize.Sm,
                 loading = state.loading,
+                leadingIcon = { Icon(PharmIcons.Search, contentDescription = null) },
             )
         },
     )
