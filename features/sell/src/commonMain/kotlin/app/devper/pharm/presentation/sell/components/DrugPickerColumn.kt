@@ -30,11 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.extension.SearchSubmitAction
@@ -49,7 +47,7 @@ import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.designsystem.PharmSearchField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -107,18 +105,16 @@ fun DrugPickerColumn(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            PharmTextField(
+            PharmSearchField(
                 value = query,
                 onValueChange = onQueryChange,
                 placeholder = pharmStrings.sellSearchPlaceholder,
                 modifier = Modifier.weight(1f),
-                imeAction = ImeAction.Search,
-                onImeAction = onSubmitSearch,
+                onSearch = onSubmitSearch,
                 focusRequester = searchFocus,
-                leadingSlot = null,
-                trailingSlot = null,
+                showSearchAction = false,
+                endSlot = { ScannerFieldIcon() },
             )
-            ScannerActivePill()
         }
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
 
@@ -204,30 +200,14 @@ fun DrugPickerColumn(
 }
 
 @Composable
-private fun ScannerActivePill() {
+private fun ScannerFieldIcon() {
     val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .height(t.dimens.controlHeight)
-            .clip(t.shapes.md)
-            .background(t.colors.accentBgSoft)
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(6.dp)
-                .clip(t.shapes.pill)
-                .background(t.colors.successFg),
-        )
-        Icon(
-            imageVector = PharmIcons.Scan,
-            contentDescription = pharmStrings.sellScannerOn,
-            tint = t.colors.accent,
-            modifier = Modifier.size(18.dp),
-        )
-    }
+    Icon(
+        imageVector = PharmIcons.Scan,
+        contentDescription = pharmStrings.sellScannerOn,
+        tint = t.colors.accent,
+        modifier = Modifier.size(18.dp),
+    )
 }
 
 @Composable

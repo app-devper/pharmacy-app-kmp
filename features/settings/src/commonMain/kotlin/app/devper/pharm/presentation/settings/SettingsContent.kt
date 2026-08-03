@@ -40,7 +40,7 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
-private fun labelFor(tab: SettingsTab, s: PharmStrings): String = when (tab) {
+internal fun labelFor(tab: SettingsTab, s: PharmStrings): String = when (tab) {
     SettingsTab.Store      -> s.settingsTabStore
     SettingsTab.Receipt    -> s.settingsTabReceipt
     SettingsTab.Stock      -> s.settingsTabStock
@@ -55,27 +55,7 @@ fun SettingsContent(
 ) {
     val strings = pharmStrings
     val tabs = SettingsTab.entries.map { PharmTab(id = it.name, label = labelFor(it, strings)) }
-    val focus = remember { SettingsFocusRequesters() }
-    var validationAttempt by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(validationAttempt, state.tab) {
-        if (validationAttempt == 0) return@LaunchedEffect
-        when (state.tab) {
-            SettingsTab.Store -> when {
-                !state.form.storeNameValid -> focus.storeName.requestFocus()
-                !state.form.timezoneValid -> focus.timezone.requestFocus()
-            }
-            SettingsTab.Stock -> when {
-                !state.form.stockLowThresholdValid -> focus.stockLowThreshold.requestFocus()
-                !state.form.stockReorderDaysValid -> focus.stockReorderDays.requestFocus()
-                !state.form.stockReorderLookaheadValid -> focus.stockReorderLookahead.requestFocus()
-                !state.form.stockExpiringDaysValid -> focus.stockExpiringDays.requestFocus()
-            }
-            SettingsTab.Receipt,
-            SettingsTab.Pharmacist,
-            SettingsTab.Ky -> Unit
-        }
-    }
+    val validation = rememberSettingsValidation(state)
 
     Column(modifier = Modifier.fillMaxSize()) {
         PharmListToolbar(
@@ -87,12 +67,7 @@ fun SettingsContent(
                     saving = state.saving,
                     canSubmit = state.canSave,
                     onSubmit = editor.onSubmit,
-                    onInvalidSubmit = if (state.dirty && !state.loading) {
-                        {
-                            validationAttempt++
-                            state.form.firstInvalidTab?.let(editor.onSelectTab)
-                        }
-                    } else null,
+                    onInvalidSubmit = validation.invalidSubmit(state, editor),
                 )
             },
         )
@@ -117,8 +92,8 @@ fun SettingsContent(
                     state = state,
                     editor = editor,
                     strings = strings,
-                    showValidation = validationAttempt > 0,
-                    focus = focus,
+                    showValidation = validation.attempt > 0,
+                    focus = validation.focus,
                 )
             }
         }
@@ -128,7 +103,7 @@ fun SettingsContent(
 }
 
 @Composable
-private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
+internal fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
     val t = pharmTokens
     val strings = pharmStrings
     Box(modifier = Modifier.fillMaxWidth().background(t.colors.successBg)) {
@@ -154,7 +129,7 @@ private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun SettingsTabBody(
+internal fun SettingsTabBody(
     state: SettingsEditorUiState,
     editor: SettingsEditorCallbacks,
     strings: PharmStrings,
@@ -189,6 +164,47 @@ internal class SettingsFocusRequesters {
     val stockReorderDays = FocusRequester()
     val stockReorderLookahead = FocusRequester()
     val stockExpiringDays = FocusRequester()
+}
+
+internal class SettingsValidationState {
+    val focus = SettingsFocusRequesters()
+    var attempt by mutableIntStateOf(0)
+
+    fun invalidSubmit(
+        state: SettingsEditorUiState,
+        editor: SettingsEditorCallbacks,
+    ): (() -> Unit)? = if (state.dirty && !state.loading) {
+        {
+            attempt++
+            state.form.firstInvalidTab?.let(editor.onSelectTab)
+        }
+    } else {
+        null
+    }
+}
+
+@Composable
+internal fun rememberSettingsValidation(state: SettingsEditorUiState): SettingsValidationState {
+    val validation = remember { SettingsValidationState() }
+    LaunchedEffect(validation.attempt, state.tab) {
+        if (validation.attempt == 0) return@LaunchedEffect
+        when (state.tab) {
+            SettingsTab.Store -> when {
+                !state.form.storeNameValid -> validation.focus.storeName.requestFocus()
+                !state.form.timezoneValid -> validation.focus.timezone.requestFocus()
+            }
+            SettingsTab.Stock -> when {
+                !state.form.stockLowThresholdValid -> validation.focus.stockLowThreshold.requestFocus()
+                !state.form.stockReorderDaysValid -> validation.focus.stockReorderDays.requestFocus()
+                !state.form.stockReorderLookaheadValid -> validation.focus.stockReorderLookahead.requestFocus()
+                !state.form.stockExpiringDaysValid -> validation.focus.stockExpiringDays.requestFocus()
+            }
+            SettingsTab.Receipt,
+            SettingsTab.Pharmacist,
+            SettingsTab.Ky -> Unit
+        }
+    }
+    return validation
 }
 
 @Preview

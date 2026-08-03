@@ -93,11 +93,12 @@ private data class MainNavEntry(
     val label: (PharmStrings) -> String,
     val icon: ImageVector,
     val admin: Boolean = false,
+    val pinned: Boolean = false,
     val sectionLabel: (PharmStrings) -> String,
 )
 
 private val MAIN_NAV_TABLE: List<MainNavEntry> = listOf(
-    MainNavEntry(Sell, { it.navSell }, PharmIcons.Sell, sectionLabel = { it.navGroupSales }),
+    MainNavEntry(Sell, { it.navSell }, PharmIcons.Sell, pinned = true, sectionLabel = { it.navGroupSales }),
     MainNavEntry(SalesHistory, { it.navSalesHistory }, PharmIcons.SalesHistory, sectionLabel = { it.navGroupSales }),
     MainNavEntry(Customers, { it.navCustomers }, PharmIcons.Customers, sectionLabel = { it.navGroupSales }),
     MainNavEntry(Stock, { it.navStock }, PharmIcons.Stock, sectionLabel = { it.navGroupInventory }),
@@ -125,20 +126,9 @@ internal fun rememberMainNavItems(): List<NavItem> {
             label = entry.label(strings),
             icon = entry.icon,
             admin = entry.admin,
+            pinned = entry.pinned,
             sectionLabel = entry.sectionLabel(strings),
         )
-    }
-}
-
-private val BOTTOM_NAV_ROUTES: List<Any> = listOf(Sell, Stock, SalesHistory, Reports)
-
-@Composable
-internal fun rememberBottomNavItems(): List<NavItem> {
-    val strings = pharmStrings
-    return BOTTOM_NAV_ROUTES.mapNotNull { route ->
-        MAIN_NAV_TABLE.firstOrNull { it.route == route }?.let { entry ->
-            NavItem(route = k(entry.route::class), label = entry.label(strings), icon = entry.icon, admin = entry.admin)
-        }
     }
 }
 

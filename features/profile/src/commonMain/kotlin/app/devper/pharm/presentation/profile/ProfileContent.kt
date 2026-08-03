@@ -31,6 +31,7 @@ import app.devper.pharm.presentation.profile.i18n.localizeProfile
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.designsystem.pharmFormContentPadding
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -54,7 +55,7 @@ fun ProfileContent(
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .pharmFormContentPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (loadingEmpty) {

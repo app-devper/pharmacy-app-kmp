@@ -65,6 +65,8 @@ internal fun ProfitFilterBar(
         modifier = modifier,
         title = s.reportsProfitTitle,
         subtitle = s.reportsProfitSubtitle,
+        compactTopbarActions = true,
+        compactControlsSharedRow = false,
         actions = {
             PharmButton(
                 label = "Excel",

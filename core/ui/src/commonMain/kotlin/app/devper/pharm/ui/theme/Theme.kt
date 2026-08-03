@@ -27,13 +27,13 @@ private val LightColors = lightColorScheme(
     tertiaryContainer   = Amber100,
     onTertiaryContainer = Amber900,
 
-    background          = Gray50,
-    onBackground        = Gray800,
+    background          = Paper,
+    onBackground        = InkNavy,
 
     surface             = White,
-    onSurface           = Gray800,
+    onSurface           = InkNavy,
     surfaceVariant      = Gray100,
-    onSurfaceVariant    = Gray600,
+    onSurfaceVariant    = InkNavy2,
     surfaceTint         = Blue600,
 
     surfaceContainerLowest  = White,
@@ -72,20 +72,20 @@ private val DarkColors = darkColorScheme(
     tertiaryContainer   = Amber800,
     onTertiaryContainer = Amber100,
 
-    background          = Slate950,
-    onBackground        = Slate100,
+    background          = PaperDark,
+    onBackground        = InkNavyDarkFg,
 
-    surface             = Slate900,
-    onSurface           = Slate100,
-    surfaceVariant      = Slate800,
-    onSurfaceVariant    = Slate400,
+    surface             = SurfaceDark,
+    onSurface           = InkNavyDarkFg,
+    surfaceVariant      = LineDarkSoft,
+    onSurfaceVariant    = InkNavy3Dark,
     surfaceTint         = Blue400,
 
-    surfaceContainerLowest  = Slate950,
-    surfaceContainerLow     = Slate900,
-    surfaceContainer        = Slate800,
-    surfaceContainerHigh    = Slate700,
-    surfaceContainerHighest = Slate600,
+    surfaceContainerLowest  = PaperDark,
+    surfaceContainerLow     = SidebarHoverDark,
+    surfaceContainer        = SurfaceDark,
+    surfaceContainerHigh    = LineDarkSoft,
+    surfaceContainerHighest = LineDark,
 
     inverseSurface      = Slate100,
     inverseOnSurface    = Slate900,
@@ -95,8 +95,8 @@ private val DarkColors = darkColorScheme(
     errorContainer      = Red800,
     onErrorContainer    = Red100,
 
-    outline             = Slate600,
-    outlineVariant      = Slate700,
+    outline             = LineDark,
+    outlineVariant      = LineDarkSoft,
     scrim               = Black,
 )
 
@@ -112,10 +112,12 @@ private val PharmacyShapes = Shapes(
 fun PharmacyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     fontScale: Float = 1f,
+    touchPrimary: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val baseTokens = if (darkTheme) DarkPharmTokens else LightPharmTokens
-    val tokens = if (fontScale == 1f) baseTokens else baseTokens.copy(fontScale = fontScale)
+    val pointerTokens = if (touchPrimary) baseTokens.forTouchInput() else baseTokens
+    val tokens = if (fontScale == 1f) pointerTokens else pointerTokens.copy(fontScale = fontScale)
     CompositionLocalProvider(LocalPharmTokens provides tokens) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColors else LightColors,

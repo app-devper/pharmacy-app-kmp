@@ -32,6 +32,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSaveAction
+import app.devper.pharm.ui.designsystem.pharmFormContentPadding
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -78,7 +79,7 @@ fun ImportFormContent(
                 .fillMaxWidth()
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .pharmFormContentPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (state.loading) {

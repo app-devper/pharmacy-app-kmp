@@ -2,12 +2,19 @@
 
 package app.devper.pharm.ui.designsystem
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,9 +26,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,18 +74,29 @@ fun <T> PharmTable(
     val effHeaderHeight = if (headerHeight == Dp.Unspecified) density.headerHeight else headerHeight
     val listState = rememberLazyListState()
 
-    if (rows.isEmpty() && emptyContent != null) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            emptyContent()
-        }
-        return
-    }
-
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(t.colors.surface),
     ) {
+        if (rows.isEmpty() && emptyContent != null) {
+            if (maxWidth < cardModeMaxWidth) {
+                PharmTableCompactEmptySurface(content = emptyContent)
+            } else {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    PharmTableHeader(columns = columns, height = effHeaderHeight)
+                    PharmTableEmptySurface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        content = emptyContent,
+                    )
+                }
+            }
+            return@BoxWithConstraints
+        }
+
         if (maxWidth < cardModeMaxWidth) {
             PharmTableCardList(
                 rows = rows,
@@ -130,6 +148,47 @@ fun <T> PharmTable(
     }
 }
 
+@Composable
+private fun PharmTableCompactEmptySurface(content: @Composable () -> Unit) {
+    val t = pharmTokens
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(t.colors.bgPage)
+            .padding(16.dp),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        PharmTableEmptySurface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(compactEmptySurfaceHeight(maxHeight)),
+            content = content,
+        )
+    }
+}
+
+internal fun compactEmptySurfaceHeight(availableHeight: Dp): Dp =
+    (availableHeight * 0.45f)
+        .coerceIn(180.dp, 320.dp)
+        .coerceAtMost(availableHeight)
+
+@Composable
+private fun PharmTableEmptySurface(
+    modifier: Modifier,
+    content: @Composable () -> Unit,
+) {
+    val t = pharmTokens
+    Box(
+        modifier = modifier
+            .clip(t.shapes.xl)
+            .background(t.colors.surfaceRaised)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.xl),
+        contentAlignment = Alignment.Center,
+    ) {
+        content()
+    }
+}
+
 private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
 @Composable
 private fun <T> PharmTableCardList(
@@ -144,7 +203,11 @@ private fun <T> PharmTableCardList(
     val trailing = remember(visible) { visible.firstOrNull { it.compactTrailing } }
     val details = remember(visible, title, trailing) { visible.filter { it !== title && it !== trailing } }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().background(pharmTokens.colors.bgPage),
+        contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+    ) {
         items(items = rows, key = key) { row ->
             val onClickRow = remember(row, onRowClick) {
                 onRowClick?.let { cb -> { cb(row) } }
@@ -166,19 +229,35 @@ private fun <T> PharmTableCard(
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
-    val clickable = if (onClick != null) Modifier.pharmClickable(role = Role.Button, onClick = onClick) else Modifier
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val interaction = remember { MutableInteractionSource() }
+    val hovered by interaction.collectIsHoveredAsState()
+    val reducedMotion = LocalReducedMotion.current
+    val bg by animateColorAsState(
+        targetValue = if (onClick != null && hovered) t.colors.hoverSurface else t.colors.bgPage,
+        animationSpec = if (reducedMotion) snap() else tween(PharmMotion.Fast),
+        label = "pharmTableCardBackground",
+    )
+    val clickable = if (onClick != null) {
+        Modifier.pharmClickable(role = Role.Button, interactionSource = interaction, onClick = onClick)
+    } else {
+        Modifier
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(bg)
+            .then(clickable),
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.Top,
         ) {
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .then(clickable),
+                    .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 title?.let { Box(modifier = Modifier.fillMaxWidth()) { it.cell(row) } }
@@ -200,12 +279,6 @@ private fun <T> PharmTableCard(
             }
             trailing?.let { Box(contentAlignment = Alignment.TopEnd) { it.cell(row) } }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.divider),
-        )
     }
 }
 
@@ -215,14 +288,14 @@ private fun <T> PharmTableHeader(columns: List<PharmTableColumn<T>>, height: Dp)
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(t.colors.surface),
+            .background(t.colors.surfaceRaised),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(height)
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = 18.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             columns.forEach { col ->
@@ -255,16 +328,29 @@ private fun <T> PharmTableRow(
     onClick: (() -> Unit)?,
 ) {
     val t = pharmTokens
-    val clickable = if (onClick != null) Modifier.pharmClickable(role = Role.Button, onClick = onClick) else Modifier
+    val interaction = remember { MutableInteractionSource() }
+    val hovered by interaction.collectIsHoveredAsState()
+    val reducedMotion = LocalReducedMotion.current
+    val bg by animateColorAsState(
+        targetValue = if (onClick != null && hovered) t.colors.hoverSurface else t.colors.surface,
+        animationSpec = if (reducedMotion) snap() else tween(PharmMotion.Fast),
+        label = "pharmTableRowBackground",
+    )
+    val clickable = if (onClick != null) {
+        Modifier.pharmClickable(role = Role.Button, interactionSource = interaction, onClick = onClick)
+    } else {
+        Modifier
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(height)
+                .background(bg)
                 .then(clickable)
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = 18.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             columns.forEach { col ->
@@ -293,8 +379,9 @@ fun PharmTableSurface(
     val t = pharmTokens
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(t.radii.lg))
-            .background(t.colors.surface),
+            .clip(t.shapes.xl)
+            .background(t.colors.surface)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.xl),
     ) {
         content()
     }

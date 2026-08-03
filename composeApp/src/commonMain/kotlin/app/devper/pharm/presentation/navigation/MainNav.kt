@@ -3,6 +3,9 @@ package app.devper.pharm.presentation.navigation
 import app.devper.pharm.ui.i18n.navTitle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -57,6 +60,7 @@ import app.devper.pharm.presentation.sell.Cart
 import app.devper.pharm.presentation.sell.Sell
 import app.devper.pharm.presentation.sell.sellNav
 import app.devper.pharm.presentation.settings.Settings as SettingsRoute
+import app.devper.pharm.presentation.settings.SettingsDialog
 import app.devper.pharm.presentation.settings.settingsNav
 import app.devper.pharm.presentation.stock.DrugAdd
 import app.devper.pharm.presentation.stock.DrugAdjust
@@ -99,7 +103,7 @@ fun MainShell(appViewModel: AppViewModel) {
     val currentRouteBase = backEntry?.destination?.route?.substringBefore('/')?.substringBefore('?')
     val isSubPage = currentRouteBase in SUB_PAGE_ROUTE_KEYS
     val navItems = rememberMainNavItems()
-    val bottomNavItems = rememberBottomNavItems()
+    var settingsOpen by remember { mutableStateOf(false) }
 
     val user: TopbarUser? = if (state.userDisplayName.isNotBlank()) {
         TopbarUser(
@@ -116,7 +120,9 @@ fun MainShell(appViewModel: AppViewModel) {
         items = navItems,
         currentRoute = sectionKey ?: "",
         onNavigate = { key ->
-            if (key != sectionKey) {
+            if (key == k(SettingsRoute::class)) {
+                settingsOpen = true
+            } else if (key != sectionKey) {
                 routeForKey(key)?.let { route ->
                     nestedNav.navigate(route) {
                         launchSingleTop = true
@@ -132,7 +138,6 @@ fun MainShell(appViewModel: AppViewModel) {
         role = state.role,
         user = user,
         onProfileClick = { nestedNav.navigate(Profile) { launchSingleTop = true } },
-        bottomNavItems = bottomNavItems,
         isSubPage = isSubPage,
         onSubPageBack = { nestedNav.popBackStack() },
         onUnsavedChangesChanged = unsavedChangesHandler::setHasUnsavedChanges,
@@ -168,4 +173,9 @@ fun MainShell(appViewModel: AppViewModel) {
             usersNav(nestedNav)
         }
     }
+
+    SettingsDialog(
+        open = settingsOpen,
+        onDismiss = { settingsOpen = false },
+    )
 }

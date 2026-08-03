@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -35,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
@@ -47,9 +47,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+
+internal val pharmTextFieldHorizontalPadding = 12.dp
+internal val pharmTextFieldTextVerticalPadding = 8.dp
+
+internal fun textFieldEndPadding(trailingSlotAtEdge: Boolean): Dp =
+    if (trailingSlotAtEdge) 0.dp else pharmTextFieldHorizontalPadding
+
+internal fun singleLineTextFieldHeight(
+    minHeight: Dp,
+    textLineHeight: Dp,
+    accessoryHeight: Dp,
+): Dp = maxOf(
+    minHeight,
+    textLineHeight + pharmTextFieldTextVerticalPadding * 2,
+    accessoryHeight,
+)
 
 private val LocalFormFieldLabel = staticCompositionLocalOf<String?> { null }
 
@@ -111,8 +128,11 @@ fun PharmTextField(
     focusRequester: FocusRequester? = null,
     textAlign: TextAlign = TextAlign.Start,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    shape: Shape = pharmTokens.shapes.md,
+    minHeight: Dp = pharmTokens.dimens.controlHeight,
     leadingSlot: (@Composable () -> Unit)? = null,
     trailingSlot: (@Composable () -> Unit)? = null,
+    trailingSlotAtEdge: Boolean = false,
     onClear: (() -> Unit)? = null,
 ) {
     val t = pharmTokens
@@ -141,7 +161,6 @@ fun PharmTextField(
         isWarning -> t.colors.warningBg.copy(alpha = 0.6f)
         else      -> t.colors.surface
     }
-    val shape = t.shapes.md
     val style = PharmText.body.copy(
         color = if (enabled) t.colors.fg1 else t.colors.fgMuted,
         textAlign = textAlign,
@@ -155,18 +174,25 @@ fun PharmTextField(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = t.dimens.controlHeight)
+            .heightIn(min = minHeight)
             .clip(shape)
             .background(bg, shape)
             .border(borderThickness, borderColor, shape)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(
+                start = pharmTextFieldHorizontalPadding,
+                end = textFieldEndPadding(trailingSlotAtEdge),
+            ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingSlot != null) {
             leadingSlot()
         }
-        Box(modifier = Modifier.weight(1f)) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = pharmTextFieldTextVerticalPadding),
+        ) {
             CompositionLocalProvider(LocalTextSelectionColors provides selectionColors) {
                 BasicTextField(
                     value = value,
@@ -210,38 +236,30 @@ fun PharmTextField(
                 )
             }
         }
-        Box(modifier = Modifier.size(18.dp), contentAlignment = Alignment.Center) {
-            if (isError) {
-                Icon(
-                    imageVector = PharmIcons.AlertCircle,
-                    contentDescription = pharmStrings.commonErrorIconDesc,
-                    tint = t.colors.dangerFg,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
+        if (isError) {
+            Icon(
+                imageVector = PharmIcons.AlertCircle,
+                contentDescription = pharmStrings.commonErrorIconDesc,
+                tint = t.colors.dangerFg,
+                modifier = Modifier.size(18.dp),
+            )
         }
         if (onClear != null) {
             val showClear = value.isNotEmpty() && enabled && !readOnly
-            Box(
-                modifier = Modifier.size(width = 24.dp, height = 24.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (showClear) {
-                    PharmIconButton(
-                        contentDescription = pharmStrings.commonClearInput,
-                        onClick = onClear,
-                        minSize = t.dimens.controlHeight,
-                        shape = t.shapes.sm,
-                        modifier = Modifier
-                            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
-                    ) {
-                        Icon(
-                            imageVector = PharmIcons.Close,
-                            contentDescription = null,
-                            tint = t.colors.fgMuted,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
+            if (showClear) {
+                PharmIconButton(
+                    contentDescription = pharmStrings.commonClearInput,
+                    onClick = onClear,
+                    minSize = t.dimens.minimumTouchTarget,
+                    shape = t.shapes.sm,
+                    modifier = Modifier.size(t.dimens.minimumTouchTarget),
+                ) {
+                    Icon(
+                        imageVector = PharmIcons.Close,
+                        contentDescription = null,
+                        tint = t.colors.fgMuted,
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
             }
         }

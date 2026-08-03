@@ -2,13 +2,13 @@ package app.devper.pharm.ui.designsystem
 
 import app.devper.pharm.ui.i18n.pharmStrings
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -85,26 +84,22 @@ fun PharmActionMenu(
             contentDescription = openMenuDesc,
             onClick = { expanded = true },
             enabled = actions.isNotEmpty(),
-            minSize = t.dimens.controlHeight,
+            selected = expanded,
+            minSize = pharmControlHeight,
             shape = t.shapes.pill,
             modifier = Modifier
                 .focusRequester(triggerFocus)
-                .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
+                .sizeIn(
+                    minWidth = pharmControlHeight,
+                    minHeight = pharmControlHeight,
+                ),
         ) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(t.shapes.pill)
-                    .background(if (expanded) t.colors.borderSubtle else Color.Transparent),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = PharmIcons.More,
-                    contentDescription = null,
-                    tint = if (expanded) t.colors.fg1 else t.colors.fg3,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
+            Icon(
+                imageVector = PharmIcons.More,
+                contentDescription = null,
+                tint = if (expanded) t.colors.fg1 else t.colors.fg3,
+                modifier = Modifier.size(18.dp),
+            )
         }
         if (useBottomSheet) {
             if (expanded) {
@@ -121,13 +116,17 @@ fun PharmActionMenu(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = ::dismiss,
-                modifier = Modifier.background(t.colors.surface),
+                shape = t.shapes.xl,
+                containerColor = t.colors.surfaceRaised,
+                tonalElevation = 0.dp,
+                shadowElevation = 8.dp,
+                border = BorderStroke(1.dp, t.colors.borderSubtle),
             ) {
                 PharmActionList(
                     actions = actions,
                     modifier = Modifier
                         .widthIn(min = 180.dp, max = 280.dp)
-                        .padding(vertical = 4.dp),
+                        .padding(horizontal = 8.dp),
                     onDismissRequest = ::dismiss,
                     onAction = { action ->
                         dismiss()
@@ -251,9 +250,10 @@ private fun PharmActionRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = t.dimens.controlHeight)
-            .pharmClickable(enabled = action.enabled, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .height(t.dimens.actionMenuRowHeight)
+            .clip(t.shapes.lg)
+            .pharmClickable(enabled = action.enabled, shape = t.shapes.lg, onClick = onClick)
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -262,13 +262,13 @@ private fun PharmActionRow(
                 imageVector = action.icon,
                 contentDescription = null,
                 tint = fg.copy(alpha = alpha),
-                modifier = Modifier.size(14.dp),
+                modifier = Modifier.size(18.dp),
             )
         }
         Text(
             text = action.label,
-            style = PharmText.bodySm.copy(color = fg.copy(alpha = alpha)),
-            maxLines = 2,
+            style = PharmText.body.copy(color = fg.copy(alpha = alpha)),
+            maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
     }

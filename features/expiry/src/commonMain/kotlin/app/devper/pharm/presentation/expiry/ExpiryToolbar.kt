@@ -43,6 +43,7 @@ internal fun ExpiryToolbar(
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = s.expirySearchPlaceholder,
+        compactControlsSharedRow = false,
         filters = {
             PharmSingleSelectChips(
                 chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label(s)) },

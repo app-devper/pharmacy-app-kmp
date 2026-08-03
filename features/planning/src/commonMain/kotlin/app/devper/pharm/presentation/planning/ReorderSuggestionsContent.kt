@@ -45,6 +45,7 @@ fun ReorderSuggestionsContent(
         PharmListToolbar(
             title = s.planningTitle,
             onBack = onBack,
+            compactHeaderActions = false,
             actions = {
                 if (state.remainingSuggestions.isNotEmpty()) {
                     PharmButton(

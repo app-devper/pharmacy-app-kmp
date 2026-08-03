@@ -49,13 +49,13 @@ fun PharmEmptyState(
                 imageVector = icon,
                 contentDescription = null,
                 tint = t.colors.fgMuted,
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(t.dimens.emptyStateIconSize),
             )
             Spacer(Modifier.height(12.dp))
         }
         Text(
             text = title,
-            style = PharmText.h2.copy(color = t.colors.fg2),
+            style = PharmText.buttonMd.copy(color = t.colors.fg2),
             textAlign = TextAlign.Center,
         )
         if (subtitle != null) {

@@ -9,6 +9,8 @@ object CommonStringsTh : CommonStrings {
     override val commonErrorIconDesc = "ข้อผิดพลาด"
     override val commonOpenMenu = "เปิดเมนู"
     override val commonCloseMenu = "ปิดเมนู"
+    override val commonOpenAccountMenu = "เปิดเมนูบัญชี"
+    override val commonCloseAccountMenu = "ปิดเมนูบัญชี"
     override val commonHelp = "ช่วยเหลือ"
     override val commonResultFound: (Int, String, Int) -> String = { visible, noun, total -> "พบ $visible $noun จากทั้งหมด $total" }
     override val commonResultTotal: (Int, String) -> String = { total, noun -> "ทั้งหมด $total $noun" }

@@ -109,7 +109,6 @@ object PharmText {
         get() = base().copy(
             fontSize = scaledSp(12f),
             fontWeight = FontWeight.SemiBold,
-            letterSpacing = 0.5.sp,
             color = pharmTokens.colors.fg3,
         )
 
@@ -156,7 +155,7 @@ object PharmText {
 
     val buttonSm: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = scaledSp(13f), fontWeight = FontWeight.Medium)
+        get() = base().copy(fontSize = scaledSp(14f), fontWeight = FontWeight.Medium)
 
     val badge: TextStyle
         @androidx.compose.runtime.Composable

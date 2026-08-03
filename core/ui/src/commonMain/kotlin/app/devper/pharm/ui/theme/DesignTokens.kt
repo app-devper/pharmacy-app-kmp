@@ -28,10 +28,21 @@ data class PharmColors(
     val borderSubtle: Color,
     val divider: Color,
 
+    val hoverSurface: Color,
+    val hoverSurfaceRaised: Color,
+    val selectedSurface: Color,
+
     val accent: Color,
     val accentHover: Color,
     val accentBgSoft: Color,
     val focusRing: Color,
+    val primaryActionBg: Color,
+    val primaryActionFg: Color,
+    val secondaryActionBg: Color,
+    val secondaryActionBgHover: Color,
+    val secondaryActionFg: Color,
+    val dangerActionBg: Color,
+    val dangerActionFg: Color,
 
     val successBg: Color, val successFg: Color,
     val warningBg: Color, val warningFg: Color,
@@ -57,12 +68,12 @@ data class PharmColors(
 internal val LightPharmColors = PharmColors(
     bgPage             = Paper,
     surface            = White,
-    surfaceRaised      = White,
-    sidebarBg          = White,
-    sidebarFg          = AzureDeep,
-    sidebarFgMuted     = InkNavy2,
-    sidebarItemHover   = LineCoolSoft,
-    sidebarItemActive  = AzureSoft,
+    surfaceRaised      = Gray50,
+    sidebarBg          = Gray50,
+    sidebarFg          = InkNavy,
+    sidebarFgMuted     = InkNavy3,
+    sidebarItemHover   = Gray100,
+    sidebarItemActive  = LineCoolSoft,
 
     fg1                = InkNavy,
     fg2                = InkNavy2,
@@ -73,10 +84,21 @@ internal val LightPharmColors = PharmColors(
     borderSubtle       = LineCoolSoft,
     divider            = LineCoolSoft,
 
+    hoverSurface       = Gray100,
+    hoverSurfaceRaised = Gray100,
+    selectedSurface    = Gray200,
+
     accent             = AzureDeep,
     accentHover        = AzureDeeper,
     accentBgSoft       = AzureSoft,
     focusRing          = Azure,
+    primaryActionBg    = InkNavy,
+    primaryActionFg    = White,
+    secondaryActionBg  = Gray100,
+    secondaryActionBgHover = Gray200,
+    secondaryActionFg  = InkNavy,
+    dangerActionBg     = DangerRed,
+    dangerActionFg     = White,
 
     successBg          = OkGreenSoft,   successFg = OkGreen,
     warningBg          = OchreSoft,     warningFg = Ochre,
@@ -102,12 +124,12 @@ internal val LightPharmColors = PharmColors(
 internal val DarkPharmColors = LightPharmColors.copy(
     bgPage             = PaperDark,
     surface            = SurfaceDark,
-    surfaceRaised      = SurfaceDark,
+    surfaceRaised      = SurfaceRaisedDark,
     sidebarBg          = SidebarDark,
     sidebarFg          = InkNavyDarkFg,
     sidebarFgMuted     = InkNavy3Dark,
-    sidebarItemHover   = SurfaceDark,
-    sidebarItemActive  = Azure,
+    sidebarItemHover   = SidebarHoverDark,
+    sidebarItemActive  = SurfaceDark,
     fg1                = InkNavyDarkFg,
     fg2                = InkNavy2Dark,
     fg3                = InkNavy3Dark,
@@ -115,10 +137,20 @@ internal val DarkPharmColors = LightPharmColors.copy(
     border             = LineDark,
     borderSubtle       = LineDarkSoft,
     divider            = LineDarkSoft,
+    hoverSurface       = SidebarHoverDark,
+    hoverSurfaceRaised = LineDark,
+    selectedSurface    = LineDark,
     accent             = AzureLight,
     accentHover        = AzureLight2,
     accentBgSoft       = Color(0x331B83D8),
     focusRing          = AzureLight,
+    primaryActionBg    = White,
+    primaryActionFg    = Black,
+    secondaryActionBg  = LineDarkSoft,
+    secondaryActionBgHover = LineDark,
+    secondaryActionFg  = InkNavyDarkFg,
+    dangerActionBg     = DangerRed,
+    dangerActionFg     = White,
     successBg          = Color(0x331E9E6A), successFg = OkGreenLight,
     warningBg          = Color(0x33C77E1F), warningFg = OchreLight,
     dangerBg           = Color(0x33D6453B), dangerFg  = DangerRedLight,
@@ -170,11 +202,33 @@ data class PharmShapes(
 
 @Immutable
 data class PharmDimens(
-    val sidebarWidth:  Dp = 224.dp,
-    val topbarHeight:  Dp = 57.dp,
-    val cartWidth:     Dp = 288.dp,
-    val modalMax:      Dp = 448.dp,
-    val controlHeight: Dp = 48.dp,
+    val sidebarWidth:          Dp = 260.dp,
+    val sidebarHeaderHeight:   Dp = 56.dp,
+    val sidebarRowHeight:      Dp = 36.dp,
+    val topbarHeight:          Dp = 56.dp,
+    val compactTopbarHeight:   Dp = 52.dp,
+    val compactTopbarStartPadding: Dp = 8.dp,
+    val compactTopbarEndPadding: Dp = 16.dp,
+    val compactTopbarItemSpacing: Dp = 8.dp,
+    val compactTopbarActionPaddingX: Dp = 14.dp,
+    val compactTopbarActionMaxWidth: Dp = 132.dp,
+    val cartWidth:             Dp = 288.dp,
+    val modalMax:              Dp = 448.dp,
+    val listWorkspaceMaxWidth: Dp = 768.dp,
+    val readingContentMaxWidth: Dp = 880.dp,
+    val dashboardContentMaxWidth: Dp = 1040.dp,
+    val searchFieldWidth:      Dp = 240.dp,
+    val buttonSmHeight:        Dp = 32.dp,
+    val buttonSmPaddingX:      Dp = 12.dp,
+    val buttonMdHeight:        Dp = 36.dp,
+    val compactControlHeight:  Dp = 36.dp,
+    val minimumTouchTarget:    Dp = 36.dp,
+    val actionMenuRowHeight:   Dp = 36.dp,
+    val accountSummaryHeight:  Dp = 56.dp,
+    val controlHeight:         Dp = 48.dp,
+    val pageTopPaddingMedium:  Dp = 32.dp,
+    val pageTopPaddingExpanded: Dp = 48.dp,
+    val emptyStateIconSize:    Dp = 28.dp,
 )
 
 @Immutable
@@ -189,6 +243,11 @@ data class PharmTokens(
 
 internal val LightPharmTokens = PharmTokens(colors = LightPharmColors)
 internal val DarkPharmTokens  = PharmTokens(colors = DarkPharmColors)
+
+internal val TouchMinimumTarget: Dp = 44.dp
+
+internal fun PharmTokens.forTouchInput(): PharmTokens =
+    copy(dimens = dimens.copy(minimumTouchTarget = TouchMinimumTarget))
 
 val LocalPharmTokens = staticCompositionLocalOf<PharmTokens> { LightPharmTokens }
 

@@ -28,11 +28,11 @@ fun PharmListResultLine(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = text, style = PharmText.micro.copy(color = t.colors.fg3))
+        Text(text = text, style = PharmText.meta.copy(color = t.colors.fg3))
         trailing?.invoke()
     }
 }

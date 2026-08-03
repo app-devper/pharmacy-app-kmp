@@ -9,6 +9,8 @@ interface CommonStrings {
     val commonErrorIconDesc: String
     val commonOpenMenu: String
     val commonCloseMenu: String
+    val commonOpenAccountMenu: String
+    val commonCloseAccountMenu: String
     val commonHelp: String
     val commonResultFound: (Int, String, Int) -> String
     val commonResultTotal: (Int, String) -> String

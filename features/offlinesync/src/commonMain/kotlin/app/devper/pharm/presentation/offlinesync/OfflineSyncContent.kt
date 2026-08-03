@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,13 +49,10 @@ fun OfflineSyncContent(
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        OfflineSyncMetricsRow(
-            pending = state.pending,
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
-        )
         PharmListToolbar(
             title = s.navOfflineSync,
             subtitle = s.offlineSyncSubtitle,
+            compactTopbarActions = true,
             actions = {
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -78,10 +76,15 @@ fun OfflineSyncContent(
                 }
             },
         )
+        OfflineSyncMetricsRow(
+            pending = state.pending,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {

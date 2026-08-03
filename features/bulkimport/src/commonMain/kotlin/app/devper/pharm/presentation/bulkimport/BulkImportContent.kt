@@ -68,6 +68,7 @@ fun BulkImportContent(
         PharmListToolbar(
             title = s.bulkImportTitle,
             subtitle = s.bulkImportSubtitle,
+            compactTopbarActions = true,
             actions = {
                 PharmButton(
                     label = s.bulkImportDownloadTemplate,
@@ -81,7 +82,8 @@ fun BulkImportContent(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .verticalScroll(scroll)
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
