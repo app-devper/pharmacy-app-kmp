@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.LocalWindowSize
+import app.devper.pharm.ui.components.WindowSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -35,13 +36,15 @@ private val METRIC_CARD_GAP = 8.dp
 private val METRIC_CARD_FOUR_COLUMN_WIDTH = 720.dp
 private val METRIC_STAT_GAP = 6.dp
 
+internal fun usesMetricStats(windowSize: WindowSize): Boolean = windowSize != WindowSize.Expanded
+
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
 fun MetricCardRow(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    if (LocalWindowSize.current.isCompact) {
+    if (usesMetricStats(LocalWindowSize.current)) {
         FlowRow(
             modifier = modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(METRIC_STAT_GAP),
@@ -93,7 +96,7 @@ fun MetricCard(
     tint: MetricTint = MetricTint.Neutral,
     onClick: (() -> Unit)? = null,
 ) {
-    if (LocalWindowSize.current.isCompact) {
+    if (usesMetricStats(LocalWindowSize.current)) {
         MetricStat(
             label = label,
             value = value,

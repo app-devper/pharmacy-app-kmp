@@ -38,9 +38,10 @@ fun PharmListScaffold(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val t = pharmTokens
-    val compact = LocalWindowSize.current.isCompact
+    val windowSize = LocalWindowSize.current
+    val compact = windowSize.isCompact
     val headerState = rememberCollapsibleHeaderState()
-    val collapsesMetrics = compact && metrics != null
+    val collapsesMetrics = usesMetricStats(windowSize) && metrics != null
     Column(
         modifier = modifier
             .fillMaxSize()
