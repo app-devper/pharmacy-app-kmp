@@ -61,7 +61,7 @@ class PharmTokensTest {
         val base = LightPharmTokens
 
         assertEquals(base.colors, base.forTouchInput().colors)
-        assertEquals(base.dimens.sidebarRowHeight, base.forTouchInput().dimens.sidebarRowHeight)
+        assertEquals(base.dimens.navRowHeight, base.forTouchInput().dimens.navRowHeight)
         assertEquals(base.dimens.compactControlHeight, base.forTouchInput().dimens.compactControlHeight)
     }
 

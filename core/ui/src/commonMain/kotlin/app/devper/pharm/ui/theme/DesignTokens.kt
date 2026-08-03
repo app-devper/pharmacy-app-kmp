@@ -204,7 +204,7 @@ data class PharmShapes(
 data class PharmDimens(
     val sidebarWidth:          Dp = 260.dp,
     val sidebarHeaderHeight:   Dp = 56.dp,
-    val sidebarRowHeight:      Dp = 36.dp,
+    val navRowHeight:      Dp = 36.dp,
     val topbarHeight:          Dp = 56.dp,
     val compactTopbarHeight:   Dp = 52.dp,
     val compactTopbarStartPadding: Dp = 8.dp,
@@ -213,7 +213,6 @@ data class PharmDimens(
     val compactTopbarActionPaddingX: Dp = 14.dp,
     val compactTopbarActionMaxWidth: Dp = 132.dp,
     val cartWidth:             Dp = 288.dp,
-    val modalMax:              Dp = 448.dp,
     val listWorkspaceMaxWidth: Dp = 768.dp,
     val readingContentMaxWidth: Dp = 880.dp,
     val dashboardContentMaxWidth: Dp = 1040.dp,

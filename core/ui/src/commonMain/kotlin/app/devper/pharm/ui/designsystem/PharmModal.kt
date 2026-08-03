@@ -60,6 +60,8 @@ internal enum class PharmModalPresentation { FullScreen, Floating }
 internal fun modalPresentation(windowWidth: Dp): PharmModalPresentation =
     if (windowWidth < PharmBreakpoint.Medium) PharmModalPresentation.FullScreen else PharmModalPresentation.Floating
 
+private val DefaultDialogMaxHeight: Dp = 720.dp
+
 internal fun modalWidth(size: PharmModalSize): Dp = when (size) {
     PharmModalSize.Sm -> 384.dp
     PharmModalSize.Md -> 448.dp
@@ -83,7 +85,7 @@ fun PharmModal(
     returnFocusRequester: FocusRequester? = null,
     fillHeight: Boolean = false,
     dialogMaxWidth: Dp? = null,
-    dialogMaxHeight: Dp = 720.dp,
+    dialogMaxHeight: Dp = DefaultDialogMaxHeight,
     contentScrollable: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(20.dp),
     footer: (@Composable () -> Unit)? = null,

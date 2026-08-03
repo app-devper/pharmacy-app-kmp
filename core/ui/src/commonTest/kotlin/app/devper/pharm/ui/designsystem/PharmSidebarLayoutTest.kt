@@ -13,7 +13,7 @@ class PharmSidebarLayoutTest {
     fun sidebarUsesChatGptWebHeights() {
         val dimens = PharmDimens()
 
-        assertEquals(36.dp, dimens.sidebarRowHeight)
+        assertEquals(36.dp, dimens.navRowHeight)
         assertEquals(56.dp, dimens.sidebarHeaderHeight)
         assertEquals(36.dp, dimens.minimumTouchTarget)
         assertEquals(36.dp, dimens.actionMenuRowHeight)

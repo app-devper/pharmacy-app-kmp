@@ -1,6 +1,11 @@
 package app.devper.pharm.presentation.settings
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +32,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,13 +41,17 @@ import app.devper.pharm.presentation.settings.i18n.localizeSettings
 import app.devper.pharm.ui.common.ReloadOnResume
 import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmMotion
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
+import app.devper.pharm.ui.designsystem.toggleSurface
 import app.devper.pharm.ui.i18n.localize
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -46,14 +59,13 @@ import app.devper.pharm.ui.theme.pharmTokens
 import org.koin.compose.viewmodel.koinViewModel
 
 private val SettingsRailWidth = 200.dp
-private val SettingsCompactBreakpoint = 720.dp
 private val SettingsDialogMaxWidth = 800.dp
 private val SettingsDialogMaxHeight = 680.dp
 
 internal enum class SettingsDialogLayout { Compact, Split }
 
 internal fun settingsDialogLayout(width: Dp): SettingsDialogLayout =
-    if (width < SettingsCompactBreakpoint) SettingsDialogLayout.Compact else SettingsDialogLayout.Split
+    if (width < PharmBreakpoint.FormThreeCol) SettingsDialogLayout.Compact else SettingsDialogLayout.Split
 
 @Composable
 fun SettingsDialog(
@@ -95,7 +107,7 @@ internal fun SettingsDialogSurface(
         dialogMaxWidth = SettingsDialogMaxWidth,
         dialogMaxHeight = SettingsDialogMaxHeight,
         contentScrollable = false,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+        contentPadding = PaddingValues(0.dp),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             state.messageState?.let { message ->
@@ -181,13 +193,26 @@ private fun SettingsCategoryItem(
     onClick: () -> Unit,
 ) {
     val t = pharmTokens
+    val interaction = remember { MutableInteractionSource() }
+    val hovered by interaction.collectIsHoveredAsState()
+    val reducedMotion = LocalReducedMotion.current
+    val bg by animateColorAsState(
+        targetValue = toggleSurface(active = active, hovered = hovered, colors = t.colors),
+        animationSpec = if (reducedMotion) snap() else tween(PharmMotion.Fast),
+        label = "settingsCategoryBackground",
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(44.dp)
-            .clip(t.shapes.lg)
-            .background(if (active) t.colors.sidebarItemActive else t.colors.surface)
-            .pharmClickable(role = Role.Tab, shape = t.shapes.lg, onClick = onClick)
+            .height(t.dimens.navRowHeight)
+            .clip(t.shapes.md)
+            .background(bg)
+            .pharmClickable(
+                role = Role.Tab,
+                shape = t.shapes.md,
+                interactionSource = interaction,
+                onClick = onClick,
+            )
             .semantics {
                 role = Role.Tab
                 selected = active
@@ -204,7 +229,12 @@ private fun SettingsCategoryItem(
         )
         Text(
             text = labelFor(tab, pharmStrings),
-            style = PharmText.bodySm.copy(color = if (active) t.colors.fg1 else t.colors.fg2),
+            style = PharmText.body.copy(
+                color = if (active) t.colors.fg1 else t.colors.fg2,
+                fontWeight = if (active) FontWeight.Medium else FontWeight.Normal,
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

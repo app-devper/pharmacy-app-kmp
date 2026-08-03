@@ -144,7 +144,7 @@ fun PharmSidebar(
     val borderColor = t.colors.border
     val reducedMotion = LocalReducedMotion.current
     val headerHeight = t.dimens.sidebarHeaderHeight
-    val rowHeight = t.dimens.sidebarRowHeight
+    val rowHeight = t.dimens.navRowHeight
     val listPadding = t.spacing.s1
     val pinnedItems = remember(items) { items.filter(SidebarNavItem::pinned) }
     val scrollableItems = remember(items) { items.filterNot(SidebarNavItem::pinned) }
