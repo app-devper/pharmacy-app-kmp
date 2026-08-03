@@ -170,7 +170,6 @@ private fun SettingsCategoryRail(
             modifier = Modifier
                 .width(SettingsRailWidth)
                 .fillMaxHeight()
-                .background(t.colors.surface)
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(t.spacing.s0_5),
         ) {
@@ -248,7 +247,7 @@ private fun SettingsPane(
 ) {
     val t = pharmTokens
     val strings = pharmStrings
-    Column(modifier = modifier.background(t.colors.surface)) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
