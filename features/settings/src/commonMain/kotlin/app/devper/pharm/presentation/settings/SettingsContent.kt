@@ -40,12 +40,19 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
+internal fun settingsSubtitle(state: SettingsEditorUiState, s: PharmStrings): String = when {
+    !state.tabSaves -> s.settingsDisplaySubtitle
+    state.dirty -> s.settingsDirtySubtitle
+    else -> s.settingsToolbarSubtitle
+}
+
 internal fun labelFor(tab: SettingsTab, s: PharmStrings): String = when (tab) {
     SettingsTab.Store      -> s.settingsTabStore
     SettingsTab.Receipt    -> s.settingsTabReceipt
     SettingsTab.Stock      -> s.settingsTabStock
     SettingsTab.Pharmacist -> s.settingsTabPharmacist
     SettingsTab.Ky         -> s.settingsTabKy
+    SettingsTab.Display    -> s.settingsTabDisplay
 }
 
 @Composable
@@ -60,15 +67,19 @@ fun SettingsContent(
     Column(modifier = Modifier.fillMaxSize()) {
         PharmListToolbar(
             title = strings.navSettings,
-            subtitle = if (state.dirty) strings.settingsDirtySubtitle else strings.settingsToolbarSubtitle,
+            subtitle = settingsSubtitle(state, strings),
             compactTopbarActions = true,
-            actions = {
-                PharmSaveAction(
-                    saving = state.saving,
-                    canSubmit = state.canSave,
-                    onSubmit = editor.onSubmit,
-                    onInvalidSubmit = validation.invalidSubmit(state, editor),
-                )
+            actions = if (state.tabSaves) {
+                {
+                    PharmSaveAction(
+                        saving = state.saving,
+                        canSubmit = state.canSave,
+                        onSubmit = editor.onSubmit,
+                        onInvalidSubmit = validation.invalidSubmit(state, editor),
+                    )
+                }
+            } else {
+                null
             },
         )
 
@@ -150,6 +161,7 @@ internal fun SettingsTabBody(
                         SettingsTab.Stock      -> SettingsStockTab(state, editor, showValidation, focus)
                         SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
                         SettingsTab.Ky         -> SettingsKyTab(state, editor)
+                        SettingsTab.Display    -> SettingsDisplayTab(state, editor, strings)
                     }
                 }
             }
@@ -201,7 +213,8 @@ internal fun rememberSettingsValidation(state: SettingsEditorUiState): SettingsV
             }
             SettingsTab.Receipt,
             SettingsTab.Pharmacist,
-            SettingsTab.Ky -> Unit
+            SettingsTab.Ky,
+            SettingsTab.Display -> Unit
         }
     }
     return validation

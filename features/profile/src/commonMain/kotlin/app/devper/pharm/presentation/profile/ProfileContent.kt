@@ -23,7 +23,6 @@ import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.presentation.profile.components.ProfileDisplayPreferences
 import app.devper.pharm.presentation.profile.components.ProfileFormSection
 import app.devper.pharm.presentation.profile.components.ProfileHeaderCard
 import app.devper.pharm.presentation.profile.components.ProfilePasswordSection
@@ -78,12 +77,6 @@ fun ProfileContent(
                     subtitle = strings.profileSectionPasswordSubtitle,
                 ) {
                     ProfilePasswordSection(state, callbacks)
-                }
-                ProfileCard(
-                    title = strings.profileSectionDisplay,
-                    subtitle = strings.profileSectionDisplaySubtitle,
-                ) {
-                    ProfileDisplayPreferences(state, callbacks)
                 }
                 Spacer(Modifier.height(8.dp))
             }

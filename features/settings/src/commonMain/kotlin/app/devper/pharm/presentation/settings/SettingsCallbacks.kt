@@ -2,6 +2,10 @@ package app.devper.pharm.presentation.settings
 
 data class SettingsEditorCallbacks(
     val onSelectTab: (SettingsTab) -> Unit = {},
+    val onThemeChange: (String) -> Unit = {},
+    val onFontSizeChange: (String) -> Unit = {},
+    val onDensityChange: (String) -> Unit = {},
+    val onLocaleChange: (String) -> Unit = {},
     val onStoreName: (String) -> Unit = {},
     val onStoreAddress: (String) -> Unit = {},
     val onStorePhone: (String) -> Unit = {},

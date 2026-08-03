@@ -14,10 +14,6 @@ data class ProfileCallbacks(
     val onConfirmPassword: (String) -> Unit = {},
     val onSubmitPasswordChange: () -> Unit = {},
     val onDismissPasswordError: () -> Unit = {},
-    val onThemeChange: (String) -> Unit = {},
-    val onFontSizeChange: (String) -> Unit = {},
-    val onDensityChange: (String) -> Unit = {},
-    val onLocaleChange: (String) -> Unit = {},
 ) {
     companion object {
         val Preview = ProfileCallbacks()

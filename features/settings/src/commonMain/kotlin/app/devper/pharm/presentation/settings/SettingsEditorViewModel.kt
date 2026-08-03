@@ -4,17 +4,26 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.presentation.settings.exception.SettingsUiStateError
+import app.devper.pharm.domain.model.DensityPreference
+import app.devper.pharm.domain.model.FontSizePreference
 import app.devper.pharm.domain.model.KySettings
+import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.model.PharmacistInfo
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StoreInfo
+import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.observer.SettingsProvider
+import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.param.settings.ReceiptSettingsInput
 import app.devper.pharm.domain.param.settings.StockSettingsInput
 import app.devper.pharm.domain.param.settings.UpdateSettingsParam
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
+import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
+import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -26,11 +35,29 @@ class SettingsEditorViewModel(
     private val refreshSettings: RefreshSettingsUseCase,
     private val updateSettings: UpdateSettingsUseCase,
     private val printReceipt: PrintReceiptUseCase,
+    uiPreferences: UiPreferencesProvider,
+    private val setTheme: SetThemePreferenceUseCase,
+    private val setFontSize: SetFontSizePreferenceUseCase,
+    private val setDensity: SetDensityPreferenceUseCase,
+    private val setLocale: SetLocalePreferenceUseCase,
 ) : BaseLoadableViewModel<SettingsEditorUiState>(SettingsEditorUiState()) {
 
     private var hydrated = false
 
     init {
+        uiPreferences.state
+            .onEach { prefs ->
+                setState {
+                    copy(
+                        theme = prefs.theme.wire,
+                        fontSize = prefs.fontSize.wire,
+                        density = prefs.density.wire,
+                        locale = prefs.locale.wire,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
         settings.state
             .onEach { s ->
                 if (!hydrated) {
@@ -66,6 +93,19 @@ class SettingsEditorViewModel(
     }
 
     fun selectTab(tab: SettingsTab) = setState { copy(tab = tab) }
+
+    fun onThemeChange(value: String) = setTheme(ThemePreference.parse(value))
+
+    fun onFontSizeChange(value: String) = setFontSize(FontSizePreference.parse(value))
+
+    fun onDensityChange(value: String) = setDensity(DensityPreference.parse(value))
+
+    fun onLocaleChange(value: String) {
+        val parsed = LocalePreference.parse(value)
+        if (parsed.wire == current.locale) return
+        setLocale(parsed)
+        setState { copy(localeChangeApplied = true) }
+    }
 
     fun onStoreName(v: String) = patch { copy(storeName = v) }
     fun onStoreAddress(v: String) = patch { copy(storeAddress = v) }

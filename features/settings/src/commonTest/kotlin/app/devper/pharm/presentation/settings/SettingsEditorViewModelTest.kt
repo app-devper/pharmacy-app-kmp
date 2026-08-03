@@ -47,13 +47,23 @@ class SettingsEditorViewModelTest {
         received = 0.0, change = 0.0, pharmacistName = "", footer = "",
     )
 
-    private fun vm(repo: FakeSettingsRepository, d: app.devper.pharm.common.AppDispatchers, printer: StubPrinter = StubPrinter()) =
-        SettingsEditorViewModel(
-            SettingsProvider(repo),
-            RefreshSettingsUseCase(repo, d),
-            UpdateSettingsUseCase(repo, d),
-            app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase(printer, d),
-        )
+    private fun vm(
+        repo: FakeSettingsRepository,
+        d: app.devper.pharm.common.AppDispatchers,
+        printer: StubPrinter = StubPrinter(),
+        uiPrefs: app.devper.pharm.domain.repository.FakeUiPreferencesRepository =
+            app.devper.pharm.domain.repository.FakeUiPreferencesRepository(),
+    ) = SettingsEditorViewModel(
+        SettingsProvider(repo),
+        RefreshSettingsUseCase(repo, d),
+        UpdateSettingsUseCase(repo, d),
+        app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase(printer, d),
+        app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
+        app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase(uiPrefs),
+        app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase(uiPrefs),
+        app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase(uiPrefs),
+        app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase(uiPrefs),
+    )
 
     @Test
     fun test_print_sends_template_to_the_printer() = runVmTest { d ->
@@ -226,4 +236,69 @@ class SettingsEditorViewModelTest {
         assertEquals("02-123-4567", model.state.value.form.storePhone)
         assertEquals("ภ.ก. สมชาย", model.state.value.form.pharmacistName)
     }
+    @Test
+    fun display_preferences_start_from_the_stored_values() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        assertEquals("auto", model.state.value.theme)
+        assertEquals("md", model.state.value.fontSize)
+        assertEquals("comfortable", model.state.value.density)
+        assertEquals("th", model.state.value.locale)
+    }
+
+    @Test
+    fun density_change_is_reflected_in_state() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onDensityChange("compact")
+        advanceUntilIdle()
+        assertEquals("compact", model.state.value.density)
+    }
+
+    @Test
+    fun theme_and_font_changes_are_reflected_in_state() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onThemeChange("dark")
+        model.onFontSizeChange("lg")
+        advanceUntilIdle()
+        assertEquals("dark", model.state.value.theme)
+        assertEquals("lg", model.state.value.fontSize)
+    }
+
+    @Test
+    fun locale_change_is_reflected_in_state_and_surfaces_applied_message() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        assertFalse(model.state.value.localeChangeApplied)
+
+        model.onLocaleChange("en")
+        advanceUntilIdle()
+
+        assertEquals("en", model.state.value.locale)
+        assertTrue(model.state.value.localeChangeApplied)
+    }
+
+    @Test
+    fun locale_change_to_same_value_does_not_surface_applied_message() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.onLocaleChange("th")
+        advanceUntilIdle()
+        assertFalse(model.state.value.localeChangeApplied)
+    }
+
+    @Test
+    fun the_display_tab_does_not_take_part_in_saving() = runVmTest { d ->
+        val model = vm(FakeSettingsRepository(), d)
+        advanceUntilIdle()
+        model.selectTab(SettingsTab.Display)
+        advanceUntilIdle()
+        assertFalse(model.state.value.tabSaves)
+
+        model.selectTab(SettingsTab.Store)
+        advanceUntilIdle()
+        assertTrue(model.state.value.tabSaves)
+    }
+
 }

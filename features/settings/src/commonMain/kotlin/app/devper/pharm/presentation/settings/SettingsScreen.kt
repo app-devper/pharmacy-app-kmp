@@ -21,6 +21,10 @@ fun SettingsScreen(
 
 internal fun SettingsEditorViewModel.settingsEditorCallbacks() = SettingsEditorCallbacks(
     onSelectTab = ::selectTab,
+    onThemeChange = ::onThemeChange,
+    onFontSizeChange = ::onFontSizeChange,
+    onDensityChange = ::onDensityChange,
+    onLocaleChange = ::onLocaleChange,
     onStoreName = ::onStoreName,
     onStoreAddress = ::onStoreAddress,
     onStorePhone = ::onStorePhone,

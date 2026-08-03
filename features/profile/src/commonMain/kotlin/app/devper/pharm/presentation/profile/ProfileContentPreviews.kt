@@ -74,8 +74,6 @@ private fun ProfileContent_DisplayPrefs_Preview() {
             state = ProfileUiState(
                 user = PreviewUser,
                 form = PreviewForm,
-                theme = "dark",
-                fontSize = "lg",
             ),
             callbacks = ProfileCallbacks.Preview,
         )

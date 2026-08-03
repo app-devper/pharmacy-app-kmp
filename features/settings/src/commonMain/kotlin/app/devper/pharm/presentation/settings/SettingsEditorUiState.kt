@@ -64,6 +64,11 @@ data class SettingsEditorUiState(
     val form: SettingsFormFields = SettingsFormFields(),
     val tab: SettingsTab = SettingsTab.Store,
     val confirmKySkip: Boolean = false,
+    val theme: String = "auto",
+    val fontSize: String = "md",
+    val density: String = "comfortable",
+    val locale: String = "th",
+    val localeChangeApplied: Boolean = false,
     override val loading: Boolean = false,
     val saving: Boolean = false,
     val messageState: CommonUiStateMessage? = null,
@@ -77,8 +82,11 @@ data class SettingsEditorUiState(
     val dirty: Boolean get() = form != baseline
     val canSave: Boolean
         get() = !saving && !loading && dirty && form.valid
+    val tabSaves: Boolean get() = tab.saves
 }
 
 enum class SettingsTab {
-    Store, Receipt, Stock, Pharmacist, Ky;
+    Store, Receipt, Stock, Pharmacist, Ky, Display;
+
+    val saves: Boolean get() = this != Display
 }

@@ -259,16 +259,18 @@ private fun SettingsPane(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = labelFor(state.tab, strings), style = PharmText.h2)
                 Text(
-                    text = if (state.dirty) strings.settingsDirtySubtitle else strings.settingsToolbarSubtitle,
+                    text = settingsSubtitle(state, strings),
                     style = PharmText.meta.copy(color = t.colors.fgMuted),
                 )
             }
-            PharmSaveAction(
-                saving = state.saving,
-                canSubmit = state.canSave,
-                onSubmit = editor.onSubmit,
-                onInvalidSubmit = validation.invalidSubmit(state, editor),
-            )
+            if (state.tabSaves) {
+                PharmSaveAction(
+                    saving = state.saving,
+                    canSubmit = state.canSave,
+                    onSubmit = editor.onSubmit,
+                    onInvalidSubmit = validation.invalidSubmit(state, editor),
+                )
+            }
         }
         Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -295,4 +297,5 @@ private fun settingsTabIcon(tab: SettingsTab): ImageVector = when (tab) {
     SettingsTab.Stock -> PharmIcons.Stock
     SettingsTab.Pharmacist -> PharmIcons.Person
     SettingsTab.Ky -> PharmIcons.KyForms
+    SettingsTab.Display -> PharmIcons.Sun
 }
