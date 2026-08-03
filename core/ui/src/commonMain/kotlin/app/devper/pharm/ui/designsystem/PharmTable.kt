@@ -79,12 +79,13 @@ fun <T> PharmTable(
             .fillMaxSize()
             .background(t.colors.surface),
     ) {
+        val tableColumns = remember(columns, maxWidth) { fittedTableColumns(columns, maxWidth) }
         if (rows.isEmpty() && emptyContent != null) {
             if (maxWidth < cardModeMaxWidth) {
                 PharmTableCompactEmptySurface(content = emptyContent)
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    PharmTableHeader(columns = columns, height = effHeaderHeight)
+                    PharmTableHeader(columns = tableColumns, height = effHeaderHeight)
                     PharmTableEmptySurface(
                         modifier = Modifier
                             .weight(1f)
@@ -108,8 +109,7 @@ fun <T> PharmTable(
             return@BoxWithConstraints
         }
 
-        val totalWeight = remember(columns) { columns.fold(0f) { acc, c -> acc + c.weight } }
-        val minTableWidth = MIN_WIDTH_PER_WEIGHT * totalWeight
+        val minTableWidth = tableMinWidth(tableColumns)
         val needsScroll = minTableWidth > maxWidth
         val hScroll = rememberScrollState()
 
@@ -127,14 +127,14 @@ fun <T> PharmTable(
         Box(modifier = outerModifier) {
             LazyColumn(state = listState, modifier = listModifier) {
                 stickyHeader {
-                    PharmTableHeader(columns = columns, height = effHeaderHeight)
+                    PharmTableHeader(columns = tableColumns, height = effHeaderHeight)
                 }
                 items(items = rows, key = key) { row ->
                     val onClickRow = remember(row, onRowClick) {
                         onRowClick?.let { cb -> { cb(row) } }
                     }
                     PharmTableRow(
-                        columns = columns,
+                        columns = tableColumns,
                         row = row,
                         height = effRowHeight,
                         onClick = onClickRow,
@@ -190,6 +190,23 @@ private fun PharmTableEmptySurface(
 }
 
 private val MIN_WIDTH_PER_WEIGHT: Dp = 88.dp
+
+internal fun <T> tableMinWidth(columns: List<PharmTableColumn<T>>): Dp =
+    MIN_WIDTH_PER_WEIGHT * columns.fold(0f) { acc, c -> acc + c.weight }
+
+internal fun <T> fittedTableColumns(
+    columns: List<PharmTableColumn<T>>,
+    availableWidth: Dp,
+): List<PharmTableColumn<T>> {
+    val kept = columns.toMutableList()
+    while (kept.size > 1 && tableMinWidth(kept) > availableWidth) {
+        val droppable = kept.indexOfLast { it.hideInCompact }
+        if (droppable < 0) break
+        kept.removeAt(droppable)
+    }
+    return kept
+}
+
 @Composable
 private fun <T> PharmTableCardList(
     rows: List<T>,
