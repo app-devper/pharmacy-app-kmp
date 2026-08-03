@@ -11,7 +11,6 @@ object PharmBreakpoint {
     val Medium = 600.dp
     val FormThreeCol = 720.dp
     val Expanded = 840.dp
-    val DashboardCap = 1000.dp
     val GridWide = 1280.dp
 }
 

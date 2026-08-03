@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmMiniBarChart
 import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -28,41 +29,36 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
     val data = daily.map { PharmBarDatum(label = dailyLabel(it.day), value = it.total) }
     val avg = if (daily.isNotEmpty()) daily.sumOf { it.total } / daily.size else 0.0
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val s = pharmStrings
-            Text(text = s.reportsSectionDailySales, style = PharmText.h3, modifier = Modifier.weight(1f))
+    val s = pharmStrings
+    PharmFormCard(
+        title = s.reportsSectionDailySales,
+        modifier = modifier,
+        trailing = {
             Text(
                 text = s.reportsAvgPerDay(formatBahtCurrency(avg)),
                 style = PharmText.meta.tabular(),
             )
-        }
-        PharmMiniBarChart(
-            data = data,
-            height = 128.dp,
-            barColor = t.colors.accent,
-            valueFormatter = { formatBahtCurrency(it) },
-        )
-        if (data.isNotEmpty()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                data.forEach { d ->
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = d.label,
-                            style = PharmText.micro.tabular().copy(textAlign = TextAlign.Center),
-                        )
+        },
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PharmMiniBarChart(
+                data = data,
+                height = 128.dp,
+                barColor = t.colors.accent,
+                valueFormatter = { formatBahtCurrency(it) },
+            )
+            if (data.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    data.forEach { d ->
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = d.label,
+                                style = PharmText.micro.tabular().copy(textAlign = TextAlign.Center),
+                            )
+                        }
                     }
                 }
             }

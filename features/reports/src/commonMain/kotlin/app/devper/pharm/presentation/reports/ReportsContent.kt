@@ -53,11 +53,13 @@ fun ReportsContent(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
         contentAlignment = Alignment.TopCenter,
     ) {
-        val contentModifier = if (maxWidth >= PharmBreakpoint.DashboardCap) Modifier.widthIn(max = t.dimens.dashboardContentMaxWidth).fillMaxSize()
-        else Modifier.fillMaxSize()
         val stackTopAndSlow = maxWidth < PharmBreakpoint.FormThreeCol
 
-        Column(modifier = contentModifier) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = t.dimens.dashboardContentMaxWidth)
+                .fillMaxSize(),
+        ) {
             val s = pharmStrings
             val dashboard = state.dashboard
             PharmListToolbar(
@@ -81,12 +83,7 @@ fun ReportsContent(
                             label = s.reportsTabEod,
                             onClick = callbacks.onCloseEod,
                             size = PharmButtonSize.Md,
-                            leadingIcon = {
-                                androidx.compose.material3.Icon(
-                                    imageVector = PharmIcons.Reports,
-                                    contentDescription = null,
-                                )
-                            },
+                            leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
                         )
                     }
                 },
@@ -111,7 +108,7 @@ fun ReportsContent(
                     else -> {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             item("metrics") {

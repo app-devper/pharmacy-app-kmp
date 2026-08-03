@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmStatus
 import app.devper.pharm.ui.designsystem.PharmStatusBadge
@@ -31,19 +32,14 @@ internal fun ReportsRecentSalesSection(recent: List<SaleSummary>, modifier: Modi
     val t = pharmTokens
     val visible = recent.take(5)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        val s = pharmStrings
-        Text(text = s.reportsSectionTopBills, style = PharmText.h3)
+    val s = pharmStrings
+    PharmFormCard(title = s.reportsSectionTopBills, modifier = modifier) {
         if (visible.isEmpty()) {
             Text(text = s.reportsEmptyNoBills, style = PharmText.meta)
         } else {
-            visible.forEach { sale -> RecentSaleRow(sale) }
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                visible.forEach { sale -> RecentSaleRow(sale) }
+            }
         }
     }
 }
