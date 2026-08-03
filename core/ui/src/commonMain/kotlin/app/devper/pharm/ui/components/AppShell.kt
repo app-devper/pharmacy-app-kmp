@@ -350,7 +350,7 @@ private fun CompactShell(
     }
 }
 
-internal fun usesCompactAppShell(windowSize: WindowSize): Boolean = windowSize != WindowSize.Expanded
+internal fun usesCompactAppShell(windowSize: WindowSize): Boolean = windowSize.isCompactShell
 
 internal fun compactDrawerWidth(windowWidth: Dp, maxDrawerWidth: Dp): Dp =
     if (windowWidth < PharmBreakpoint.Medium) windowWidth else minOf(windowWidth, maxDrawerWidth)

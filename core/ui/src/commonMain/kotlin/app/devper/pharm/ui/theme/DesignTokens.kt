@@ -214,6 +214,7 @@ data class PharmDimens(
     val compactTopbarActionMaxWidth: Dp = 132.dp,
     val cartWidth:             Dp = 288.dp,
     val listWorkspaceMaxWidth: Dp = 768.dp,
+    val formContentMaxWidth:   Dp = 768.dp,
     val readingContentMaxWidth: Dp = 880.dp,
     val dashboardContentMaxWidth: Dp = 1040.dp,
     val searchFieldWidth:      Dp = 240.dp,

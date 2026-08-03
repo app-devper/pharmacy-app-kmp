@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.components.LocalWindowSize
@@ -39,7 +40,8 @@ fun PharmListScaffold(
 ) {
     val t = pharmTokens
     val windowSize = LocalWindowSize.current
-    val compact = windowSize.isCompact
+    val compact = windowSize.isCompactContent
+    val gutter = pharmPageGutter
     val headerState = rememberCollapsibleHeaderState()
     val collapsesMetrics = usesMetricStats(windowSize) && metrics != null
     Column(
@@ -76,18 +78,19 @@ fun PharmListScaffold(
                         MetricsBanner(
                             metrics = metrics,
                             banner = banner,
+                            gutter = gutter,
                             modifier = Modifier.onSizeChanged { headerState.onHeaderMeasured(it.height) },
                         )
                         resultLine()
-                        ListBody(compact = compact, content = content)
+                        ListBody(compact = compact, gutter = gutter, content = content)
                     }
                 }
             } else {
                 if (metrics != null || banner != null) {
-                    MetricsBanner(metrics = metrics, banner = banner)
+                    MetricsBanner(metrics = metrics, banner = banner, gutter = gutter)
                 }
                 resultLine()
-                ListBody(compact = compact, content = content)
+                ListBody(compact = compact, gutter = gutter, content = content)
             }
         }
         footer?.let {
@@ -96,7 +99,7 @@ fun PharmListScaffold(
                     .widthIn(max = t.dimens.listWorkspaceMaxWidth)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    .padding(start = gutter, end = gutter, bottom = 16.dp),
             ) { it() }
         }
     }
@@ -106,12 +109,13 @@ fun PharmListScaffold(
 private fun MetricsBanner(
     metrics: (@Composable () -> Unit)?,
     banner: (@Composable () -> Unit)?,
+    gutter: Dp,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = gutter),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         metrics?.invoke()
@@ -122,6 +126,7 @@ private fun MetricsBanner(
 @Composable
 private fun ColumnScope.ListBody(
     compact: Boolean,
+    gutter: Dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val t = pharmTokens
@@ -134,7 +139,7 @@ private fun ColumnScope.ListBody(
                     Modifier.background(t.colors.bgPage)
                 } else {
                     Modifier
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = gutter)
                         .clip(t.shapes.xl)
                         .background(t.colors.surface)
                         .border(1.dp, t.colors.borderSubtle, t.shapes.xl)

@@ -53,7 +53,7 @@ internal fun listToolbarTopPadding(
 }
 
 internal fun usesCompactListToolbar(windowSize: WindowSize, availableWidth: Dp): Boolean =
-    windowSize != WindowSize.Expanded || availableWidth < PharmBreakpoint.Medium
+    windowSize.isCompactShell || availableWidth < PharmBreakpoint.Medium
 
 internal fun listToolbarSectionSpacing(
     compact: Boolean,
@@ -85,10 +85,10 @@ internal fun movesListToolbarActionsToTopbar(
     windowSize: WindowSize,
     hasBack: Boolean,
     compactTopbarActions: Boolean,
-): Boolean = windowSize != WindowSize.Expanded && !hasBack && compactTopbarActions
+): Boolean = windowSize.isCompactShell && !hasBack && compactTopbarActions
 
 internal fun movesSubpageHeaderToTopbar(windowSize: WindowSize, hasBack: Boolean): Boolean =
-    windowSize != WindowSize.Expanded && hasBack
+    windowSize.isCompactShell && hasBack
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -114,7 +114,8 @@ fun PharmListToolbar(
 ) {
     val t = pharmTokens
     val windowSize = LocalWindowSize.current
-    val effectiveTitle = if (windowSize != WindowSize.Expanded && onBack == null) {
+    val gutter = pharmPageGutter
+    val effectiveTitle = if (windowSize.isCompactShell && onBack == null) {
         ""
     } else {
         title.ifBlank { LocalPageTitle.current.takeUnless { windowSize.isCompact }.orEmpty() }
@@ -178,7 +179,7 @@ fun PharmListToolbar(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = topPadding, end = 16.dp, bottom = 16.dp),
+                    .padding(start = gutter, top = topPadding, end = gutter, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(
                     listToolbarSectionSpacing(
                         compact = compact,

@@ -274,7 +274,7 @@ private fun PharmActionRow(
     }
 }
 
-internal fun usesActionBottomSheet(windowSize: WindowSize): Boolean = windowSize.isCompact
+internal fun usesActionBottomSheet(windowSize: WindowSize): Boolean = windowSize.isCompactContent
 
 internal enum class PharmActionFocusMove { Next, Previous, First, Last }
 

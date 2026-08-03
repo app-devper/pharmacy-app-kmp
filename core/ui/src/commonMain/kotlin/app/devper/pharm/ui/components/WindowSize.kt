@@ -6,7 +6,6 @@ import androidx.compose.ui.unit.dp
 
 object PharmBreakpoint {
     val Stack = 360.dp
-    val ShortViewport = 480.dp
     val FormTwoCol = 560.dp
     val Medium = 600.dp
     val FormThreeCol = 720.dp
@@ -21,6 +20,9 @@ enum class WindowSize {
 
     val isCompact: Boolean get() = this == Compact
     val isAtLeastMedium: Boolean get() = this != Compact
+
+    val isCompactShell: Boolean get() = this != Expanded
+    val isCompactContent: Boolean get() = this == Compact
 
     companion object {
         fun fromWidth(width: Dp): WindowSize = when {

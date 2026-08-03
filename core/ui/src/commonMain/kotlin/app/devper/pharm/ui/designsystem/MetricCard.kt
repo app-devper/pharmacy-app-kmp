@@ -36,7 +36,7 @@ private val METRIC_CARD_GAP = 8.dp
 private val METRIC_CARD_FOUR_COLUMN_WIDTH = 720.dp
 private val METRIC_STAT_GAP = 6.dp
 
-internal fun usesMetricStats(windowSize: WindowSize): Boolean = windowSize != WindowSize.Expanded
+internal fun usesMetricStats(windowSize: WindowSize): Boolean = windowSize.isCompactShell
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)

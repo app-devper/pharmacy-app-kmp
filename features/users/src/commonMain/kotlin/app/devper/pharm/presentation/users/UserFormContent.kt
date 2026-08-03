@@ -29,6 +29,7 @@ import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.designsystem.pharmFormContentPadding
+import app.devper.pharm.ui.designsystem.pharmFormContentWidth
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -75,7 +76,7 @@ fun UserFormContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .then(pharmFormContentWidth())
                 .imePadding()
                 .verticalScroll(rememberScrollState())
                 .pharmFormContentPadding(vertical = 20.dp),
