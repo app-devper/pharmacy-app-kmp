@@ -16,17 +16,11 @@ internal fun StockMetricsRow(
     onOpenExpiry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val total = drugs.size
     val oos = drugs.count { !it.stock.isPositive }
     val low = drugs.count { it.stock.isPositive && it.minStock.isPositive && it.stock <= it.minStock }
     val stockValue = drugs.sumOf { it.stock.value.coerceAtLeast(0) * it.costPrice.amount }
 
     MetricCardRow(modifier = modifier) {
-        MetricCard(
-            label = pharmStrings.stockMetricCount,
-            value = total.toString(),
-            sub = pharmStrings.movementsCountNoun,
-        )
         MetricCard(
             label = pharmStrings.stockMetricOut,
             value = oos.toString(),

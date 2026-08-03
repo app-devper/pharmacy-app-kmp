@@ -7,8 +7,6 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
     override val offlineSyncEmpty = "All bills are synced with the backend"
     override val offlineSyncMetricsTotal = "Pending total"
     override val offlineSyncMetricsLocation = "On this device"
-    override val offlineSyncMetricsAttempts = "Total attempts"
-    override val offlineSyncMetricsAttemptsSuffix = "attempts"
     override val offlineSyncMetricsFailed = "Sync failed"
     override val offlineSyncStatusFailed = "Failed"
     override val offlineSyncStatusPending = "Pending sync"

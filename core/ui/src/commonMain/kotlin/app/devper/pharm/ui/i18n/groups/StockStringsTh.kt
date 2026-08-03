@@ -66,7 +66,6 @@ object StockStringsTh : StockStrings {
     override val stockTypeSupplement = "อาหารเสริม"
     override val stockTypeBoth = "ยาแผนปัจจุบัน / สมุนไพร"
     override val stockTypeAbbrev = "แผนปัจจุบัน"
-    override val stockMetricCount = "จำนวนรายการยา"
     override val stockMetricValueByCost = "ตามราคาทุน"
     override val stockMetricBelowMin = "ต่ำกว่าขั้นต่ำ"
     override val stockMetricOut = "หมดสต็อก"

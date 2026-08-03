@@ -7,8 +7,6 @@ object OfflineSyncStringsTh : OfflineSyncStrings {
     override val offlineSyncEmpty = "ทุกบิลส่งเข้า backend แล้ว"
     override val offlineSyncMetricsTotal = "รายการค้างทั้งหมด"
     override val offlineSyncMetricsLocation = "ในเครื่องนี้"
-    override val offlineSyncMetricsAttempts = "ความพยายามสะสม"
-    override val offlineSyncMetricsAttemptsSuffix = "ครั้งสะสม"
     override val offlineSyncMetricsFailed = "ซิงก์ล้มเหลว"
     override val offlineSyncStatusFailed = "ล้มเหลว"
     override val offlineSyncStatusPending = "รอซิงก์"

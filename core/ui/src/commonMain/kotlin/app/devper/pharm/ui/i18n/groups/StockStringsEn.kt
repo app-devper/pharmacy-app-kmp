@@ -66,7 +66,6 @@ object StockStringsEn : StockStrings {
     override val stockTypeSupplement = "Supplement"
     override val stockTypeBoth = "Modern / Herbal"
     override val stockTypeAbbrev = "Modern"
-    override val stockMetricCount = "Drug count"
     override val stockMetricValueByCost = "By cost"
     override val stockMetricBelowMin = "Below minimum"
     override val stockMetricOut = "Out of stock"
