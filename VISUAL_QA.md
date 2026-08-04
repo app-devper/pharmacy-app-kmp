@@ -4,8 +4,12 @@ Manual pass over all 20 features using the shared
 [`app-devper/mock-api`](https://github.com/app-devper/mock-api). The mock implements
 every pharmacy route this client calls, so no feature is blocked by a missing endpoint.
 
-Automated UI driving is not available: Compose renders into a WebGL canvas with no DOM,
-so Playwright and friends cannot click anything. This list is for a human.
+Compose renders into a WebGL canvas with no DOM, so selector-based tools cannot pick
+anything out of it — but the canvas still takes events, and headless Edge under
+SwiftShader renders it fine. The [`run` skill](.claude/skills/run/SKILL.md) drives the
+app over CDP by coordinate and screenshots the result, which is enough to walk this
+list without a human at the keyboard. Judging whether a screen *looks right* is still
+a human call.
 
 ## Setup
 
@@ -15,6 +19,9 @@ MOCK_API_PORT=8088 \
 MOCK_API_STATIC_DIR=$PWD/composeApp/build/dist/wasmJs/developmentExecutable \
 ../../mock-api/.venv/bin/mock-api
 ```
+
+For the headless browser and the coordinates to drive it, see the
+[`run` skill](.claude/skills/run/SKILL.md).
 
 Open `http://localhost:8088/?apiBaseUrl=http://localhost:8088` and sign in as
 `admin` / `qa1234` (also `super`, `manager`, `user` — same password, different role).
