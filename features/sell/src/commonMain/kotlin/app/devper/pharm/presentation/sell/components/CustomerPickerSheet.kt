@@ -30,6 +30,7 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
@@ -135,21 +136,8 @@ private fun CustomerRow(customer: Customer, onClick: () -> Unit) {
 
 @Composable
 private fun EmptyCustomers(searching: Boolean) {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = if (searching) PharmIcons.Search else PharmIcons.Customers,
-            contentDescription = null,
-            tint = t.colors.fgMuted,
-            modifier = Modifier.size(36.dp),
-        )
-        Text(
-            text = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
-            style = PharmText.body.copy(color = t.colors.fg3),
-            modifier = Modifier.padding(top = 12.dp),
-        )
-    }
+    PharmEmptyState(
+        icon = if (searching) PharmIcons.Search else PharmIcons.Customers,
+        title = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
+    )
 }

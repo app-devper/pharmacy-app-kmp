@@ -79,7 +79,6 @@ fun CartPanel(
     activeSlot: Int = 0,
     @Suppress("UNUSED_PARAMETER") parkedFilledCount: Int = 0,
     @Suppress("UNUSED_PARAMETER") onOpenParkedSheet: () -> Unit = {},
-    compact: Boolean = false,
     showShortcutHints: Boolean = false,
     kyCaptured: Boolean = false,
     kyInvalidated: Boolean = false,
@@ -150,7 +149,7 @@ fun CartPanel(
                     }
                 }
             } else {
-                EmptyCart(compact = compact)
+                EmptyCart()
             }
         }
 

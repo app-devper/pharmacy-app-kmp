@@ -1,4 +1,6 @@
 package app.devper.pharm.presentation.sell
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
@@ -12,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Surface
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -139,10 +140,10 @@ fun SellScreen(
         onCloseVoidSheet = voidSaleVM::closeSheet,
     )
 
-    Surface(
-        color = t.colors.bgPage,
+    Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(t.colors.bgPage)
             .scanBarcodes(onScan = drugPickerVM::onScanBarcode)
             .pharmShortcuts(*sellShortcuts),
     ) {

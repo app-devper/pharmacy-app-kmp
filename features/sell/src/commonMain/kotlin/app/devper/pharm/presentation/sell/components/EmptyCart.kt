@@ -24,10 +24,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun EmptyCart(
-    compact: Boolean = false,
-    modifier: Modifier = Modifier,
-) {
+internal fun EmptyCart(modifier: Modifier = Modifier) {
     val t = pharmTokens
     Column(
         modifier = modifier.fillMaxSize().padding(24.dp),
@@ -57,8 +54,7 @@ internal fun EmptyCart(
             modifier = Modifier.padding(top = 16.dp),
         )
         Text(
-            text = if (compact) pharmStrings.sellEmptyCartHint
-            else pharmStrings.sellEmptyCartHint,
+            text = pharmStrings.sellEmptyCartHint,
             style = PharmText.meta,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 6.dp),
@@ -69,11 +65,11 @@ internal fun EmptyCart(
 @Preview
 @Composable
 private fun EmptyCart_Wide_Preview() {
-    PharmacyTheme { EmptyCart(compact = false) }
+    PharmacyTheme { EmptyCart() }
 }
 
 @Preview
 @Composable
 private fun EmptyCart_Compact_Preview() {
-    PharmacyTheme { EmptyCart(compact = true) }
+    PharmacyTheme { EmptyCart() }
 }
