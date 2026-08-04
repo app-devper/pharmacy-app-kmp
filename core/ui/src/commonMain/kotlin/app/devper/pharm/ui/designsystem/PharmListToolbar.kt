@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
@@ -64,6 +65,12 @@ internal fun listToolbarSectionSpacing(
 } else {
     pharmListToolbarDefaultSectionSpacing
 }
+
+internal fun hidesToolbarTitleForSearch(
+    compact: Boolean,
+    hasSearch: Boolean,
+    availableWidth: Dp,
+): Boolean = !compact && hasSearch && availableWidth < PharmBreakpoint.FormThreeCol
 
 internal fun searchSharesRowWithActions(
     compact: Boolean,
@@ -160,6 +167,11 @@ fun PharmListToolbar(
             hasInlineActions = inlineActions != null,
         )
         val controlRowActions = inlineActions.takeUnless { searchRowTakesActions }
+        val hideTitleForSearch = hidesToolbarTitleForSearch(
+            compact = compact,
+            hasSearch = hasSearch,
+            availableWidth = maxWidth,
+        )
         val combineCompactControls = combinesCompactToolbarControls(
             compact = compact,
             hasFilters = filters != null,
@@ -338,17 +350,21 @@ fun PharmListToolbar(
                                 )
                             }
                         }
-                        if (showTitle) {
+                        if (showTitle && !hideTitleForSearch) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = effectiveTitle,
                                     style = titleStyle,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.semantics { heading() },
                                 )
                                 if (subtitle != null) {
                                     Text(
                                         text = subtitle,
                                         style = PharmText.micro.copy(color = t.colors.fgMuted),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }
