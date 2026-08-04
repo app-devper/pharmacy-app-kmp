@@ -43,15 +43,40 @@ internal fun StockToolbar(
     )
     PharmListToolbar(
         modifier = modifier,
+        subtitle = pharmStrings.stockSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = pharmStrings.stockSearchPlaceholder,
+        compactTopbarActions = true,
+        compactTopbarAction = {
+            StockAddDrugButton(callbacks = callbacks)
+        },
+        compactInlineActions = {
+            PharmActionMenu(
+                actions = listOf(
+                    PharmAction(
+                        label = "Excel",
+                        onClick = { callbacks.onExportExcel(exportHeaders) },
+                        icon = PharmIcons.Excel,
+                    ),
+                    PharmAction(
+                        label = pharmStrings.stockActionImport,
+                        onClick = callbacks.onImport,
+                        icon = PharmIcons.Imports,
+                    ),
+                    PharmAction(
+                        label = pharmStrings.stockActionPurchase,
+                        onClick = callbacks.onOpenReorderSuggestions,
+                        icon = PharmIcons.OfflineSync,
+                    ),
+                ),
+            )
+        },
         filters = {
             PharmSingleSelectChips(
                 chips = StockTypeFilter.entries.map { PharmFilterChip(id = it.name, label = it.label(pharmStrings)) },
                 activeId = typeFilter.name,
                 onSelect = { id -> callbacks.onTypeFilterChange(StockTypeFilter.valueOf(id)) },
-                scrollable = false,
             )
         },
         actions = {
@@ -80,13 +105,18 @@ internal fun StockToolbar(
                     size = PharmButtonSize.Sm,
                     leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                 )
-                PharmButton(
-                    label = pharmStrings.stockAddDrugCta,
-                    onClick = callbacks.onAddDrug,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
-                )
+                StockAddDrugButton(callbacks = callbacks)
             }
         },
+    )
+}
+
+@Composable
+private fun StockAddDrugButton(callbacks: StockCallbacks) {
+    PharmButton(
+        label = pharmStrings.stockAddDrugCta,
+        onClick = callbacks.onAddDrug,
+        size = PharmButtonSize.Sm,
+        leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
     )
 }

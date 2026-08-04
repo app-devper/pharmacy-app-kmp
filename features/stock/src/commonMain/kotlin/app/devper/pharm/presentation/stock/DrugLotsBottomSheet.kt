@@ -221,7 +221,6 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
                 Icon(
                     imageVector = PharmIcons.Plus,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
                 )
             },
         )

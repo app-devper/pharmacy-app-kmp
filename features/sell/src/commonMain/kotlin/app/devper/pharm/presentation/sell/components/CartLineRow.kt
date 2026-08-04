@@ -53,13 +53,13 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.designsystem.LocalPharmDensity
 import app.devper.pharm.ui.designsystem.PharmDensity
 import app.devper.pharm.ui.designsystem.PharmIconButton
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -172,7 +172,7 @@ private fun CartLineName(line: CartLine, modifier: Modifier = Modifier) {
             }
         }
         Text(
-            text = "${formatBahtCurrency(line.unitPrice.amount)} / ${line.displayUnit}",
+            text = "${fmtBaht(line.unitPrice.amount)} / ${line.displayUnit}",
             style = PharmText.micro,
             color = t.colors.fg3,
         )
@@ -201,7 +201,7 @@ private fun CartLinePrice(line: CartLine) {
         modifier = Modifier.widthIn(min = 84.dp),
     ) {
         Text(
-            text = formatBahtCurrency(line.lineTotal.amount),
+            text = fmtBaht(line.lineTotal.amount),
             style = PharmText.body.tabular(),
             fontWeight = FontWeight.Bold,
             color = t.colors.fg1,
@@ -222,7 +222,7 @@ private fun CartLinePrice(line: CartLine) {
 private fun priceMetaLabel(line: CartLine, s: PharmStrings): String {
     if (line.discount.isPositive) {
         val saved = line.discount * line.qty
-        return "−${formatBahtCurrency(saved.amount)}"
+        return "−${fmtBaht(saved.amount)}"
     }
     return when (line.tier) {
         "wholesale" -> s.sellTierWholesale

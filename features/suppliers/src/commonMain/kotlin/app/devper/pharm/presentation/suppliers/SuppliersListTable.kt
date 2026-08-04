@@ -33,6 +33,7 @@ internal fun SuppliersListTable(
         listOf(
         PharmTableColumn<Supplier>(
             header = s.suppliersHeaderName,
+            compactTitle = true,
             weight = 2.2f,
             cell = { supplier ->
                 Text(
@@ -117,7 +118,6 @@ internal fun SuppliersListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { supplier -> callbacks.onOpenDetail(supplier) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

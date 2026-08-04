@@ -25,11 +25,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.extension.Tier
-import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PriceTierBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
-import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
@@ -116,40 +115,16 @@ private fun CustomerRow(customer: Customer, onClick: () -> Unit) {
         customer.phone?.let {
             Text(text = it, style = PharmText.meta)
         }
-        if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
-            Box(modifier = Modifier.padding(top = 4.dp)) {
-                val label = when (customer.priceTier) {
-                    Tier.Wholesale -> pharmStrings.sellTierWholesaleLabel
-                    Tier.Regular -> pharmStrings.sellTierRegularLabel
-                    else -> customer.priceTier
-                }
-                PharmBadge(
-                    text = label,
-                    tone = PharmBadgeTone.Indigo,
-                    size = PharmBadgeSize.Sm,
-                )
-            }
+        Box(modifier = Modifier.padding(top = 4.dp)) {
+            PriceTierBadge(priceTier = customer.priceTier, size = PharmBadgeSize.Sm)
         }
     }
 }
 
 @Composable
 private fun EmptyCustomers(searching: Boolean) {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = if (searching) PharmIcons.Search else PharmIcons.Customers,
-            contentDescription = null,
-            tint = t.colors.fgMuted,
-            modifier = Modifier.size(36.dp),
-        )
-        Text(
-            text = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
-            style = PharmText.body.copy(color = t.colors.fg3),
-            modifier = Modifier.padding(top = 12.dp),
-        )
-    }
+    PharmEmptyState(
+        icon = if (searching) PharmIcons.Search else PharmIcons.Customers,
+        title = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
+    )
 }

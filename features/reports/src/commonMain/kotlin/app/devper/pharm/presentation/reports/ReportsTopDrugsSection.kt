@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -31,15 +32,8 @@ internal fun ReportsTopDrugsSection(rows: List<TopDrug>, modifier: Modifier = Mo
     val visible = rows.take(10)
     val maxQty = (visible.maxOfOrNull { it.qtySold } ?: 0).coerceAtLeast(1)
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        val s = pharmStrings
-        Text(text = s.reportsTopSellingTitle, style = PharmText.h3)
+    val s = pharmStrings
+    PharmFormCard(title = s.reportsTopSellingTitle, modifier = modifier) {
         if (visible.isEmpty()) {
             Text(text = s.reportsEmptyNoData, style = PharmText.meta)
         } else {

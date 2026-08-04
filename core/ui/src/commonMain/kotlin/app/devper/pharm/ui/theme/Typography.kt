@@ -6,6 +6,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.resources.Res
 import app.devper.pharm.ui.resources.sarabun_bold
 import app.devper.pharm.ui.resources.sarabun_light
@@ -109,7 +110,6 @@ object PharmText {
         get() = base().copy(
             fontSize = scaledSp(12f),
             fontWeight = FontWeight.SemiBold,
-            letterSpacing = 0.5.sp,
             color = pharmTokens.colors.fg3,
         )
 
@@ -156,7 +156,7 @@ object PharmText {
 
     val buttonSm: TextStyle
         @androidx.compose.runtime.Composable
-        get() = base().copy(fontSize = scaledSp(13f), fontWeight = FontWeight.Medium)
+        get() = base().copy(fontSize = scaledSp(14f), fontWeight = FontWeight.Medium)
 
     val badge: TextStyle
         @androidx.compose.runtime.Composable
@@ -167,22 +167,6 @@ object PharmText {
         get() = base().copy(fontSize = scaledSp(10f), fontWeight = FontWeight.SemiBold)
 }
 
-fun fmtBaht(n: Double): String {
-    val cents = (n * 100.0 + if (n >= 0) 0.5 else -0.5).toLong()
-    val negative = cents < 0
-    val absCents = if (negative) -cents else cents
-    val whole = absCents / 100
-    val fracCents = absCents % 100
-    val sign = if (negative) "-" else ""
-    val wholeStr = buildString {
-        val s = whole.toString()
-        for (i in s.indices) {
-            if (i > 0 && (s.length - i) % 3 == 0) append(',')
-            append(s[i])
-        }
-    }
-    return if (fracCents == 0L) "฿$sign$wholeStr"
-    else "฿$sign$wholeStr." + fracCents.toString().padStart(2, '0')
-}
+fun fmtBaht(n: Double): String = formatBahtCurrency(n)
 
 fun fmtBaht(n: Int): String = fmtBaht(n.toDouble())

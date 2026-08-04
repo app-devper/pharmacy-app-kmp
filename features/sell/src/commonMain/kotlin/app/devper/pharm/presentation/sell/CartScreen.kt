@@ -107,7 +107,6 @@ fun CartScreen(
                 activeSlot = parkedState.activeSlot,
                 parkedFilledCount = parkedState.filledCount,
                 onOpenParkedSheet = parkedCartVM::openSheet,
-                compact = true,
                 kyCaptured = checkoutState.kyCaptured,
                 kyInvalidated = checkoutState.kyPrecaptureInvalidated,
                 kySkipAuto = sellState.settings.ky.skipAuto,

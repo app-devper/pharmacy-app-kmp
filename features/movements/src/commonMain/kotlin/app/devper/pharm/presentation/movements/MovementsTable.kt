@@ -65,6 +65,7 @@ internal fun MovementsTable(
             ),
             PharmTableColumn(
                 header = s.commonQty,
+                compactTrailing = true,
                 weight = 0.9f,
                 align = PharmColumnAlign.End,
                 cell = { m -> QtyCell(m) },
@@ -88,7 +89,6 @@ internal fun MovementsTable(
         columns = columns,
         key = { "${it.type.wire}::${it.id}" },
         modifier = modifier,
-        rowHeight = 52.dp,
         emptyContent = {
             PharmEmptyState(
                 icon = PharmIcons.Movements,

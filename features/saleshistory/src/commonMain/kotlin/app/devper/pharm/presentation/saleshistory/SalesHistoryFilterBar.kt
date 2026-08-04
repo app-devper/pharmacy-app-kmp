@@ -11,10 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.format.millisToBuddhistDisplay
-import androidx.compose.material3.Icon
-import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmButton
-import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
 import app.devper.pharm.ui.designsystem.PharmFilterChip
@@ -46,7 +42,11 @@ internal fun SalesHistoryListToolbar(
         subtitle = s.salesHistorySubtitle,
         searchValue = state.query,
         onSearchChange = callbacks.onQueryChange,
+        onSearch = callbacks.onApplyFilter,
+        searching = state.loading,
         searchPlaceholder = s.salesHistorySearchPlaceholder,
+        compactTopbarActions = true,
+        compactControlsSharedRow = false,
         filters = {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -65,15 +65,6 @@ internal fun SalesHistoryListToolbar(
                 )
                 SalesHistoryRangeChips(state = state, onSelectRange = callbacks.onSelectRange)
             }
-        },
-        actions = {
-            PharmButton(
-                label = s.commonSearch,
-                onClick = callbacks.onApplyFilter,
-                size = PharmButtonSize.Sm,
-                loading = state.loading,
-                leadingIcon = { Icon(PharmIcons.Search, contentDescription = null) },
-            )
         },
     )
 }

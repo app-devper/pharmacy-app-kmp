@@ -45,4 +45,5 @@ interface UsersStrings {
     val usersFormPasswordCreate: String
     val usersFormPasswordNew: String
     val usersFormPasswordHint: String
+    val usersSubtitle: String
 }

@@ -27,7 +27,6 @@ interface StockStrings {
     val stockHeaderMinStock: String
     val stockBadgeHerb: String
     val stockUnitPlaceholder: String
-    val stockDrugSavedToast: String
     val stockFormTitleEdit: String
     val stockFormTitleAdd: String
     val movementTypeImport: String
@@ -76,7 +75,6 @@ interface StockStrings {
     val stockTypeSupplement: String
     val stockTypeBoth: String
     val stockTypeAbbrev: String
-    val stockMetricCount: String
     val stockMetricValueByCost: String
     val stockMetricBelowMin: String
     val stockMetricOut: String

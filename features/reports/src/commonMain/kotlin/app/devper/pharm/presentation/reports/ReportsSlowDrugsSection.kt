@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmStaticTable
@@ -24,22 +25,14 @@ import app.devper.pharm.ui.theme.tabular
 internal fun ReportsSlowDrugsSection(rows: List<SlowDrug>, modifier: Modifier = Modifier) {
     val t = pharmTokens
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+    val s = pharmStrings
+    PharmFormCard(
+        title = s.reportsProfitNoMovement,
+        modifier = modifier,
+        trailing = {
+            Text(text = "${rows.size} ${s.movementsCountNoun}", style = PharmText.meta)
+        },
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            val s = pharmStrings
-            Text(text = s.reportsProfitNoMovement, style = PharmText.h3)
-            Text(text = "(${rows.size} ${s.movementsCountNoun})", style = PharmText.meta)
-        }
         PharmStaticTable(
             rows = rows.take(10),
             columns = slowDrugColumns(),

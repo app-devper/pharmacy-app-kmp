@@ -71,5 +71,5 @@ Worth one sweep each rather than per feature:
 - **Error states** — `MOCK_API_SCENARIO=error`; each page should raise the error sheet with feature-specific copy
 - **Session expiry** — `POST /__mock/reset` invalidates nothing, so to test this stop the mock mid-session; the next call 401s and the login screen should say the session expired rather than appearing silently
 - **Language** — switch to English from the profile chip and re-walk a few pages; no Thai should remain except printed receipts and KY official forms
-- **Responsive** — narrow the window to 320px, then 600px and 840px; tables switch to card mode below 600px and nothing scrolls horizontally
+- **Responsive** — check 320px, 360px, 390px, 430px, 519px, 520px, 599px, 600px and 840px; the full-width mobile drawer and compact top bar stay active below 600px, tables switch to card mode below 600px and nothing scrolls horizontally
 - **Roles** — sign in as `user` and confirm admin-only sidebar entries are hidden

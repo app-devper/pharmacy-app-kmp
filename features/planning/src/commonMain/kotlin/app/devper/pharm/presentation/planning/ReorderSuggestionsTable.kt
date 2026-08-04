@@ -43,6 +43,7 @@ internal fun ReorderSuggestionsTable(
         listOf(
         PharmTableColumn<ReorderSuggestion>(
             header = s.expiryHeaderDrugName,
+            compactTitle = true,
             weight = 2.4f,
             cell = { row -> SuggestionNameCell(row, row.drugId in draftDrugIds) },
         ),
@@ -85,7 +86,6 @@ internal fun ReorderSuggestionsTable(
         columns = columns,
         key = { it.drugId },
         modifier = modifier,
-        rowHeight = 52.dp,
         emptyContent = {
             Text(text = s.planningReorderEmptyTitle, style = PharmText.meta)
         },

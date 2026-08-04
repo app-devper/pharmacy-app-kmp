@@ -38,7 +38,10 @@ internal fun MovementsListToolbar(
         subtitle = s.movementsSubtitle,
         searchValue = state.drugName,
         onSearchChange = callbacks.onSearchChange,
+        onSearch = callbacks.onApplyFilter,
+        searching = state.loading,
         searchPlaceholder = s.movementsSearchPlaceholder,
+        compactControlsSharedRow = false,
         filters = {
             PharmDateRangeField(
                 range = range,
@@ -59,13 +62,6 @@ internal fun MovementsListToolbar(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                PharmButton(
-                    label = s.commonSearch,
-                    onClick = callbacks.onApplyFilter,
-                    size = PharmButtonSize.Sm,
-                    loading = state.loading,
-                    leadingIcon = { Icon(PharmIcons.Search, contentDescription = null) },
-                )
                 PharmButton(
                     label = "Excel",
                     onClick = {

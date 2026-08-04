@@ -34,7 +34,7 @@ fun DrugFormScreen(
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
-            snackbar.showToast(PharmToast.Success(s.stockDrugSavedToast))
+            snackbar.showToast(PharmToast.Success(s.commonSaved))
             onBack()
         }
     }

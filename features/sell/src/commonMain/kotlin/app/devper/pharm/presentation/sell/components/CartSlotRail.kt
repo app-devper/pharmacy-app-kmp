@@ -84,7 +84,7 @@ private fun SlotChip(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(if (selected) t.colors.sidebarItemActive else t.colors.bgPage)
+            .background(if (selected) t.colors.selectedSurface else t.colors.bgPage)
             .pharmClickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,

@@ -7,8 +7,6 @@ interface OfflineSyncStrings {
     val offlineSyncEmpty: String
     val offlineSyncMetricsTotal: String
     val offlineSyncMetricsLocation: String
-    val offlineSyncMetricsAttempts: String
-    val offlineSyncMetricsAttemptsSuffix: String
     val offlineSyncMetricsFailed: String
     val offlineSyncStatusFailed: String
     val offlineSyncStatusPending: String

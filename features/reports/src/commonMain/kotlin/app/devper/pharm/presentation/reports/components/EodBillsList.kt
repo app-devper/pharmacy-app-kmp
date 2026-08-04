@@ -20,6 +20,8 @@ import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -67,22 +69,13 @@ internal fun EodBillRow(bill: SaleSummary) {
 @Composable
 internal fun EmptyEod() {
     val t = pharmTokens
-    Box(
+    PharmEmptyState(
+        icon = PharmIcons.Reports,
+        title = pharmStrings.reportsEmptyNoData,
+        subtitle = pharmStrings.reportsEodTryAnotherDate,
         modifier = Modifier
-            .fillMaxSize()
             .clip(t.shapes.lg)
             .background(t.colors.surface, t.shapes.lg)
-            .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-            .padding(32.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = pharmStrings.reportsEmptyNoData, style = PharmText.h2)
-            Text(
-                text = pharmStrings.reportsEodTryAnotherDate,
-                style = PharmText.meta.copy(color = t.colors.fgMuted),
-                modifier = Modifier.padding(top = 4.dp),
-            )
-        }
-    }
+            .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+    )
 }

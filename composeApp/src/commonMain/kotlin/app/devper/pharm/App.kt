@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import app.devper.pharm.common.platform.MotionPreferences
+import app.devper.pharm.common.platform.PointerPreferences
 import app.devper.pharm.domain.model.DensityPreference
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.presentation.AppViewModel
@@ -37,6 +38,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Preview
 fun App(viewModel: AppViewModel = koinViewModel()) {
     val motionPreferences = koinInject<MotionPreferences>()
+    val pointerPreferences = koinInject<PointerPreferences>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val systemDark = isSystemInDarkTheme()
     val darkTheme = when (state.uiPreferences.theme) {
@@ -67,6 +69,7 @@ fun App(viewModel: AppViewModel = koinViewModel()) {
     PharmacyTheme(
         darkTheme = darkTheme,
         fontScale = state.uiPreferences.fontSize.scale,
+        touchPrimary = pointerPreferences.isTouchPrimary,
     ) {
         CompositionLocalProvider(
             LocalThemeController provides themeController,

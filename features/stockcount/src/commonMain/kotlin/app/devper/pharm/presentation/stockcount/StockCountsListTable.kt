@@ -85,7 +85,6 @@ internal fun StockCountsListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { callbacks.onOpenDetail(it) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

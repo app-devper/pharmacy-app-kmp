@@ -32,13 +32,14 @@ import app.devper.pharm.presentation.customers.i18n.localizeCustomerDetail
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PriceTierBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -133,14 +134,7 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
                     style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
-            if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
-                val label = when (customer.priceTier) {
-                    Tier.Wholesale -> s.sellTierWholesaleLabel
-                    Tier.Regular -> s.sellTierRegularLabel
-                    else -> customer.priceTier
-                }
-                PharmBadge(text = label, tone = PharmBadgeTone.Purple)
-            }
+            PriceTierBadge(priceTier = customer.priceTier)
         }
 
         customer.allergyNote?.takeIf { it.isNotBlank() && it != "-" }?.let { note ->
@@ -241,7 +235,7 @@ private fun SaleRow(sale: SaleSummary) {
             )
         }
         Text(
-            text = formatBahtCurrency(sale.total.amount),
+            text = fmtBaht(sale.total.amount),
             style = PharmText.h2.tabular().copy(color = t.colors.accent),
         )
     }

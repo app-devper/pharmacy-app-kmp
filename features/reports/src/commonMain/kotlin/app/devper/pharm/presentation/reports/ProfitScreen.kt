@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.devper.pharm.ui.common.LocalPharmSnackbar
-import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.toToast
 import app.devper.pharm.ui.i18n.localize
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.common.ReloadOnResume
@@ -19,7 +19,7 @@ fun ProfitScreen(viewModel: ProfitViewModel = koinViewModel()) {
     val s = pharmStrings
     LaunchedEffect(state.messageState) {
         state.messageState?.let {
-            snackbar.showToast(PharmToast.Info(it.localize(s)))
+            snackbar.showToast(it.toToast(s))
             viewModel.dismissMessage()
         }
     }

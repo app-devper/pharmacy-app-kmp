@@ -51,6 +51,7 @@ internal fun BulkImportResultTable(
         ),
         PharmTableColumn(
             header = s.expiryHeaderDrugName,
+            compactTitle = true,
             weight = 3f,
             cell = { row ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -87,6 +88,7 @@ internal fun BulkImportResultTable(
         ),
         PharmTableColumn(
             header = s.commonStatus,
+            compactTrailing = true,
             weight = 1.1f,
             cell = { row -> BulkImportStatusBadge(row.status) },
         ),
@@ -98,7 +100,6 @@ internal fun BulkImportResultTable(
             rows = rows,
             columns = columns,
             key = { it.row },
-            rowHeight = 52.dp,
             emptyContent = {
                 PharmEmptyState(
                     icon = PharmIcons.Imports,

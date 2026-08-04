@@ -41,4 +41,20 @@ interface SettingsStrings {
     val settingsTestPrintFailed: String
     val settingsKyDefaultBuyerAddress: String
     val settingsKyDefaultBuyerAddressHint: String
+    val settingsDisplayTitle: String
+    val settingsDisplaySubtitle: String
+    val settingsDisplayTheme: String
+    val settingsDisplayFontSize: String
+    val settingsDisplayDensity: String
+    val settingsThemeLight: String
+    val settingsThemeDark: String
+    val settingsThemeAuto: String
+    val settingsFontSm: String
+    val settingsFontMd: String
+    val settingsFontLg: String
+    val settingsFontXl: String
+    val settingsDensityComfortable: String
+    val settingsDensityCompact: String
+    val settingsTabDisplay: String
+
 }

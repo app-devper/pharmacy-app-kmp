@@ -6,6 +6,7 @@ import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,23 +53,19 @@ fun ReportsContent(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
         contentAlignment = Alignment.TopCenter,
     ) {
-        val contentModifier = if (maxWidth >= PharmBreakpoint.DashboardCap) Modifier.widthIn(max = 1040.dp).fillMaxSize()
-        else Modifier.fillMaxSize()
         val stackTopAndSlow = maxWidth < PharmBreakpoint.FormThreeCol
 
-        Column(modifier = contentModifier) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = t.dimens.dashboardContentMaxWidth)
+                .fillMaxSize(),
+        ) {
             val s = pharmStrings
             val dashboard = state.dashboard
-            dashboard?.summary?.let {
-                ReportsMetricsRow(
-                    summary = it,
-                    monthProfit = state.monthProfit,
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                )
-            }
             PharmListToolbar(
                 title = s.reportsTabSummary,
                 subtitle = s.reportsSubtitle,
+                compactControlsSharedRow = false,
                 filters = {
                     ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
                 },
@@ -77,7 +74,7 @@ fun ReportsContent(
                         PharmButton(
                             label = s.commonRefresh,
                             onClick = callbacks.onReload,
-                            size = PharmButtonSize.Md,
+                            size = PharmButtonSize.Sm,
                             variant = PharmButtonVariant.Outline,
                             loading = state.loading,
                             leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
@@ -85,59 +82,61 @@ fun ReportsContent(
                         PharmButton(
                             label = s.reportsTabEod,
                             onClick = callbacks.onCloseEod,
-                            size = PharmButtonSize.Md,
-                            leadingIcon = {
-                                androidx.compose.material3.Icon(
-                                    imageVector = PharmIcons.Reports,
-                                    contentDescription = null,
-                                )
-                            },
+                            size = PharmButtonSize.Sm,
+                            leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
                         )
                     }
                 },
             )
-
-            when {
-                state.loading && dashboard == null ->
-                    PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                dashboard == null ->
-                    PharmEmptyState(
-                        icon = PharmIcons.Reports,
-                        title = s.reportsEmptyNoData,
-                        subtitle = s.reportsEmptyChartHint,
-                        action = {
-                            PharmButton(
-                                label = s.commonRetry,
-                                onClick = callbacks.onReload,
-                                size = PharmButtonSize.Sm,
-                            )
-                        },
-                    )
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 24.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        item("daily") { ReportsDailyBarChart(daily = dashboard.daily) }
-                        item("monthly") { ReportsMonthlyGroupedBars(monthly = dashboard.monthly) }
-                        item("top-and-slow") {
-                            if (stackTopAndSlow) {
-                                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
-                                    ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
-                                }
-                            } else {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                ) {
-                                    ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
-                                    ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                when {
+                    state.loading && dashboard == null ->
+                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
+                    dashboard == null ->
+                        PharmEmptyState(
+                            icon = PharmIcons.Reports,
+                            title = s.reportsEmptyNoData,
+                            subtitle = s.reportsEmptyChartHint,
+                            action = {
+                                PharmButton(
+                                    label = s.commonRetry,
+                                    onClick = callbacks.onReload,
+                                    size = PharmButtonSize.Sm,
+                                )
+                            },
+                        )
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            item("metrics") {
+                                ReportsMetricsRow(
+                                    summary = dashboard.summary,
+                                    monthProfit = state.monthProfit,
+                                )
+                            }
+                            item("daily") { ReportsDailyBarChart(daily = dashboard.daily) }
+                            item("monthly") { ReportsMonthlyGroupedBars(monthly = dashboard.monthly) }
+                            item("top-and-slow") {
+                                if (stackTopAndSlow) {
+                                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                        ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.fillMaxWidth())
+                                        ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
+                                    }
+                                } else {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    ) {
+                                        ReportsTopDrugsSection(rows = state.topDrugs, modifier = Modifier.weight(1f))
+                                        ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
+                            item("recent") { ReportsRecentSalesSection(recent = dashboard.recentSales) }
                         }
-                        item("recent") { ReportsRecentSalesSection(recent = dashboard.recentSales) }
                     }
                 }
             }

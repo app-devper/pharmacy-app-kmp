@@ -18,10 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
+import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmGroupedBarChart
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
@@ -31,30 +32,19 @@ internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Mo
     val revenueData = recent.map { PharmBarDatum(label = monthLabel(it.month), value = it.revenue) }
     val costData = recent.map { PharmBarDatum(label = monthLabel(it.month), value = it.cost) }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val s = pharmStrings
-            Text(
-                text = s.reportsSectionMonthly,
-                style = PharmText.h3,
-                modifier = Modifier.weight(1f),
-            )
+    val s = pharmStrings
+    PharmFormCard(
+        title = s.reportsSectionMonthly,
+        modifier = modifier,
+        trailing = {
             Text(text = "${recent.size} ${s.reportsRangeThisMonth}", style = PharmText.meta)
-        }
+        },
+    ) {
         PharmGroupedBarChart(
             revenue = revenueData,
             cost = costData,
             height = 144.dp,
-            valueFormatter = { formatBahtCurrency(it) },
+            valueFormatter = { fmtBaht(it) },
         )
         Row(
             modifier = Modifier.fillMaxWidth(),

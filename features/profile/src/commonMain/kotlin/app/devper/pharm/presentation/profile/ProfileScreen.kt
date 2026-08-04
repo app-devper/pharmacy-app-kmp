@@ -38,10 +38,6 @@ fun ProfileScreen(
             onConfirmPassword = viewModel::onConfirmPassword,
             onSubmitPasswordChange = viewModel::submitPasswordChange,
             onDismissPasswordError = viewModel::dismissPasswordError,
-            onThemeChange = viewModel::onThemeChange,
-            onFontSizeChange = viewModel::onFontSizeChange,
-            onDensityChange = viewModel::onDensityChange,
-            onLocaleChange = viewModel::onLocaleChange,
         ),
     )
 }

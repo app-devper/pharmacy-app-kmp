@@ -7,10 +7,6 @@ import app.devper.pharm.presentation.profile.exception.ProfileUiStateError
 import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.repository.FakeProfileRepository
-import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
@@ -26,19 +22,12 @@ import kotlin.test.assertTrue
 
 class ProfileViewModelTest {
 
-    private fun bundle(fake: FakeProfileRepository, dispatchers: app.devper.pharm.common.AppDispatchers): ProfileViewModel {
-        val uiPrefs = app.devper.pharm.domain.repository.FakeUiPreferencesRepository()
-        return ProfileViewModel(
+    private fun bundle(fake: FakeProfileRepository, dispatchers: app.devper.pharm.common.AppDispatchers): ProfileViewModel =
+        ProfileViewModel(
             getProfile = GetProfileUseCase(fake, dispatchers),
             updateProfile = UpdateProfileUseCase(fake, dispatchers),
             changePassword = ChangePasswordUseCase(fake, dispatchers),
-            uiPreferences = app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
-            setTheme = SetThemePreferenceUseCase(uiPrefs),
-            setFontSize = SetFontSizePreferenceUseCase(uiPrefs),
-            setDensity = SetDensityPreferenceUseCase(uiPrefs),
-            setLocale = SetLocalePreferenceUseCase(uiPrefs),
         )
-    }
 
     @Test
     fun loads_profile_on_init() = runVmTest { dispatchers ->
@@ -180,53 +169,9 @@ class ProfileViewModelTest {
         assertEquals("token expired", loadErr.cause?.message)
     }
 
-    @Test
-    fun density_change_is_reflected_in_state() = runVmTest { dispatchers ->
-        val fake = FakeProfileRepository()
-        val vm = bundle(fake, dispatchers)
-        advanceUntilIdle()
-        vm.onDensityChange("compact")
-        advanceUntilIdle()
-        assertEquals("compact", vm.state.value.density)
-    }
 
-    @Test
-    fun locale_change_is_reflected_in_state_and_surfaces_restart_message() = runVmTest { dispatchers ->
-        val fake = FakeProfileRepository()
-        val vm = bundle(fake, dispatchers)
-        advanceUntilIdle()
-        assertEquals("th", vm.state.value.locale)
-        assertFalse(vm.state.value.localeChangeApplied)
 
-        vm.onLocaleChange("en")
-        advanceUntilIdle()
 
-        assertEquals("en", vm.state.value.locale)
-        assertTrue(vm.state.value.localeChangeApplied)
-    }
-
-    @Test
-    fun locale_change_to_same_value_does_not_surface_restart_message() = runVmTest { dispatchers ->
-        val fake = FakeProfileRepository()
-        val vm = bundle(fake, dispatchers)
-        advanceUntilIdle()
-        vm.onLocaleChange("th")
-        advanceUntilIdle()
-        assertFalse(vm.state.value.localeChangeApplied)
-    }
-
-    @Test
-    fun dismiss_locale_change_message_clears_it() = runVmTest { dispatchers ->
-        val fake = FakeProfileRepository()
-        val vm = bundle(fake, dispatchers)
-        advanceUntilIdle()
-        vm.onLocaleChange("en")
-        advanceUntilIdle()
-        assertTrue(vm.state.value.localeChangeApplied)
-        vm.dismissLocaleChangeMessage()
-        advanceUntilIdle()
-        assertFalse(vm.state.value.localeChangeApplied)
-    }
 
     @Test
     fun close_password_panel_hides_panel() = runVmTest { dispatchers ->

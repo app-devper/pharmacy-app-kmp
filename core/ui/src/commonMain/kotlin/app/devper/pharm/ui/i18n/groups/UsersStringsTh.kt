@@ -47,4 +47,5 @@ object UsersStringsTh : UsersStrings {
     override val usersStatusChangeFailed = "เปลี่ยนสถานะไม่สำเร็จ"
     override val usersSetPasswordFailed = "ตั้งรหัสผ่านไม่สำเร็จ"
     override val usersFormNotFound = "ไม่พบผู้ใช้งาน"
+    override val usersSubtitle = "จัดการผู้ใช้และสิทธิ์การเข้าถึง"
 }

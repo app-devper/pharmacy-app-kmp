@@ -48,15 +48,14 @@ internal fun SubmitConfirmModal(
                 label = s.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Md,
+                size = PharmButtonSize.Sm,
             )
             PharmButton(
                 label = s.stockCountFormConfirmCta,
                 onClick = onConfirm,
                 variant = PharmButtonVariant.Primary,
-                size = PharmButtonSize.Md,
-            )
-        },
+                size = PharmButtonSize.Sm,
+            )},
     ) {
         val t = pharmTokens
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

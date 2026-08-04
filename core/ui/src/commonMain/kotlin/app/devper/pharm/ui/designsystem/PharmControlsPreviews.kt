@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -42,6 +43,31 @@ private fun PharmTabBar_Preview() {
 @Composable
 private fun PharmTabBar_Dark_Preview() {
     PharmDarkPreview { PharmTabBar_Body() }
+}
+
+@Composable
+private fun PharmSearchField_Body() {
+    var query by remember { mutableStateOf("") }
+    Box(modifier = Modifier.padding(16.dp)) {
+        PharmSearchField(
+            value = query,
+            onValueChange = { query = it },
+            placeholder = "ค้นหาชื่อยา บาร์โค้ด หรือเลขทะเบียน",
+            modifier = Modifier.width(pharmTokens.dimens.searchFieldWidth),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PharmSearchField_Preview() {
+    PharmLightPreview { PharmSearchField_Body() }
+}
+
+@Preview(name = "dark")
+@Composable
+private fun PharmSearchField_Dark_Preview() {
+    PharmDarkPreview { PharmSearchField_Body() }
 }
 
 @Composable

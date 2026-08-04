@@ -36,11 +36,11 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
 import app.devper.pharm.ui.format.localDateToBuddhist
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -193,7 +193,7 @@ private fun HeaderBlock(po: PurchaseOrder) {
         }
         val s = pharmStrings
         Text(
-            text = s.importsFormItemTotal(formatBahtCurrency(po.totalCost.amount)),
+            text = s.importsFormItemTotal(fmtBaht(po.totalCost.amount)),
             style = PharmText.h2.tabular(),
         )
         Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))

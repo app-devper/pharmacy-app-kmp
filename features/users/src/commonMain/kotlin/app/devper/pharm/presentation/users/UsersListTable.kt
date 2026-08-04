@@ -49,6 +49,7 @@ internal fun UsersListTable(
         listOf(
         PharmTableColumn<UmUser>(
             header = s.usersHeaderName,
+            compactTitle = true,
             weight = 2.2f,
             cell = { user -> UserNameCell(user = user, isSelf = user.id == currentUserId) },
         ),
@@ -106,7 +107,6 @@ internal fun UsersListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { callbacks.onEditUser(it) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

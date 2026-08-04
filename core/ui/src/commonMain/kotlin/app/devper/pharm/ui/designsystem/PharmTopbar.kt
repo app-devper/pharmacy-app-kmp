@@ -22,7 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.LocalThemeController
@@ -30,6 +33,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.common.pharmClickable
+import app.devper.pharm.ui.components.PharmBreakpoint
 
 data class TopbarUser(
     val initial: String,
@@ -47,6 +51,8 @@ fun PharmTopbar(
     showThemeToggle: Boolean = true,
     showStatus: Boolean = true,
     compactUserMenu: Boolean = false,
+    showDivider: Boolean = true,
+    backgroundColor: Color? = null,
     onBack: (() -> Unit)? = null,
     actions: (@Composable () -> Unit)? = null,
     onHamburger: () -> Unit = {},
@@ -56,15 +62,18 @@ fun PharmTopbar(
 ) {
     val t = pharmTokens
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val horizontalPadding = if (maxWidth < 360.dp) 8.dp else 16.dp
-        val itemSpacing = if (maxWidth < 360.dp) 6.dp else 12.dp
-        val useCompactUserMenu = compactUserMenu || maxWidth < 520.dp
+        val compact = usesCompactTopbar(maxWidth)
+        val startPadding = if (compact) t.dimens.compactTopbarStartPadding else 16.dp
+        val endPadding = if (compact) t.dimens.compactTopbarEndPadding else 16.dp
+        val itemSpacing = if (compact) t.dimens.compactTopbarItemSpacing else 12.dp
+        val topbarHeight = if (compact) t.dimens.compactTopbarHeight else t.dimens.topbarHeight
+        val useCompactUserMenu = compactUserMenu || compact
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(t.dimens.topbarHeight)
-                .background(t.colors.surface)
-                .padding(horizontal = horizontalPadding),
+                .height(topbarHeight)
+                .background(backgroundColor ?: t.colors.surface)
+                .padding(start = startPadding, end = endPadding),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(itemSpacing),
         ) {
@@ -78,7 +87,9 @@ fun PharmTopbar(
                 style = PharmText.h1,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics { heading() },
             )
             actions?.invoke()
             if (onBack == null && showThemeToggle) {
@@ -139,13 +150,17 @@ fun PharmTopbar(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(t.colors.border),
-    )
+    if (showDivider) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(t.colors.border),
+        )
+    }
 }
+
+internal fun usesCompactTopbar(width: androidx.compose.ui.unit.Dp): Boolean = width < PharmBreakpoint.Expanded
 
 @Composable
 private fun ThemeToggleButton() {
@@ -199,15 +214,14 @@ private fun HamburgerButton(onClick: () -> Unit) {
     PharmIconButton(
         contentDescription = pharmStrings.commonMenu,
         onClick = onClick,
-        minSize = t.dimens.controlHeight,
-        shape = t.shapes.sm,
-        modifier = Modifier
-            .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
+        minSize = t.dimens.minimumTouchTarget,
+        shape = t.shapes.md,
+        modifier = Modifier.size(t.dimens.minimumTouchTarget),
     ) {
         Icon(
             imageVector = PharmIcons.Hamburger,
             contentDescription = null,
-            tint = t.colors.fg2,
+            tint = t.colors.sidebarFgMuted,
             modifier = Modifier.size(20.dp),
         )
     }

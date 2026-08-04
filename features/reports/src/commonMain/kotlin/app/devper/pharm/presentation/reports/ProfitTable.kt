@@ -67,6 +67,7 @@ internal fun ProfitTable(
         ),
         PharmTableColumn(
             header = s.reportsHeaderProfit,
+            compactTrailing = true,
             weight = 1.2f,
             align = PharmColumnAlign.End,
             cell = { row -> MoneyCell(row.profit, bold = true) },
@@ -85,7 +86,6 @@ internal fun ProfitTable(
         columns = columns,
         key = { it.drugId },
         modifier = modifier,
-        rowHeight = 48.dp,
         emptyContent = {
             Text(text = pharmStrings.reportsSectionDailySalesEmpty, style = PharmText.meta)
         },

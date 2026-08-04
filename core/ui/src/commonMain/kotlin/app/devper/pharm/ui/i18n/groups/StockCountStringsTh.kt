@@ -51,4 +51,5 @@ object StockCountStringsTh : StockCountStrings {
     override val stockCountFormConfirmTitle = "ยืนยันการปรับสต็อก"
     override val stockCountFormConfirmMessage = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้"
     override val stockCountFormConfirmCta = "ยืนยัน"
+    override val stockCountSubtitle = "ตรวจนับสต็อกและปรับยอดตามจริง"
 }

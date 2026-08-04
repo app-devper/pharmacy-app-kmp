@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -169,14 +170,15 @@ private fun DateField(
 ) {
     val t = pharmTokens
     val display = valueMillis?.let(formatDate)
+    val shape = t.shapes.pill
 
     Row(
         modifier = modifier
-            .heightIn(min = t.dimens.controlHeight)
-            .clip(t.shapes.md)
-            .border(1.dp, t.colors.border, t.shapes.md)
+            .heightIn(min = pharmControlHeight)
+            .clip(shape)
+            .border(1.dp, t.colors.border, shape)
             .background(t.colors.surface)
-            .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onClick)
+            .pharmClickable(role = Role.Button, shape = shape, onClick = onClick)
             .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -193,20 +195,27 @@ private fun DateField(
             maxLines = 1,
             modifier = Modifier.weight(1f),
         )
+        Icon(
+            imageVector = PharmIcons.Calendar,
+            contentDescription = null,
+            tint = t.colors.fgMuted,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }
 
 @Composable
 private fun QuickPeriodChip(label: String, onClick: () -> Unit) {
     val t = pharmTokens
+    val shape = t.shapes.pill
     Box(
         modifier = Modifier
-            .heightIn(min = t.dimens.controlHeight)
-            .clip(t.shapes.md)
-            .border(1.dp, t.colors.border, t.shapes.md)
+            .heightIn(min = pharmControlHeight)
+            .clip(shape)
+            .border(1.dp, t.colors.borderSubtle, shape)
             .background(t.colors.bgPage)
-            .pharmClickable(role = Role.Button, shape = t.shapes.md, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .pharmClickable(role = Role.Button, shape = shape, onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 6.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(text = label, style = PharmText.bodySm)

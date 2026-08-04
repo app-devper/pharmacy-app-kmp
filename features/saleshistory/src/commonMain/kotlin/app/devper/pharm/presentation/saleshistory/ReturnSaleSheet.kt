@@ -45,6 +45,7 @@ import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmIconButton
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
@@ -227,7 +228,7 @@ private fun ReturnLineRow(
             }
             if (refund > 0) {
                 Text(
-                    text = pharmStrings.salesHistoryRefund(app.devper.pharm.ui.format.formatBahtCurrency(refund)),
+                    text = pharmStrings.salesHistoryRefund(fmtBaht(refund)),
                     style = PharmText.meta.tabular(),
                     color = t.colors.accent,
                     fontWeight = FontWeight.SemiBold,

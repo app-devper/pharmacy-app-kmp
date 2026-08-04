@@ -58,6 +58,7 @@ fun HelpContent(
         PharmListToolbar(
             title = s.navHelp,
             subtitle = s.helpSubtitle,
+            compactTopbarActions = true,
             actions = {
                 PharmButton(
                     label = s.commonRefresh,
@@ -137,7 +138,7 @@ private fun HelpBody(
                     sections = sections,
                     listState = listState,
                     modifier = Modifier
-                        .widthIn(max = 880.dp)
+                        .widthIn(max = pharmTokens.dimens.readingContentMaxWidth)
                         .fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
                 )
