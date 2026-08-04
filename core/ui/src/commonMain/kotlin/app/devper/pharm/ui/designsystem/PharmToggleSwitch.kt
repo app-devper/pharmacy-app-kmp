@@ -37,6 +37,7 @@ fun PharmToggleSwitch(
     Box(
         modifier = modifier
             .sizeIn(minWidth = 48.dp, minHeight = t.dimens.controlHeight)
+            .pharmFocusRing(interactionSource = interaction, shape = t.shapes.pill)
             .toggleable(
                 value = checked,
                 interactionSource = interaction,
@@ -50,7 +51,6 @@ fun PharmToggleSwitch(
         Box(
             modifier = Modifier
                 .alpha(if (enabled) 1f else 0.5f)
-                .pharmFocusRing(interactionSource = interaction, shape = t.shapes.pill)
                 .padding(2.dp)
                 .width(36.dp)
                 .height(20.dp)

@@ -1,8 +1,10 @@
 package app.devper.pharm.ui.i18n.groups
 
 object UsersStringsTh : UsersStrings {
-    override val usersListSubtitle = "บัญชีผู้ใช้ในระบบ User Management"
-    override val usersSearchPlaceholder = "ค้นหาชื่อ / username / อีเมล…"
+    override val usersListLoadFailed = "โหลดรายชื่อผู้ใช้งานไม่สำเร็จ"
+    override val usersFormLoadFailed = "โหลดข้อมูลผู้ใช้งานไม่สำเร็จ"
+    override val usersListSubtitle = "จัดการบัญชีผู้ใช้และสิทธิ์การเข้าถึง"
+    override val usersSearchPlaceholder = "ค้นหาชื่อ / ชื่อผู้ใช้ / อีเมล…"
     override val usersAddCta = "เพิ่มผู้ใช้งาน"
     override val usersAddFirstCta = "เพิ่มผู้ใช้งานคนแรก"
     override val usersCountNoun = "คน"
@@ -11,9 +13,16 @@ object UsersStringsTh : UsersStrings {
     override val usersListNotFound = "ไม่พบผู้ใช้งานที่ค้นหา"
     override val usersCannotEdit = "ไม่สามารถแก้ไขได้"
     override val usersHeaderName = "ชื่อ-นามสกุล"
+    override val usersHeaderUsername = "ชื่อผู้ใช้"
+    override val usersHeaderRole = "สิทธิ์"
+    override val usersRoleSuper = "ผู้ดูแลสูงสุด"
+    override val usersRoleAdmin = "ผู้ดูแลระบบ"
+    override val usersRoleManager = "ผู้จัดการ"
+    override val usersRoleUser = "ผู้ใช้งาน"
+    override val usersRoleUnknown = "ไม่ระบุ"
     override val usersStatusActive = "เปิดใช้งาน"
     override val usersStatusSuspended = "ระงับ"
-    override val usersActionChangeRole = "เปลี่ยน Role"
+    override val usersActionChangeRole = "เปลี่ยนสิทธิ์"
     override val usersActionSetPassword = "ตั้งรหัสผ่าน"
     override val usersActionSuspend = "ระงับ"
     override val usersActionEnable = "เปิดใช้"
@@ -21,7 +30,7 @@ object UsersStringsTh : UsersStrings {
     override val usersConfirmDeleteMessage: (String) -> String = { name ->
         "ลบผู้ใช้งาน \"$name\" ?\nการดำเนินการนี้ไม่สามารถกู้คืนได้"
     }
-    override val usersConfirmRoleTitle = "เปลี่ยน Role"
+    override val usersConfirmRoleTitle = "เปลี่ยนสิทธิ์"
     override val usersConfirmEnableTitle = "ยืนยันเปิดใช้งาน"
     override val usersConfirmSuspendTitle = "ยืนยันระงับการใช้งาน"
     override val usersConfirmEnableMessage: (String) -> String = { name -> "เปิดใช้งานผู้ใช้ \"$name\"" }
@@ -34,8 +43,9 @@ object UsersStringsTh : UsersStrings {
     override val usersFormPasswordCreate = "รหัสผ่าน (≥8 ตัว)"
     override val usersFormPasswordNew = "รหัสผ่านใหม่ (≥8 ตัว)"
     override val usersFormPasswordHint = "รหัสผ่านต้องไม่น้อยกว่า 8 ตัวอักษร"
-    override val usersRoleChangeFailed = "เปลี่ยน Role ไม่สำเร็จ"
+    override val usersRoleChangeFailed = "เปลี่ยนสิทธิ์ไม่สำเร็จ"
     override val usersStatusChangeFailed = "เปลี่ยนสถานะไม่สำเร็จ"
     override val usersSetPasswordFailed = "ตั้งรหัสผ่านไม่สำเร็จ"
     override val usersFormNotFound = "ไม่พบผู้ใช้งาน"
+    override val usersSubtitle = "จัดการผู้ใช้และสิทธิ์การเข้าถึง"
 }

@@ -78,10 +78,5 @@ fun <T> PharmStaticTable(
 
 @Composable
 private fun RowDivider(color: androidx.compose.ui.graphics.Color) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(color),
-    )
+    PharmDivider(color = color)
 }

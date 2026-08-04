@@ -12,30 +12,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 
 @Immutable
-class SubPageBarContent(
+class CompactPageActionsContent(
     val token: Any,
-    val title: String,
-    val onBack: () -> Unit,
-    val actions: (@Composable () -> Unit)?,
+    val actions: @Composable () -> Unit,
 )
 
 @Stable
-class SubPageBarController {
-    var content: SubPageBarContent? by mutableStateOf(null)
+class CompactPageActionsController {
+    var content: CompactPageActionsContent? by mutableStateOf(null)
 }
 
-val LocalSubPageBarController = staticCompositionLocalOf<SubPageBarController?> { null }
+val LocalCompactPageActionsController = staticCompositionLocalOf<CompactPageActionsController?> { null }
 
 @Composable
-fun SubPageBar(
-    title: String,
-    onBack: () -> Unit,
-    actions: (@Composable () -> Unit)? = null,
-) {
-    val controller = LocalSubPageBarController.current ?: return
+fun CompactPageActions(actions: @Composable () -> Unit) {
+    val controller = LocalCompactPageActionsController.current ?: return
     val token = remember { Any() }
     SideEffect {
-        controller.content = SubPageBarContent(token, title, onBack, actions)
+        controller.content = CompactPageActionsContent(token, actions)
     }
     DisposableEffect(Unit) {
         onDispose {

@@ -11,8 +11,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.suppliers.SupplierFormFields
 import app.devper.pharm.presentation.suppliers.SupplierFormMode
@@ -20,8 +25,10 @@ import app.devper.pharm.presentation.suppliers.SupplierFormUiState
 import app.devper.pharm.presentation.suppliers.i18n.localizeSupplierForm
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
+import app.devper.pharm.ui.designsystem.pharmFormContentPadding
+import app.devper.pharm.ui.designsystem.pharmFormContentWidth
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -34,8 +41,10 @@ fun SupplierFormContent(
 ) {
     val t = pharmTokens
     val s = pharmStrings
+    var validationRequested by remember(state.mode) { mutableStateOf(false) }
+    val nameFocusRequester = remember { FocusRequester() }
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = if (state.isEdit) s.suppliersFormEditTitle else s.suppliersFormAddTitle,
             onBack = callbacks.onBack,
             actions = {
@@ -43,16 +52,22 @@ fun SupplierFormContent(
                     saving = state.saving,
                     canSubmit = state.canSubmit,
                     onSubmit = callbacks.onSubmit,
+                    onInvalidSubmit = if (state.loading) null else {
+                        {
+                            validationRequested = true
+                            nameFocusRequester.requestFocus()
+                        }
+                    },
                 )
             },
         )
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .then(pharmFormContentWidth())
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .pharmFormContentPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (state.loading) {
@@ -63,7 +78,12 @@ fun SupplierFormContent(
                     PharmCircularProgress(color = t.colors.accent)
                 }
             } else {
-                SupplierFormInfoSection(form = state.form, callbacks = callbacks)
+                SupplierFormInfoSection(
+                    form = state.form,
+                    callbacks = callbacks,
+                    showValidation = validationRequested,
+                    nameFocusRequester = nameFocusRequester,
+                )
             }
         }
     }

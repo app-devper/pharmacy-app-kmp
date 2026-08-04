@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeCustomerForm(s: PharmStrings): String = when (this) {
+    is CustomerFormUiStateError.LoadCustomerFailed -> s.customersFormLoadFailed
     is CustomerFormUiStateError.NotFound -> s.customersFormNotFound
     else -> localizeCommon(s)
 }

@@ -4,7 +4,6 @@ import app.devper.pharm.domain.param.ky.ExportKyFormParam
 import app.devper.pharm.domain.param.ky.KyMonthFilterParam
 import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
@@ -37,7 +36,7 @@ class Ky9ViewModel(
         launchResult(
             block = { getKy9Entries(KyMonthFilterParam(month = s.month)) },
             onSuccess = { list -> setState { copy(loading = false, entries = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = KyUiStateError.LoadEntriesFailed(e)) } },
         )
     }
 }

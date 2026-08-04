@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.sell.flow
 
 import app.devper.pharm.presentation.sell.exception.DrugPickerUiStateError
 
-import app.devper.pharm.common.error.CommonUiStateError
-
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -78,7 +76,7 @@ class DrugPickerViewModelTest {
     fun load_failure_routes_to_error_clears_spinner() = runVmTest { dispatchers ->
         val (vm) = newVm(dispatchers, repo = FakeDrugRepository(listThrows = true))
         advanceUntilIdle()
-        assertIs<CommonUiStateError.LoadFailed>(vm.state.value.errorState)
+        assertIs<DrugPickerUiStateError.LoadDrugsFailed>(vm.state.value.errorState)
         assertEquals("list failed", vm.state.value.errorState?.cause?.message)
         assertFalse(vm.state.value.drugsLoading)
     }

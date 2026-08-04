@@ -11,7 +11,7 @@ object KyStringsEn : KyStrings {
     override val kyToolbarSubtitle = "Export Excel/PDF for FDA submission following the Ministry of Health template"
     override val kyEmptyMonth = "No entries in this month"
     override val kyCountNoun = "entries"
-    override val kySearchPlaceholder = "Search"
+    override val kySearchPlaceholder = "Search entries…"
     override val kyAddCta = "Add entry"
     override val kyAddCtaWithNumber: (Int) -> String = { n -> "Add KY $n entry" }
     override val kyHeaderDate = "Date"
@@ -21,7 +21,7 @@ object KyStringsEn : KyStrings {
     override val kyHeaderQty = "Qty"
     override val kyHeaderValue = "Value"
     override val kyHeaderPricePerUnit = "Price/unit"
-    override val kyHeaderStatusPlaceholder = "e.g. dispensed / pending"
+    override val kyHeaderStatusPlaceholder = "e.g. dispensed / pending…"
     override val kyExportingPdf = "Exporting…"
     override val kyExportPdfSuccess = "PDF exported"
     override val kyExportPdfFailed = "PDF download failed"
@@ -55,5 +55,6 @@ object KyStringsEn : KyStrings {
     override val kyTotalAll = "Total"
     override val kyDateYmd = "Date (YYYY-MM-DD)"
     override val kyMonthLabel = "Month"
+    override val kyLoadEntriesFailed = "Failed to load KY form entries"
     override val kyDownloadPdfFailed = "Failed to download PDF"
 }

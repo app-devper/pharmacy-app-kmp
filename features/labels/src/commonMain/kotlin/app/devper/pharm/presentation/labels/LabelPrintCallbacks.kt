@@ -11,7 +11,9 @@ data class LabelPrintCallbacks(
     val onChangeBarcode: (Int, String) -> Unit = { _, _ -> },
     val onToggleIncludePrice: (Int, Boolean) -> Unit = { _, _ -> },
     val onSizeChange: (LabelSize) -> Unit = {},
-    val onClearAll: () -> Unit = {},
+    val onAskClearAll: () -> Unit = {},
+    val onCancelClearAll: () -> Unit = {},
+    val onConfirmClearAll: () -> Unit = {},
     val onPrint: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

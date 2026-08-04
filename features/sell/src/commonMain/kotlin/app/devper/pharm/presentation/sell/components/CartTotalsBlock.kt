@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +24,10 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.designsystem.PharmDivider
+import app.devper.pharm.ui.designsystem.PharmIcons
 
 @Composable
 fun CartTotalsBlock(
@@ -55,7 +55,7 @@ fun CartTotalsBlock(
             Text(fmtBaht(grossSubtotal), style = PharmText.bodySm.copy(color = t.colors.fg2))
         }
 
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         if (hasDiscounts) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -75,7 +75,7 @@ fun CartTotalsBlock(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(role = Role.Button, onClick = onOpenCartDiscount)
+                    .pharmClickable(role = Role.Button, onClick = onOpenCartDiscount)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -87,7 +87,7 @@ fun CartTotalsBlock(
                     modifier = Modifier.weight(1f),
                 )
                 Icon(
-                    Icons.Rounded.KeyboardArrowRight,
+                    PharmIcons.ChevronRight,
                     contentDescription = null,
                     tint = t.colors.accent,
                     modifier = Modifier.size(20.dp),
@@ -110,7 +110,7 @@ private fun CartTotalsRow(label: String, value: String, color: Color, onClick: (
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
+            .then(if (onClick != null) Modifier.pharmClickable(role = Role.Button, onClick = onClick) else Modifier)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

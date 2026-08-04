@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -78,7 +79,7 @@ private fun SummaryCard(state: StockCountFormUiState, callbacks: StockCountFormC
         )
 
         Spacer(modifier = Modifier.height(4.dp))
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
@@ -91,6 +92,7 @@ private fun SummaryCard(state: StockCountFormUiState, callbacks: StockCountFormC
                 onValueChange = callbacks.onNotesChange,
                 placeholder = s.stockCountFormNotePlaceholder,
                 singleLine = false,
+                enabled = !state.saving,
             )
         }
     }

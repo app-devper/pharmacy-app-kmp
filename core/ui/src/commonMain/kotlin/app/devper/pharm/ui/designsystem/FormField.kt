@@ -3,7 +3,6 @@ package app.devper.pharm.ui.designsystem
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,14 +24,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -42,10 +45,30 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+
+internal val pharmTextFieldHorizontalPadding = 12.dp
+internal val pharmTextFieldTextVerticalPadding = 8.dp
+
+internal fun textFieldEndPadding(trailingSlotAtEdge: Boolean): Dp =
+    if (trailingSlotAtEdge) 0.dp else pharmTextFieldHorizontalPadding
+
+internal fun singleLineTextFieldHeight(
+    minHeight: Dp,
+    textLineHeight: Dp,
+    accessoryHeight: Dp,
+): Dp = maxOf(
+    minHeight,
+    textLineHeight + pharmTextFieldTextVerticalPadding * 2,
+    accessoryHeight,
+)
+
+private val LocalFormFieldLabel = staticCompositionLocalOf<String?> { null }
 
 @Composable
 fun FormField(
@@ -69,7 +92,9 @@ fun FormField(
         } else AnnotatedString(label)
         Text(text = labelText, style = PharmText.h3.copy(color = t.colors.fg2))
 
-        content()
+        CompositionLocalProvider(LocalFormFieldLabel provides label) {
+            content()
+        }
 
         when {
             error != null -> Text(
@@ -90,6 +115,7 @@ fun PharmTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String? = null,
+    accessibilityLabel: String? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
     isError: Boolean = false,
@@ -98,15 +124,30 @@ fun PharmTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Default,
     onImeAction: (() -> Unit)? = null,
+    onFocusLost: (() -> Unit)? = null,
     focusRequester: FocusRequester? = null,
+    textAlign: TextAlign = TextAlign.Start,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    shape: Shape = pharmTokens.shapes.md,
+    minHeight: Dp = pharmTokens.dimens.controlHeight,
     leadingSlot: (@Composable () -> Unit)? = null,
     trailingSlot: (@Composable () -> Unit)? = null,
+    trailingSlotAtEdge: Boolean = false,
     onClear: (() -> Unit)? = null,
 ) {
     val t = pharmTokens
+    val semanticLabel = accessibilityLabel ?: LocalFormFieldLabel.current ?: placeholder
     val interaction = remember { MutableInteractionSource() }
     val isFocused by interaction.collectIsFocusedAsState()
+    var wasFocused by remember { mutableStateOf(false) }
+    LaunchedEffect(isFocused) {
+        if (isFocused) {
+            wasFocused = true
+        } else if (wasFocused) {
+            wasFocused = false
+            onFocusLost?.invoke()
+        }
+    }
     val borderColor = when {
         !enabled   -> t.colors.borderSubtle
         isError    -> t.colors.dangerFg
@@ -120,8 +161,10 @@ fun PharmTextField(
         isWarning -> t.colors.warningBg.copy(alpha = 0.6f)
         else      -> t.colors.surface
     }
-    val shape = t.shapes.md
-    val style = PharmText.body.copy(color = if (enabled) t.colors.fg1 else t.colors.fgMuted)
+    val style = PharmText.body.copy(
+        color = if (enabled) t.colors.fg1 else t.colors.fgMuted,
+        textAlign = textAlign,
+    )
 
     val selectionColors = TextSelectionColors(
         handleColor = t.colors.accent,
@@ -131,24 +174,34 @@ fun PharmTextField(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = t.dimens.controlHeight)
+            .heightIn(min = minHeight)
             .clip(shape)
             .background(bg, shape)
             .border(borderThickness, borderColor, shape)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(
+                start = pharmTextFieldHorizontalPadding,
+                end = textFieldEndPadding(trailingSlotAtEdge),
+            ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingSlot != null) {
             leadingSlot()
         }
-        Box(modifier = Modifier.weight(1f)) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = pharmTextFieldTextVerticalPadding),
+        ) {
             CompositionLocalProvider(LocalTextSelectionColors provides selectionColors) {
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics {
+                            if (!semanticLabel.isNullOrBlank()) contentDescription = semanticLabel
+                        }
                         .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier),
                     enabled = enabled,
                     readOnly = readOnly,
@@ -183,34 +236,30 @@ fun PharmTextField(
                 )
             }
         }
-        Box(modifier = Modifier.size(18.dp), contentAlignment = Alignment.Center) {
-            if (isError) {
-                Icon(
-                    imageVector = PharmIcons.AlertCircle,
-                    contentDescription = pharmStrings.commonErrorIconDesc,
-                    tint = t.colors.dangerFg,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
+        if (isError) {
+            Icon(
+                imageVector = PharmIcons.AlertCircle,
+                contentDescription = pharmStrings.commonErrorIconDesc,
+                tint = t.colors.dangerFg,
+                modifier = Modifier.size(18.dp),
+            )
         }
         if (onClear != null) {
             val showClear = value.isNotEmpty() && enabled && !readOnly
-            Box(modifier = Modifier.size(width = 24.dp, height = 24.dp), contentAlignment = Alignment.Center) {
-                if (showClear) {
-                    Box(
-                        modifier = Modifier
-                            .sizeIn(minWidth = 40.dp, minHeight = 40.dp)
-                            .clip(t.shapes.sm)
-                            .clickable(role = Role.Button, onClick = onClear),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = PharmIcons.Close,
-                            contentDescription = pharmStrings.commonClearInput,
-                            tint = t.colors.fgMuted,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
+            if (showClear) {
+                PharmIconButton(
+                    contentDescription = pharmStrings.commonClearInput,
+                    onClick = onClear,
+                    minSize = t.dimens.minimumTouchTarget,
+                    shape = t.shapes.sm,
+                    modifier = Modifier.size(t.dimens.minimumTouchTarget),
+                ) {
+                    Icon(
+                        imageVector = PharmIcons.Close,
+                        contentDescription = null,
+                        tint = t.colors.fgMuted,
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
             }
         }

@@ -2,6 +2,8 @@ package app.devper.pharm.ui.i18n.groups
 
 interface UsersStrings {
     val usersFormNotFound: String
+    val usersFormLoadFailed: String
+    val usersListLoadFailed: String
     val usersRoleChangeFailed: String
     val usersStatusChangeFailed: String
     val usersSetPasswordFailed: String
@@ -15,6 +17,13 @@ interface UsersStrings {
     val usersListNotFound: String
     val usersCannotEdit: String
     val usersHeaderName: String
+    val usersHeaderUsername: String
+    val usersHeaderRole: String
+    val usersRoleSuper: String
+    val usersRoleAdmin: String
+    val usersRoleManager: String
+    val usersRoleUser: String
+    val usersRoleUnknown: String
     val usersStatusActive: String
     val usersStatusSuspended: String
     val usersActionChangeRole: String
@@ -36,4 +45,5 @@ interface UsersStrings {
     val usersFormPasswordCreate: String
     val usersFormPasswordNew: String
     val usersFormPasswordHint: String
+    val usersSubtitle: String
 }

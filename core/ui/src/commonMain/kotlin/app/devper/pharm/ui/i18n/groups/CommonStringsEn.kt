@@ -8,6 +8,9 @@ object CommonStringsEn : CommonStrings {
     override val commonOffline = "Offline"
     override val commonErrorIconDesc = "Error"
     override val commonOpenMenu = "Open menu"
+    override val commonCloseMenu = "Close menu"
+    override val commonOpenAccountMenu = "Open account menu"
+    override val commonCloseAccountMenu = "Close account menu"
     override val commonHelp = "Help"
     override val commonResultFound: (Int, String, Int) -> String = { visible, noun, total -> "Found $visible $noun of $total" }
     override val commonResultTotal: (Int, String) -> String = { total, noun -> "All $total $noun" }
@@ -53,6 +56,10 @@ object CommonStringsEn : CommonStrings {
     override val commonCost = "Cost"
 
     override val commonCancel = "Cancel"
+    override val commonUnsavedChangesTitle = "Unsaved changes"
+    override val commonUnsavedChangesMessage = "Your changes will be lost if you leave now."
+    override val commonKeepEditing = "Keep editing"
+    override val commonDiscardChanges = "Discard changes"
     override val commonSave = "Save"
     override val commonDelete = "Delete"
     override val commonEdit = "Edit"
@@ -63,7 +70,7 @@ object CommonStringsEn : CommonStrings {
     override val commonBackspace = "Backspace"
     override val commonClearInput = "Clear text"
     override val commonBack = "Back"
-    override val commonLoading = "Loading"
+    override val commonLoading = "Loading…"
     override val commonRetry = "Retry"
     override val commonMore = "More"
     override val commonTotal = "Total"

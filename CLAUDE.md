@@ -235,8 +235,27 @@ license headers required by upstream libraries.
   Expanded`). `WindowSize.fromWidth(maxWidth)` in
   `:core:ui/ui/components/WindowSize.kt`. Use `BoxWithConstraints` +
   `FlowRow`; `PharmTable` columns take `hideInCompact` / `compactTitle`.
-  Desktop/web floor at 600px (`Main.kt window.minimumSize`, `index.html
-  min-width`). Always `collectAsStateWithLifecycle()` (battery).
+  Always `collectAsStateWithLifecycle()` (battery).
+  - **Two tiers, and each component states which one it means.**
+    `WindowSize.isCompactShell` (< 840) drives chrome — sidebar becomes a
+    drawer, topbar goes compact, metrics become stat pills, list toolbar
+    collapses. `WindowSize.isCompactContent` (< 600) drives data density —
+    `PharmTable` switches to cards, action menus become bottom sheets,
+    modals go full-screen, the list surface drops its card frame. Never
+    reach for the raw enum comparison; the named tier says which question
+    is being asked.
+  - **One horizontal gutter per page**: `pharmPageGutter` (16dp on
+    phones, 24dp above) is what `PharmListToolbar`, `PharmListScaffold`
+    and `pharmFormContentPadding` all use, so a page header always lines
+    up with its own body.
+  - **Content is width-capped and centred**: lists and forms at 768dp
+    (`listWorkspaceMaxWidth` / `formContentMaxWidth`, via
+    `pharmFormContentWidth()` on forms), long-form help at 880dp, the
+    reports dashboard at 1040dp.
+  - **Platform floors differ on purpose**: the desktop window will not go
+    below 600×600 (`Main.kt window.minimumSize`), the web build runs down
+    to 320px (`index.html min-width`), and Android/iOS run at whatever
+    the device is. Only web and mobile ever reach the compact tier.
 
 - **Adding a new feature** → 6-step recipe in
   [MODULE_GRAPH.md § Per-feature recipe](./MODULE_GRAPH.md#per-feature-recipe).

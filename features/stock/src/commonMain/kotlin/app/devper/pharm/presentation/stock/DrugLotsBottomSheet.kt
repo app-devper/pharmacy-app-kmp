@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.stock
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,32 +12,39 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmStamp
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.format.localDateToBuddhist
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
-import app.devper.pharm.ui.format.localDateToBuddhist
-import app.devper.pharm.ui.i18n.pharmStrings
 
 data class DrugLotsCallbacks(
     val onClose: () -> Unit = {},
@@ -53,7 +61,6 @@ data class DrugLotsCallbacks(
     val onDismissError: () -> Unit = {},
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrugLotsBottomSheet(
     state: DrugLotsUiState,
@@ -62,15 +69,12 @@ fun DrugLotsBottomSheet(
 ) {
     if (state.drugId.isBlank()) return
 
-    val t = pharmTokens
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = {
             callbacks.onClose()
             onDismiss()
         },
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
+        dismissEnabled = !state.saving,
     ) {
         DrugLotsContent(
             state = state,
@@ -140,12 +144,7 @@ fun DrugLotsDialogs(
 
 @Composable
 private fun Divider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }
 
 @Composable
@@ -174,7 +173,6 @@ private fun HeaderRow(state: DrugLotsUiState) {
 private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
     val t = pharmTokens
     Column(
-        modifier = Modifier.heightIn(max = 320.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         when {
@@ -192,11 +190,19 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
                 )
             }
             else -> {
-                state.lots.forEach { lot ->
-                    LotRow(
-                        lot = lot,
-                        onDelete = { callbacks.onRequestDelete(lot) },
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = if (state.addFormOpen) 160.dp else 320.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    items(state.lots, key = { it.id }) { lot ->
+                        LotRow(
+                            lot = lot,
+                            onDelete = { callbacks.onRequestDelete(lot) },
+                            enabled = !state.saving,
+                        )
+                    }
                 }
             }
         }
@@ -205,12 +211,12 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
         PharmButton(
             label = if (state.addFormOpen) pharmStrings.stockLotCloseAddForm else pharmStrings.stockLotAddCta,
             onClick = callbacks.onToggleAddForm,
+            enabled = !state.saving,
             variant = PharmButtonVariant.Ghost,
             leadingIcon = {
                 Icon(
                     imageVector = PharmIcons.Plus,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
                 )
             },
         )
@@ -218,7 +224,7 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
 }
 
 @Composable
-private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
+private fun LotRow(lot: DrugLot, onDelete: () -> Unit, enabled: Boolean) {
     val t = pharmTokens
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -237,6 +243,7 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
         }
         PharmButton(
             onClick = onDelete,
+            enabled = enabled,
             variant = PharmButtonVariant.Ghost,
         ) {
             Icon(
@@ -251,81 +258,170 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit) {
 
 @Composable
 private fun AddLotForm(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
+    val strings = pharmStrings
+    var validationRequested by rememberSaveable(state.addFormOpen) { mutableStateOf(false) }
+    val lotNumberFocus = remember(state.addFormOpen) { FocusRequester() }
+    val expiryDateFocus = remember(state.addFormOpen) { FocusRequester() }
+    val quantityFocus = remember(state.addFormOpen) { FocusRequester() }
+    val costPriceFocus = remember(state.addFormOpen) { FocusRequester() }
+    val sellPriceFocus = remember(state.addFormOpen) { FocusRequester() }
+    val lotNumberError = if (validationRequested && !state.draft.lotNumberValid) {
+        strings.validationRequired(strings.fieldLotNumber)
+    } else null
+    val expiryDateError = if (validationRequested && !state.draft.expiryDateValid) {
+        if (state.draft.expiryDate.isBlank()) {
+            strings.validationRequired(strings.fieldExpiryDate)
+        } else {
+            strings.validationInvalidDate(strings.fieldExpiryDate)
+        }
+    } else null
+    val quantityError = if (validationRequested && !state.draft.quantityValid) {
+        if (state.draft.quantity.isBlank()) {
+            strings.validationRequired(strings.fieldQuantity)
+        } else {
+            strings.validationMustBePositive(strings.fieldQuantity)
+        }
+    } else null
+    val costPriceError = if (validationRequested && !state.draft.costPriceValid) {
+        strings.validationNotANumber(strings.stockHeaderCostPrice)
+    } else null
+    val sellPriceError = if (validationRequested && !state.draft.sellPriceValid) {
+        strings.validationNotANumber(strings.stockHeaderSellPrice)
+    } else null
+    val fields = listOf(
+        LotFieldSpec(
+            label = strings.stockLotNumber,
+            value = state.draft.lotNumber,
+            onValueChange = callbacks.onLotNumber,
+            placeholder = strings.stockLotNumberPlaceholder,
+            required = true,
+            error = lotNumberError,
+            focusRequester = lotNumberFocus,
+        ),
+        LotFieldSpec(
+            label = strings.stockLotExpiryRequired,
+            value = state.draft.expiryDate,
+            onValueChange = callbacks.onExpiryDate,
+            placeholder = "2026-12-31",
+            required = true,
+            error = expiryDateError,
+            focusRequester = expiryDateFocus,
+        ),
+        LotFieldSpec(
+            label = strings.stockLotInitialQty,
+            value = state.draft.quantity,
+            onValueChange = callbacks.onQuantity,
+            placeholder = "0",
+            keyboardType = KeyboardType.Number,
+            required = true,
+            error = quantityError,
+            focusRequester = quantityFocus,
+        ),
+        LotFieldSpec(
+            label = strings.stockHeaderCostPrice,
+            value = state.draft.costPrice,
+            onValueChange = callbacks.onCostPrice,
+            placeholder = strings.stockLotInitialCostHint,
+            keyboardType = KeyboardType.Decimal,
+            error = costPriceError,
+            focusRequester = costPriceFocus,
+        ),
+        LotFieldSpec(
+            label = strings.stockHeaderSellPrice,
+            value = state.draft.sellPrice,
+            onValueChange = callbacks.onSellPrice,
+            placeholder = strings.stockLotInitialSellHint,
+            keyboardType = KeyboardType.Decimal,
+            error = sellPriceError,
+            focusRequester = sellPriceFocus,
+        ),
+    )
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = pharmStrings.stockLotAddTitle,
+            text = strings.stockLotAddTitle,
             style = PharmText.h2,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LotField(
-                label = pharmStrings.stockLotNumber,
-                value = state.draft.lotNumber,
-                onValueChange = callbacks.onLotNumber,
-                placeholder = pharmStrings.stockLotNumberPlaceholder,
-                modifier = Modifier.weight(1f),
-            )
-            LotField(
-                label = pharmStrings.stockLotExpiryRequired,
-                value = state.draft.expiryDate,
-                onValueChange = callbacks.onExpiryDate,
-                placeholder = "2026-12-31",
-                modifier = Modifier.weight(1f),
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LotField(
-                label = pharmStrings.stockLotInitialQty,
-                value = state.draft.quantity,
-                onValueChange = callbacks.onQuantity,
-                placeholder = "0",
-                keyboardType = KeyboardType.Number,
-                modifier = Modifier.weight(1f),
-            )
-            LotField(
-                label = pharmStrings.stockHeaderCostPrice,
-                value = state.draft.costPrice,
-                onValueChange = callbacks.onCostPrice,
-                placeholder = pharmStrings.stockLotInitialCostHint,
-                keyboardType = KeyboardType.Decimal,
-                modifier = Modifier.weight(1f),
-            )
-            LotField(
-                label = pharmStrings.stockHeaderSellPrice,
-                value = state.draft.sellPrice,
-                onValueChange = callbacks.onSellPrice,
-                placeholder = pharmStrings.stockLotInitialSellHint,
-                keyboardType = KeyboardType.Decimal,
-                modifier = Modifier.weight(1f),
-            )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            when {
+                maxWidth < 360.dp -> Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    fields.forEach { LotField(spec = it) }
+                }
+                maxWidth < 600.dp -> Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LotFieldRow(fields = fields.take(2))
+                    LotFieldRow(fields = fields.slice(2..3))
+                    LotField(spec = fields[4])
+                }
+                else -> Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LotFieldRow(fields = fields.take(2))
+                    LotFieldRow(fields = fields.drop(2))
+                }
+            }
         }
         PharmButton(
-            label = pharmStrings.stockLotSaveCta,
-            onClick = callbacks.onSubmitAdd,
-            enabled = state.canSubmitDraft,
+            label = strings.stockLotSaveCta,
+            onClick = {
+                if (state.draft.valid) {
+                    callbacks.onSubmitAdd()
+                } else {
+                    validationRequested = true
+                    when {
+                        !state.draft.lotNumberValid -> lotNumberFocus.requestFocus()
+                        !state.draft.expiryDateValid -> expiryDateFocus.requestFocus()
+                        !state.draft.quantityValid -> quantityFocus.requestFocus()
+                        !state.draft.costPriceValid -> costPriceFocus.requestFocus()
+                        !state.draft.sellPriceValid -> sellPriceFocus.requestFocus()
+                    }
+                }
+            },
+            enabled = state.canAttemptSubmit,
             loading = state.saving,
             modifier = Modifier.fillMaxWidth(),
         )
     }
 }
 
+private data class LotFieldSpec(
+    val label: String,
+    val value: String,
+    val onValueChange: (String) -> Unit,
+    val placeholder: String,
+    val keyboardType: KeyboardType = KeyboardType.Text,
+    val required: Boolean = false,
+    val error: String? = null,
+    val focusRequester: FocusRequester,
+)
+
+@Composable
+private fun LotFieldRow(fields: List<LotFieldSpec>) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        fields.forEach { LotField(spec = it, modifier = Modifier.weight(1f)) }
+    }
+}
+
 @Composable
 private fun LotField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
+    spec: LotFieldSpec,
     modifier: Modifier = Modifier,
 ) {
-    FormField(label = label, modifier = modifier) {
+    FormField(
+        label = spec.label,
+        required = spec.required,
+        error = spec.error,
+        modifier = modifier,
+    ) {
         PharmTextField(
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = placeholder,
-            keyboardType = keyboardType,
+            value = spec.value,
+            onValueChange = spec.onValueChange,
+            placeholder = spec.placeholder,
+            keyboardType = spec.keyboardType,
+            isError = spec.error != null,
+            focusRequester = spec.focusRequester,
         )
     }
 }

@@ -15,6 +15,7 @@ fun AppException.localizeSell(s: PharmStrings): String = when (this) {
     is VoidSaleUiStateError.MissingBillId -> s.sellVoidMissingBillId
     is VoidSaleUiStateError.ReasonRequired -> s.sellVoidReasonRequired
     is VoidSaleUiStateError.VoidFailed -> s.sellVoidFailed
+    is DrugPickerUiStateError.LoadDrugsFailed -> s.sellLoadDrugsFailed
     is DrugPickerUiStateError.BarcodeNotFound -> s.sellBarcodeNotFound(code)
     is CustomerPickerUiStateError.LoadCustomersFailed -> s.sellLoadCustomersFailed
     is CheckoutUiStateError.PrintReceiptUnsupported -> s.sellPrintReceiptUnsupported

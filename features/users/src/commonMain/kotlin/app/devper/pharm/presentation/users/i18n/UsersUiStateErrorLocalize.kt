@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeUsers(s: PharmStrings): String = when (this) {
+    is UsersUiStateError.LoadUsersFailed -> s.usersListLoadFailed
     is UsersUiStateError.RoleChangeFailed -> s.usersRoleChangeFailed
     is UsersUiStateError.StatusChangeFailed -> s.usersStatusChangeFailed
     is UsersUiStateError.SetPasswordFailed -> s.usersSetPasswordFailed

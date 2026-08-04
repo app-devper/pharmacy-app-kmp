@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.suppliers
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.suppliers.SupplierInput
 import app.devper.pharm.domain.param.suppliers.UpdateSupplierParam
 import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
@@ -44,22 +43,26 @@ class SupplierFormViewModel(
                 if (s == null) {
                     setState { copy(loading = false, errorState = SupplierFormUiStateError.NotFound()) }
                 } else {
+                    val hydratedForm = SupplierFormFields(
+                        name = s.name,
+                        contactName = s.contactName,
+                        phone = s.phone,
+                        address = s.address,
+                        taxId = s.taxId,
+                        notes = s.notes,
+                    )
                     setState {
                         copy(
                             loading = false,
-                            form = SupplierFormFields(
-                                name = s.name,
-                                contactName = s.contactName,
-                                phone = s.phone,
-                                address = s.address,
-                                taxId = s.taxId,
-                                notes = s.notes,
-                            ),
+                            form = hydratedForm,
+                            baselineForm = hydratedForm,
                         )
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = SupplierFormUiStateError.LoadSupplierFailed(e)) }
+            },
         )
     }
 

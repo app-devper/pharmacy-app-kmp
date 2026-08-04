@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.expiry
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
@@ -20,18 +19,20 @@ class ExpiryViewModel(
         reload()
     }
 
+    fun onQueryChange(value: String) = setState { copy(query = value) }
+
     fun toggleSelected(lotId: String) = setState {
         copy(selected = if (lotId in selected) selected - lotId else selected + lotId)
     }
 
     fun toggleAll() = setState {
-        copy(selected = if (allSelected) emptySet() else lots.map { it.id }.toSet())
+        val visibleIds = filteredLots.map { it.id }.toSet()
+        copy(selected = if (allVisibleSelected) selected - visibleIds else selected + visibleIds)
     }
 
-    fun selectAll() = setState { copy(selected = lots.map { it.id }.toSet()) }
     fun clearSelection() = setState { copy(selected = emptySet()) }
 
-    fun askConfirm() = setState { copy(confirmDialog = true) }
+    fun askConfirm() = setState { if (canWriteoff) copy(confirmDialog = true) else this }
     fun cancelConfirm() = setState { copy(confirmDialog = false) }
 
     fun confirmWriteoff() {
@@ -61,8 +62,18 @@ class ExpiryViewModel(
                     ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
                 )
             },
-            onSuccess = { lots -> setState { copy(loading = false, lots = lots) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onSuccess = { lots ->
+                setState {
+                    copy(
+                        loading = false,
+                        lots = lots,
+                        selected = selected intersect lots.map { it.id }.toSet(),
+                    )
+                }
+            },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = ExpiryUiStateError.LoadLotsFailed(e)) }
+            },
         )
     }
 }

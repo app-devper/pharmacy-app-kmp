@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.DrugProfit
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
@@ -42,6 +43,7 @@ internal fun ProfitTable(
         PharmTableColumn<DrugProfit>(
             header = s.reportsHeaderDrugName,
             weight = 2.2f,
+            compactTitle = true,
             cell = { row -> NameCell(row.drugName) },
         ),
         PharmTableColumn(
@@ -54,22 +56,25 @@ internal fun ProfitTable(
             header = s.reportsHeaderRevenue,
             weight = 1.2f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { row -> MoneyCell(row.revenue) },
         ),
         PharmTableColumn(
             header = s.reportsHeaderCost,
             weight = 1.2f,
             align = PharmColumnAlign.End,
+            hideInCompact = true,
             cell = { row -> MoneyCell(row.cost, muted = true) },
         ),
         PharmTableColumn(
             header = s.reportsHeaderProfit,
+            compactTrailing = true,
             weight = 1.2f,
             align = PharmColumnAlign.End,
             cell = { row -> MoneyCell(row.profit, bold = true) },
         ),
         PharmTableColumn(
-            header = "Margin %",
+            header = s.reportsCsvHeaderMargin,
             weight = 1.0f,
             align = PharmColumnAlign.End,
             cell = { row -> MarginCell(row.margin) },
@@ -82,7 +87,6 @@ internal fun ProfitTable(
         columns = columns,
         key = { it.drugId },
         modifier = modifier,
-        rowHeight = 48.dp,
         emptyContent = {
             Text(text = pharmStrings.reportsSectionDailySalesEmpty, style = PharmText.meta)
         },
@@ -114,12 +118,7 @@ private fun ProfitTotalsRow(
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.border),
-        )
+        PharmDivider(color = t.colors.border)
         Row(
             modifier = Modifier
                 .fillMaxWidth()

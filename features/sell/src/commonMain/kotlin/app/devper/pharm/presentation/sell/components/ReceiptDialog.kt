@@ -40,7 +40,7 @@ fun ReceiptDialog(
                     label = pharmStrings.sellCancelBillCta,
                     onClick = onVoid,
                     variant = PharmButtonVariant.Ghost,
-                    size = PharmButtonSize.Md,
+                    size = PharmButtonSize.Sm,
                 )
                 Box(modifier = Modifier.size(1.dp))
             }
@@ -49,7 +49,7 @@ fun ReceiptDialog(
                     label = pharmStrings.sellPrintCta,
                     onClick = onPrint,
                     variant = PharmButtonVariant.Secondary,
-                    size = PharmButtonSize.Md,
+                    size = PharmButtonSize.Sm,
                     leadingIcon = {
                         Icon(
                             imageVector = PharmIcons.Print,
@@ -62,9 +62,8 @@ fun ReceiptDialog(
             PharmButton(
                 label = pharmStrings.sellNewBill,
                 onClick = onDismiss,
-                size = PharmButtonSize.Md,
-            )
-        },
+                size = PharmButtonSize.Sm,
+            )},
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

@@ -24,7 +24,7 @@ class ImportsListViewModel(
         launchResult(
             block = { getPurchaseOrders() },
             onSuccess = { list -> setState { copy(loading = false, orders = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = ImportsUiStateError.LoadOrdersFailed(e)) } },
         )
     }
 

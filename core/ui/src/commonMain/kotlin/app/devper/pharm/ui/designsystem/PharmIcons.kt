@@ -216,7 +216,13 @@ object PharmIcons {
 
     val Hamburger: ImageVector = strokeIcon(
         name = "Hamburger",
-        "M3 6 h18 M3 12 h18 M3 18 h18",
+        "M3 7 h18 M3 17 h12",
+    )
+
+    val SidebarPanel: ImageVector = strokeIcon(
+        name = "SidebarPanel",
+        rect(3f, 4f, 18f, 16f, rx = 2f),
+        "M9 4 v16",
     )
 
     val Sun: ImageVector = strokeIcon(
@@ -235,6 +241,12 @@ object PharmIcons {
         name = "Search",
         circle(11f, 11f, 7f),
         "M20 20 l-3.5 -3.5",
+    )
+
+    val Calendar: ImageVector = strokeIcon(
+        name = "Calendar",
+        rect(3f, 5f, 18f, 16f, 2f),
+        "M8 3 v4 M16 3 v4 M3 10 h18",
     )
 
     val Scan: ImageVector = strokeIcon(
@@ -265,6 +277,11 @@ object PharmIcons {
     val Plus: ImageVector = strokeIcon(
         name = "Plus",
         "M12 5 v14 M5 12 h14",
+    )
+
+    val Minus: ImageVector = strokeIcon(
+        name = "Minus",
+        "M5 12 h14",
     )
 
     val Close: ImageVector = strokeIcon(
@@ -328,6 +345,11 @@ object PharmIcons {
     val ChevronLeft: ImageVector = strokeIcon(
         name = "ChevronLeft",
         "M15 6 L9 12 L15 18",
+    )
+
+    val ChevronRight: ImageVector = strokeIcon(
+        name = "ChevronRight",
+        "M9 6 L15 12 L9 18",
     )
 
     val Pencil: ImageVector = strokeIcon(

@@ -3,8 +3,9 @@ package app.devper.pharm.presentation.expiry
 import app.devper.pharm.presentation.expiry.i18n.label
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +25,11 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ExpiryToolbar(
     window: ExpiryWindow,
+    query: String,
     selectedCount: Int,
     writingOff: Boolean,
     callbacks: ExpiryCallbacks,
@@ -35,18 +38,24 @@ internal fun ExpiryToolbar(
     val s = pharmStrings
     PharmListToolbar(
         modifier = modifier,
+        title = s.navExpiry,
+        subtitle = s.expirySubtitle,
+        searchValue = query,
+        onSearchChange = callbacks.onQueryChange,
+        searchPlaceholder = s.expirySearchPlaceholder,
+        compactControlsSharedRow = false,
         filters = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+            PharmSingleSelectChips(
+                chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label(s)) },
+                activeId = window.name,
+                onSelect = { id -> callbacks.onWindowChange(ExpiryWindow.valueOf(id)) },
+            )
+        },
+        actions = {
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                PharmSingleSelectChips(
-                    chips = ExpiryWindow.entries.map { PharmFilterChip(id = it.name, label = it.label(pharmStrings)) },
-                    activeId = window.name,
-                    onSelect = { id -> callbacks.onWindowChange(ExpiryWindow.valueOf(id)) },
-                    modifier = Modifier.weight(1f),
-                )
                 PharmButton(
                     label = "Excel",
                     onClick = callbacks.onExportExcel,

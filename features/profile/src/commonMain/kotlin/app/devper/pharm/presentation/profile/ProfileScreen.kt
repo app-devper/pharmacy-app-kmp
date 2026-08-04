@@ -4,13 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import app.devper.pharm.ui.components.RegisterUnsavedChanges
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileScreen(
+    onBack: () -> Unit = {},
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    RegisterUnsavedChanges(state.hasUnsavedChanges)
 
     LaunchedEffect(state.saved) {
         if (state.saved) {
@@ -20,6 +23,7 @@ fun ProfileScreen(
 
     ProfileContent(
         state = state,
+        onBack = onBack,
         callbacks = ProfileCallbacks(
             onFirstName = viewModel::onFirstName,
             onLastName = viewModel::onLastName,
@@ -34,10 +38,6 @@ fun ProfileScreen(
             onConfirmPassword = viewModel::onConfirmPassword,
             onSubmitPasswordChange = viewModel::submitPasswordChange,
             onDismissPasswordError = viewModel::dismissPasswordError,
-            onThemeChange = viewModel::onThemeChange,
-            onFontSizeChange = viewModel::onFontSizeChange,
-            onDensityChange = viewModel::onDensityChange,
-            onLocaleChange = viewModel::onLocaleChange,
         ),
     )
 }

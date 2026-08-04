@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -32,49 +33,45 @@ internal fun StockCountFormToolbar(
 ) {
     val t = pharmTokens
     val s = pharmStrings
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(t.colors.surface)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+    Column(modifier = modifier.fillMaxWidth().background(t.colors.surface)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Box(modifier = Modifier.widthIn(min = 220.dp, max = 320.dp)) {
-                PharmTextField(
-                    value = state.query,
-                    onValueChange = callbacks.onSearchChange,
-                    placeholder = s.stockCountFormSearchPlaceholder,
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Box(modifier = Modifier.widthIn(min = 220.dp, max = 320.dp)) {
+                    PharmTextField(
+                        value = state.query,
+                        onValueChange = callbacks.onSearchChange,
+                        placeholder = s.stockCountFormSearchPlaceholder,
+                        enabled = !state.saving,
+                    )
+                }
+                PharmButton(
+                    label = s.stockCountFormFillSystem,
+                    onClick = callbacks.onFillFromSystem,
+                    variant = PharmButtonVariant.Outline,
+                    size = PharmButtonSize.Sm,
+                    enabled = state.drugs.isNotEmpty() && !state.saving,
+                    leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
+                )
+                PharmButton(
+                    label = s.stockCountFormClearDraftCta,
+                    onClick = callbacks.onClearDraft,
+                    variant = PharmButtonVariant.Danger,
+                    size = PharmButtonSize.Sm,
+                    enabled = (state.counts.isNotEmpty() || state.note.isNotBlank()) && !state.saving,
                 )
             }
-            PharmButton(
-                label = s.stockCountFormFillSystem,
-                onClick = callbacks.onFillFromSystem,
-                variant = PharmButtonVariant.Outline,
-                size = PharmButtonSize.Sm,
-                enabled = state.drugs.isNotEmpty(),
-                leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-            )
-            PharmButton(
-                label = s.bulkImportClearCta,
-                onClick = callbacks.onClear,
-                variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Sm,
-                enabled = state.counts.isNotEmpty(),
-            )
-            PharmButton(
-                label = s.stockCountFormClearDraftCta,
-                onClick = callbacks.onClearDraft,
-                variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Sm,
-                enabled = state.counts.isNotEmpty() || state.note.isNotBlank(),
-            )
+            StockCountFormStatusLine(state = state)
         }
-        StockCountFormStatusLine(state = state)
+        PharmDivider()
     }
 }
 

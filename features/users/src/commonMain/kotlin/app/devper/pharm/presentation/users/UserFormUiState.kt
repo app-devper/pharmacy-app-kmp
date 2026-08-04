@@ -20,6 +20,7 @@ data class UserFormFields(
 data class UserFormUiState(
     val mode: UserFormMode = UserFormMode.Add,
     val form: UserFormFields = UserFormFields(),
+    val baselineForm: UserFormFields = UserFormFields(),
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,
@@ -32,9 +33,13 @@ data class UserFormUiState(
         get() {
             if (saving || loading) return false
             if (form.firstName.isBlank()) return false
+            if (form.lastName.isBlank()) return false
             return if (isEdit) true
             else form.username.isNotBlank() && form.password.length >= 8
         }
+
+    override val hasUnsavedChanges: Boolean
+        get() = form != baselineForm
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)

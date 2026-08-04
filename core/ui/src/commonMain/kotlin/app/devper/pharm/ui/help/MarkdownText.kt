@@ -1,17 +1,18 @@
 package app.devper.pharm.ui.help
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -20,6 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmDivider
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
 fun MarkdownText(markdown: String, modifier: Modifier = Modifier) {
@@ -118,10 +122,9 @@ private fun RenderBlock(block: MdBlock) {
     when (block) {
         is MdBlock.Heading -> {
             val style = when (block.level) {
-                1 -> MaterialTheme.typography.headlineMedium
-                2 -> MaterialTheme.typography.titleLarge
-                3 -> MaterialTheme.typography.titleMedium
-                else -> MaterialTheme.typography.titleSmall
+                1 -> PharmText.h1
+                2 -> PharmText.h2
+                else -> PharmText.h3
             }
             Text(
                 text = renderInline(block.text),
@@ -133,7 +136,7 @@ private fun RenderBlock(block: MdBlock) {
 
         is MdBlock.Paragraph -> Text(
             text = renderInline(block.text),
-            style = MaterialTheme.typography.bodyMedium,
+            style = PharmText.body,
         )
 
         is MdBlock.Bullet -> Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -141,33 +144,33 @@ private fun RenderBlock(block: MdBlock) {
                 Row {
                     Text(
                         text = "•  ",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        style = PharmText.body.copy(color = pharmTokens.colors.accent),
                     )
                     Text(
                         text = renderInline(item),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = PharmText.body,
                     )
                 }
             }
         }
 
-        is MdBlock.Quote -> Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shape = MaterialTheme.shapes.small,
+        is MdBlock.Quote -> Box(
+            modifier = Modifier
+                .clip(pharmTokens.shapes.md)
+                .background(pharmTokens.colors.surfaceRaised),
         ) {
             Text(
                 text = renderInline(block.text),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = PharmText.body.copy(color = pharmTokens.colors.fg2),
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             )
         }
 
-        is MdBlock.TableBlock -> Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier.fillMaxWidth(),
+        is MdBlock.TableBlock -> Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(pharmTokens.shapes.md)
+                .background(pharmTokens.colors.surfaceRaised),
         ) {
             Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (block.header.isNotEmpty()) {
@@ -175,7 +178,7 @@ private fun RenderBlock(block: MdBlock) {
                         block.header.forEach { cell ->
                             Text(
                                 text = renderInline(cell),
-                                style = MaterialTheme.typography.labelMedium,
+                                style = PharmText.thead,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier
                                     .weight(1f)
@@ -183,14 +186,14 @@ private fun RenderBlock(block: MdBlock) {
                             )
                         }
                     }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    PharmDivider()
                 }
                 block.rows.forEach { row ->
                     Row {
                         row.forEach { cell ->
                             Text(
                                 text = renderInline(cell),
-                                style = MaterialTheme.typography.bodySmall,
+                                style = PharmText.bodySm,
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 4.dp, vertical = 3.dp),
@@ -201,16 +204,13 @@ private fun RenderBlock(block: MdBlock) {
             }
         }
 
-        MdBlock.HorizontalRule -> HorizontalDivider(
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-            modifier = Modifier.padding(vertical = 4.dp),
-        )
+        MdBlock.HorizontalRule -> PharmDivider(modifier = Modifier.padding(vertical = 4.dp))
     }
 }
 
 @Composable
 private fun renderInline(text: String): AnnotatedString = buildAnnotatedString {
-    val primary = MaterialTheme.colorScheme.primary
+    val primary = pharmTokens.colors.accent
     var i = 0
     while (i < text.length) {
         when {
@@ -265,3 +265,4 @@ private fun renderInline(text: String): AnnotatedString = buildAnnotatedString {
         }
     }
 }
+

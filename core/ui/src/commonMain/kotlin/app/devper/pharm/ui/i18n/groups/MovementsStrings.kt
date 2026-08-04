@@ -12,6 +12,7 @@ interface MovementsStrings {
     val movementsSearchPlaceholder: String
     val movementsCountNoun: String
     val movementsEmpty: String
+    val movementsEmptySearching: String
     val movementsHeaderType: String
     val movementsHeaderRef: String
     val movementsHeaderBy: String

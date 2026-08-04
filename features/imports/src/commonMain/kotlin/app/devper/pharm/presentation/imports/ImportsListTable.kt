@@ -78,6 +78,7 @@ internal fun ImportsListTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { row -> ImportRowActions(row = row, callbacks = callbacks) },
         ),
         )
@@ -89,7 +90,6 @@ internal fun ImportsListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { row -> callbacks.onOpenImport(row) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

@@ -1,5 +1,6 @@
 package app.devper.pharm.ui.components
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -9,7 +10,6 @@ object PharmBreakpoint {
     val Medium = 600.dp
     val FormThreeCol = 720.dp
     val Expanded = 840.dp
-    val DashboardCap = 1000.dp
     val GridWide = 1280.dp
 }
 
@@ -21,6 +21,9 @@ enum class WindowSize {
     val isCompact: Boolean get() = this == Compact
     val isAtLeastMedium: Boolean get() = this != Compact
 
+    val isCompactShell: Boolean get() = this != Expanded
+    val isCompactContent: Boolean get() = this == Compact
+
     companion object {
         fun fromWidth(width: Dp): WindowSize = when {
             width < PharmBreakpoint.Medium -> Compact
@@ -29,3 +32,5 @@ enum class WindowSize {
         }
     }
 }
+
+val LocalWindowSize = staticCompositionLocalOf { WindowSize.Expanded }

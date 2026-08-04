@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
-import app.devper.pharm.common.error.CommonUiStateError
+import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 import app.devper.pharm.domain.usecase.inventory.GetStockCountsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
@@ -17,7 +17,7 @@ class StockCountsListViewModel(
         launchResult(
             block = { getStockCounts() },
             onSuccess = { list -> setState { copy(loading = false, counts = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = StockCountUiStateError.LoadRoundsFailed(e)) } },
         )
     }
 }

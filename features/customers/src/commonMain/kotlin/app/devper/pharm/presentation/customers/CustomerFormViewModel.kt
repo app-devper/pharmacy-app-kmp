@@ -1,6 +1,5 @@
 package app.devper.pharm.presentation.customers
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.customers.CustomerInput
 import app.devper.pharm.domain.param.customers.UpdateCustomerParam
 import app.devper.pharm.domain.usecase.customers.AddCustomerUseCase
@@ -42,20 +41,22 @@ class CustomerFormViewModel(
                 if (c == null) {
                     setState { copy(loading = false, errorState = CustomerFormUiStateError.NotFound()) }
                 } else {
+                    val hydratedForm = CustomerFormFields(
+                        name = c.name,
+                        phone = c.phone.orEmpty(),
+                        allergyNote = c.allergyNote.orEmpty(),
+                        priceTier = c.priceTier,
+                    )
                     setState {
                         copy(
                             loading = false,
-                            form = CustomerFormFields(
-                                name = c.name,
-                                phone = c.phone.orEmpty(),
-                                allergyNote = c.allergyNote.orEmpty(),
-                                priceTier = c.priceTier,
-                            ),
+                            form = hydratedForm,
+                            baselineForm = hydratedForm,
                         )
                     }
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = CustomerFormUiStateError.LoadCustomerFailed(e)) } },
         )
     }
 

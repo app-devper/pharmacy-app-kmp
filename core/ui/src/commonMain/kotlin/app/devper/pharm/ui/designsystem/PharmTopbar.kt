@@ -3,31 +3,37 @@ package app.devper.pharm.ui.designsystem
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.LocalThemeController
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.common.pharmClickable
+import app.devper.pharm.ui.components.PharmBreakpoint
 
 data class TopbarUser(
     val initial: String,
@@ -45,6 +51,8 @@ fun PharmTopbar(
     showThemeToggle: Boolean = true,
     showStatus: Boolean = true,
     compactUserMenu: Boolean = false,
+    showDivider: Boolean = true,
+    backgroundColor: Color? = null,
     onBack: (() -> Unit)? = null,
     actions: (@Composable () -> Unit)? = null,
     onHamburger: () -> Unit = {},
@@ -53,105 +61,123 @@ fun PharmTopbar(
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val t = pharmTokens
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(t.dimens.topbarHeight)
-            .background(t.colors.surface)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        if (onBack != null) {
-            BackButton(onClick = onBack)
-        } else if (showHamburger) {
-            HamburgerButton(onClick = onHamburger)
-        }
-        Text(text = title, style = PharmText.h1)
-        Box(modifier = Modifier.weight(1f))
-        if (onBack != null) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val compact = usesCompactTopbar(maxWidth)
+        val startPadding = if (compact) t.dimens.compactTopbarStartPadding else 16.dp
+        val endPadding = if (compact) t.dimens.compactTopbarEndPadding else 16.dp
+        val itemSpacing = if (compact) t.dimens.compactTopbarItemSpacing else 12.dp
+        val topbarHeight = if (compact) t.dimens.compactTopbarHeight else t.dimens.topbarHeight
+        val useCompactUserMenu = compactUserMenu || compact
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(topbarHeight)
+                .background(backgroundColor ?: t.colors.surface)
+                .padding(start = startPadding, end = endPadding),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(itemSpacing),
+        ) {
+            if (onBack != null) {
+                BackButton(onClick = onBack)
+            } else if (showHamburger) {
+                HamburgerButton(onClick = onHamburger)
+            }
+            Text(
+                text = title,
+                style = PharmText.h1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics { heading() },
+            )
             actions?.invoke()
-        }
-        if (onBack == null && showThemeToggle) {
-            ThemeToggleButton()
-        }
-        if (onBack == null && showStatus && online) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(t.shapes.pill)
-                        .background(t.colors.successFg),
-                )
-                Text(pharmStrings.commonOnline, style = PharmText.meta)
+            if (onBack == null && showThemeToggle) {
+                ThemeToggleButton()
             }
-        }
-        if (onBack == null && user != null) {
-            if (compactUserMenu) {
-                PharmActionMenu(
-                    actions = buildList {
-                        if (onProfileClick != null) {
-                            add(
-                                PharmAction(
-                                    label = pharmStrings.profileTitle,
-                                    icon = PharmIcons.Person,
-                                    onClick = onProfileClick,
-                                ),
-                            )
-                        }
-                        if (onLogout != null) {
-                            add(
-                                PharmAction(
-                                    label = pharmStrings.commonLogout,
-                                    icon = PharmIcons.Logout,
-                                    tone = PharmActionTone.Danger,
-                                    onClick = onLogout,
-                                ),
-                            )
-                        }
-                    },
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .padding(vertical = 12.dp)
-                        .background(t.colors.border),
-                )
-                UserChip(user = user, onLogout = onLogout, onProfileClick = onProfileClick)
+            if (onBack == null && showStatus && online) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(t.shapes.pill)
+                            .background(t.colors.successFg),
+                    )
+                    Text(pharmStrings.commonOnline, style = PharmText.meta)
+                }
             }
+            if (onBack == null && user != null) {
+                if (useCompactUserMenu) {
+                    PharmActionMenu(
+                        actions = buildList {
+                            if (onProfileClick != null) {
+                                add(
+                                    PharmAction(
+                                        label = pharmStrings.profileTitle,
+                                        icon = PharmIcons.Person,
+                                        onClick = onProfileClick,
+                                    ),
+                                )
+                            }
+                            if (onLogout != null) {
+                                add(
+                                    PharmAction(
+                                        label = pharmStrings.commonLogout,
+                                        icon = PharmIcons.Logout,
+                                        tone = PharmActionTone.Danger,
+                                        onClick = onLogout,
+                                    ),
+                                )
+                            }
+                        }
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .padding(vertical = 12.dp)
+                            .background(t.colors.border),
+                    )
+                    UserChip(user = user, onLogout = onLogout, onProfileClick = onProfileClick)
+                }
+            }
+            trailing?.invoke()
         }
-        trailing?.invoke()
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(t.colors.border),
-    )
+    if (showDivider) {
+        PharmDivider(color = t.colors.border)
+    }
 }
+
+internal fun usesCompactTopbar(width: androidx.compose.ui.unit.Dp): Boolean = width < PharmBreakpoint.Expanded
 
 @Composable
 private fun ThemeToggleButton() {
     val t = pharmTokens
     val controller = LocalThemeController.current
     if (!controller.canToggle) return
-    Box(
+    val description = if (controller.isDark) {
+        pharmStrings.commonSwitchToLightTheme
+    } else {
+        pharmStrings.commonSwitchToDarkTheme
+    }
+    PharmIconButton(
+        contentDescription = description,
+        onClick = controller.toggle,
+        minSize = t.dimens.controlHeight,
+        shape = t.shapes.sm,
         modifier = Modifier
-            .size(44.dp)
-            .clip(t.shapes.sm)
-            .clickable(role = Role.Button, onClick = controller.toggle),
-        contentAlignment = Alignment.Center,
+            .size(t.dimens.controlHeight),
     ) {
         Icon(
             imageVector = if (controller.isDark) PharmIcons.Sun else PharmIcons.Moon,
-            contentDescription = if (controller.isDark) pharmStrings.commonSwitchToLightTheme else pharmStrings.commonSwitchToDarkTheme,
+            contentDescription = null,
             tint = t.colors.fg2,
             modifier = Modifier.size(18.dp),
         )
@@ -161,16 +187,16 @@ private fun ThemeToggleButton() {
 @Composable
 private fun BackButton(onClick: () -> Unit) {
     val t = pharmTokens
-    Box(
+    PharmIconButton(
+        contentDescription = pharmStrings.commonBack,
+        onClick = onClick,
+        minSize = t.dimens.controlHeight,
         modifier = Modifier
-            .size(44.dp)
-            .clip(CircleShape)
-            .clickable(role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
+            .size(t.dimens.controlHeight),
     ) {
         Icon(
             imageVector = PharmIcons.ChevronLeft,
-            contentDescription = pharmStrings.commonBack,
+            contentDescription = null,
             tint = t.colors.fg1,
             modifier = Modifier.size(22.dp),
         )
@@ -180,17 +206,17 @@ private fun BackButton(onClick: () -> Unit) {
 @Composable
 private fun HamburgerButton(onClick: () -> Unit) {
     val t = pharmTokens
-    Box(
-        modifier = Modifier
-            .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-            .clip(t.shapes.sm)
-            .clickable(role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
+    PharmIconButton(
+        contentDescription = pharmStrings.commonMenu,
+        onClick = onClick,
+        minSize = t.dimens.minimumTouchTarget,
+        shape = t.shapes.md,
+        modifier = Modifier.size(t.dimens.minimumTouchTarget),
     ) {
         Icon(
             imageVector = PharmIcons.Hamburger,
-            contentDescription = pharmStrings.commonMenu,
-            tint = t.colors.fg2,
+            contentDescription = null,
+            tint = t.colors.sidebarFgMuted,
             modifier = Modifier.size(20.dp),
         )
     }
@@ -221,9 +247,10 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
         }
         val nameModifier = if (onProfileClick != null) {
             Modifier
+                .heightIn(min = t.dimens.controlHeight)
                 .clip(t.shapes.sm)
-                .clickable(role = Role.Button, onClick = onProfileClick)
-                .padding(horizontal = 4.dp, vertical = 2.dp)
+                .pharmClickable(role = Role.Button, shape = t.shapes.sm, onClick = onProfileClick)
+                .padding(horizontal = 6.dp, vertical = 4.dp)
         } else {
             Modifier
         }
@@ -240,17 +267,17 @@ private fun UserChip(user: TopbarUser, onLogout: (() -> Unit)?, onProfileClick: 
             Text(text = user.role, style = PharmText.micro)
         }
         if (onLogout != null) {
-            Box(
+            PharmIconButton(
+                contentDescription = pharmStrings.commonLogout,
+                onClick = onLogout,
+                minSize = t.dimens.controlHeight,
+                shape = t.shapes.sm,
                 modifier = Modifier
-                    .clip(t.shapes.sm)
-                    .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
-                    .clickable(role = Role.Button, onClick = onLogout)
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center,
+                    .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight),
             ) {
                 Icon(
                     imageVector = PharmIcons.Logout,
-                    contentDescription = pharmStrings.commonLogout,
+                    contentDescription = null,
                     tint = t.colors.dangerFg,
                     modifier = Modifier.size(16.dp),
                 )

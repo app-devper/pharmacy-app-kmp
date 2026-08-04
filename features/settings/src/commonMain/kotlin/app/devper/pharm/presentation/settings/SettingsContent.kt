@@ -4,16 +4,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.settings.i18n.localizeSettings
 import app.devper.pharm.ui.i18n.localize
@@ -34,12 +40,19 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import androidx.compose.ui.tooling.preview.Preview
 
-private fun labelFor(tab: SettingsTab, s: PharmStrings): String = when (tab) {
+internal fun settingsSubtitle(state: SettingsEditorUiState, s: PharmStrings): String = when {
+    !state.tabSaves -> s.settingsDisplaySubtitle
+    state.dirty -> s.settingsDirtySubtitle
+    else -> s.settingsToolbarSubtitle
+}
+
+internal fun labelFor(tab: SettingsTab, s: PharmStrings): String = when (tab) {
     SettingsTab.Store      -> s.settingsTabStore
     SettingsTab.Receipt    -> s.settingsTabReceipt
     SettingsTab.Stock      -> s.settingsTabStock
     SettingsTab.Pharmacist -> s.settingsTabPharmacist
     SettingsTab.Ky         -> s.settingsTabKy
+    SettingsTab.Display    -> s.settingsTabDisplay
 }
 
 @Composable
@@ -49,14 +62,24 @@ fun SettingsContent(
 ) {
     val strings = pharmStrings
     val tabs = SettingsTab.entries.map { PharmTab(id = it.name, label = labelFor(it, strings)) }
+    val validation = rememberSettingsValidation(state)
+
     Column(modifier = Modifier.fillMaxSize()) {
         PharmListToolbar(
-            actions = {
-                PharmSaveAction(
-                    saving = state.saving,
-                    canSubmit = state.canSave,
-                    onSubmit = editor.onSubmit,
-                )
+            title = strings.navSettings,
+            subtitle = settingsSubtitle(state, strings),
+            compactTopbarActions = true,
+            actions = if (state.tabSaves) {
+                {
+                    PharmSaveAction(
+                        saving = state.saving,
+                        canSubmit = state.canSave,
+                        onSubmit = editor.onSubmit,
+                        onInvalidSubmit = validation.invalidSubmit(state, editor),
+                    )
+                }
+            } else {
+                null
             },
         )
 
@@ -70,13 +93,19 @@ fun SettingsContent(
             onSelect = { id -> editor.onSelectTab(SettingsTab.valueOf(id)) },
         )
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (state.loading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     PharmCircularProgress()
                 }
             } else {
-                SettingsTabBody(state = state, editor = editor, strings = strings)
+                SettingsTabBody(
+                    state = state,
+                    editor = editor,
+                    strings = strings,
+                    showValidation = validation.attempt > 0,
+                    focus = validation.focus,
+                )
             }
         }
     }
@@ -85,7 +114,7 @@ fun SettingsContent(
 }
 
 @Composable
-private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
+internal fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
     val t = pharmTokens
     val strings = pharmStrings
     Box(modifier = Modifier.fillMaxWidth().background(t.colors.successBg)) {
@@ -111,32 +140,84 @@ private fun SettingsMessageBanner(message: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun SettingsTabBody(
+internal fun SettingsTabBody(
     state: SettingsEditorUiState,
     editor: SettingsEditorCallbacks,
     strings: PharmStrings,
+    showValidation: Boolean,
+    focus: SettingsFocusRequesters,
 ) {
-    val scroll = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .fillMaxWidth()
-            .verticalScroll(scroll)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        PharmFormCard(title = labelFor(state.tab, strings)) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                when (state.tab) {
-                    SettingsTab.Store      -> SettingsStoreTab(state, editor)
-                    SettingsTab.Receipt    -> SettingsReceiptTab(state, editor)
-                    SettingsTab.Stock      -> SettingsStockTab(state, editor)
-                    SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
-                    SettingsTab.Ky         -> SettingsKyTab(state, editor)
+        item(key = state.tab.name) {
+            PharmFormCard(title = labelFor(state.tab, strings)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    when (state.tab) {
+                        SettingsTab.Store      -> SettingsStoreTab(state, editor, showValidation, focus)
+                        SettingsTab.Receipt    -> SettingsReceiptTab(state, editor, showValidation)
+                        SettingsTab.Stock      -> SettingsStockTab(state, editor, showValidation, focus)
+                        SettingsTab.Pharmacist -> SettingsPharmacistTab(state, editor)
+                        SettingsTab.Ky         -> SettingsKyTab(state, editor)
+                        SettingsTab.Display    -> SettingsDisplayTab(state, editor, strings)
+                    }
                 }
             }
         }
     }
+}
+
+internal class SettingsFocusRequesters {
+    val storeName = FocusRequester()
+    val timezone = FocusRequester()
+    val stockLowThreshold = FocusRequester()
+    val stockReorderDays = FocusRequester()
+    val stockReorderLookahead = FocusRequester()
+    val stockExpiringDays = FocusRequester()
+}
+
+internal class SettingsValidationState {
+    val focus = SettingsFocusRequesters()
+    var attempt by mutableIntStateOf(0)
+
+    fun invalidSubmit(
+        state: SettingsEditorUiState,
+        editor: SettingsEditorCallbacks,
+    ): (() -> Unit)? = if (state.dirty && !state.loading) {
+        {
+            attempt++
+            state.form.firstInvalidTab?.let(editor.onSelectTab)
+        }
+    } else {
+        null
+    }
+}
+
+@Composable
+internal fun rememberSettingsValidation(state: SettingsEditorUiState): SettingsValidationState {
+    val validation = remember { SettingsValidationState() }
+    LaunchedEffect(validation.attempt, state.tab) {
+        if (validation.attempt == 0) return@LaunchedEffect
+        when (state.tab) {
+            SettingsTab.Store -> when {
+                !state.form.storeNameValid -> validation.focus.storeName.requestFocus()
+                !state.form.timezoneValid -> validation.focus.timezone.requestFocus()
+            }
+            SettingsTab.Stock -> when {
+                !state.form.stockLowThresholdValid -> validation.focus.stockLowThreshold.requestFocus()
+                !state.form.stockReorderDaysValid -> validation.focus.stockReorderDays.requestFocus()
+                !state.form.stockReorderLookaheadValid -> validation.focus.stockReorderLookahead.requestFocus()
+                !state.form.stockExpiringDaysValid -> validation.focus.stockExpiringDays.requestFocus()
+            }
+            SettingsTab.Receipt,
+            SettingsTab.Pharmacist,
+            SettingsTab.Ky,
+            SettingsTab.Display -> Unit
+        }
+    }
+    return validation
 }
 
 @Preview

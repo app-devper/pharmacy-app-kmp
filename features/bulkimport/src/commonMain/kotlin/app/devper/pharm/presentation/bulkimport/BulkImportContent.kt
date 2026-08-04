@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,15 +21,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.model.BulkImportRowError
 import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.presentation.bulkimport.i18n.localizeBulkImport
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -40,7 +46,6 @@ import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import androidx.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmCircularProgress
 
 @Composable
 fun BulkImportContent(
@@ -50,6 +55,11 @@ fun BulkImportContent(
     val t = pharmTokens
     val s = pharmStrings
     val scroll = rememberScrollState()
+    val jsonFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(state.parseErrorState) {
+        if (state.parseErrorState != null) jsonFocusRequester.requestFocus()
+    }
 
     Column(
         modifier = Modifier
@@ -57,6 +67,9 @@ fun BulkImportContent(
             .background(t.colors.bgPage),
     ) {
         PharmListToolbar(
+            title = s.bulkImportTitle,
+            subtitle = s.bulkImportSubtitle,
+            compactTopbarActions = true,
             actions = {
                 PharmButton(
                     label = s.bulkImportDownloadTemplate,
@@ -70,7 +83,8 @@ fun BulkImportContent(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .verticalScroll(scroll)
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -84,44 +98,45 @@ fun BulkImportContent(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-            BulkImportDropZone(onPickFile = callbacks.onPickFile)
+                BulkImportDropZone(onPickFile = callbacks.onPickFile)
 
-            BulkImportJsonInput(
-                value = state.text,
-                onValueChange = callbacks.onJsonChange,
-                parseError = state.parseErrorState?.localizeBulkImport(s),
-            )
+                BulkImportJsonInput(
+                    value = state.text,
+                    onValueChange = callbacks.onJsonChange,
+                    parseError = state.parseErrorState?.localizeBulkImport(s),
+                    focusRequester = jsonFocusRequester,
+                )
 
-            state.previewCount?.let { count ->
-                if (state.parseErrorState == null && state.result == null) {
-                    BulkImportInfoBanner(
-                        text = s.bulkImportValidatedReady(count),
-                    )
+                state.previewCount?.let { count ->
+                    if (state.parseErrorState == null && state.result == null) {
+                        BulkImportInfoBanner(
+                            text = s.bulkImportValidatedReady(count),
+                        )
+                    }
                 }
+
+                BulkImportActionRow(state = state, callbacks = callbacks)
             }
 
-            BulkImportActionRow(state = state, callbacks = callbacks)
-        }
+            state.result?.let { result ->
+                BulkImportResultSummary(result = result)
+            }
 
-        state.result?.let { result ->
-            BulkImportResultSummary(result = result)
-        }
-
-        if (state.rows.isNotEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(t.shapes.lg)
-                    .background(t.colors.surface)
-                    .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
-            ) {
-                BulkImportResultHeader(rows = state.rows)
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
-                Box(modifier = Modifier.heightIn(min = 240.dp, max = 480.dp)) {
-                    BulkImportResultTable(rows = state.rows)
+            if (state.rows.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(t.shapes.lg)
+                        .background(t.colors.surface)
+                        .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
+                ) {
+                    BulkImportResultHeader(rows = state.rows)
+                    PharmDivider()
+                    Box(modifier = Modifier.heightIn(min = 240.dp, max = 480.dp)) {
+                        BulkImportResultTable(rows = state.rows)
+                    }
                 }
             }
-        }
         }
     }
 
@@ -133,43 +148,95 @@ private fun BulkImportActionRow(
     state: BulkImportUiState,
     callbacks: BulkImportCallbacks,
 ) {
-    val s = pharmStrings
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        PharmButton(
-            label = s.bulkImportValidateCta,
-            onClick = callbacks.onPreview,
-            variant = PharmButtonVariant.Outline,
-            size = PharmButtonSize.Md,
-            enabled = state.canSubmit,
-        )
-        PharmButton(
-            onClick = callbacks.onSubmit,
-            variant = PharmButtonVariant.Primary,
-            size = PharmButtonSize.Md,
-            enabled = state.canSubmit,
-            modifier = Modifier.weight(1f),
-        ) {
-            if (state.submitting) {
-                PharmCircularProgress(
-                    strokeWidth = 2.dp,
-                    modifier = Modifier.size(18.dp),
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        if (maxWidth < PharmBreakpoint.FormTwoCol) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                BulkImportSubmitButton(
+                    state = state,
+                    onSubmit = callbacks.onSubmit,
+                    modifier = Modifier.fillMaxWidth(),
                 )
-            } else {
-                Text(text = s.bulkImportImportAllCta, style = PharmText.buttonMd)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    BulkImportValidateButton(
+                        state = state,
+                        onPreview = callbacks.onPreview,
+                        modifier = Modifier.weight(1f),
+                    )
+                    BulkImportClearButton(
+                        state = state,
+                        onClear = callbacks.onClear,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                BulkImportValidateButton(state = state, onPreview = callbacks.onPreview)
+                BulkImportSubmitButton(
+                    state = state,
+                    onSubmit = callbacks.onSubmit,
+                    modifier = Modifier.weight(1f),
+                )
+                BulkImportClearButton(state = state, onClear = callbacks.onClear)
             }
         }
-        PharmButton(
-            label = s.bulkImportClearCta,
-            onClick = callbacks.onClear,
-            variant = PharmButtonVariant.Ghost,
-            size = PharmButtonSize.Md,
-            enabled = !state.submitting,
-        )
     }
+}
+
+@Composable
+private fun BulkImportValidateButton(
+    state: BulkImportUiState,
+    onPreview: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PharmButton(
+        label = pharmStrings.bulkImportValidateCta,
+        onClick = onPreview,
+        variant = PharmButtonVariant.Outline,
+        size = PharmButtonSize.Md,
+        enabled = state.actionsEnabled,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun BulkImportSubmitButton(
+    state: BulkImportUiState,
+    onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PharmButton(
+        label = pharmStrings.bulkImportImportAllCta,
+        onClick = onSubmit,
+        variant = PharmButtonVariant.Primary,
+        size = PharmButtonSize.Md,
+        enabled = state.actionsEnabled,
+        loading = state.submitting,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun BulkImportClearButton(
+    state: BulkImportUiState,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    PharmButton(
+        label = pharmStrings.bulkImportClearCta,
+        onClick = onClear,
+        variant = PharmButtonVariant.Ghost,
+        size = PharmButtonSize.Md,
+        enabled = state.actionsEnabled,
+        modifier = modifier,
+    )
 }
 
 @Composable

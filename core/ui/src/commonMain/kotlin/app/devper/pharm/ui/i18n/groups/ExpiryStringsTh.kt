@@ -1,6 +1,7 @@
 package app.devper.pharm.ui.i18n.groups
 
 object ExpiryStringsTh : ExpiryStrings {
+    override val expiryLoadLotsFailed = "โหลดล็อตใกล้หมดอายุไม่สำเร็จ"
     override val expiryWriteoffFailures: (Int) -> String = { n -> "$n ล็อตล้มเหลว — กรุณาลองใหม่" }
     override val expiryMoreFailures: (Int) -> String = { n -> "(+$n อื่นๆ)" }
 
@@ -11,6 +12,8 @@ object ExpiryStringsTh : ExpiryStrings {
     override val expiryWindowExpired = "หมดอายุแล้ว"
 
     override val expirySubtitle = "ตรวจล็อตใกล้หมดอายุ และตัดจำหน่าย"
+    override val expirySearchPlaceholder = "ค้นหาชื่อยา หรือเลขล็อต…"
+    override val expirySearchNotFound = "ไม่พบล็อตตามที่ค้นหา"
     override val expirySelectAll = "เลือกทั้งหมด"
     override val expirySelectPartial = "เลือกบางส่วน · กดเพื่อล้าง"
     override val expiryWriteoffCta = "ตัดจำหน่าย"

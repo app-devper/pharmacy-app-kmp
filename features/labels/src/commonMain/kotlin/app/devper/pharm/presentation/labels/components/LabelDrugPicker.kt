@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.labels.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,10 @@ import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 
 @Composable
 internal fun LabelDrugPicker(
@@ -58,6 +60,17 @@ internal fun LabelDrugPicker(
             }
             return@Column
         }
+        if (state.filteredDrugs.isEmpty()) {
+            PharmEmptyState(
+                title = if (state.query.isBlank()) {
+                    pharmStrings.labelsNoDrugs
+                } else {
+                    pharmStrings.labelsNoSearchResults
+                },
+                icon = if (state.query.isBlank()) PharmIcons.Pill else PharmIcons.Search,
+            )
+            return@Column
+        }
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(state.filteredDrugs, key = { it.id }) { drug ->
                 LabelDrugRow(drug = drug, onAdd = { onAddDrug(drug) })
@@ -72,7 +85,7 @@ private fun LabelDrugRow(drug: Drug, onAdd: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onAdd)
+            .pharmClickable(role = Role.Button, onClick = onAdd)
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -28,6 +28,7 @@ class Ky9AddViewModelTest {
         vm.onQty("12a3")
         assertEquals("Amoxicillin", vm.state.value.draft.drugName)
         assertEquals("123", vm.state.value.draft.qty)
+        assertTrue(vm.state.value.hasUnsavedChanges)
     }
 
     @Test

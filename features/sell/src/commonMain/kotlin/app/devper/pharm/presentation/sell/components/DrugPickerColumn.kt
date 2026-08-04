@@ -30,11 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.extension.SearchSubmitAction
@@ -45,11 +43,12 @@ import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.designsystem.PharmSearchField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -64,6 +63,8 @@ fun DrugPickerColumn(
     visible: List<Drug>,
     loading: Boolean,
     activeTier: String,
+    addedDrugName: String?,
+    onAddedDrugMessageDismiss: () -> Unit,
     onAdd: (Drug) -> Unit,
     modifier: Modifier = Modifier,
     searchFocusRequester: FocusRequester? = null,
@@ -77,16 +78,14 @@ fun DrugPickerColumn(
         if (gridState.isScrollInProgress) focusManager.clearFocus()
     }
     var armedDrugId by remember(query) { mutableStateOf<String?>(null) }
-    var addedDrugName by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(addedDrugName) {
         if (addedDrugName != null) {
             delay(2000)
-            addedDrugName = null
+            onAddedDrugMessageDismiss()
         }
     }
     val addAndClear = { drug: Drug ->
         onAdd(drug)
-        addedDrugName = drug.name
         onQueryChange("")
     }
     val onSubmitSearch = {
@@ -103,28 +102,26 @@ fun DrugPickerColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(t.colors.surface)
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            PharmTextField(
+            PharmSearchField(
                 value = query,
                 onValueChange = onQueryChange,
                 placeholder = pharmStrings.sellSearchPlaceholder,
                 modifier = Modifier.weight(1f),
-                imeAction = ImeAction.Search,
-                onImeAction = onSubmitSearch,
+                onSearch = onSubmitSearch,
                 focusRequester = searchFocus,
-                leadingSlot = null,
-                trailingSlot = null,
+                showSearchAction = false,
+                endSlot = { ScannerFieldIcon() },
             )
-            ScannerActivePill()
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         ResultLine(query, total = drugs.size, visibleCount = visible.size)
 
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         addedDrugName?.let { name ->
             Text(
@@ -135,7 +132,7 @@ fun DrugPickerColumn(
                     .background(t.colors.successBg)
                     .padding(horizontal = 16.dp, vertical = 6.dp),
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
 
         visible.firstOrNull { it.id == armedDrugId }?.let { armed ->
@@ -147,7 +144,7 @@ fun DrugPickerColumn(
                     .background(t.colors.accentBgSoft)
                     .padding(horizontal = 16.dp, vertical = 6.dp),
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
 
         when {
@@ -204,30 +201,14 @@ fun DrugPickerColumn(
 }
 
 @Composable
-private fun ScannerActivePill() {
+private fun ScannerFieldIcon() {
     val t = pharmTokens
-    Row(
-        modifier = Modifier
-            .height(t.dimens.controlHeight)
-            .clip(t.shapes.md)
-            .background(t.colors.accentBgSoft)
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(6.dp)
-                .clip(t.shapes.pill)
-                .background(t.colors.successFg),
-        )
-        Icon(
-            imageVector = PharmIcons.Scan,
-            contentDescription = pharmStrings.sellScannerOn,
-            tint = t.colors.accent,
-            modifier = Modifier.size(18.dp),
-        )
-    }
+    Icon(
+        imageVector = PharmIcons.Scan,
+        contentDescription = pharmStrings.sellScannerOn,
+        tint = t.colors.accent,
+        modifier = Modifier.size(18.dp),
+    )
 }
 
 @Composable

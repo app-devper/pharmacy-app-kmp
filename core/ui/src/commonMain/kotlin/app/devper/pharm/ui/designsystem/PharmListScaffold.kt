@@ -1,18 +1,32 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.components.LocalWindowSize
 import app.devper.pharm.ui.theme.pharmTokens
+import kotlin.math.roundToInt
 
 @Composable
 fun PharmListScaffold(
@@ -25,43 +39,112 @@ fun PharmListScaffold(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val t = pharmTokens
+    val windowSize = LocalWindowSize.current
+    val compact = windowSize.isCompactContent
+    val gutter = pharmPageGutter
+    val headerState = rememberCollapsibleHeaderState()
+    val collapsesMetrics = usesMetricStats(windowSize) && metrics != null
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(t.colors.bgPage),
     ) {
-        if (metrics != null || banner != null) {
-            Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                metrics?.invoke()
-                banner?.invoke()
-            }
-        }
         Column(
             modifier = Modifier
                 .weight(1f)
+                .widthIn(max = t.dimens.listWorkspaceMaxWidth)
                 .fillMaxWidth()
-                .background(t.colors.surface),
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 16.dp),
         ) {
-            PharmListHairline()
             if (toolbar != null) {
                 toolbar()
-                PharmListHairline()
             }
-            resultLine()
-            PharmListHairline()
-            content()
+            if (collapsesMetrics) {
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .clipToBounds()
+                        .nestedScroll(headerState.nestedScrollConnection()),
+                ) {
+                    val headerHeight = with(LocalDensity.current) { headerState.headerHeightPx.toDp() }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(maxHeight + headerHeight)
+                            .offset { IntOffset(0, headerState.offsetPx.roundToInt()) },
+                    ) {
+                        MetricsBanner(
+                            metrics = metrics,
+                            banner = banner,
+                            gutter = gutter,
+                            modifier = Modifier.onSizeChanged { headerState.onHeaderMeasured(it.height) },
+                        )
+                        resultLine()
+                        ListBody(compact = compact, gutter = gutter, content = content)
+                    }
+                }
+            } else {
+                if (metrics != null || banner != null) {
+                    MetricsBanner(metrics = metrics, banner = banner, gutter = gutter)
+                }
+                resultLine()
+                ListBody(compact = compact, gutter = gutter, content = content)
+            }
         }
         footer?.let {
-            Box(modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)) { it() }
+            Box(
+                modifier = Modifier
+                    .widthIn(max = t.dimens.listWorkspaceMaxWidth)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .padding(start = gutter, end = gutter, bottom = 16.dp),
+            ) { it() }
         }
     }
 }
 
 @Composable
-private fun PharmListHairline() {
+private fun MetricsBanner(
+    metrics: (@Composable () -> Unit)?,
+    banner: (@Composable () -> Unit)?,
+    gutter: Dp,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = gutter),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        metrics?.invoke()
+        banner?.invoke()
+    }
+}
+
+@Composable
+private fun ColumnScope.ListBody(
+    compact: Boolean,
+    gutter: Dp,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     val t = pharmTokens
-    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
+            .then(
+                if (compact) {
+                    Modifier.background(t.colors.bgPage)
+                } else {
+                    Modifier
+                        .padding(horizontal = gutter)
+                        .clip(t.shapes.xl)
+                        .background(t.colors.surface)
+                        .border(1.dp, t.colors.borderSubtle, t.shapes.xl)
+                },
+            ),
+        content = content,
+    )
 }

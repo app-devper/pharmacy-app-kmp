@@ -9,8 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.presentation.movements.internal.formatYmdDisplay
-import app.devper.pharm.presentation.movements.internal.ymdToMillis
+import app.devper.pharm.ui.format.millisToBuddhistDisplay
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -35,9 +34,14 @@ internal fun MovementsListToolbar(
 
     PharmListToolbar(
         modifier = modifier,
+        title = s.navMovements,
+        subtitle = s.movementsSubtitle,
         searchValue = state.drugName,
         onSearchChange = callbacks.onSearchChange,
+        onSearch = callbacks.onApplyFilter,
+        searching = state.loading,
         searchPlaceholder = s.movementsSearchPlaceholder,
+        compactControlsSharedRow = false,
         filters = {
             PharmDateRangeField(
                 range = range,
@@ -45,7 +49,7 @@ internal fun MovementsListToolbar(
                     if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
                     if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
                 },
-                formatDate = { millis -> formatYmdDisplay(millis, state.dateRange.tz) },
+                formatDate = { millis -> millisToBuddhistDisplay(millis, state.dateRange.tz) },
                 modifier = Modifier.widthIn(min = 220.dp),
             )
             MovementsTypeChips(
@@ -58,11 +62,6 @@ internal fun MovementsListToolbar(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                PharmButton(
-                    label = s.commonSearch,
-                    onClick = callbacks.onApplyFilter,
-                    size = PharmButtonSize.Sm,
-                )
                 PharmButton(
                     label = "Excel",
                     onClick = {
@@ -80,6 +79,7 @@ internal fun MovementsListToolbar(
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
                     loading = state.exporting,
+                    enabled = !state.loading,
                     leadingIcon = {
                         Icon(
                             imageVector = PharmIcons.Excel,

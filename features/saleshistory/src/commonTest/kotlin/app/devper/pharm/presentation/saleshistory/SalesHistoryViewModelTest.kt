@@ -10,6 +10,7 @@ import app.devper.pharm.domain.repository.FakeSaleHistoryRepository
 import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
 import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
+import app.devper.pharm.domain.validation.SaleValidationError
 import app.devper.pharm.presentation.saleshistory.exception.SalesHistoryUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -223,6 +224,29 @@ class SalesHistoryViewModelTest {
     }
 
     @Test
+    fun onStartReturn_opens_loading_sheet_and_dismiss_stays_closed() = runVmTest { dispatchers ->
+        val sale = summary("s1")
+        val (vm, _) = newVm(
+            dispatchers,
+            FakeSaleHistoryRepository(
+                seed = listOf(sale),
+                itemsBySale = mapOf("s1" to listOf(item("i1"))),
+            ),
+        )
+        advanceUntilIdle()
+
+        vm.onStartReturn(sale)
+        assertTrue(vm.state.value.returnSheetOpen)
+        assertTrue(vm.state.value.itemsLoading)
+        vm.onCloseReturnSheet()
+        advanceUntilIdle()
+
+        assertFalse(vm.state.value.returnSheetOpen)
+        assertFalse(vm.state.value.itemsLoading)
+        assertNull(vm.state.value.selected)
+    }
+
+    @Test
     fun onReturnLineQtyChange_converts_display_qty_to_base() = runVmTest { dispatchers ->
         val sale = summary("s1")
         val (vm, _) = newVm(
@@ -279,6 +303,48 @@ class SalesHistoryViewModelTest {
         advanceUntilIdle()
         assertNull(repo.lastSubmitReturn)
         assertFalse(vm.state.value.submittingReturn)
+    }
+
+    @Test
+    fun confirmReturn_without_reason_surfaces_validation_error() = runVmTest { dispatchers ->
+        val sale = summary("s1")
+        val (vm, repo) = newVm(
+            dispatchers,
+            FakeSaleHistoryRepository(
+                seed = listOf(sale),
+                itemsBySale = mapOf("s1" to listOf(item("i1", qty = 5))),
+            ),
+        )
+        advanceUntilIdle()
+        vm.onSelectSale(sale)
+        advanceUntilIdle()
+        vm.onOpenReturnSheet()
+        vm.onReturnLineQtyChange("i1", displayQty = 1)
+        vm.confirmReturn()
+        advanceUntilIdle()
+        assertIs<SaleValidationError.ReturnReasonRequired>(vm.state.value.errorState)
+        assertNull(repo.lastSubmitReturn)
+    }
+
+    @Test
+    fun confirmReturn_without_items_surfaces_validation_error() = runVmTest { dispatchers ->
+        val sale = summary("s1")
+        val (vm, repo) = newVm(
+            dispatchers,
+            FakeSaleHistoryRepository(
+                seed = listOf(sale),
+                itemsBySale = mapOf("s1" to listOf(item("i1", qty = 5))),
+            ),
+        )
+        advanceUntilIdle()
+        vm.onSelectSale(sale)
+        advanceUntilIdle()
+        vm.onOpenReturnSheet()
+        vm.onReturnReasonChange("ลูกค้าเปลี่ยนใจ")
+        vm.confirmReturn()
+        advanceUntilIdle()
+        assertIs<SaleValidationError.ReturnItemsRequired>(vm.state.value.errorState)
+        assertNull(repo.lastSubmitReturn)
     }
 
     @Test

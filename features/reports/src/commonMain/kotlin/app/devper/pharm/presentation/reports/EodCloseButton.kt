@@ -37,13 +37,12 @@ internal fun EodCloseButton(
                 Icon(
                     imageVector = PharmIcons.Check,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
                 )
             },
         )
     } else {
         PharmButton(
-            label = s.reportsTabEod,
+            label = s.reportsEodCloseCta,
             onClick = onClick,
             enabled = enabled,
             variant = PharmButtonVariant.Primary,
@@ -72,15 +71,14 @@ internal fun EodConfirmCloseModal(
                 label = s.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Md,
+                size = PharmButtonSize.Sm,
             )
             PharmButton(
-                label = s.reportsEodConfirmTitle,
+                label = s.reportsEodCloseCta,
                 onClick = onConfirm,
-                variant = PharmButtonVariant.Primary,
-                size = PharmButtonSize.Md,
-            )
-        },
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Sm,
+            )},
     ) {
         val t = pharmTokens
         if (report != null) {

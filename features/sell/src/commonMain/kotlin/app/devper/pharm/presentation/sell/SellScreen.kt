@@ -1,4 +1,7 @@
 package app.devper.pharm.presentation.sell
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import app.devper.pharm.ui.designsystem.PharmVerticalDivider
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
@@ -12,8 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Surface
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,8 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.ui.common.LocalPharmSnackbar
-import app.devper.pharm.ui.common.PharmToast
 import app.devper.pharm.ui.common.pharmShortcuts
 import app.devper.pharm.presentation.sell.i18n.localizeSell
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -59,12 +58,11 @@ fun SellScreen(
     val t = pharmTokens
     val searchFocus = remember { FocusRequester() }
     var showShortcuts by remember { mutableStateOf(false) }
+    var addedDrugName by remember { mutableStateOf<String?>(null) }
 
-    val s = pharmStrings
-    val snackbar = LocalPharmSnackbar.current
     LaunchedEffect(Unit) {
         drugPickerVM.added.collect { name ->
-            snackbar.showToast(PharmToast.Success(message = s.sellAddedToast(name)))
+            addedDrugName = name
         }
     }
     val onTapParkSlot: (Int) -> Unit = { slot ->
@@ -142,10 +140,10 @@ fun SellScreen(
         onCloseVoidSheet = voidSaleVM::closeSheet,
     )
 
-    Surface(
-        color = t.colors.bgPage,
+    Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(t.colors.bgPage)
             .scanBarcodes(onScan = drugPickerVM::onScanBarcode)
             .pharmShortcuts(*sellShortcuts),
     ) {
@@ -162,11 +160,13 @@ fun SellScreen(
                         visible = drugState.filteredDrugs,
                         loading = drugState.drugsLoading,
                         activeTier = sellState.activeTier,
+                        addedDrugName = addedDrugName,
+                        onAddedDrugMessageDismiss = { addedDrugName = null },
                         onAdd = drugPickerVM::onTapDrug,
                         modifier = Modifier.weight(1f),
                         searchFocusRequester = searchFocus,
                     )
-                    VerticalDivider(color = t.colors.divider)
+                    PharmVerticalDivider()
                     Column(modifier = Modifier.width(cartWidth)) {
                         if (!showRail) {
                             CartTabStrip(
@@ -217,6 +217,8 @@ fun SellScreen(
                         visible = drugState.filteredDrugs,
                         loading = drugState.drugsLoading,
                         activeTier = sellState.activeTier,
+                        addedDrugName = addedDrugName,
+                        onAddedDrugMessageDismiss = { addedDrugName = null },
                         onAdd = drugPickerVM::onTapDrug,
                         modifier = Modifier.weight(1f).fillMaxWidth(),
                         searchFocusRequester = searchFocus,

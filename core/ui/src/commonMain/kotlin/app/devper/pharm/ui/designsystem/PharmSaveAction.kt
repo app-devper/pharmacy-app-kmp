@@ -14,6 +14,7 @@ fun PharmSaveAction(
     saving: Boolean,
     canSubmit: Boolean,
     onSubmit: () -> Unit,
+    onInvalidSubmit: (() -> Unit)? = null,
     label: String = pharmStrings.commonSave,
 ) {
     val focusManager = LocalFocusManager.current
@@ -28,9 +29,9 @@ fun PharmSaveAction(
             label = label,
             onClick = {
                 focusManager.clearFocus()
-                onSubmit()
+                if (canSubmit) onSubmit() else onInvalidSubmit?.invoke()
             },
-            enabled = canSubmit,
+            enabled = canSubmit || onInvalidSubmit != null,
             size = PharmButtonSize.Sm,
         )
     }

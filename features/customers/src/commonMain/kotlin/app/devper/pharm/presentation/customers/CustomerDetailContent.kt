@@ -5,7 +5,6 @@ import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,16 +31,19 @@ import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.presentation.customers.i18n.localizeCustomerDetail
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PriceTierBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.components.SubPageBar
-import app.devper.pharm.ui.format.formatBahtCurrency
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -53,15 +55,16 @@ fun CustomerDetailContent(
     val t = pharmTokens
     val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = state.customer?.name ?: s.navCustomers,
+            subtitle = s.navCustomers,
             onBack = callbacks.onBack,
             actions = {
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(t.shapes.md)
-                        .clickable(role = Role.Button, onClick = callbacks.onEdit),
+                        .pharmClickable(role = Role.Button, onClick = callbacks.onEdit),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -83,7 +86,7 @@ fun CustomerDetailContent(
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
             CustomerHeader(customer = state.customer, loading = state.customerLoading)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
             SalesSection(state = state)
         }
     }
@@ -132,14 +135,7 @@ private fun CustomerHeader(customer: Customer?, loading: Boolean) {
                     style = PharmText.body.copy(color = t.colors.fg2),
                 )
             }
-            if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
-                val label = when (customer.priceTier) {
-                    Tier.Wholesale -> s.sellTierWholesaleLabel
-                    Tier.Regular -> s.sellTierRegularLabel
-                    else -> customer.priceTier
-                }
-                PharmBadge(text = label, tone = PharmBadgeTone.Purple)
-            }
+            PriceTierBadge(priceTier = customer.priceTier)
         }
 
         customer.allergyNote?.takeIf { it.isNotBlank() && it != "-" }?.let { note ->
@@ -201,7 +197,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(state.sales, key = { it.id }) { sale ->
                         SaleRow(sale)
-                        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                        PharmDivider()
                     }
                 }
             }
@@ -240,7 +236,7 @@ private fun SaleRow(sale: SaleSummary) {
             )
         }
         Text(
-            text = formatBahtCurrency(sale.total.amount),
+            text = fmtBaht(sale.total.amount),
             style = PharmText.h2.tabular().copy(color = t.colors.accent),
         )
     }

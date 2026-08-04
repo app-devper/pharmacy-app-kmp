@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,12 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,19 +23,22 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmIconButton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 import app.devper.pharm.ui.i18n.pharmStrings
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ParkedCartsSheet(
     slots: List<ParkedCart?>,
@@ -50,13 +48,9 @@ fun ParkedCartsSheet(
     onRequestOverwrite: (Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val t = pharmTokens
     val s = pharmStrings
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
             Text(
@@ -106,7 +100,7 @@ private fun EmptySlotRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = canPark, role = Role.Button, onClick = onClick)
+            .pharmClickable(enabled = canPark, role = Role.Button, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -138,7 +132,7 @@ private fun FilledSlotRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onRestore)
+            .pharmClickable(role = Role.Button, onClick = onRestore)
             .padding(start = 16.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -161,10 +155,13 @@ private fun FilledSlotRow(
                 size = PharmButtonSize.Sm,
             )
         }
-        IconButton(onClick = { confirmingDiscard = true }) {
+        PharmIconButton(
+            contentDescription = s.sellParkedDeleteDesc,
+            onClick = { confirmingDiscard = true },
+        ) {
             Icon(
                 imageVector = PharmIcons.Trash,
-                contentDescription = s.sellParkedDeleteDesc,
+                contentDescription = null,
                 tint = t.colors.dangerFg,
                 modifier = Modifier.size(18.dp),
             )
@@ -220,12 +217,7 @@ private fun SlotBadge(slotNumber: Int, dimmed: Boolean = false) {
 
 @Composable
 private fun SheetDivider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }
 
 @Composable

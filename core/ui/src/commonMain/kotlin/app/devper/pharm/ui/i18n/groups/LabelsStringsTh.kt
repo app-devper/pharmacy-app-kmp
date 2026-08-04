@@ -3,12 +3,18 @@ package app.devper.pharm.ui.i18n.groups
 object LabelsStringsTh : LabelsStrings {
     override val labelsAddCta = "+ เพิ่ม"
 
+    override val labelsLoadDrugsFailed = "โหลดรายการยาสำหรับพิมพ์ฉลากไม่สำเร็จ"
     override val labelsSubtitle = "ออกแบบและพิมพ์ฉลากยา"
     override val labelsSearchPlaceholder = "ค้นหายา (เพิ่มทีละบรรทัด)…"
+    override val labelsNoDrugs = "ยังไม่มียาให้เลือก"
+    override val labelsNoSearchResults = "ไม่พบยาที่ค้นหา"
     override val labelsEmpty = "ยังไม่มีรายการ เลือกยาทางซ้ายเพื่อเพิ่ม"
     override val labelsListTitle: (Int) -> String = { count -> "รายการฉลาก ($count บรรทัด)" }
     override val labelsRemoveLine = "ลบบรรทัด"
     override val labelsClear = "ล้าง"
+    override val labelsClearTitle = "ล้างรายการฉลาก?"
+    override val labelsClearSubtitle = "รายการฉลากที่เตรียมไว้ทั้งหมดจะถูกนำออก"
+    override val labelsClearConfirm = "ล้างรายการ"
     override val labelsSizeLabel = "ขนาดฉลาก"
     override val labelsSizeSmall = "38 × 25 มม."
     override val labelsSizeMedium = "50 × 30 มม."

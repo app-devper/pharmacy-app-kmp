@@ -9,6 +9,7 @@ sealed class VoidSaleUiStateError(message: String, cause: Throwable? = null) : A
 }
 
 sealed class DrugPickerUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
+    class LoadDrugsFailed(cause: Throwable? = null) : DrugPickerUiStateError("sell.load_drugs_failed", cause)
     class BarcodeNotFound(val code: String) : DrugPickerUiStateError("sell.barcode_not_found")
 }
 

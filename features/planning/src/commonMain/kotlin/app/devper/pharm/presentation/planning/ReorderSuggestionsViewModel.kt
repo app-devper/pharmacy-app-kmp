@@ -1,12 +1,11 @@
 package app.devper.pharm.presentation.planning
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.PurchaseDraftLine
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.domain.usecase.inventory.GetReorderSuggestionsUseCase
+import app.devper.pharm.presentation.planning.exception.ReorderSuggestionsUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,20 +18,21 @@ class ReorderSuggestionsViewModel(
     init {
         reload()
         purchaseDraft.state
-            .onEach { lines -> setState { copy(draftCount = lines.size) } }
+            .onEach { lines -> setState { copy(draftDrugIds = lines.mapTo(mutableSetOf()) { it.drugId }) } }
             .launchIn(viewModelScope)
     }
 
     fun addToPurchaseOrder(suggestion: ReorderSuggestion) {
-        purchaseDraft.addUnique(listOf(suggestion.toDraftLine()))
-        setState { copy(messageState = CommonUiStateMessage.Saved) }
+        if (suggestion.drugId in current.draftDrugIds) return
+        addLines(listOf(suggestion))
     }
 
     fun addAllToPurchaseOrder() {
-        val lines = current.suggestions.map { it.toDraftLine() }
-        if (lines.isEmpty()) return
-        purchaseDraft.addUnique(lines)
-        setState { copy(messageState = CommonUiStateMessage.Saved) }
+        addLines(current.remainingSuggestions)
+    }
+
+    fun dismissSuggestion(suggestion: ReorderSuggestion) = setState {
+        copy(suggestions = suggestions.filterNot { it.drugId == suggestion.drugId })
     }
 
     fun dismissMessage() = setState { copy(messageState = null) }
@@ -45,12 +45,22 @@ class ReorderSuggestionsViewModel(
         sellPrice = sellPrice.amount,
     )
 
+    private fun addLines(suggestions: List<ReorderSuggestion>) {
+        if (suggestions.isEmpty()) return
+        val before = purchaseDraft.state.value.size
+        purchaseDraft.addUnique(suggestions.map { it.toDraftLine() })
+        val added = purchaseDraft.state.value.size - before
+        if (added > 0) setState { copy(messageState = ReorderSuggestionsMessage.Added(added)) }
+    }
+
     fun reload() {
         setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { getReorderSuggestions() },
             onSuccess = { list -> setState { copy(loading = false, suggestions = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = ReorderSuggestionsUiStateError.LoadFailed(e)) }
+            },
         )
     }
 }

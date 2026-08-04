@@ -1,8 +1,10 @@
 package app.devper.pharm.ui.i18n.groups
 
 object SuppliersStringsTh : SuppliersStrings {
-    override val suppliersTaxIdPlaceholder = "13 หลัก"
+    override val suppliersTaxIdPlaceholder = "เลขผู้เสียภาษี 13 หลัก…"
 
+    override val suppliersListLoadFailed = "โหลดรายชื่อซัพพลายเออร์ไม่สำเร็จ"
+    override val suppliersFormLoadFailed = "โหลดข้อมูลผู้จัดจำหน่ายไม่สำเร็จ"
     override val suppliersListSubtitle = "จัดการข้อมูลผู้ขายและบริษัทคู่ค้า"
     override val suppliersSearchPlaceholder = "ค้นหาชื่อ / ผู้ติดต่อ / เบอร์โทร…"
     override val suppliersAddCta = "เพิ่มซัพพลายเออร์"
@@ -20,11 +22,11 @@ object SuppliersStringsTh : SuppliersStrings {
     override val suppliersFormEditTitle = "แก้ไขผู้จัดจำหน่าย"
     override val suppliersFormInfoSection = "ข้อมูลผู้จัดจำหน่าย"
     override val suppliersFormCompanyName = "ชื่อบริษัท / ผู้จัดจำหน่าย"
-    override val suppliersFormCompanyPlaceholder = "เช่น บริษัท เอ บี ซี ฟาร์มา จำกัด"
+    override val suppliersFormCompanyPlaceholder = "เช่น บริษัท เอ บี ซี ฟาร์มา จำกัด…"
     override val suppliersFormContactName = "ชื่อพนักงานขาย"
     override val suppliersFormAddress = "ที่อยู่"
-    override val suppliersFormAddressPlaceholder = "บ้านเลขที่ / ถนน / ตำบล / อำเภอ / จังหวัด"
+    override val suppliersFormAddressPlaceholder = "บ้านเลขที่ / ถนน / ตำบล / อำเภอ / จังหวัด…"
     override val suppliersFormTaxId = "เลขประจำตัวผู้เสียภาษี"
-    override val suppliersFormNotesPlaceholder = "เงื่อนไขการสั่งซื้อ / ส่วนลด / รายละเอียดเพิ่มเติม"
+    override val suppliersFormNotesPlaceholder = "เงื่อนไขการสั่งซื้อ / ส่วนลด / รายละเอียดเพิ่มเติม…"
     override val suppliersFormNotFound = "ไม่พบผู้จัดจำหน่าย"
 }

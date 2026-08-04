@@ -2,6 +2,8 @@ package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -10,6 +12,7 @@ import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,6 +23,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.state.ToggleableState
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmFocusRing
 
 @Composable
 fun PharmCheckbox(
@@ -29,13 +33,18 @@ fun PharmCheckbox(
     enabled: Boolean = true,
     contentDescription: String? = null,
 ) {
+    val t = pharmTokens
     val state = if (checked) ToggleableState.On else ToggleableState.Off
     if (onCheckedChange != null) {
+        val interaction = remember { MutableInteractionSource() }
         Box(
             modifier = modifier
-                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
+                .pharmFocusRing(interactionSource = interaction, shape = t.shapes.sm)
                 .toggleable(
                     value = checked,
+                    interactionSource = interaction,
+                    indication = LocalIndication.current,
                     enabled = enabled,
                     role = Role.Checkbox,
                     onValueChange = onCheckedChange,
@@ -62,12 +71,17 @@ fun PharmTriStateCheckbox(
     enabled: Boolean = true,
     contentDescription: String? = null,
 ) {
+    val t = pharmTokens
     if (onClick != null) {
+        val interaction = remember { MutableInteractionSource() }
         Box(
             modifier = modifier
-                .sizeIn(minWidth = 44.dp, minHeight = 44.dp)
+                .sizeIn(minWidth = t.dimens.controlHeight, minHeight = t.dimens.controlHeight)
+                .pharmFocusRing(interactionSource = interaction, shape = t.shapes.sm)
                 .triStateToggleable(
                     state = state,
+                    interactionSource = interaction,
+                    indication = LocalIndication.current,
                     enabled = enabled,
                     role = Role.Checkbox,
                     onClick = onClick,

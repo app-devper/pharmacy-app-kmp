@@ -15,36 +15,46 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Remove
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmIconButton
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReturnSaleSheet(
     sale: SaleSummary,
     items: List<SaleItemSnapshot>,
+    itemsLoading: Boolean,
 
     draft: Map<String, Int>,
     reason: String,
@@ -55,11 +65,26 @@ fun ReturnSaleSheet(
     onDismiss: () -> Unit,
 ) {
     val t = pharmTokens
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val anyDraft = draft.values.any { it > 0 }
-    val canSubmit = anyDraft && reason.isNotBlank() && !submitting
+    val canSubmit = anyDraft && reason.isNotBlank() && !submitting && !itemsLoading
+    var validationRequested by rememberSaveable(sale.id) { mutableStateOf(false) }
+    val reasonFocus = remember(sale.id) { FocusRequester() }
+    val itemsError = validationRequested && !anyDraft
+    val reasonError = validationRequested && reason.isBlank()
+    val submitReturn: () -> Unit = {
+        if (canSubmit) {
+            onConfirm()
+        } else if (!submitting && !itemsLoading) {
+            validationRequested = true
+            if (reason.isBlank()) reasonFocus.requestFocus()
+            Unit
+        }
+    }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+    PharmBottomSheet(
+        onDismissRequest = onDismiss,
+        dismissEnabled = !submitting,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -78,41 +103,56 @@ fun ReturnSaleSheet(
                 color = t.colors.fg2,
             )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(pharmTokens.colors.border),
-            )
+            PharmDivider(color = pharmTokens.colors.border)
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth().height(280.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(items, key = { it.id }) { item ->
-                    ReturnLineRow(
-                        item = item,
-                        draftBaseQty = draft[item.id] ?: 0,
-                        enabled = !submitting,
-                        onChange = { onLineQtyChange(item.id, it) },
-                    )
+            if (itemsLoading && items.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(280.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    PharmCircularProgress(color = t.colors.accent)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth().height(280.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(items, key = { it.id }) { item ->
+                        ReturnLineRow(
+                            item = item,
+                            draftBaseQty = draft[item.id] ?: 0,
+                            enabled = !submitting,
+                            onChange = { onLineQtyChange(item.id, it) },
+                        )
+                    }
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(pharmTokens.colors.border),
-            )
+            PharmDivider(color = pharmTokens.colors.border)
 
-            FormField(label = pharmStrings.salesHistoryReasonLabel, required = true) {
+            if (itemsError) {
+                Text(
+                    text = pharmStrings.salesHistoryReturnItemsRequired,
+                    style = PharmText.micro.copy(color = t.colors.dangerFg),
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+
+            FormField(
+                label = pharmStrings.salesHistoryReasonLabel,
+                required = true,
+                error = if (reasonError) pharmStrings.salesHistoryReturnReasonRequired else null,
+            ) {
                 Box(modifier = Modifier.heightIn(min = 96.dp)) {
                     PharmTextField(
                         value = reason,
                         onValueChange = onReasonChange,
                         placeholder = pharmStrings.salesHistoryReturnReasonPlaceholder,
                         singleLine = false,
+                        imeAction = ImeAction.Done,
+                        onImeAction = submitReturn,
+                        isError = reasonError,
+                        focusRequester = reasonFocus,
                     )
                 }
             }
@@ -130,9 +170,9 @@ fun ReturnSaleSheet(
                 )
                 PharmButton(
                     label = pharmStrings.salesHistoryReturnConfirmCta,
-                    onClick = onConfirm,
+                    onClick = submitReturn,
                     variant = PharmButtonVariant.Primary,
-                    enabled = canSubmit,
+                    enabled = !submitting && !itemsLoading,
                     loading = submitting,
                 )
             }
@@ -179,7 +219,7 @@ private fun ReturnLineRow(
             }
             if (refund > 0) {
                 Text(
-                    text = pharmStrings.salesHistoryRefund(app.devper.pharm.ui.format.formatBahtCurrency(refund)),
+                    text = pharmStrings.salesHistoryRefund(fmtBaht(refund)),
                     style = PharmText.meta.tabular(),
                     color = t.colors.accent,
                     fontWeight = FontWeight.SemiBold,
@@ -187,41 +227,56 @@ private fun ReturnLineRow(
             }
         }
 
-        Surface(
-            shape = t.shapes.xl,
-            color = t.colors.surfaceRaised,
+        Box(
+            modifier = Modifier
+                .clip(t.shapes.xl)
+                .background(t.colors.surfaceRaised, t.shapes.xl),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.padding(4.dp),
             ) {
-                IconButton(
+                ReturnQuantityButton(
+                    icon = PharmIcons.Minus,
+                    contentDescription = pharmStrings.sellQtyDecrease,
                     onClick = { onChange((draftDisplay - 1).coerceAtLeast(0)) },
                     enabled = enabled && draftDisplay > 0,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Remove,
-                        contentDescription = pharmStrings.sellQtyDecrease,
-                        modifier = Modifier.size(18.dp),
-                    )
-                }
+                )
                 Text(
                     text = draftDisplay.toString(),
                     style = PharmText.total.tabular(),
                     fontWeight = FontWeight.SemiBold,
                 )
-                IconButton(
+                ReturnQuantityButton(
+                    icon = PharmIcons.Plus,
+                    contentDescription = pharmStrings.sellQtyIncrease,
                     onClick = { onChange((draftDisplay + 1).coerceAtMost(maxDisplay)) },
                     enabled = enabled && draftDisplay < maxDisplay,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = pharmStrings.sellQtyIncrease,
-                        modifier = Modifier.size(18.dp),
-                    )
-                }
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun ReturnQuantityButton(
+    icon: ImageVector,
+    contentDescription: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val t = pharmTokens
+    PharmIconButton(
+        contentDescription = contentDescription,
+        enabled = enabled,
+        onClick = onClick,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = if (enabled) t.colors.fg1 else t.colors.fgMuted,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }

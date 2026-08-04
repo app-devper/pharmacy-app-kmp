@@ -8,6 +8,7 @@ import app.devper.pharm.domain.repository.FakeAuthRepository
 import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
 import app.devper.pharm.domain.model.UiPreferences
+import app.devper.pharm.domain.observer.SessionExpiryProvider
 import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
 import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.ui.common.runVmTest
@@ -17,6 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -27,12 +29,14 @@ class LoginViewModelTest {
         dispatchers: AppDispatchers,
         repo: FakeAuthRepository = FakeAuthRepository(),
         uiPrefs: FakeUiPreferencesRepository = FakeUiPreferencesRepository(),
+        sessionExpiry: SessionExpiryProvider = SessionExpiryProvider(),
     ): Triple<LoginViewModel, FakeAuthRepository, FakeUiPreferencesRepository> {
         val vm = LoginViewModel(
             login = LoginUseCase(repo, dispatchers),
             uiPreferences = UiPreferencesProvider(uiPrefs),
             setLocale = SetLocalePreferenceUseCase(uiPrefs),
             setLastUsername = SetLastUsernameUseCase(uiPrefs),
+            sessionExpiry = sessionExpiry,
         )
         return Triple(vm, repo, uiPrefs)
     }
@@ -62,6 +66,8 @@ class LoginViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertIs<LoginUiStateError.RequiredFields>(vm.state.value.errorState)
+        assertEquals(true, vm.state.value.usernameMissing)
+        assertEquals(false, vm.state.value.passwordMissing)
         assertNull(repo.lastLogin)
         assertFalse(vm.state.value.loading)
     }
@@ -73,6 +79,8 @@ class LoginViewModelTest {
         vm.submit()
         advanceUntilIdle()
         assertIs<LoginUiStateError.RequiredFields>(vm.state.value.errorState)
+        assertEquals(false, vm.state.value.usernameMissing)
+        assertEquals(true, vm.state.value.passwordMissing)
         assertNull(repo.lastLogin)
     }
 
@@ -90,6 +98,7 @@ class LoginViewModelTest {
         assertEquals("PHARMACY", captured.system)
         assertNotNull(vm.state.value.loggedInUser)
         assertEquals("admin", vm.state.value.loggedInUser?.username)
+        assertFalse(vm.state.value.validationRequested)
         assertFalse(vm.state.value.loading)
         assertNull(vm.state.value.errorState)
     }
@@ -172,5 +181,34 @@ class LoginViewModelTest {
         assertNotNull(vm.state.value.errorState)
         vm.onPasswordChange("x")
         assertNull(vm.state.value.errorState)
+    }
+
+    @Test
+    fun expired_session_is_announced_on_the_login_screen() = runVmTest { dispatchers ->
+        val sessionExpiry = SessionExpiryProvider()
+        sessionExpiry.markExpired()
+        val (vm) = newVm(dispatchers, sessionExpiry = sessionExpiry)
+        advanceUntilIdle()
+        assertTrue(vm.state.value.sessionExpired)
+    }
+
+    @Test
+    fun signing_in_again_clears_the_expired_notice() = runVmTest { dispatchers ->
+        val sessionExpiry = SessionExpiryProvider()
+        sessionExpiry.markExpired()
+        val (vm) = newVm(dispatchers, sessionExpiry = sessionExpiry)
+        advanceUntilIdle()
+        vm.onUsernameChange("somsri")
+        vm.onPasswordChange("secret123")
+        vm.submit()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.sessionExpired)
+    }
+
+    @Test
+    fun a_fresh_launch_shows_no_expired_notice() = runVmTest { dispatchers ->
+        val (vm) = newVm(dispatchers)
+        advanceUntilIdle()
+        assertFalse(vm.state.value.sessionExpired)
     }
 }

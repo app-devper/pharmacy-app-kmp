@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.imports.i18n.localizeImports
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -31,7 +32,9 @@ import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSaveAction
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.pharmFormContentPadding
+import app.devper.pharm.ui.designsystem.pharmFormContentWidth
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -48,9 +51,11 @@ fun ImportFormContent(
     val s = pharmStrings
     var pickerForLine by remember { mutableStateOf<Int?>(null) }
     var supplierPickerOpen by remember { mutableStateOf(false) }
+    var validationRequested by remember(state.mode) { mutableStateOf(false) }
+    val supplierFocusRequester = remember { FocusRequester() }
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = if (state.isEdit) s.importsFormEditTitle else s.importsNewTitle,
             onBack = callbacks.onBack,
             actions = {
@@ -59,6 +64,12 @@ fun ImportFormContent(
                         saving = state.saving,
                         canSubmit = state.canSubmit,
                         onSubmit = callbacks.onSubmit,
+                        onInvalidSubmit = if (state.loading) null else {
+                            {
+                                validationRequested = true
+                                if (state.form.supplier.isBlank()) supplierFocusRequester.requestFocus()
+                            }
+                        },
                     )
                 }
             },
@@ -66,10 +77,10 @@ fun ImportFormContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .then(pharmFormContentWidth())
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .pharmFormContentPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (state.loading) {
@@ -85,6 +96,8 @@ fun ImportFormContent(
                         state = state,
                         callbacks = callbacks,
                         onPickSupplier = { supplierPickerOpen = true },
+                        showValidation = validationRequested,
+                        supplierFocusRequester = supplierFocusRequester,
                     )
                 }
                 PharmFormCard(
@@ -104,6 +117,7 @@ fun ImportFormContent(
                                 onCost = { callbacks.onLineCost(index, it) },
                                 onSell = { callbacks.onLineSell(index, it) },
                                 onRemove = { callbacks.onRemoveLine(index) },
+                                showValidation = validationRequested,
                             )
                         }
                         if (!state.readOnly) {
@@ -115,6 +129,12 @@ fun ImportFormContent(
                             ) {
                                 Text(text = s.importsActionAddLine, style = PharmText.buttonMd)
                             }
+                        }
+                        if (validationRequested && state.form.items.isEmpty()) {
+                            Text(
+                                text = s.validationRequired(s.importsItemListLabel),
+                                style = PharmText.micro.copy(color = t.colors.dangerFg),
+                            )
                         }
                         if (state.readOnly) {
                             ReadOnlyNote()

@@ -17,7 +17,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
 enum class PharmBadgeTone {
-    Gray, Green, Amber, Red, Blue, Purple, Emerald, Orange, Indigo, Rose, Teal,
+    Gray, Green, Amber, Red, Blue, Purple, Emerald, Orange, Indigo,
 }
 
 enum class PharmBadgeSize { Sm, Md }
@@ -38,8 +38,6 @@ private fun colorsFor(tone: PharmBadgeTone): BadgeColors {
         PharmBadgeTone.Emerald -> BadgeColors(t.typeEmeraldBg,   t.typeEmeraldFg, null)
         PharmBadgeTone.Orange  -> BadgeColors(t.typeOrangeBg,    t.typeOrangeFg,  null)
         PharmBadgeTone.Indigo  -> BadgeColors(t.indigoBg,        t.indigoFg,      null)
-        PharmBadgeTone.Rose    -> BadgeColors(t.ky11Bg.copy(),   t.ky11Fg,        null)
-        PharmBadgeTone.Teal    -> BadgeColors(t.ky12Bg,          t.ky12Fg,        t.ky12Border)
     }
 }
 

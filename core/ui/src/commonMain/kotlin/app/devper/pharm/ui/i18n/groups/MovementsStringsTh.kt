@@ -12,6 +12,7 @@ object MovementsStringsTh : MovementsStrings {
     override val movementsSearchPlaceholder = "ค้นหาชื่อยา…"
     override val movementsCountNoun = "รายการ"
     override val movementsEmpty = "ไม่มีรายการในช่วงเวลานี้"
+    override val movementsEmptySearching = "ไม่พบความเคลื่อนไหวที่ตรงกับตัวกรอง"
     override val movementsHeaderType = "ประเภท"
     override val movementsHeaderRef = "อ้างอิง"
     override val movementsHeaderBy = "โดย"

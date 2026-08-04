@@ -21,6 +21,7 @@ internal fun SuppliersListToolbar(
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.suppliersSearchPlaceholder,
         modifier = modifier,
+        compactTopbarActions = true,
         actions = {
             PharmButton(
                 label = s.suppliersAddCta,

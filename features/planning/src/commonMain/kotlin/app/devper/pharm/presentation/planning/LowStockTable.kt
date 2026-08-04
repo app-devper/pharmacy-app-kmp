@@ -31,6 +31,7 @@ internal fun LowStockTable(
             PharmTableColumn<Drug>(
                 header = s.expiryHeaderDrugName,
                 weight = 2.4f,
+                compactTitle = true,
                 cell = { drug -> LowStockNameCell(drug) },
             ),
             PharmTableColumn(
@@ -43,15 +44,18 @@ internal fun LowStockTable(
                 header = s.planningHeaderMin,
                 weight = 0.9f,
                 align = PharmColumnAlign.End,
+                hideInCompact = true,
                 cell = { drug -> LowStockMinCell(drug) },
             ),
             PharmTableColumn(
                 header = s.commonUnit,
                 weight = 0.8f,
+                hideInCompact = true,
                 cell = { drug -> LowStockUnitCell(drug) },
             ),
             PharmTableColumn(
                 header = s.commonStatus,
+                compactTrailing = true,
                 weight = 1.0f,
                 align = PharmColumnAlign.End,
                 cell = { drug -> LowStockStatusCell(drug) },
@@ -65,7 +69,6 @@ internal fun LowStockTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { callbacks.onRowClick(it) },
-        rowHeight = 52.dp,
         emptyContent = {
             Text(text = s.planningLowStockEmpty, style = PharmText.meta)
         },

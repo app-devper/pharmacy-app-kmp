@@ -4,7 +4,6 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.param.labels.PrintLabelsParam
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase
@@ -66,7 +65,14 @@ class LabelPrintViewModel(
 
     fun onSizeChange(size: LabelSize) = setState { copy(size = size) }
 
-    fun onClearAll() = setState { copy(lines = emptyList()) }
+    fun onAskClearAll() {
+        if (!current.canClear) return
+        setState { copy(confirmClear = true) }
+    }
+
+    fun onCancelClearAll() = setState { copy(confirmClear = false) }
+
+    fun onConfirmClearAll() = setState { copy(lines = emptyList(), confirmClear = false) }
 
     fun onPrint() {
         val s = current
@@ -93,7 +99,9 @@ class LabelPrintViewModel(
         launchResult(
             block = { getDrugs() },
             onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = LabelPrintUiStateError.LoadDrugsFailed(e)) }
+            },
         )
     }
 

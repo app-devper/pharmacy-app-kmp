@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.devper.pharm.ui.common.LocalPharmSnackbar
-import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.toToast
 import app.devper.pharm.ui.common.ReloadOnResume
 import app.devper.pharm.ui.i18n.localize
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -21,7 +21,7 @@ fun LabelPrintScreen(viewModel: LabelPrintViewModel = koinViewModel()) {
 
     LaunchedEffect(state.messageState) {
         state.messageState?.let {
-            snackbar.showToast(PharmToast.Info(it.localize(s)))
+            snackbar.showToast(it.toToast(s))
             viewModel.dismissMessage()
         }
     }
@@ -36,7 +36,9 @@ fun LabelPrintScreen(viewModel: LabelPrintViewModel = koinViewModel()) {
             onChangeBarcode = viewModel::onChangeBarcode,
             onToggleIncludePrice = viewModel::onToggleIncludePrice,
             onSizeChange = viewModel::onSizeChange,
-            onClearAll = viewModel::onClearAll,
+            onAskClearAll = viewModel::onAskClearAll,
+            onCancelClearAll = viewModel::onCancelClearAll,
+            onConfirmClearAll = viewModel::onConfirmClearAll,
             onPrint = viewModel::onPrint,
             onDismissError = viewModel::dismissError,
         ),

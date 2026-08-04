@@ -26,7 +26,12 @@ data class Ky10AddUiState(
 ) : BaseFormUiState<Ky10AddUiState> {
 
     override val canSubmit: Boolean
-        get() = !saving && isKy10DraftValid(draft.date, draft.drugName, draft.unit, draft.qty)
+        get() = !saving &&
+            isKy10DraftValid(draft.date, draft.drugName, draft.unit, draft.qty) &&
+            (draft.balance.isBlank() || (draft.balance.toIntOrNull() ?: -1) >= 0)
+
+    override val hasUnsavedChanges: Boolean
+        get() = draft != Ky10Draft()
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
     override fun withSaved(saved: Boolean) = copy(saved = saved)

@@ -107,6 +107,15 @@ class DrugFormViewModelTest {
     }
 
     @Test
+    fun edit_mode_load_failure_uses_drug_specific_error() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeDrugRepository(listThrows = true))
+        vm.init(DrugFormMode.Edit("d1"))
+        advanceUntilIdle()
+        assertIs<DrugFormUiStateError.LoadDrugFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
     fun onSellPrice_strips_non_numeric_chars_and_caps_one_dot() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers)
         vm.init(DrugFormMode.Add)
@@ -133,6 +142,88 @@ class DrugFormViewModelTest {
         vm.onName("Paracetamol")
         assertFalse(vm.state.value.canSubmit)
         vm.onSellPrice("5")
+        assertTrue(vm.state.value.canSubmit)
+    }
+
+    @Test
+    fun canSubmit_rejects_incomplete_optional_cost_price() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers)
+        vm.init(DrugFormMode.Add)
+        advanceUntilIdle()
+        vm.onName("Paracetamol")
+        vm.onSellPrice("5")
+        assertTrue(vm.state.value.canSubmit)
+
+        vm.onCostPrice(".")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onCostPrice("3.50")
+        assertTrue(vm.state.value.canSubmit)
+    }
+
+    @Test
+    fun canSubmit_rejects_incomplete_tier_and_alt_unit_prices() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers)
+        vm.init(DrugFormMode.Add)
+        advanceUntilIdle()
+        vm.onName("Paracetamol")
+        vm.onSellPrice("5")
+        assertTrue(vm.state.value.canSubmit)
+
+        vm.onTierRetail(".")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onTierRetail("4.50")
+        vm.onAddAltUnit()
+        vm.onAltUnitName(0, "แผง")
+        vm.onAltUnitFactor(0, "10")
+        vm.onAltUnitSellPrice(0, ".")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onAltUnitSellPrice(0, "45")
+        assertTrue(vm.state.value.canSubmit)
+    }
+
+    @Test
+    fun canSubmit_requires_lot_number_and_strict_expiry_for_initial_stock() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers)
+        vm.init(DrugFormMode.Add)
+        advanceUntilIdle()
+        vm.onName("Paracetamol")
+        vm.onSellPrice("5")
+        vm.onInitialStock("10")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onLotNumber("L-001")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onLotExpiry("2027-12-31-extra")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onLotExpiry("2027-12-31")
+        assertTrue(vm.state.value.canSubmit)
+    }
+
+    @Test
+    fun canSubmit_rejects_incomplete_initial_lot_prices() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers)
+        vm.init(DrugFormMode.Add)
+        advanceUntilIdle()
+        vm.onName("Paracetamol")
+        vm.onSellPrice("5")
+        vm.onInitialStock("10")
+        vm.onLotNumber("L-001")
+        vm.onLotExpiry("2027-12-31")
+        assertTrue(vm.state.value.canSubmit)
+
+        vm.onLotCostPrice(".")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onLotCostPrice("3.50")
+        vm.onLotSellPrice(".")
+        assertFalse(vm.state.value.canSubmit)
+
+        vm.onLotSellPrice("4.50")
         assertTrue(vm.state.value.canSubmit)
     }
 

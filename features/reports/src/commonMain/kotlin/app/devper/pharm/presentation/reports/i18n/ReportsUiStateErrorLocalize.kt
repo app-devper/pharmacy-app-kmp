@@ -10,6 +10,7 @@ import app.devper.pharm.ui.i18n.localizeCommon
 fun AppException.localizeReports(s: PharmStrings): String = when (this) {
     is ReportsUiStateError.LoadSummaryFailed -> s.reportsLoadSummaryFailed
     is ProfitUiStateError.LoadReportFailed -> s.reportsLoadReportFailed
+    is EodUiStateError.LoadReportFailed -> s.reportsLoadReportFailed
     is EodUiStateError.CloseFailed -> s.reportsEodCloseFailed
     is EodUiStateError.PrintReceiptUnsupported -> s.reportsEodPrintUnsupported
     else -> localizeCommon(s)

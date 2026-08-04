@@ -1,19 +1,19 @@
 package app.devper.pharm.ui.designsystem
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,13 +23,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.theme.tabular
 import androidx.compose.foundation.shape.CircleShape
 import kotlin.time.Clock
@@ -43,6 +47,7 @@ import kotlinx.datetime.toLocalDateTime
 fun PharmDatePicker(
     initialMillis: Long?,
     onPick: (Long?) -> Unit,
+    returnFocusRequester: FocusRequester? = null,
 ) {
     val s = pharmStrings
     val today = remember { Clock.System.now().toLocalDateTime(TimeZone.of("Asia/Bangkok")).date }
@@ -51,40 +56,27 @@ fun PharmDatePicker(
     var visibleMonth by remember(initialMillis) {
         mutableStateOf(CalendarMonth.of(initialDate ?: today))
     }
+    val previousMonthFocusRequester = remember { FocusRequester() }
 
     PharmModal(
         open = true,
         onDismiss = { onPick(null) },
         size = PharmModalSize.Sm,
+        initialFocusRequester = previousMonthFocusRequester,
+        returnFocusRequester = returnFocusRequester,
         footer = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                PharmButton(
-                    label = s.calendarToday,
-                    onClick = {
-                        selected = today
-                        visibleMonth = CalendarMonth.of(today)
-                    },
-                    size = PharmButtonSize.Sm,
-                    variant = PharmButtonVariant.Outline,
-                )
-                Box(modifier = Modifier.weight(1f))
-                PharmButton(
-                    label = s.commonCancel,
-                    onClick = { onPick(null) },
-                    size = PharmButtonSize.Sm,
-                    variant = PharmButtonVariant.Ghost,
-                )
-                PharmButton(
-                    label = s.commonConfirm,
-                    onClick = { onPick(selected?.toUtcStartOfDayMillis()) },
-                    size = PharmButtonSize.Sm,
-                    enabled = selected != null,
-                )
-            }
+            DatePickerFooter(
+                todayLabel = s.calendarToday,
+                cancelLabel = s.commonCancel,
+                confirmLabel = s.commonConfirm,
+                confirmEnabled = selected != null,
+                onToday = {
+                    selected = today
+                    visibleMonth = CalendarMonth.of(today)
+                },
+                onCancel = { onPick(null) },
+                onConfirm = { onPick(selected?.toUtcStartOfDayMillis()) },
+            )
         },
     ) {
         Column(
@@ -97,6 +89,7 @@ fun PharmDatePicker(
                 onNext = { visibleMonth = visibleMonth.next() },
                 prevDesc = s.calendarPrevMonth,
                 nextDesc = s.calendarNextMonth,
+                previousFocusRequester = previousMonthFocusRequester,
             )
             WeekdayHeaderRow(labels = weekdayHeaders(s))
             visibleMonth.weeks().forEach { week ->
@@ -117,22 +110,104 @@ fun PharmDatePicker(
 }
 
 @Composable
+private fun DatePickerFooter(
+    todayLabel: String,
+    cancelLabel: String,
+    confirmLabel: String,
+    confirmEnabled: Boolean,
+    onToday: () -> Unit,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        if (shouldStackDatePickerFooter(maxWidth)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                PharmButton(
+                    label = todayLabel,
+                    onClick = onToday,
+                    modifier = Modifier.fillMaxWidth(),
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Outline,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    PharmButton(
+                        label = cancelLabel,
+                        onClick = onCancel,
+                        modifier = Modifier.weight(1f),
+                        size = PharmButtonSize.Sm,
+                        variant = PharmButtonVariant.Ghost,
+                    )
+                    PharmButton(
+                        label = confirmLabel,
+                        onClick = onConfirm,
+                        modifier = Modifier.weight(1f),
+                        size = PharmButtonSize.Sm,
+                        enabled = confirmEnabled,
+                    )
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PharmButton(
+                    label = todayLabel,
+                    onClick = onToday,
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Outline,
+                )
+                Box(modifier = Modifier.weight(1f))
+                PharmButton(
+                    label = cancelLabel,
+                    onClick = onCancel,
+                    size = PharmButtonSize.Sm,
+                    variant = PharmButtonVariant.Ghost,
+                )
+                PharmButton(
+                    label = confirmLabel,
+                    onClick = onConfirm,
+                    size = PharmButtonSize.Sm,
+                    enabled = confirmEnabled,
+                )
+            }
+        }
+    }
+}
+
+internal fun shouldStackDatePickerFooter(width: Dp): Boolean = width < 300.dp
+
+@Composable
 private fun CalendarHeader(
     title: String,
     onPrev: () -> Unit,
     onNext: () -> Unit,
     prevDesc: String,
     nextDesc: String,
+    previousFocusRequester: FocusRequester,
 ) {
     val t = pharmTokens
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onPrev, modifier = Modifier.size(36.dp)) {
+        PharmIconButton(
+            contentDescription = prevDesc,
+            onClick = onPrev,
+            modifier = Modifier
+                .focusRequester(previousFocusRequester)
+                .size(t.dimens.controlHeight),
+        ) {
             Icon(
-                Icons.Rounded.KeyboardArrowLeft,
-                contentDescription = prevDesc,
+                Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                contentDescription = null,
                 tint = pharmTokens.colors.fg2,
                 modifier = Modifier.size(22.dp),
             )
@@ -143,10 +218,14 @@ private fun CalendarHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = onNext, modifier = Modifier.size(36.dp)) {
+        PharmIconButton(
+            contentDescription = nextDesc,
+            onClick = onNext,
+            modifier = Modifier.size(t.dimens.controlHeight),
+        ) {
             Icon(
-                Icons.Rounded.KeyboardArrowRight,
-                contentDescription = nextDesc,
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                contentDescription = null,
                 tint = pharmTokens.colors.fg2,
                 modifier = Modifier.size(22.dp),
             )
@@ -178,7 +257,18 @@ private fun DayCell(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
-    Box(modifier = modifier.padding(2.dp), contentAlignment = Alignment.Center) {
+    val clickModifier = if (date != null) {
+        Modifier.pharmClickable(role = Role.Button, shape = CircleShape, onClick = onClick)
+    } else {
+        Modifier
+    }
+    Box(
+        modifier = modifier
+            .heightIn(min = 44.dp)
+            .then(clickModifier)
+            .padding(2.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         if (date != null) {
             Box(
                 modifier = Modifier
@@ -190,8 +280,7 @@ private fun DayCell(
                             isToday -> t.colors.accentBgSoft
                             else -> t.colors.surface
                         },
-                    )
-                    .clickable(role = Role.Button, onClick = onClick),
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(

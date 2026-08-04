@@ -82,10 +82,12 @@ private fun UsersListToolbar(
 ) {
     val s = pharmStrings
     PharmListToolbar(
+        subtitle = s.usersSubtitle,
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,
         titleStyle = PharmText.h2,
+        compactTopbarActions = true,
         actions = {
             if (state.currentUserRole.canManageUsers()) {
                 PharmButton(

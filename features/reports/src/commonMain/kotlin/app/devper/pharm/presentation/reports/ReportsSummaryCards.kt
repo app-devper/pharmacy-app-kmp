@@ -6,8 +6,8 @@ import app.devper.pharm.domain.model.ReportSummary
 import app.devper.pharm.ui.designsystem.MetricCard
 import app.devper.pharm.ui.designsystem.MetricCardRow
 import app.devper.pharm.ui.designsystem.MetricTint
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.theme.fmtBaht
 
 @Composable
 internal fun ReportsMetricsRow(
@@ -19,17 +19,17 @@ internal fun ReportsMetricsRow(
     MetricCardRow(modifier = modifier) {
         MetricCard(
             label = s.reportsMetricSalesToday,
-            value = formatBahtCurrency(summary.todaySales),
+            value = fmtBaht(summary.todaySales),
             sub = "${summary.todayBills} ${s.movementsCountNoun}",
         )
         MetricCard(
             label = s.reportsMetricSalesMonth,
-            value = formatBahtCurrency(summary.monthSales),
+            value = fmtBaht(summary.monthSales),
             sub = s.commonBaht,
         )
         MetricCard(
             label = s.reportsMetricProfitMonth,
-            value = monthProfit?.let { formatBahtCurrency(it) } ?: "—",
+            value = monthProfit?.let { fmtBaht(it) } ?: "—",
             sub = s.reportsMetricProfitMonthHint,
             tint = when {
                 monthProfit == null -> MetricTint.Neutral
@@ -40,7 +40,7 @@ internal fun ReportsMetricsRow(
         )
         MetricCard(
             label = s.reportsMetricStockValue,
-            value = formatBahtCurrency(summary.stockValue),
+            value = fmtBaht(summary.stockValue),
             sub = s.reportsMetricStockHint(summary.outStock, summary.lowStock),
             tint = when {
                 summary.outStock > 0 -> MetricTint.Danger

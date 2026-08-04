@@ -109,7 +109,7 @@ private fun validateKyManualCommon(date: String, drugName: String, unit: String,
 }
 
 private fun isKyManualCommonValid(date: String, drugName: String, unit: String, qty: String): Boolean =
-    Check.notBlank(date) &&
+    Check.localDate(date) &&
         Check.notBlank(drugName) &&
         Check.notBlank(unit) &&
         Check.positiveInt(qty)

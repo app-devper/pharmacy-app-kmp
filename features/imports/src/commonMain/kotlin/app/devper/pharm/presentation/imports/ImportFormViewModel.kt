@@ -5,8 +5,6 @@ import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
-import app.devper.pharm.common.error.CommonUiStateError
-
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.PurchaseOrderStatus
@@ -145,31 +143,33 @@ class ImportFormViewModel(
             block = { getPurchaseOrder(id) },
             onSuccess = { po ->
                 val readOnly = po.status == PurchaseOrderStatus.Confirmed
+                val hydratedForm = ImportFormFields(
+                    supplier = po.supplier,
+                    invoiceNo = po.invoiceNo,
+                    receiveDate = po.receiveDate?.toString() ?: "",
+                    notes = po.notes,
+                    items = po.items.map { item ->
+                        ImportLineFields(
+                            drugId = item.drugId,
+                            drugName = item.drugName,
+                            lotNumber = item.lotNumber,
+                            expiryDate = item.expiryDate?.toString() ?: "",
+                            qty = item.qty.value.toString(),
+                            costPrice = item.costPrice.amount.cleanPrice(),
+                            sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
+                        )
+                    },
+                )
                 setState {
                     copy(
                         loading = false,
                         readOnly = readOnly,
-                        form = ImportFormFields(
-                            supplier = po.supplier,
-                            invoiceNo = po.invoiceNo,
-                            receiveDate = po.receiveDate?.toString() ?: "",
-                            notes = po.notes,
-                            items = po.items.map { item ->
-                                ImportLineFields(
-                                    drugId = item.drugId,
-                                    drugName = item.drugName,
-                                    lotNumber = item.lotNumber,
-                                    expiryDate = item.expiryDate?.toString() ?: "",
-                                    qty = item.qty.value.toString(),
-                                    costPrice = item.costPrice.amount.cleanPrice(),
-                                    sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
-                                )
-                            },
-                        ),
+                        form = hydratedForm,
+                        baselineForm = hydratedForm,
                     )
                 }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = ImportFormUiStateError.LoadOrderFailed(e)) } },
         )
     }
 

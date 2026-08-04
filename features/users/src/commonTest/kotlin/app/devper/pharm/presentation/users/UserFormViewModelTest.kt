@@ -8,6 +8,7 @@ import app.devper.pharm.domain.repository.FakeUsersRepository
 import app.devper.pharm.domain.usecase.users.CreateUserUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
+import app.devper.pharm.presentation.users.exception.UserFormUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -28,13 +29,15 @@ class UserFormViewModelTest {
         )
 
     @Test
-    fun add_canSubmit_requires_firstName_username_and_password() = runVmTest { dispatchers ->
+    fun add_canSubmit_requires_names_username_and_password() = runVmTest { dispatchers ->
         val fake = FakeUsersRepository()
         val vm = bundle(fake, dispatchers)
         vm.init(UserFormMode.Add)
         advanceUntilIdle()
         assertFalse(vm.state.value.canSubmit)
         vm.onFirstName("สมหมาย")
+        assertFalse(vm.state.value.canSubmit)
+        vm.onLastName("ทดสอบ")
         assertFalse(vm.state.value.canSubmit)
         vm.onUsername("sommai")
         assertFalse(vm.state.value.canSubmit)
@@ -82,6 +85,16 @@ class UserFormViewModelTest {
     }
 
     @Test
+    fun edit_load_failure_uses_user_specific_error() = runVmTest { dispatchers ->
+        val fake = FakeUsersRepository(listFailsWith = RuntimeException("network down"))
+        val vm = bundle(fake, dispatchers)
+        vm.init(UserFormMode.Edit("u-1"))
+        advanceUntilIdle()
+        assertIs<UserFormUiStateError.LoadUserFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
     fun edit_happy_path_writes_update_param() = runVmTest { dispatchers ->
         val fake = FakeUsersRepository()
         val vm = bundle(fake, dispatchers)
@@ -106,6 +119,7 @@ class UserFormViewModelTest {
         vm.init(UserFormMode.Add)
         advanceUntilIdle()
         vm.onFirstName("สมหมาย")
+        vm.onLastName("ทดสอบ")
         vm.onUsername("sommai")
         vm.onPassword("password1")
         vm.submit()

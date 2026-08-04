@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,18 +25,19 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.extension.Tier
-import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PharmDivider
+import app.devper.pharm.ui.designsystem.PriceTierBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
-import app.devper.pharm.ui.designsystem.PharmBadgeTone
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
+import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.i18n.pharmStrings
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerPickerSheet(
     customers: List<Customer>,
@@ -48,7 +45,6 @@ fun CustomerPickerSheet(
     onPick: (Customer) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var query by remember { mutableStateOf("") }
     val filtered = remember(customers, query) {
         if (query.isBlank()) customers
@@ -59,10 +55,8 @@ fun CustomerPickerSheet(
     }
 
     val t = pharmTokens
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
     ) {
         Column(modifier = Modifier.fillMaxHeight(0.85f)) {
             Text(
@@ -92,12 +86,7 @@ fun CustomerPickerSheet(
                     else -> LazyColumn(contentPadding = PaddingValues(bottom = 32.dp)) {
                         items(filtered, key = { it.id }) { customer ->
                             CustomerRow(customer, onClick = { onPick(customer) })
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(t.colors.borderSubtle),
-                            )
+                            PharmDivider(color = t.colors.borderSubtle)
                         }
                     }
                 }
@@ -112,7 +101,7 @@ private fun CustomerRow(customer: Customer, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onClick)
+            .pharmClickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp),
     ) {
         Text(
@@ -122,40 +111,16 @@ private fun CustomerRow(customer: Customer, onClick: () -> Unit) {
         customer.phone?.let {
             Text(text = it, style = PharmText.meta)
         }
-        if (customer.priceTier.isNotBlank() && customer.priceTier != Tier.Retail) {
-            Box(modifier = Modifier.padding(top = 4.dp)) {
-                val label = when (customer.priceTier) {
-                    Tier.Wholesale -> pharmStrings.sellTierWholesaleLabel
-                    Tier.Regular -> pharmStrings.sellTierRegularLabel
-                    else -> customer.priceTier
-                }
-                PharmBadge(
-                    text = label,
-                    tone = PharmBadgeTone.Indigo,
-                    size = PharmBadgeSize.Sm,
-                )
-            }
+        Box(modifier = Modifier.padding(top = 4.dp)) {
+            PriceTierBadge(priceTier = customer.priceTier, size = PharmBadgeSize.Sm)
         }
     }
 }
 
 @Composable
 private fun EmptyCustomers(searching: Boolean) {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = if (searching) PharmIcons.Search else PharmIcons.Customers,
-            contentDescription = null,
-            tint = t.colors.fgMuted,
-            modifier = Modifier.size(36.dp),
-        )
-        Text(
-            text = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
-            style = PharmText.body.copy(color = t.colors.fg3),
-            modifier = Modifier.padding(top = 12.dp),
-        )
-    }
+    PharmEmptyState(
+        icon = if (searching) PharmIcons.Search else PharmIcons.Customers,
+        title = if (searching) pharmStrings.sellCustomerNotFound else pharmStrings.sellCustomerEmpty,
+    )
 }

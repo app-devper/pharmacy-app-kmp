@@ -44,6 +44,7 @@ class CustomerFormViewModelTest {
         assertEquals("", s.form.phone)
         assertFalse(s.loading)
         assertFalse(s.canSubmit)
+        assertFalse(s.hasUnsavedChanges)
     }
 
     @Test
@@ -65,6 +66,7 @@ class CustomerFormViewModelTest {
         assertEquals("regular", s.form.priceTier)
         assertFalse(s.loading)
         assertTrue(s.canSubmit)
+        assertFalse(s.hasUnsavedChanges)
     }
 
     @Test
@@ -78,6 +80,15 @@ class CustomerFormViewModelTest {
     }
 
     @Test
+    fun init_edit_mode_load_failure_surfaces_form_specific_error() = runVmTest { dispatchers ->
+        val (vm, _) = newVm(dispatchers, FakeCustomerRepository(listThrows = true))
+        vm.init(CustomerFormMode.Edit("c1"))
+        advanceUntilIdle()
+        assertIs<CustomerFormUiStateError.LoadCustomerFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
     fun canSubmit_requires_non_blank_name() = runVmTest { dispatchers ->
         val (vm, _) = newVm(dispatchers)
         vm.init(CustomerFormMode.Add)
@@ -85,6 +96,7 @@ class CustomerFormViewModelTest {
         assertFalse(vm.state.value.canSubmit)
         vm.onName("Foo")
         assertTrue(vm.state.value.canSubmit)
+        assertTrue(vm.state.value.hasUnsavedChanges)
     }
 
     @Test

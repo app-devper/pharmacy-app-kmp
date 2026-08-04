@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.sell.components
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,9 +24,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
+import app.devper.pharm.ui.designsystem.PharmVerticalDivider
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 internal fun CartTabStrip(
@@ -38,11 +40,11 @@ internal fun CartTabStrip(
 ) {
     val t = pharmTokens
     Box(modifier = modifier.fillMaxWidth()) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.TopCenter))
-        Row(modifier = Modifier.fillMaxWidth().height(44.dp)) {
+        PharmDivider(modifier = Modifier.align(Alignment.TopCenter))
+        Row(modifier = Modifier.fillMaxWidth().height(48.dp)) {
             slots.forEachIndexed { index, parked ->
                 if (index > 0) {
-                    Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(t.colors.divider))
+                    PharmVerticalDivider()
                 }
                 TabChip(
                     number = index + 1,
@@ -53,7 +55,7 @@ internal fun CartTabStrip(
                 )
             }
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.BottomCenter))
+        PharmDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 
@@ -70,8 +72,8 @@ private fun TabChip(
     Box(
         modifier = modifier
             .fillMaxHeight()
-            .background(if (selected) t.colors.sidebarItemActive else t.colors.bgPage)
-            .clickable(role = Role.Button, onClick = onClick)
+            .background(if (selected) t.colors.selectedSurface else t.colors.bgPage)
+            .pharmClickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,
     ) {

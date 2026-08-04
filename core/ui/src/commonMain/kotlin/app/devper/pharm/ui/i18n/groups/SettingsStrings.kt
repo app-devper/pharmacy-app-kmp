@@ -14,18 +14,21 @@ interface SettingsStrings {
     val settingsStoreAddress: String
     val settingsStoreTaxId: String
     val settingsStoreTimezone: String
+    val settingsStoreTimezoneInvalid: String
     val settingsReceiptHeader: String
     val settingsReceiptHeaderPlaceholder: String
     val settingsReceiptFooter: String
     val settingsReceiptFooterPlaceholder: String
     val settingsReceiptFooterHint: String
     val settingsReceiptPaperWidth: String
+    val settingsReceiptPaperWidthInvalid: String
     val settingsReceiptShowPharmacist: String
     val settingsStockLowThresholdLabel: String
     val settingsStockLowThresholdPlaceholder: String
     val settingsStockReorderDays: String
     val settingsStockReorderLookahead: String
     val settingsStockExpiringDays: String
+    val settingsStockRangeError: (String, Int, Int) -> String
     val settingsPharmacistName: String
     val settingsPharmacistLicenseNo: String
     val settingsKySkipAuto: String
@@ -38,4 +41,20 @@ interface SettingsStrings {
     val settingsTestPrintFailed: String
     val settingsKyDefaultBuyerAddress: String
     val settingsKyDefaultBuyerAddressHint: String
+    val settingsDisplayTitle: String
+    val settingsDisplaySubtitle: String
+    val settingsDisplayTheme: String
+    val settingsDisplayFontSize: String
+    val settingsDisplayDensity: String
+    val settingsThemeLight: String
+    val settingsThemeDark: String
+    val settingsThemeAuto: String
+    val settingsFontSm: String
+    val settingsFontMd: String
+    val settingsFontLg: String
+    val settingsFontXl: String
+    val settingsDensityComfortable: String
+    val settingsDensityCompact: String
+    val settingsTabDisplay: String
+
 }

@@ -43,7 +43,6 @@ internal fun KyTable(
         columns = columns,
         key = { it.id },
         modifier = modifier,
-        rowHeight = 44.dp,
         emptyContent = {
             PharmEmptyState(
                 icon = PharmIcons.KyForms,
@@ -77,6 +76,7 @@ private fun kyColumns(
     ),
     PharmTableColumn(
         header = s.kyHeaderItem,
+        compactTitle = true,
         weight = 2.2f,
         cell = { row -> DrugNameCell(row.drugName) },
     ),
@@ -104,6 +104,7 @@ private fun kyColumns(
     ),
     PharmTableColumn(
         header = s.kyValueAmount,
+        compactTrailing = true,
         weight = 1.1f,
         align = PharmColumnAlign.End,
         cell = { row -> TotalCell(row.totalValue) },

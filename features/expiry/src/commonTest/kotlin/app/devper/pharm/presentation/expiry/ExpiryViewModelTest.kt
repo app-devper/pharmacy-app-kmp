@@ -5,15 +5,16 @@ import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.domain.repository.FakeExpiringLotsRepository
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
 import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
+import app.devper.pharm.presentation.expiry.exception.ExpiryUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import app.devper.pharm.common.AppException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,6 +77,7 @@ class ExpiryViewModelTest {
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
         val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
         advanceUntilIdle()
+        vm.toggleSelected("a")
         vm.askConfirm()
         assertTrue(vm.state.value.confirmDialog)
         vm.cancelConfirm()
@@ -87,7 +89,7 @@ class ExpiryViewModelTest {
         val repo = FakeExpiringLotsRepository(listThrows = true)
         val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.errorState)
+        assertIs<ExpiryUiStateError.LoadLotsFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 
@@ -120,5 +122,30 @@ class ExpiryViewModelTest {
         assertNotNull(vm.state.value.writeoffResult)
         vm.dismissResult()
         assertNull(vm.state.value.writeoffResult)
+    }
+
+    @Test
+    fun query_filters_by_drug_or_lot_and_select_all_affects_visible_rows_only() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("a"), lot("b"), lot("c")))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+
+        vm.onQueryChange("Lb")
+        assertEquals(listOf("b"), vm.state.value.filteredLots.map { it.id })
+        vm.toggleAll()
+
+        assertEquals(setOf("b"), vm.state.value.selected)
+        assertTrue(vm.state.value.allVisibleSelected)
+    }
+
+    @Test
+    fun confirm_cannot_open_without_a_selection() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        advanceUntilIdle()
+
+        vm.askConfirm()
+
+        assertFalse(vm.state.value.confirmDialog)
     }
 }

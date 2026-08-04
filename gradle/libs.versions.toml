@@ -1,8 +1,8 @@
 [versions]
 agp = "8.13.2"
 
-app-version = "3.2.3"
-app-versionCode = "3"
+app-version = "3.3.0"
+app-versionCode = "4"
 
 buildkonfig = "0.17.0"
 
@@ -37,6 +37,7 @@ androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", nam
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-savedstate = { group = "org.jetbrains.androidx.savedstate", name = "savedstate", version.ref = "androidx-savedstate" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigationCompose" }
+compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
 
 # Android
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }

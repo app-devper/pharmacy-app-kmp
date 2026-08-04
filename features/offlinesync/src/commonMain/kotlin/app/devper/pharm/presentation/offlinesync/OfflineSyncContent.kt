@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,9 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -43,33 +47,20 @@ fun OfflineSyncContent(
     val t = pharmTokens
     val s = pharmStrings
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.bgPage),
-    ) {
-        OfflineSyncMetricsRow(
-            pending = state.pending,
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
-        )
-        PharmListToolbar(
-            actions = {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    PharmButton(
-                        label = s.commonRefresh,
-                        onClick = callbacks.onRefresh,
-                        variant = PharmButtonVariant.Secondary,
-                        size = PharmButtonSize.Md,
-                    )
+    PharmListScaffold(
+        toolbar = {
+            PharmListToolbar(
+                title = s.navOfflineSync,
+                subtitle = s.offlineSyncSubtitle,
+                compactTopbarActions = true,
+                actions = {
                     PharmButton(
                         label = s.offlineSyncRetryAllCta,
                         onClick = callbacks.onSyncAll,
                         variant = PharmButtonVariant.Primary,
-                        size = PharmButtonSize.Md,
+                        size = PharmButtonSize.Sm,
                         enabled = state.totalCount > 0,
+                        loading = state.syncingAll,
                         leadingIcon = {
                             Icon(
                                 imageVector = PharmIcons.OfflineSync,
@@ -78,26 +69,32 @@ fun OfflineSyncContent(
                             )
                         },
                     )
-                }
-            },
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            when {
-                state.loading && state.pending.isEmpty() -> PharmListSkeleton()
-                state.pending.isEmpty() -> EmptyOfflineSync()
-                else -> LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(state.pending, key = { it.id }) { row ->
-                        OfflineSyncCard(row = row, tz = state.tz, callbacks = callbacks)
-                    }
+                },
+            )
+        },
+        metrics = { OfflineSyncMetricsRow(pending = state.pending) },
+        resultLine = {
+            PharmListResultLine(
+                total = state.pending.size,
+                noun = s.movementsCountNoun,
+            )
+        },
+    ) {
+        when {
+            state.loading && state.pending.isEmpty() -> PharmListSkeleton()
+            state.pending.isEmpty() -> EmptyOfflineSync()
+            else -> LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(state.pending, key = { it.id }) { row ->
+                    OfflineSyncCard(
+                        row = row,
+                        tz = state.tz,
+                        syncing = row.id in state.syncingIds,
+                        actionsEnabled = !state.busy,
+                        callbacks = callbacks,
+                    )
                 }
             }
         }
@@ -114,12 +111,14 @@ fun OfflineSyncContent(
                     onClick = callbacks.onDismissCancel,
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
+                    enabled = !state.discarding,
                 )
                 PharmButton(
                     label = s.commonDelete,
                     onClick = callbacks.onConfirmCancel,
                     variant = PharmButtonVariant.Danger,
                     size = PharmButtonSize.Md,
+                    loading = state.discarding,
                 )
             },
         ) {
@@ -135,28 +134,12 @@ fun OfflineSyncContent(
 
 @Composable
 private fun EmptyOfflineSync() {
-    val t = pharmTokens
     val s = pharmStrings
-    Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = PharmIcons.Check,
-                contentDescription = null,
-                tint = t.colors.successFg,
-                modifier = Modifier.size(56.dp),
-            )
-            Text(
-                text = s.offlineSyncEmptyTitle,
-                style = PharmText.h2,
-                modifier = Modifier.padding(top = 12.dp),
-            )
-            Text(
-                text = s.offlineSyncEmpty,
-                style = PharmText.meta.copy(color = t.colors.fgMuted),
-                modifier = Modifier.padding(top = 4.dp),
-            )
-        }
-    }
+    PharmEmptyState(
+        icon = PharmIcons.Check,
+        title = s.offlineSyncEmptyTitle,
+        subtitle = s.offlineSyncEmpty,
+    )
 }
 
 private val samplePending = listOf(

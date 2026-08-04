@@ -19,6 +19,7 @@ fun ExpiryScreen(
         state = state,
         callbacks = ExpiryCallbacks(
             onWindowChange = viewModel::selectWindow,
+            onQueryChange = viewModel::onQueryChange,
             onToggleRow = viewModel::toggleSelected,
             onToggleAll = viewModel::toggleAll,
             onClearSelection = viewModel::clearSelection,

@@ -8,6 +8,9 @@ object CommonStringsTh : CommonStrings {
     override val commonOffline = "ออฟไลน์"
     override val commonErrorIconDesc = "ข้อผิดพลาด"
     override val commonOpenMenu = "เปิดเมนู"
+    override val commonCloseMenu = "ปิดเมนู"
+    override val commonOpenAccountMenu = "เปิดเมนูบัญชี"
+    override val commonCloseAccountMenu = "ปิดเมนูบัญชี"
     override val commonHelp = "ช่วยเหลือ"
     override val commonResultFound: (Int, String, Int) -> String = { visible, noun, total -> "พบ $visible $noun จากทั้งหมด $total" }
     override val commonResultTotal: (Int, String) -> String = { total, noun -> "ทั้งหมด $total $noun" }
@@ -53,6 +56,10 @@ object CommonStringsTh : CommonStrings {
     override val commonCost = "ต้นทุน"
 
     override val commonCancel = "ยกเลิก"
+    override val commonUnsavedChangesTitle = "ยังไม่ได้บันทึกการเปลี่ยนแปลง"
+    override val commonUnsavedChangesMessage = "หากออกตอนนี้ การเปลี่ยนแปลงจะหายไป"
+    override val commonKeepEditing = "แก้ไขต่อ"
+    override val commonDiscardChanges = "ทิ้งการเปลี่ยนแปลง"
     override val commonSave = "บันทึก"
     override val commonDelete = "ลบ"
     override val commonEdit = "แก้ไข"
@@ -63,7 +70,7 @@ object CommonStringsTh : CommonStrings {
     override val commonBackspace = "ลบหลัง"
     override val commonClearInput = "ล้างข้อความ"
     override val commonBack = "กลับ"
-    override val commonLoading = "กำลังโหลด"
+    override val commonLoading = "กำลังโหลด…"
     override val commonRetry = "ลองอีกครั้ง"
     override val commonMore = "เพิ่มเติม"
     override val commonTotal = "ทั้งหมด"

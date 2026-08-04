@@ -6,6 +6,7 @@ import app.devper.pharm.ui.i18n.PharmStrings
 import app.devper.pharm.ui.i18n.localizeCommon
 
 fun AppException.localizeKy(s: PharmStrings): String = when (this) {
+    is KyUiStateError.LoadEntriesFailed -> s.kyLoadEntriesFailed
     is KyUiStateError.DownloadPdfFailed -> s.kyDownloadPdfFailed
     else -> localizeCommon(s)
 }

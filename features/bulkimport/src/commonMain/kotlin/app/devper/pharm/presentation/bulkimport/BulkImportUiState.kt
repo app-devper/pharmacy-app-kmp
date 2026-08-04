@@ -22,7 +22,7 @@ data class BulkImportUiState(
     override fun withLoading(value: Boolean) = copy(submitting = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
-    val canSubmit: Boolean get() = !submitting && text.isNotBlank()
+    val actionsEnabled: Boolean get() = !submitting
 
     val rows: List<BulkImportRow> = run {
         val errorByRow = result?.errors.orEmpty().associateBy { it.row }

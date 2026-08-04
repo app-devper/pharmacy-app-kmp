@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.stockcount
 
 import app.devper.pharm.domain.model.StockCount
+import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
 import app.devper.pharm.domain.usecase.inventory.GetStockCountsUseCase
 import app.devper.pharm.ui.common.runVmTest
@@ -9,6 +10,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,5 +36,14 @@ class StockCountsListViewModelTest {
         advanceUntilIdle()
         vm.onQueryChange("SC-001")
         assertEquals("SC-001", vm.state.value.query)
+    }
+
+    @Test
+    fun load_failure_surfaces_typed_error_and_clears_loading() = runVmTest { d ->
+        val repo = FakeStockCountsRepository(listThrows = true)
+        val vm = StockCountsListViewModel(GetStockCountsUseCase(repo, d))
+        advanceUntilIdle()
+        assertIs<StockCountUiStateError.LoadRoundsFailed>(vm.state.value.errorState)
+        assertFalse(vm.state.value.loading)
     }
 }

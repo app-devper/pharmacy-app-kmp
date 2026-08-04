@@ -39,9 +39,33 @@ Single host for both um-api and pharmacy-app/backend: `https://api.devper.app`
 - `/api/um/v1/*` — auth (login, user info, logout)
 - `/api/pharmacy/v1/*` — pharmacy POS endpoints
 
-To point at a local backend, override `ApiConfig(apiBaseUrl = "http://10.0.2.2:8087")` in the platform Koin module.
+To point native clients at a local backend, pass `ApiConfig(apiBaseUrl = "http://10.0.2.2:8087")` to `appModule(...)` in the platform entry point.
+
+For local web QA, clone and install the shared private
+[`app-devper/mock-api`](https://github.com/app-devper/mock-api) Python service.
+It serves UM, Pharmacy, Gold, POS, and Alert routes and can host the Wasm build
+from the same origin:
+
+```bash
+git clone git@github.com:app-devper/mock-api.git ../../mock-api
+cd ../../mock-api
+python3 -m venv .venv
+.venv/bin/pip install -e ".[dev]"
+cd ../pharmacy-app/app-kmp
+./gradlew :composeApp:wasmJsBrowserDevelopmentExecutableDistribution
+MOCK_API_PORT=8088 \
+MOCK_API_STATIC_DIR=composeApp/build/dist/wasmJs/developmentExecutable \
+../../mock-api/.venv/bin/mock-api
+```
+
+Open `http://localhost:8088/?apiBaseUrl=http://localhost:8088`. The shared
+repository documents setup for every supported project and exposes its combined
+contract at `/docs` and `/openapi.json`.
+
+The runtime override is accepted only when the web app itself is served from localhost, so production remains pinned to `https://api.devper.app`.
 
 ## Docs
 
 - [`CLAUDE.md`](CLAUDE.md) — project conventions, module rules, verify command
 - [`MODULE_GRAPH.md`](MODULE_GRAPH.md) — full 26-module dep matrix, what lives where, per-feature recipe
+- [`VISUAL_QA.md`](VISUAL_QA.md) — manual pass over every feature against the mock API

@@ -17,7 +17,8 @@ data class PasswordFormFields(
     val confirmPassword: String = "",
 ) {
     val matches: Boolean get() = newPassword.isNotBlank() && newPassword == confirmPassword
-    val canSubmit: Boolean get() = oldPassword.isNotBlank() && matches
+    val newPasswordValid: Boolean get() = newPassword.length >= 8
+    val canSubmit: Boolean get() = oldPassword.isNotBlank() && newPasswordValid && matches
 }
 
 data class ProfileUiState(
@@ -28,11 +29,6 @@ data class ProfileUiState(
     val passwordSaving: Boolean = false,
     val passwordSaved: Boolean = false,
     val passwordErrorState: AppException? = null,
-    val theme: String = "auto",
-    val fontSize: String = "md",
-    val density: String = "comfortable",
-    val locale: String = "th",
-    val localeChangeApplied: Boolean = false,
     override val loading: Boolean = false,
     override val saving: Boolean = false,
     override val saved: Boolean = false,
@@ -48,6 +44,12 @@ data class ProfileUiState(
                 form.phone != it.phone ||
                 form.email != it.email
         } == true
+
+    val canAttemptSubmit: Boolean
+        get() = !saving && !loading && user != null && isDirty
+
+    override val hasUnsavedChanges: Boolean
+        get() = isDirty || showPasswordPanel && password != PasswordFormFields()
 
     override val domainError: AppException? get() = errorState
     override fun withSaving(saving: Boolean) = copy(saving = saving)

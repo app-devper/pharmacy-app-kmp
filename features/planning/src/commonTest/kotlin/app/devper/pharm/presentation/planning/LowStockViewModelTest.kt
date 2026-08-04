@@ -7,13 +7,15 @@ import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.usecase.inventory.GetLowStockDrugsUseCase
+import app.devper.pharm.presentation.planning.exception.LowStockUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LowStockViewModelTest {
@@ -50,7 +52,28 @@ class LowStockViewModelTest {
         val repo = FakeDrugRepository(lowStockThrows = true)
         val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
         advanceUntilIdle()
-        assertNotNull(vm.state.value.errorState)
+        assertIs<LowStockUiStateError.LoadFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun query_filters_loaded_drugs_and_survives_reload() = runVmTest { d ->
+        val paracetamol = drug("paracetamol").copy(
+            name = "Paracetamol 500 mg",
+            genericName = "Acetaminophen",
+            barcode = "885000000001",
+        )
+        val amoxicillin = drug("amoxicillin").copy(name = "Amoxicillin 250 mg")
+        val repo = FakeDrugRepository(lowStockSeed = listOf(paracetamol, amoxicillin))
+        val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
+        advanceUntilIdle()
+
+        vm.onQueryChange("885000")
+
+        assertEquals(listOf("paracetamol"), vm.state.value.filtered.map { it.id })
+        vm.reload()
+        advanceUntilIdle()
+        assertEquals("885000", vm.state.value.query)
+        assertTrue(vm.state.value.filtered.single().name.startsWith("Paracetamol"))
     }
 }

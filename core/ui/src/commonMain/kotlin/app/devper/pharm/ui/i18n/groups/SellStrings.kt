@@ -86,6 +86,7 @@ interface SellStrings {
     val sellVoidMissingBillId: String
     val sellVoidReasonRequired: String
     val sellVoidFailed: String
+    val sellLoadDrugsFailed: String
     val sellBarcodeNotFound: (String) -> String
     val sellLoadCustomersFailed: String
     val sellPrintReceiptUnsupported: String

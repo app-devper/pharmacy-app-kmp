@@ -74,14 +74,22 @@ class OfflineSyncViewModelTest {
 
     @Test
     fun askDiscard_sets_confirm_id() = runVmTest { dispatchers ->
-        val (vm, _, _) = newVm(dispatchers)
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(seed = listOf(pending("foo", enqueuedAt = 100))),
+        )
+        advanceUntilIdle()
         vm.askDiscard("foo")
         assertEquals("foo", vm.state.value.confirmDiscardId)
     }
 
     @Test
     fun cancelDiscard_clears_confirm_id() = runVmTest { dispatchers ->
-        val (vm, _, _) = newVm(dispatchers)
+        val (vm, _, _) = newVm(
+            dispatchers,
+            FakeOfflineSaleQueue(seed = listOf(pending("foo", enqueuedAt = 100))),
+        )
+        advanceUntilIdle()
         vm.askDiscard("foo")
         vm.cancelDiscard()
         assertNull(vm.state.value.confirmDiscardId)
@@ -286,10 +294,12 @@ class OfflineSyncViewModelTest {
     }
 
     @Test
-    fun refresh_sets_refreshed_message() = runVmTest { dispatchers ->
+    fun ask_discard_ignores_an_unknown_item() = runVmTest { dispatchers ->
         val (vm, _, _) = newVm(dispatchers)
         advanceUntilIdle()
-        vm.refresh()
-        assertIs<OfflineSyncUiStateMessage.Refreshed>(vm.state.value.messageState)
+
+        vm.askDiscard("missing")
+
+        assertNull(vm.state.value.confirmDiscardId)
     }
 }

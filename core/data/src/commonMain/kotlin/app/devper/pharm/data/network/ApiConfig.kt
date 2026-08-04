@@ -13,3 +13,18 @@ data class ApiConfig(
 
     private fun String.ensureLeadingSlash(): String = if (isEmpty() || startsWith("/")) this else "/$this"
 }
+
+fun localQaApiBaseUrl(pageHost: String, rawQuery: String): String? {
+    if (pageHost.lowercase() !in setOf("localhost", "127.0.0.1", "::1")) return null
+    return rawQuery
+        .removePrefix("?")
+        .split("&")
+        .mapNotNull { entry ->
+            val parts = entry.split("=", limit = 2)
+            parts.takeIf { it.size == 2 && it[0] == "apiBaseUrl" }?.get(1)
+        }
+        .firstOrNull()
+        ?.trim()
+        ?.trimEnd('/')
+        ?.takeIf { it.startsWith("http://") || it.startsWith("https://") }
+}

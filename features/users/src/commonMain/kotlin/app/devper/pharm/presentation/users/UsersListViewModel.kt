@@ -35,7 +35,9 @@ class UsersListViewModel(
         launchResult(
             block = { getUsers() },
             onSuccess = { list -> setState { copy(loading = false, users = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = UsersUiStateError.LoadUsersFailed(e)) }
+            },
         )
     }
 

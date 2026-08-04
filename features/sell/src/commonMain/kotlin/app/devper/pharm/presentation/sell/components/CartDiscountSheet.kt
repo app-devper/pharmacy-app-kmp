@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.sell.components
 
 import app.devper.pharm.common.value.Money
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
@@ -12,10 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +23,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
+import app.devper.pharm.ui.common.pharmSelectable
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -39,7 +36,6 @@ import app.devper.pharm.ui.i18n.pharmStrings
 
 private enum class Kind { Flat, Percent }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartDiscountSheet(
     current: CartDiscount,
@@ -47,7 +43,6 @@ fun CartDiscountSheet(
     onApply: (CartDiscount) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val t = pharmTokens
     var kind by remember(current) {
         mutableStateOf(when (current) {
@@ -74,10 +69,8 @@ fun CartDiscountSheet(
         Kind.Percent -> value < 0 || value > 100
     }
 
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
     ) {
         Column(
             modifier = Modifier
@@ -153,7 +146,12 @@ private fun SegItem(text: String, active: Boolean, onClick: () -> Unit) {
         modifier = Modifier
             .clip(t.shapes.sm)
             .background(bg, t.shapes.sm)
-            .selectable(selected = active, role = Role.RadioButton, onClick = { if (!active) onClick() })
+            .pharmSelectable(
+                selected = active,
+                role = Role.RadioButton,
+                shape = t.shapes.sm,
+                onClick = { if (!active) onClick() },
+            )
             .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         Text(

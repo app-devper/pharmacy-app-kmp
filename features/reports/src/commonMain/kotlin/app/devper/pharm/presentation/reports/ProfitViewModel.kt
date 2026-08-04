@@ -8,9 +8,9 @@ import app.devper.pharm.domain.param.reports.ExportProfitCsvParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
 import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
 import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
-import app.devper.pharm.presentation.reports.internal.startOfMonth
-import app.devper.pharm.presentation.reports.internal.todayDate
-import app.devper.pharm.presentation.reports.internal.toYmd
+import app.devper.pharm.ui.format.startOfMonth
+import app.devper.pharm.ui.format.todayLocalDate
+import app.devper.pharm.ui.format.toYmd
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
@@ -23,21 +23,18 @@ class ProfitViewModel(
     ProfitUiState(
         dateRange = DateRangeFilter(
             tz = timeZoneProvider.current,
-            from = todayDate(timeZoneProvider.current).startOfMonth().toYmd(),
-            to = todayDate(timeZoneProvider.current).toYmd(),
+            from = todayLocalDate(timeZoneProvider.current).startOfMonth().toYmd(),
+            to = todayLocalDate(timeZoneProvider.current).toYmd(),
         ),
     ),
 ) {
 
     init { reload() }
 
-    fun onFromMillisChange(millis: Long?) {
-        setState { copy(dateRange = dateRange.withFromMillis(millis)) }
-        reload()
-    }
-
-    fun onToMillisChange(millis: Long?) {
-        setState { copy(dateRange = dateRange.withToMillis(millis)) }
+    fun onDateRangeChange(fromMillis: Long?, toMillis: Long?) {
+        val next = current.dateRange.withFromMillis(fromMillis).withToMillis(toMillis)
+        if (next == current.dateRange) return
+        setState { copy(dateRange = next) }
         reload()
     }
 

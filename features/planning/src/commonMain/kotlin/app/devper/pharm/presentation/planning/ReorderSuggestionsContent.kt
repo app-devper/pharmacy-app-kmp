@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.presentation.planning.i18n.localizePlanning
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -26,7 +27,7 @@ import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -42,16 +43,22 @@ fun ReorderSuggestionsContent(
     val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(
+        PharmListToolbar(
             title = s.planningTitle,
             onBack = onBack,
+            compactHeaderActions = false,
             actions = {
-                if (state.suggestions.isNotEmpty()) {
+                if (state.remainingSuggestions.isNotEmpty()) {
                     PharmButton(
-                        label = s.planningAddAllCta,
+                        label = if (state.addedSuggestionCount == 0) {
+                            s.planningAddAllCta
+                        } else {
+                            s.planningAddRemainingCta(state.remainingSuggestions.size)
+                        },
                         onClick = callbacks.onAddAll,
                         size = PharmButtonSize.Sm,
                         variant = PharmButtonVariant.Outline,
+                        enabled = !state.loading,
                         leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
                     )
                 }
@@ -68,6 +75,8 @@ fun ReorderSuggestionsContent(
                     onClick = callbacks.onReload,
                     size = PharmButtonSize.Sm,
                     variant = PharmButtonVariant.Outline,
+                    enabled = !state.loading,
+                    loading = state.loading,
                     leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                 )
             },
@@ -82,7 +91,7 @@ fun ReorderSuggestionsContent(
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
             PharmListResultLine(total = state.suggestions.size, noun = s.planningCountNoun)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
             when {
                 state.loading && state.suggestions.isEmpty() -> PharmListSkeleton()
                 state.suggestions.isEmpty() ->
@@ -91,7 +100,11 @@ fun ReorderSuggestionsContent(
                         title = s.planningReorderEmptyTitle,
                         subtitle = s.planningReorderEmpty,
                     )
-                else -> ReorderSuggestionsTable(suggestions = state.suggestions, callbacks = callbacks)
+                else -> ReorderSuggestionsTable(
+                    suggestions = state.suggestions,
+                    draftDrugIds = state.draftDrugIds,
+                    callbacks = callbacks,
+                )
             }
         }
     }

@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 object CustomersStringsTh : CustomersStrings {
+    override val customersListLoadFailed = "โหลดรายชื่อลูกค้าไม่สำเร็จ"
+    override val customersFormLoadFailed = "โหลดข้อมูลลูกค้าเพื่อแก้ไขไม่สำเร็จ"
     override val customersListSubtitle = "จัดการข้อมูลลูกค้าและประวัติการซื้อ"
     override val customersSearchPlaceholder = "ค้นหาชื่อ / เบอร์โทร…"
     override val customersAddCta = "เพิ่มลูกค้า"
@@ -19,7 +21,7 @@ object CustomersStringsTh : CustomersStrings {
     override val customersFormEditTitle = "แก้ไขลูกค้า"
     override val customersFormInfoSection = "ข้อมูลลูกค้า"
     override val customersFormFullName = "ชื่อ-นามสกุล"
-    override val customersFormNamePlaceholder = "เช่น สมศรี ใจดี"
+    override val customersFormNamePlaceholder = "เช่น สมศรี ใจดี…"
     override val customersFormAllergyHint = "จะถูกแสดงเป็นแถบเตือนสีแดงในตะกร้า"
     override val customersTierLabel = "กลุ่มราคา"
     override val customersTierHint = "กลุ่มราคาเริ่มต้นของลูกค้า เวลาขายระบบจะใช้ราคาตามกลุ่มนี้ ถ้ายาไม่มีราคากลุ่มนั้นจะใช้ราคาหน้าร้านแทน"
@@ -30,4 +32,5 @@ object CustomersStringsTh : CustomersStrings {
     override val customersDetailLoadCustomerFailed = "โหลดข้อมูลลูกค้าไม่สำเร็จ"
     override val customersDetailLoadSalesFailed = "โหลดประวัติการขายไม่สำเร็จ"
     override val customersFormNotFound = "ไม่พบลูกค้า"
+    override val customersSubtitle = "ข้อมูลลูกค้าและประวัติการซื้อ"
 }

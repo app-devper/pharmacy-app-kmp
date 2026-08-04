@@ -1,13 +1,14 @@
 package app.devper.pharm.presentation.stock
 
-import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
+import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.param.reports.ExportDrugsCsvParam
 import app.devper.pharm.domain.usecase.reports.ExportDrugsCsvUseCase
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
+import app.devper.pharm.presentation.stock.exception.StockUiStateError
 
 private const val EXPIRING_SOON_DAYS = 90
 
@@ -43,7 +44,9 @@ class StockViewModel(
         launchResult(
             block = { getDrugs() },
             onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e ->
+                setState { copy(loading = false, errorState = StockUiStateError.LoadStockFailed(e)) }
+            },
         )
         launchResult(
             block = { getExpiringLots(ExpiringLotsFilterParam(daysAhead = EXPIRING_SOON_DAYS)) },

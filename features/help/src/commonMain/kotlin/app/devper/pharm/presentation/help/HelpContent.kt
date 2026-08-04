@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -32,15 +31,21 @@ import app.devper.pharm.presentation.help.i18n.localize
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.help.MarkdownText
 import app.devper.pharm.ui.i18n.pharmStrings
-import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import kotlinx.coroutines.launch
 import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
+import androidx.compose.material3.Icon
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 
 private const val DUAL_PANE_MIN_DP = 720
-private const val PINNED_ITEMS_BEFORE_SECTIONS = 2
+private const val PINNED_ITEMS_BEFORE_SECTIONS = 1
 
 @Composable
 fun HelpContent(
@@ -48,33 +53,52 @@ fun HelpContent(
     callbacks: HelpCallbacks,
 ) {
     val t = pharmTokens
-    Box(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        when {
-            state.loading -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) { PharmCircularProgress(color = t.colors.accent) }
-
-            state.markdown.isBlank() -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = pharmStrings.helpNotFound,
-                    style = PharmText.body.copy(color = t.colors.fg3),
+    val s = pharmStrings
+    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
+        PharmListToolbar(
+            title = s.navHelp,
+            subtitle = s.helpSubtitle,
+            compactTopbarActions = true,
+            actions = {
+                PharmButton(
+                    label = s.commonRefresh,
+                    onClick = callbacks.onReload,
+                    variant = PharmButtonVariant.Ghost,
+                    size = PharmButtonSize.Sm,
+                    loading = state.loading,
+                    leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
                 )
-            }
+            },
+        )
+        Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            when {
+                state.loading -> Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) { PharmCircularProgress(color = t.colors.accent) }
 
-            else -> HelpBody(state = state, callbacks = callbacks)
+                state.markdown.isBlank() -> PharmEmptyState(
+                    title = s.helpNotFound,
+                    icon = PharmIcons.Help,
+                    action = {
+                        PharmButton(
+                            label = s.commonRetry,
+                            onClick = callbacks.onReload,
+                            size = PharmButtonSize.Sm,
+                        )
+                    },
+                )
+
+                else -> HelpBody(state = state)
+            }
         }
     }
-    ErrorBottomSheet(message = state.errorState?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localize(s), onDismiss = callbacks.onDismissError)
 }
 
 @Composable
 private fun HelpBody(
     state: HelpUiState,
-    callbacks: HelpCallbacks,
 ) {
     val sections = remember(state.markdown) { splitSections(state.markdown) }
     val listState = rememberLazyListState()
@@ -90,7 +114,6 @@ private fun HelpBody(
     }
 
     val onSelect: (String) -> Unit = { id ->
-        callbacks.onTocClick(id)
         val idx = sections.indexOfFirst { it.id == id }
         if (idx >= 0) {
             scope.launch { listState.animateScrollToItem(idx + PINNED_ITEMS_BEFORE_SECTIONS) }
@@ -115,14 +138,14 @@ private fun HelpBody(
                     sections = sections,
                     listState = listState,
                     modifier = Modifier
-                        .widthIn(max = 880.dp)
+                        .widthIn(max = pharmTokens.dimens.readingContentMaxWidth)
                         .fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
                 )
             }
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
-                HelpToc(
+                HelpCompactToc(
                     sections = sections,
                     activeId = activeId,
                     onSelect = onSelect,
@@ -154,7 +177,6 @@ private fun HelpArticle(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item("__title__") { ArticleHeader() }
         item("__tip__") { KeyboardTipBanner() }
         items(
             count = sections.size,
@@ -166,21 +188,6 @@ private fun HelpArticle(
                 Spacer(Modifier.height(8.dp))
             }
         }
-    }
-}
-
-@Composable
-private fun ArticleHeader() {
-    val t = pharmTokens
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Text(text = pharmStrings.navHelp, style = PharmText.h1)
-        Text(
-            text = pharmStrings.helpSubtitle,
-            style = PharmText.meta.copy(color = t.colors.fgMuted),
-        )
     }
 }
 

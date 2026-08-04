@@ -6,9 +6,11 @@ import androidx.compose.ui.Modifier
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.i18n.localizeCommon
+import app.devper.pharm.presentation.customers.i18n.localizeCustomersList
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -41,6 +43,13 @@ fun CustomersListContent(
             state.customers.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.Customers,
                 title = s.customersListEmpty,
+                action = {
+                    PharmButton(
+                        label = s.customersAddCta,
+                        onClick = callbacks.onOpenAdd,
+                        size = PharmButtonSize.Sm,
+                    )
+                },
             )
             else -> CustomersListTable(
                 customers = visible,
@@ -50,7 +59,7 @@ fun CustomersListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeCommon(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeCustomersList(s), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleCustomers = listOf(

@@ -13,7 +13,6 @@ internal fun OfflineSyncMetricsRow(pending: List<PendingSale>, modifier: Modifie
     val s = pharmStrings
     val total = pending.size
     val failed = pending.count { it.lastError != null }
-    val attempts = pending.sumOf { it.attempts }
 
     MetricCardRow(modifier = modifier) {
         MetricCard(
@@ -27,11 +26,6 @@ internal fun OfflineSyncMetricsRow(pending: List<PendingSale>, modifier: Modifie
             value = failed.toString(),
             sub = s.offlineSyncStatusRetry,
             tint = if (failed > 0) MetricTint.Danger else MetricTint.Neutral,
-        )
-        MetricCard(
-            label = s.offlineSyncMetricsAttempts,
-            value = attempts.toString(),
-            sub = s.offlineSyncMetricsAttemptsSuffix,
         )
     }
 }

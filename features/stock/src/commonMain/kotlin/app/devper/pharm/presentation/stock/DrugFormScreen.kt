@@ -10,6 +10,7 @@ import app.devper.pharm.presentation.stock.form.DrugFormCallbacks
 import app.devper.pharm.presentation.stock.form.DrugFormContent
 import app.devper.pharm.ui.common.LocalPharmSnackbar
 import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.components.RegisterUnsavedChanges
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -21,6 +22,7 @@ fun DrugFormScreen(
     adjustmentsViewModel: StockAdjustmentsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    RegisterUnsavedChanges(state.hasUnsavedChanges)
     val lotsState by lotsViewModel.state.collectAsStateWithLifecycle()
     val adjustmentsState by adjustmentsViewModel.state.collectAsStateWithLifecycle()
     val snackbar = LocalPharmSnackbar.current
@@ -32,7 +34,7 @@ fun DrugFormScreen(
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
-            snackbar.showToast(PharmToast.Success(s.stockDrugSavedToast))
+            snackbar.showToast(PharmToast.Success(s.commonSaved))
             onBack()
         }
     }

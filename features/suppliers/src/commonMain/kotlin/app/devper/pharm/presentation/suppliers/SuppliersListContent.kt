@@ -4,9 +4,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.i18n.localizeCommon
+import app.devper.pharm.presentation.suppliers.i18n.localizeSuppliersList
 import app.devper.pharm.ui.designsystem.PharmButton
+import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -34,6 +37,17 @@ fun SuppliersListContent(
     ) {
         when {
             state.loading && state.suppliers.isEmpty() -> PharmListSkeleton()
+            state.suppliers.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.Suppliers,
+                title = s.suppliersListEmpty,
+                action = {
+                    PharmButton(
+                        label = s.suppliersAddCta,
+                        onClick = callbacks.onOpenAdd,
+                        size = PharmButtonSize.Sm,
+                    )
+                },
+            )
             else -> SuppliersListTable(
                 suppliers = visible,
                 callbacks = callbacks,
@@ -51,7 +65,7 @@ fun SuppliersListContent(
         )
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeCommon(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState?.localizeSuppliersList(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

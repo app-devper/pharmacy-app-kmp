@@ -18,6 +18,7 @@ import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
+import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -27,6 +28,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ImportFormViewModelTest {
@@ -121,6 +123,7 @@ class ImportFormViewModelTest {
         assertEquals("Amoxicillin", items[0].drugName)
         assertEquals("100", items[0].qty)
         assertTrue(consumed.state.value.isEmpty())
+        assertTrue(vm.state.value.hasUnsavedChanges)
     }
 
     @Test
@@ -156,6 +159,7 @@ class ImportFormViewModelTest {
         assertEquals("100", s.form.items[0].qty)
         assertFalse(s.readOnly)
         assertTrue(s.isEdit)
+        assertFalse(s.hasUnsavedChanges)
     }
 
     @Test
@@ -170,14 +174,15 @@ class ImportFormViewModelTest {
         advanceUntilIdle()
         assertTrue(vm.state.value.readOnly)
         assertFalse(vm.state.value.canSubmit)
+        assertFalse(vm.state.value.hasUnsavedChanges)
     }
 
     @Test
     fun edit_mode_not_found_surfaces_error() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers)
+        val (vm, _) = newVm(dispatchers, poRepo = FakePurchaseOrderRepository(getThrows = true))
         vm.init(ImportFormMode.Edit("missing"))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.errorState)
+        assertIs<ImportFormUiStateError.LoadOrderFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
 

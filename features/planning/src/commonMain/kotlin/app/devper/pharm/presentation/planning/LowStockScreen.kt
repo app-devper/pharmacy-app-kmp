@@ -7,13 +7,18 @@ import app.devper.pharm.ui.common.ReloadOnResume
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LowStockScreen(viewModel: LowStockViewModel = koinViewModel()) {
+fun LowStockScreen(
+    onOpenDrug: (drugId: String) -> Unit = {},
+    viewModel: LowStockViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ReloadOnResume(viewModel::reload)
     LowStockContent(
         state = state,
         callbacks = LowStockCallbacks(
             onReload = viewModel::reload,
+            onQueryChange = viewModel::onQueryChange,
+            onRowClick = { onOpenDrug(it.id) },
             onDismissError = viewModel::dismissError,
         ),
     )

@@ -1,6 +1,9 @@
 package app.devper.pharm.presentation.stockcount
 
 import androidx.compose.runtime.Composable
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -12,10 +15,13 @@ fun StockCountFormScreen(
     viewModel: StockCountFormViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbar = LocalPharmSnackbar.current
+    val s = pharmStrings
 
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
+            snackbar.showToast(PharmToast.Success(s.commonSaved))
             onBack()
         }
     }
@@ -25,9 +31,10 @@ fun StockCountFormScreen(
         callbacks = StockCountFormCallbacks(
             onSearchChange = viewModel::onQueryChange,
             onCountedChange = viewModel::onCountChange,
-            onFillFromSystem = viewModel::onFillFromSystem,
-            onClear = viewModel::onClear,
-            onClearDraft = viewModel::onClearDraft,
+            onFillFromSystem = viewModel::requestFillFromSystem,
+            onClearDraft = viewModel::requestClearDraft,
+            onConfirmDraftAction = viewModel::confirmDraftAction,
+            onCancelDraftAction = viewModel::cancelDraftAction,
             onSave = viewModel::requestSubmit,
             onConfirmSubmit = viewModel::confirmSubmit,
             onCancelSubmit = viewModel::cancelSubmit,

@@ -2,23 +2,13 @@ package app.devper.pharm.presentation.profile
 
 import app.devper.pharm.presentation.profile.exception.ProfileUiStateError
 
-import app.devper.pharm.common.error.CommonUiStateError
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.domain.model.DensityPreference
-import app.devper.pharm.domain.model.FontSizePreference
-import app.devper.pharm.domain.model.LocalePreference
-import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.param.profile.ChangePasswordParam
 import app.devper.pharm.domain.param.profile.UpdateProfileParam
 import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
-import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
 import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -28,27 +18,10 @@ class ProfileViewModel(
     private val getProfile: GetProfileUseCase,
     private val updateProfile: UpdateProfileUseCase,
     private val changePassword: ChangePasswordUseCase,
-    uiPreferences: UiPreferencesProvider,
-    private val setTheme: SetThemePreferenceUseCase,
-    private val setFontSize: SetFontSizePreferenceUseCase,
-    private val setDensity: SetDensityPreferenceUseCase,
-    private val setLocale: SetLocalePreferenceUseCase,
 ) : BaseFormViewModel<ProfileUiState>(ProfileUiState()) {
 
     init {
         load()
-        uiPreferences.state
-            .onEach { prefs ->
-                setState {
-                    copy(
-                        theme = prefs.theme.wire,
-                        fontSize = prefs.fontSize.wire,
-                        density = prefs.density.wire,
-                        locale = prefs.locale.wire,
-                    )
-                }
-            }
-            .launchIn(viewModelScope)
     }
 
     fun reload() = load()
@@ -69,27 +42,6 @@ class ProfileViewModel(
     fun onConfirmPassword(v: String) = patchPassword { copy(confirmPassword = v) }
 
     fun dismissPasswordError() = setState { copy(passwordErrorState = null) }
-
-    fun onThemeChange(value: String) {
-        setTheme(ThemePreference.parse(value))
-    }
-
-    fun onFontSizeChange(value: String) {
-        setFontSize(FontSizePreference.parse(value))
-    }
-
-    fun onDensityChange(value: String) {
-        setDensity(DensityPreference.parse(value))
-    }
-
-    fun onLocaleChange(value: String) {
-        val parsed = LocalePreference.parse(value)
-        if (parsed.wire == current.locale) return
-        setLocale(parsed)
-        setState { copy(localeChangeApplied = true) }
-    }
-
-    fun dismissLocaleChangeMessage() = setState { copy(localeChangeApplied = false) }
 
     fun submitPasswordChange() {
         val pwd = current.password
@@ -133,7 +85,7 @@ class ProfileViewModel(
                 hydrate(user)
                 setState { copy(loading = false) }
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = CommonUiStateError.LoadFailed(e)) } },
+            onFailure = { e -> setState { copy(loading = false, errorState = ProfileUiStateError.LoadProfileFailed(e)) } },
         )
     }
 

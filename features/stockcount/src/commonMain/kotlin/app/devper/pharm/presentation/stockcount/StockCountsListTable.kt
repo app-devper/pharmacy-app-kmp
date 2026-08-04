@@ -73,6 +73,7 @@ internal fun StockCountsListTable(
             header = s.customersHeaderActions,
             weight = 0.6f,
             align = PharmColumnAlign.End,
+            compactTrailing = true,
             cell = { count -> StockCountRowActions(count = count, callbacks = callbacks) },
         ),
         )
@@ -84,7 +85,6 @@ internal fun StockCountsListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { callbacks.onOpenDetail(it) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

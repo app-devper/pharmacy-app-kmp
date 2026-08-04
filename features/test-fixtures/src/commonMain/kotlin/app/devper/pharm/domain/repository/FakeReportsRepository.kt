@@ -44,6 +44,8 @@ class FakeReportsRepository(
         private set
     var closeCallCount: Int = 0
         private set
+    var eodCallCount: Int = 0
+        private set
 
     override suspend fun dashboard(param: DashboardRangeParam): Dashboard = Dashboard(
         summary = ReportSummary(0.0, 0, 0.0, 0.0, 0, 0),
@@ -69,6 +71,7 @@ class FakeReportsRepository(
 
     override suspend fun eod(param: EodReportParam): EodReport {
         lastEodParam = param
+        eodCallCount++
         eodThrows?.let { throw it }
         return eodResult
     }

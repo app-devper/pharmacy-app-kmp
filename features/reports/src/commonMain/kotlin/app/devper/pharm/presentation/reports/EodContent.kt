@@ -4,6 +4,7 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.model.SaleSummary
@@ -27,8 +29,11 @@ import app.devper.pharm.presentation.reports.components.EodClosedReceiptCard
 import app.devper.pharm.presentation.reports.components.EodHeader
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
+import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
-import app.devper.pharm.ui.components.SubPageBar
+import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -45,16 +50,26 @@ fun EodContent(
     val s = pharmStrings
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        SubPageBar(title = s.reportsEodTitle, onBack = onBack)
+        PharmListToolbar(
+            title = s.reportsEodTitle,
+            subtitle = s.reportsEodSubtitle,
+            onBack = onBack,
+            badge = {
+                if (state.closed) {
+                    PharmBadge(text = s.reportsEodClosedBadge, tone = PharmBadgeTone.Green)
+                }
+            },
+        )
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             EodHeader(
                 date = state.date,
+                dateError = if (state.dateErrorVisible) s.reportsEodDateInvalid else null,
                 loading = state.loading,
                 closing = state.closing,
                 closed = state.closed,
@@ -107,17 +122,18 @@ private fun EodBillsCard(report: EodReport) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(t.colors.surface),
+            .clip(t.shapes.lg)
+            .background(t.colors.surface)
+            .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
         Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
             EodBillsHeader(count = report.billCount)
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
         report.bills.forEachIndexed { index, bill ->
             EodBillRow(bill = bill)
             if (index < report.bills.lastIndex) {
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                PharmDivider()
             }
         }
     }

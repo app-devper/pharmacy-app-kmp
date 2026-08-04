@@ -27,7 +27,6 @@ interface StockStrings {
     val stockHeaderMinStock: String
     val stockBadgeHerb: String
     val stockUnitPlaceholder: String
-    val stockDrugSavedToast: String
     val stockFormTitleEdit: String
     val stockFormTitleAdd: String
     val movementTypeImport: String
@@ -39,6 +38,8 @@ interface StockStrings {
     val stockDrugFormLotExpiryInvalid: String
 
     val stockDrugFormNotFound: String
+    val stockDrugFormLoadFailed: String
+    val stockLoadFailed: String
     val stockLoadHistoryFailed: String
     val stockLoadLotsFailed: String
     val stockInvalidExpiry: String
@@ -74,7 +75,6 @@ interface StockStrings {
     val stockTypeSupplement: String
     val stockTypeBoth: String
     val stockTypeAbbrev: String
-    val stockMetricCount: String
     val stockMetricValueByCost: String
     val stockMetricBelowMin: String
     val stockMetricOut: String
@@ -121,4 +121,18 @@ interface StockStrings {
     val stockExampleReg: String
     val stockExampleBarcode: String
     val stockBarcodeScanHint: String
+    val stockPricingTitle: String
+    val stockPricingSubtitle: String
+    val stockAltUnitsTitle: String
+    val stockAltUnitsSubtitle: String
+    val stockAltUnitAdd: String
+    val stockAltUnitEmpty: String
+    val stockAltUnitTitle: (Int) -> String
+    val stockAltUnitName: String
+    val stockAltUnitFactor: String
+    val stockAltUnitFactorHint: String
+    val stockAltUnitHidden: String
+    val stockAltUnitNameDuplicate: String
+    val stockAltUnitNameMatchesBase: String
+    val stockAltUnitFactorInvalid: String
 }

@@ -23,14 +23,25 @@ fun MovementsContent(
 ) {
     PharmListScaffold(
         toolbar = { MovementsListToolbar(state = state, callbacks = callbacks) },
-        resultLine = { PharmListResultLine(total = state.items.size, noun = pharmStrings.movementsCountNoun) },
+        resultLine = {
+            PharmListResultLine(
+                total = state.total,
+                noun = pharmStrings.movementsCountNoun,
+                visible = state.items.size,
+                searching = state.hasActiveFilters,
+            )
+        },
     ) {
         when {
             state.loading && state.items.isEmpty() ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
             state.items.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.Movements,
-                title = pharmStrings.movementsEmpty,
+                title = if (state.hasActiveFilters) {
+                    pharmStrings.movementsEmptySearching
+                } else {
+                    pharmStrings.movementsEmpty
+                },
             )
             else -> MovementsTable(state = state, callbacks = callbacks)
         }

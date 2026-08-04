@@ -12,13 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
-import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmAction
+import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
+import app.devper.pharm.ui.designsystem.PharmSearchAction
 import app.devper.pharm.ui.designsystem.PharmTab
 import app.devper.pharm.ui.designsystem.PharmTabBar
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -46,6 +49,8 @@ internal fun KyToolbar(
     val meta = kyFormMeta(currentForm, pharmStrings)
     PharmListToolbar(
         modifier = modifier,
+        subtitle = pharmStrings.kyToolbarSubtitle,
+        compactControlsSharedRow = false,
         filters = {
             KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
             KyMonthField(month = month, onMonthChange = onMonthChange, onApply = onApply)
@@ -55,20 +60,20 @@ internal fun KyToolbar(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                PharmButton(
-                    label = "Excel",
-                    onClick = onExportExcel,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
-                )
-                PharmButton(
-                    label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
-                    onClick = onExport,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    enabled = !exporting,
-                    leadingIcon = { Icon(PharmIcons.FilePdf, contentDescription = null) },
+                PharmActionMenu(
+                    actions = listOf(
+                        PharmAction(
+                            label = "Excel",
+                            onClick = onExportExcel,
+                            icon = PharmIcons.Excel,
+                        ),
+                        PharmAction(
+                            label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
+                            onClick = onExport,
+                            icon = PharmIcons.FilePdf,
+                            enabled = !exporting,
+                        ),
+                    ),
                 )
                 PharmButton(
                     label = pharmStrings.kyAddCta,
@@ -99,14 +104,11 @@ private fun KyMonthField(
                 value = month,
                 onValueChange = onMonthChange,
                 placeholder = "YYYY-MM",
+                imeAction = ImeAction.Search,
+                onImeAction = onApply,
+                trailingSlot = { PharmSearchAction(onClick = onApply) },
             )
         }
-        PharmButton(
-            label = pharmStrings.commonSearch,
-            onClick = onApply,
-            variant = PharmButtonVariant.Outline,
-            size = PharmButtonSize.Sm,
-        )
     }
 }
 

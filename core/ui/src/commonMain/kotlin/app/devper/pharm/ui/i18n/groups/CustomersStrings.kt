@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.i18n.groups
 
 interface CustomersStrings {
+    val customersListLoadFailed: String
+    val customersFormLoadFailed: String
     val customersFormNotFound: String
     val customersDetailNotFound: String
     val customersDetailLoadCustomerFailed: String
@@ -31,4 +33,5 @@ interface CustomersStrings {
     val customersTierRetail: String
     val customersTierRegular: String
     val customersTierWholesale: String
+    val customersSubtitle: String
 }

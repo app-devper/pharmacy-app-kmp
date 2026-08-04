@@ -1,6 +1,8 @@
 package app.devper.pharm.ui.format
 
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -151,5 +153,23 @@ class DateFormatTest {
     @Test
     fun ymdToMillis_returns_zero_offset_relative_to_utc_epoch() {
         assertEquals(0L, ymdToMillis("1970-01-01"))
+    }
+
+    @Test
+    fun to_ymd_pads_month_and_day() {
+        assertEquals("2026-06-07", LocalDate(2026, 6, 7).toYmd())
+        assertEquals("2026-12-31", LocalDate(2026, 12, 31).toYmd())
+    }
+
+    @Test
+    fun start_of_month_keeps_year_and_month() {
+        assertEquals(LocalDate(2026, 6, 1), LocalDate(2026, 6, 30).startOfMonth())
+    }
+
+    @Test
+    fun today_local_date_resolves_in_the_given_zone() {
+        val bangkok = todayLocalDate(TimeZone.of("Asia/Bangkok"))
+        val utc = todayLocalDate(TimeZone.UTC)
+        assertTrue(bangkok >= utc)
     }
 }

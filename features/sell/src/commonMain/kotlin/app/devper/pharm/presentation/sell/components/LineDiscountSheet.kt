@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.ui.designsystem.FormField
+import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -29,14 +27,12 @@ import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 import app.devper.pharm.ui.i18n.pharmStrings
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LineDiscountSheet(
     line: CartLine,
     onApply: (key: app.devper.pharm.domain.model.CartLineKey, discount: Double) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val t = pharmTokens
     val factor = line.factor
     val perDisplayDiscount = (line.discount * factor).amount
@@ -48,10 +44,8 @@ fun LineDiscountSheet(
     val effective = (unitPriceDouble - (parsed ?: 0.0)).coerceAtLeast(0.0)
     val invalid = parsed != null && (parsed < 0.0 || parsed > unitPriceDouble)
 
-    ModalBottomSheet(
+    PharmBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = t.colors.surface,
     ) {
         Column(
             modifier = Modifier

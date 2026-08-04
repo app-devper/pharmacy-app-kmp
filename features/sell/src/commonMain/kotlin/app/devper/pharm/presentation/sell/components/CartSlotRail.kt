@@ -1,9 +1,9 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +28,7 @@ import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.ui.format.todayDayMonth
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
+import app.devper.pharm.ui.common.pharmClickable
 
 @Composable
 internal fun CartSlotRail(
@@ -43,7 +44,7 @@ internal fun CartSlotRail(
             .width(44.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         slots.forEachIndexed { index, parked ->
             SlotChip(
@@ -52,7 +53,7 @@ internal fun CartSlotRail(
                 selected = index == selectedSlot,
                 onClick = { onTapSlot(index) },
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -83,9 +84,9 @@ private fun SlotChip(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(44.dp)
-            .background(if (selected) t.colors.sidebarItemActive else t.colors.bgPage)
-            .clickable(role = Role.Button, onClick = onClick)
+            .height(48.dp)
+            .background(if (selected) t.colors.selectedSurface else t.colors.bgPage)
+            .pharmClickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = parkSlotDesc },
         contentAlignment = Alignment.Center,
     ) {

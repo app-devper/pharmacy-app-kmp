@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.bulkimport
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -29,6 +30,7 @@ internal fun BulkImportJsonInput(
     onValueChange: (String) -> Unit,
     parseError: String?,
     modifier: Modifier = Modifier,
+    focusRequester: FocusRequester = FocusRequester.Default,
 ) {
     FormField(
         label = pharmStrings.bulkImportPasteHere,
@@ -42,6 +44,7 @@ internal fun BulkImportJsonInput(
             placeholder = BULK_IMPORT_SAMPLE_JSON,
             singleLine = false,
             isError = parseError != null,
+            focusRequester = focusRequester,
             modifier = Modifier.heightIn(min = 180.dp, max = 280.dp),
         )
     }

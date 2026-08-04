@@ -1,27 +1,18 @@
 package app.devper.pharm.presentation.users
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -30,6 +21,7 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -42,23 +34,21 @@ internal fun ActionDialog(
 ) {
     val target = state.actionTarget ?: return
     val mode = state.actionMode ?: return
-    val t = pharmTokens
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(t.colors.scrim)
-            .clickable(enabled = !state.actionBusy, onClick = callbacks.onDismissAction),
-        contentAlignment = Alignment.Center,
+    val s = pharmStrings
+    val title = when (mode) {
+        UsersAction.Delete       -> s.usersConfirmDeleteTitle
+        UsersAction.EditRole     -> s.usersConfirmRoleTitle
+        UsersAction.ToggleStatus -> if (target.status.isActive) s.usersConfirmSuspendTitle else s.usersConfirmEnableTitle
+        UsersAction.SetPassword  -> s.usersSetPasswordTitle(target.displayName)
+    }
+    PharmModal(
+        open = true,
+        onDismiss = callbacks.onDismissAction,
+        title = title,
+        dismissEnabled = !state.actionBusy,
     ) {
         Column(
-            modifier = Modifier
-                .widthIn(max = 480.dp)
-                .clip(t.shapes.lg)
-                .background(t.colors.surface)
-                .border(1.dp, t.colors.borderSubtle, t.shapes.lg)
-                .clickable(enabled = false, onClick = {})
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             when (mode) {
@@ -78,7 +68,6 @@ private fun DeleteDialogBody(
     callbacks: UsersListCallbacks,
 ) {
     val s = pharmStrings
-    Text(text = s.usersConfirmDeleteTitle, style = PharmText.h2)
     Text(text = s.usersConfirmDeleteMessage(target.username), style = PharmText.body)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         PharmButton(
@@ -104,13 +93,12 @@ private fun RoleDialogBody(
     callbacks: UsersListCallbacks,
 ) {
     val s = pharmStrings
-    Text(text = s.usersConfirmRoleTitle, style = PharmText.h2)
     Text(text = "@${target.username}", style = PharmText.micro.copy(color = pharmTokens.colors.fgMuted))
     val options = roleOptionsFor(actorRole)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { role ->
             PharmButton(
-                label = role.label(),
+                label = role.label(s),
                 onClick = { callbacks.onSubmitRoleChange(role) },
                 variant = if (role == target.role) PharmButtonVariant.Primary else PharmButtonVariant.Outline,
                 enabled = !state.actionBusy,
@@ -134,10 +122,6 @@ private fun StatusDialogBody(
 ) {
     val s = pharmStrings
     val nextActive = !target.status.isActive
-    Text(
-        text = if (nextActive) s.usersConfirmEnableTitle else s.usersConfirmSuspendTitle,
-        style = PharmText.h2,
-    )
     Text(
         text = if (nextActive) s.usersConfirmEnableMessage(target.username) else s.usersConfirmSuspendMessage(target.username),
         style = PharmText.body,
@@ -167,21 +151,34 @@ private fun PasswordDialogBody(
     val s = pharmStrings
     var pwd by rememberSaveable(target.id) { mutableStateOf("") }
     var confirm by rememberSaveable(target.id) { mutableStateOf("") }
+    var validationRequested by rememberSaveable(target.id) { mutableStateOf(false) }
+    val passwordFocus = remember { FocusRequester() }
+    val confirmFocus = remember { FocusRequester() }
     val matches = pwd.length >= 8 && pwd == confirm
-    Text(text = s.usersSetPasswordTitle(target.displayName), style = PharmText.h2)
-    FormField(label = s.usersFormPasswordNew, required = true) {
+    val passwordError = validationRequested && pwd.length < 8
+    val confirmError = validationRequested && (confirm.isBlank() || pwd != confirm)
+    FormField(
+        label = s.usersFormPasswordNew,
+        required = true,
+        error = if (passwordError) s.usersFormPasswordHint else null,
+    ) {
         PharmTextField(
             value = pwd,
             onValueChange = { pwd = it },
             visualTransformation = PasswordVisualTransformation(),
             keyboardType = KeyboardType.Password,
+            isError = passwordError,
+            focusRequester = passwordFocus,
         )
     }
-    val confirmError = confirm.isNotBlank() && pwd != confirm
     FormField(
         label = s.profilePasswordConfirm,
         required = true,
-        error = if (confirmError) s.profilePasswordMismatch else null,
+        error = if (confirmError) {
+            if (confirm.isBlank()) s.validationRequired(s.profilePasswordConfirm) else s.profilePasswordMismatch
+        } else {
+            null
+        },
     ) {
         PharmTextField(
             value = confirm,
@@ -189,6 +186,7 @@ private fun PasswordDialogBody(
             visualTransformation = PasswordVisualTransformation(),
             keyboardType = KeyboardType.Password,
             isError = confirmError,
+            focusRequester = confirmFocus,
         )
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -200,9 +198,16 @@ private fun PasswordDialogBody(
         )
         PharmButton(
             label = s.usersActionSetPassword,
-            onClick = { callbacks.onSubmitPasswordSet(pwd) },
+            onClick = {
+                if (matches) {
+                    callbacks.onSubmitPasswordSet(pwd)
+                } else {
+                    validationRequested = true
+                    if (pwd.length < 8) passwordFocus.requestFocus() else confirmFocus.requestFocus()
+                }
+            },
             variant = PharmButtonVariant.Primary,
-            enabled = matches,
+            enabled = !state.actionBusy,
             loading = state.actionBusy,
         )
     }
