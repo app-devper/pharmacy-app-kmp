@@ -65,26 +65,16 @@ fun ReportsContent(
             PharmListToolbar(
                 title = s.reportsTabSummary,
                 subtitle = s.reportsSubtitle,
-                compactControlsSharedRow = false,
+                compactTopbarActions = true,
+                compactTopbarAction = { ReportsCloseEodButton(callbacks = callbacks) },
+                compactInlineActions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
                 filters = {
                     ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
                 },
                 actions = {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        PharmButton(
-                            label = s.commonRefresh,
-                            onClick = callbacks.onReload,
-                            size = PharmButtonSize.Sm,
-                            variant = PharmButtonVariant.Outline,
-                            loading = state.loading,
-                            leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-                        )
-                        PharmButton(
-                            label = s.reportsTabEod,
-                            onClick = callbacks.onCloseEod,
-                            size = PharmButtonSize.Sm,
-                            leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
-                        )
+                        ReportsRefreshButton(state = state, callbacks = callbacks)
+                        ReportsCloseEodButton(callbacks = callbacks)
                     }
                 },
             )
@@ -144,6 +134,28 @@ fun ReportsContent(
     }
 
     ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+}
+
+@Composable
+private fun ReportsRefreshButton(state: ReportsUiState, callbacks: ReportsCallbacks) {
+    PharmButton(
+        label = pharmStrings.commonRefresh,
+        onClick = callbacks.onReload,
+        size = PharmButtonSize.Sm,
+        variant = PharmButtonVariant.Outline,
+        loading = state.loading,
+        leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
+    )
+}
+
+@Composable
+private fun ReportsCloseEodButton(callbacks: ReportsCallbacks) {
+    PharmButton(
+        label = pharmStrings.reportsTabEod,
+        onClick = callbacks.onCloseEod,
+        size = PharmButtonSize.Sm,
+        leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
+    )
 }
 
 private val previewSummary = ReportSummary(

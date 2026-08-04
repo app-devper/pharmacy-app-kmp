@@ -51,6 +51,9 @@ internal fun KyToolbar(
         modifier = modifier,
         subtitle = pharmStrings.kyToolbarSubtitle,
         compactControlsSharedRow = false,
+        compactTopbarActions = true,
+        compactTopbarAction = { KyAddEntryButton(onAddEntry = onAddEntry) },
+        compactInlineActions = { KyExportMenu(onExport = onExport, onExportExcel = onExportExcel, exporting = exporting) },
         filters = {
             KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
             KyMonthField(month = month, onMonthChange = onMonthChange, onApply = onApply)
@@ -60,29 +63,39 @@ internal fun KyToolbar(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                PharmActionMenu(
-                    actions = listOf(
-                        PharmAction(
-                            label = "Excel",
-                            onClick = onExportExcel,
-                            icon = PharmIcons.Excel,
-                        ),
-                        PharmAction(
-                            label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
-                            onClick = onExport,
-                            icon = PharmIcons.FilePdf,
-                            enabled = !exporting,
-                        ),
-                    ),
-                )
-                PharmButton(
-                    label = pharmStrings.kyAddCta,
-                    onClick = onAddEntry,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
-                )
+                KyExportMenu(onExport = onExport, onExportExcel = onExportExcel, exporting = exporting)
+                KyAddEntryButton(onAddEntry = onAddEntry)
             }
         },
+    )
+}
+
+@Composable
+private fun KyExportMenu(onExport: () -> Unit, onExportExcel: () -> Unit, exporting: Boolean) {
+    PharmActionMenu(
+        actions = listOf(
+            PharmAction(
+                label = "Excel",
+                onClick = onExportExcel,
+                icon = PharmIcons.Excel,
+            ),
+            PharmAction(
+                label = if (exporting) pharmStrings.kyExportingPdf else "PDF",
+                onClick = onExport,
+                icon = PharmIcons.FilePdf,
+                enabled = !exporting,
+            ),
+        ),
+    )
+}
+
+@Composable
+private fun KyAddEntryButton(onAddEntry: () -> Unit) {
+    PharmButton(
+        label = pharmStrings.kyAddCta,
+        onClick = onAddEntry,
+        size = PharmButtonSize.Sm,
+        leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
     )
 }
 
