@@ -68,4 +68,5 @@ interface ImportsStrings {
     val importsConfirmDeleteReceivedMessage: String
     val importsHeaderInvoiceNo: String
     val importsHeaderInvoicePlaceholder: String
+    val importsDetailTitle: String
 }

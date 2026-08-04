@@ -38,7 +38,6 @@ internal fun ExpiryToolbar(
     val s = pharmStrings
     PharmListToolbar(
         modifier = modifier,
-        title = s.navExpiry,
         subtitle = s.expirySubtitle,
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,

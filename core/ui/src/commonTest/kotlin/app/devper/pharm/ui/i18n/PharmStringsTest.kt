@@ -42,6 +42,8 @@ class PharmStringsTablesTest {
         check("customersSubtitle", PharmStringsTh.customersSubtitle, PharmStringsEn.customersSubtitle, mismatches)
         check("stockCountSubtitle", PharmStringsTh.stockCountSubtitle, PharmStringsEn.stockCountSubtitle, mismatches)
         check("usersSubtitle", PharmStringsTh.usersSubtitle, PharmStringsEn.usersSubtitle, mismatches)
+        check("customersDetailTitle", PharmStringsTh.customersDetailTitle, PharmStringsEn.customersDetailTitle, mismatches)
+        check("importsDetailTitle", PharmStringsTh.importsDetailTitle, PharmStringsEn.importsDetailTitle, mismatches)
         check("settingsTabDisplay", PharmStringsTh.settingsTabDisplay, PharmStringsEn.settingsTabDisplay, mismatches)
         check("settingsToolbarSubtitle", PharmStringsTh.settingsToolbarSubtitle, PharmStringsEn.settingsToolbarSubtitle, mismatches)
         check("settingsTabStore", PharmStringsTh.settingsTabStore, PharmStringsEn.settingsTabStore, mismatches)

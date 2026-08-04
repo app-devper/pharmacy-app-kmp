@@ -5,7 +5,6 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsAvgMarginHint = "ถ่วงน้ำหนักตามรายได้"
 
     override val reportsSubtitle = "ภาพรวมยอดขาย สต็อก และสินค้าขายดี"
-    override val reportsTabSummary = "รายงานสรุป"
     override val reportsTabProfit = "กำไร"
     override val reportsTabEod = "ปิดรอบ EOD"
     override val reportsMetricSalesToday = "ยอดขายวันนี้"
@@ -35,7 +34,6 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsHeaderDrugName = "ชื่อยา"
     override val reportsTotalLabel = "รวม"
     override val reportsRevenueVsCostLabel = "รวมทั้งวัน"
-    override val reportsProfitTitle = "กำไรต่อยา"
     override val reportsProfitSubtitle = "กำไรแยกตามรายการยาในช่วงที่เลือก"
     override val reportsProfitTotal = "กำไรรวม"
     override val reportsProfitBeforeCost = "ก่อนหักต้นทุน"

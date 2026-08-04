@@ -33,4 +33,5 @@ object CustomersStringsEn : CustomersStrings {
     override val customersDetailLoadSalesFailed = "Failed to load sales history"
     override val customersFormNotFound = "Customer not found"
     override val customersSubtitle = "Customer records and purchase history"
+    override val customersDetailTitle = "Customer detail"
 }

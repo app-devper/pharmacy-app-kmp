@@ -34,4 +34,5 @@ interface CustomersStrings {
     val customersTierRegular: String
     val customersTierWholesale: String
     val customersSubtitle: String
+    val customersDetailTitle: String
 }

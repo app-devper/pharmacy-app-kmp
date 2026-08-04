@@ -33,4 +33,5 @@ object CustomersStringsTh : CustomersStrings {
     override val customersDetailLoadSalesFailed = "โหลดประวัติการขายไม่สำเร็จ"
     override val customersFormNotFound = "ไม่พบลูกค้า"
     override val customersSubtitle = "ข้อมูลลูกค้าและประวัติการซื้อ"
+    override val customersDetailTitle = "รายละเอียดลูกค้า"
 }

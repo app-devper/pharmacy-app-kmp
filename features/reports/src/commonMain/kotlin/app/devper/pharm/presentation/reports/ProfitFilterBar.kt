@@ -63,7 +63,6 @@ internal fun ProfitFilterBar(
 
     PharmListToolbar(
         modifier = modifier,
-        title = s.reportsProfitTitle,
         subtitle = s.reportsProfitSubtitle,
         compactTopbarActions = true,
         compactControlsSharedRow = false,

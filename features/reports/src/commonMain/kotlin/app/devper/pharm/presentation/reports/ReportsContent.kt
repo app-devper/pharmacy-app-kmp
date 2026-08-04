@@ -63,7 +63,6 @@ fun ReportsContent(
             val s = pharmStrings
             val dashboard = state.dashboard
             PharmListToolbar(
-                title = s.reportsTabSummary,
                 subtitle = s.reportsSubtitle,
                 compactTopbarActions = true,
                 compactTopbarAction = { ReportsCloseEodButton(callbacks = callbacks) },

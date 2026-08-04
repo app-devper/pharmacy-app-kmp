@@ -68,4 +68,5 @@ object ImportsStringsTh : ImportsStrings {
     override val importsFormLoadOrderFailed = "โหลดข้อมูลใบนำเข้าเพื่อแก้ไขไม่สำเร็จ"
     override val importsFormLoadDrugsFailed = "โหลดข้อมูลยาไม่สำเร็จ"
     override val importsFormLoadSuppliersFailed = "โหลดข้อมูลซัพพลายเออร์ไม่สำเร็จ"
+    override val importsDetailTitle = "รายละเอียดใบนำเข้า"
 }

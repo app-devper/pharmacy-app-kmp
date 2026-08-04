@@ -22,7 +22,6 @@ internal fun StockCountsListToolbar(
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.stockCountHistorySearchPlaceholder,
-        titleStyle = PharmText.h2,
         modifier = modifier,
         compactTopbarActions = true,
         actions = {
