@@ -65,6 +65,12 @@ internal fun listToolbarSectionSpacing(
     pharmListToolbarDefaultSectionSpacing
 }
 
+internal fun searchSharesRowWithActions(
+    compact: Boolean,
+    hasSearch: Boolean,
+    hasInlineActions: Boolean,
+): Boolean = compact && hasSearch && hasInlineActions
+
 internal fun combinesCompactToolbarControls(
     compact: Boolean,
     hasFilters: Boolean,
@@ -147,10 +153,17 @@ fun PharmListToolbar(
             else -> actions
         }
         val topbarAction = compactTopbarAction ?: actions
+        val hasSearch = searchValue != null && onSearchChange != null
+        val searchRowTakesActions = searchSharesRowWithActions(
+            compact = compact,
+            hasSearch = hasSearch,
+            hasInlineActions = inlineActions != null,
+        )
+        val controlRowActions = inlineActions.takeUnless { searchRowTakesActions }
         val combineCompactControls = combinesCompactToolbarControls(
             compact = compact,
             hasFilters = filters != null,
-            hasInlineActions = inlineActions != null,
+            hasInlineActions = controlRowActions != null,
             allowSharedRow = compactControlsSharedRow,
         )
         if (moveSubpageHeaderToTopbar && guardedBack != null) {
@@ -167,7 +180,7 @@ fun PharmListToolbar(
         val hasCompactContent = hasCompactToolbarContent(
             showTitle = localShowTitle,
             hasBack = localBack != null,
-            hasSearch = searchValue != null && onSearchChange != null,
+            hasSearch = hasSearch,
             hasFilters = filters != null,
             hasBadge = badge != null,
             hasInlineActions = inlineActions != null,
@@ -228,15 +241,26 @@ fun PharmListToolbar(
                             }
                         }
                     }
-                    if (searchValue != null && onSearchChange != null) {
-                        PharmSearchField(
-                            value = searchValue,
-                            onValueChange = onSearchChange,
-                            placeholder = searchPlaceholder,
-                            onSearch = onSearch,
-                            searching = searching,
+                    if (hasSearch && searchValue != null && onSearchChange != null) {
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                        )
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            PharmSearchField(
+                                value = searchValue,
+                                onValueChange = onSearchChange,
+                                placeholder = searchPlaceholder,
+                                onSearch = onSearch,
+                                searching = searching,
+                                modifier = Modifier.weight(1f),
+                            )
+                            if (searchRowTakesActions) {
+                                CompositionLocalProvider(LocalCompactTopbarActions provides true) {
+                                    inlineActions?.invoke()
+                                }
+                            }
+                        }
                     }
                     if (combineCompactControls) {
                         Row(
@@ -254,10 +278,10 @@ fun PharmListToolbar(
                                 filters?.invoke(this)
                             }
                             CompositionLocalProvider(LocalCompactTopbarActions provides true) {
-                                inlineActions?.invoke()
+                                controlRowActions?.invoke()
                             }
                         }
-                    } else if (filters != null || badge != null || inlineActions != null) {
+                    } else if (filters != null || badge != null || controlRowActions != null) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -271,7 +295,7 @@ fun PharmListToolbar(
                                     content = filters,
                                 )
                             }
-                            if (badge != null || inlineActions != null) {
+                            if (badge != null || controlRowActions != null) {
                                 FlowRow(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = if (badge == null) {
@@ -284,7 +308,7 @@ fun PharmListToolbar(
                                 ) {
                                     badge?.invoke()
                                     CompositionLocalProvider(LocalCompactTopbarActions provides true) {
-                                        inlineActions?.invoke()
+                                        controlRowActions?.invoke()
                                     }
                                 }
                             }
