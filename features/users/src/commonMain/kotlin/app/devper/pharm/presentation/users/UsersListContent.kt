@@ -86,7 +86,6 @@ private fun UsersListToolbar(
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,
-        titleStyle = PharmText.h2,
         compactTopbarActions = true,
         actions = {
             if (state.currentUserRole.canManageUsers()) {

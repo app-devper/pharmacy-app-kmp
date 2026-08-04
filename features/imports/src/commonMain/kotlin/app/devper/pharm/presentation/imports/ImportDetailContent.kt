@@ -58,7 +58,8 @@ fun ImportDetailContent(
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.po?.docNo ?: s.importsTitle,
+            title = s.importsDetailTitle,
+            subtitle = state.po?.docNo,
             onBack = callbacks.onBack,
             actions = {
                 state.po?.let { po ->

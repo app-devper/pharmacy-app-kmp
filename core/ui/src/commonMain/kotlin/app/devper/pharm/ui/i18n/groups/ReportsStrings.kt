@@ -9,7 +9,6 @@ interface ReportsStrings {
     val reportsEodCloseFailed: String
     val reportsEodPrintUnsupported: String
     val reportsSubtitle: String
-    val reportsTabSummary: String
     val reportsTabProfit: String
     val reportsTabEod: String
     val reportsMetricSalesToday: String
@@ -39,7 +38,6 @@ interface ReportsStrings {
     val reportsHeaderDrugName: String
     val reportsTotalLabel: String
     val reportsRevenueVsCostLabel: String
-    val reportsProfitTitle: String
     val reportsProfitSubtitle: String
     val reportsProfitTotal: String
     val reportsProfitBeforeCost: String

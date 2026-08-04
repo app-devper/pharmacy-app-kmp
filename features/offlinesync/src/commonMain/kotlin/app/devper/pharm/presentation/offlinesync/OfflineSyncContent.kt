@@ -50,7 +50,6 @@ fun OfflineSyncContent(
     PharmListScaffold(
         toolbar = {
             PharmListToolbar(
-                title = s.navOfflineSync,
                 subtitle = s.offlineSyncSubtitle,
                 compactTopbarActions = true,
                 actions = {

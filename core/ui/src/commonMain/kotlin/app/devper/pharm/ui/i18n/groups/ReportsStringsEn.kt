@@ -5,7 +5,6 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsAvgMarginHint = "Weighted by revenue"
 
     override val reportsSubtitle = "Sales / stock / top sellers overview"
-    override val reportsTabSummary = "Summary"
     override val reportsTabProfit = "Profit"
     override val reportsTabEod = "EOD close"
     override val reportsMetricSalesToday = "Sales today"
@@ -35,7 +34,6 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsHeaderDrugName = "Drug name"
     override val reportsTotalLabel = "Total"
     override val reportsRevenueVsCostLabel = "Full day"
-    override val reportsProfitTitle = "Profit per drug"
     override val reportsProfitSubtitle = "Profit broken down by drug in the selected range"
     override val reportsProfitTotal = "Total profit"
     override val reportsProfitBeforeCost = "Before cost"

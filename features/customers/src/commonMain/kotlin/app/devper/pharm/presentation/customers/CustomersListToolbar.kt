@@ -22,7 +22,6 @@ internal fun CustomersListToolbar(
         searchValue = query,
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.customersSearchPlaceholder,
-        titleStyle = PharmText.h2,
         modifier = modifier,
         compactTopbarActions = true,
         actions = {
