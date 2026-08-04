@@ -10,6 +10,8 @@ import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -45,15 +47,13 @@ fun KyListContent(
                 },
             )
         },
-        footer = {
-            Text(
-                text = pharmStrings.kyToolbarSubtitle,
-                style = PharmText.micro.copy(color = t.colors.fgMuted),
-            )
-        },
     ) {
         when {
             state.loading && state.rows.isEmpty() -> PharmListSkeleton()
+            state.rows.isEmpty() -> PharmEmptyState(
+                icon = PharmIcons.KyForms,
+                title = pharmStrings.kyEmptyMonth,
+            )
             else -> KyTable(rows = state.rows, formType = state.formType)
         }
     }

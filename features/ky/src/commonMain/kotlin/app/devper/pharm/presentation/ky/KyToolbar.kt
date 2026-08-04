@@ -49,6 +49,7 @@ internal fun KyToolbar(
     val meta = kyFormMeta(currentForm, pharmStrings)
     PharmListToolbar(
         modifier = modifier,
+        subtitle = pharmStrings.kyToolbarSubtitle,
         compactControlsSharedRow = false,
         filters = {
             KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)

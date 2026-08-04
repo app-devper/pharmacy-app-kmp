@@ -51,4 +51,5 @@ interface StockCountStrings {
     val stockCountFormConfirmTitle: String
     val stockCountFormConfirmMessage: String
     val stockCountFormConfirmCta: String
+    val stockCountSubtitle: String
 }

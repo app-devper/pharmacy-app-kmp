@@ -43,6 +43,7 @@ internal fun StockToolbar(
     )
     PharmListToolbar(
         modifier = modifier,
+        subtitle = pharmStrings.stockSubtitle,
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = pharmStrings.stockSearchPlaceholder,

@@ -51,4 +51,5 @@ object StockCountStringsEn : StockCountStrings {
     override val stockCountFormConfirmTitle = "Confirm stock adjustment"
     override val stockCountFormConfirmMessage = "The system will adjust stock to the counted quantity — once confirmed this cannot be undone"
     override val stockCountFormConfirmCta = "Confirm"
+    override val stockCountSubtitle = "Stock counts and adjustments to actual"
 }
