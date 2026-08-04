@@ -44,6 +44,7 @@ internal fun StockTable(
         listOf(
         PharmTableColumn<Drug>(
             header = s.expiryHeaderDrugName,
+            compactTitle = true,
             weight = 2.4f,
             cell = { drug ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {

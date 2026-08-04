@@ -55,6 +55,7 @@ internal fun StockCountFormTable(
         listOf(
             PharmTableColumn<StockCountFormRow>(
                 header = s.expiryHeaderDrugName,
+                compactTitle = true,
                 weight = 2.4f,
                 cell = { row -> StockCountDrugCell(row) },
             ),

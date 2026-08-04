@@ -49,6 +49,7 @@ internal fun UsersListTable(
         listOf(
         PharmTableColumn<UmUser>(
             header = s.usersHeaderName,
+            compactTitle = true,
             weight = 2.2f,
             cell = { user -> UserNameCell(user = user, isSelf = user.id == currentUserId) },
         ),

@@ -33,6 +33,7 @@ internal fun SuppliersListTable(
         listOf(
         PharmTableColumn<Supplier>(
             header = s.suppliersHeaderName,
+            compactTitle = true,
             weight = 2.2f,
             cell = { supplier ->
                 Text(

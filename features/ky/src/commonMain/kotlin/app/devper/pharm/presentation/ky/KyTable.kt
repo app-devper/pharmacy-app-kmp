@@ -76,6 +76,7 @@ private fun kyColumns(
     ),
     PharmTableColumn(
         header = s.kyHeaderItem,
+        compactTitle = true,
         weight = 2.2f,
         cell = { row -> DrugNameCell(row.drugName) },
     ),

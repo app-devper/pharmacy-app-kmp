@@ -47,7 +47,7 @@ internal fun ImportDetailActionBar(
                     enabled = !state.confirming && !state.deleting,
                     loading = state.deleting,
                     leadingIcon = {
-                        Icon(PharmIcons.Trash, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(PharmIcons.Trash, contentDescription = null)
                     },
                 )
                 PharmButton(
@@ -57,7 +57,7 @@ internal fun ImportDetailActionBar(
                     enabled = !state.confirming && !state.deleting && po.itemCount > 0,
                     loading = state.confirming,
                     leadingIcon = {
-                        Icon(PharmIcons.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(PharmIcons.Check, contentDescription = null)
                     },
                 )
             } else {

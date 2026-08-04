@@ -148,7 +148,7 @@ private fun HeaderRow(state: StockAdjustmentsUiState, callbacks: StockAdjustment
             enabled = !state.saving,
             variant = PharmButtonVariant.Ghost,
             leadingIcon = {
-                Icon(PharmIcons.Plus, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(PharmIcons.Plus, contentDescription = null)
             },
         )
     }

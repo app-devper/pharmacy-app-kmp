@@ -46,14 +46,13 @@ internal fun DraftActionConfirmModal(
                 label = s.commonCancel,
                 onClick = onCancel,
                 variant = PharmButtonVariant.Ghost,
-                size = PharmButtonSize.Md,
+                size = PharmButtonSize.Sm,
             )
             PharmButton(
                 label = confirmLabel,
                 onClick = onConfirm,
                 variant = variant,
-                size = PharmButtonSize.Md,
-            )
-        },
+                size = PharmButtonSize.Sm,
+            )},
     ) {}
 }

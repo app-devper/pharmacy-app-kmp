@@ -36,9 +36,9 @@ import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
@@ -241,7 +241,7 @@ private fun SaleRow(sale: SaleSummary) {
             )
         }
         Text(
-            text = formatBahtCurrency(sale.total.amount),
+            text = fmtBaht(sale.total.amount),
             style = PharmText.h2.tabular().copy(color = t.colors.accent),
         )
     }

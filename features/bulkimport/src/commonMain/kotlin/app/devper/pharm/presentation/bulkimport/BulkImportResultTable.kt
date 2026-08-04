@@ -51,6 +51,7 @@ internal fun BulkImportResultTable(
         ),
         PharmTableColumn(
             header = s.expiryHeaderDrugName,
+            compactTitle = true,
             weight = 3f,
             cell = { row ->
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {

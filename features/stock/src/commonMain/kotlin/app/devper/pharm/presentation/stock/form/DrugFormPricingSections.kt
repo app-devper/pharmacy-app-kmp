@@ -98,7 +98,6 @@ private fun AltUnitsCard(
                 Icon(
                     imageVector = PharmIcons.Plus,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
                 )
             },
         )

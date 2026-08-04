@@ -17,9 +17,9 @@ import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmMiniBarChart
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
@@ -35,7 +35,7 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
         modifier = modifier,
         trailing = {
             Text(
-                text = s.reportsAvgPerDay(formatBahtCurrency(avg)),
+                text = s.reportsAvgPerDay(fmtBaht(avg)),
                 style = PharmText.meta.tabular(),
             )
         },
@@ -45,7 +45,7 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
                 data = data,
                 height = 128.dp,
                 barColor = t.colors.accent,
-                valueFormatter = { formatBahtCurrency(it) },
+                valueFormatter = { fmtBaht(it) },
             )
             if (data.isNotEmpty()) {
                 Row(

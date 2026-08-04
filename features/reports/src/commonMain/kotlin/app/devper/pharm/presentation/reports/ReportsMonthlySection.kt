@@ -20,9 +20,9 @@ import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.ui.designsystem.PharmBarDatum
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.ui.designsystem.PharmGroupedBarChart
-import app.devper.pharm.ui.format.formatBahtCurrency
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
@@ -44,7 +44,7 @@ internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Mo
             revenue = revenueData,
             cost = costData,
             height = 144.dp,
-            valueFormatter = { formatBahtCurrency(it) },
+            valueFormatter = { fmtBaht(it) },
         )
         Row(
             modifier = Modifier.fillMaxWidth(),

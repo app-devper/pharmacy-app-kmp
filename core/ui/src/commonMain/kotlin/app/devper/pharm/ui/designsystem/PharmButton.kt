@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -42,6 +43,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
+
+private val BUTTON_ICON_SIZE = 16.dp
 
 enum class PharmButtonVariant { Primary, Secondary, Danger, Ghost, Outline }
 enum class PharmButtonSize { Sm, Md, Lg }
@@ -130,7 +133,7 @@ fun PharmButton(
                     modifier = Modifier.size(14.dp),
                 )
             } else if (resolvedLeadingIcon != null) {
-                resolvedLeadingIcon()
+                Box(modifier = Modifier.size(BUTTON_ICON_SIZE)) { resolvedLeadingIcon() }
             }
             content()
         }
