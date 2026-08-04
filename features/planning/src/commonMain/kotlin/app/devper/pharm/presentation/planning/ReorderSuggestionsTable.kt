@@ -85,7 +85,6 @@ internal fun ReorderSuggestionsTable(
         columns = columns,
         key = { it.drugId },
         modifier = modifier,
-        rowHeight = 52.dp,
         emptyContent = {
             Text(text = s.planningReorderEmptyTitle, style = PharmText.meta)
         },

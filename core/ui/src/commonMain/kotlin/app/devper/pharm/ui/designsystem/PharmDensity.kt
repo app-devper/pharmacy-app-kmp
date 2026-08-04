@@ -15,3 +15,9 @@ val LocalPharmDensity = staticCompositionLocalOf { PharmDensity.Comfortable }
 
 internal val pharmControlHeight: Dp
     @Composable get() = pharmTokens.dimens.compactControlHeight
+
+internal fun resolvedRowHeight(rowHeight: Dp, density: PharmDensity): Dp =
+    if (rowHeight == Dp.Unspecified) density.rowHeight else rowHeight
+
+internal fun resolvedHeaderHeight(headerHeight: Dp, density: PharmDensity): Dp =
+    if (headerHeight == Dp.Unspecified) density.headerHeight else headerHeight

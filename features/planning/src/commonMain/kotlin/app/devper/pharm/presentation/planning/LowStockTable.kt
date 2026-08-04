@@ -68,7 +68,6 @@ internal fun LowStockTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { callbacks.onRowClick(it) },
-        rowHeight = 52.dp,
         emptyContent = {
             Text(text = s.planningLowStockEmpty, style = PharmText.meta)
         },

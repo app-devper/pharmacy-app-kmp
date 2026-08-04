@@ -106,7 +106,6 @@ internal fun ExpiryTable(
             columns = columns,
             key = { it.id },
             onRowClick = { lot -> callbacks.onToggleRow(lot.id) },
-            rowHeight = 52.dp,
             emptyContent = {
                 PharmEmptyState(
                     icon = PharmIcons.Expiry,

@@ -88,7 +88,6 @@ internal fun MovementsTable(
         columns = columns,
         key = { "${it.type.wire}::${it.id}" },
         modifier = modifier,
-        rowHeight = 52.dp,
         emptyContent = {
             PharmEmptyState(
                 icon = PharmIcons.Movements,

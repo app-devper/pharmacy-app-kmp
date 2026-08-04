@@ -43,7 +43,6 @@ internal fun KyTable(
         columns = columns,
         key = { it.id },
         modifier = modifier,
-        rowHeight = 44.dp,
         emptyContent = {
             PharmEmptyState(
                 icon = PharmIcons.KyForms,

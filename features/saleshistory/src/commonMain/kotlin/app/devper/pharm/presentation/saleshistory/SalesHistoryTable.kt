@@ -89,7 +89,6 @@ internal fun SalesHistoryTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { sale -> callbacks.onOpenReceipt(sale) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

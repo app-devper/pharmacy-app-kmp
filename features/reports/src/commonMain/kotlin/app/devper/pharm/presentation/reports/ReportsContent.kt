@@ -74,7 +74,7 @@ fun ReportsContent(
                         PharmButton(
                             label = s.commonRefresh,
                             onClick = callbacks.onReload,
-                            size = PharmButtonSize.Md,
+                            size = PharmButtonSize.Sm,
                             variant = PharmButtonVariant.Outline,
                             loading = state.loading,
                             leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
@@ -82,7 +82,7 @@ fun ReportsContent(
                         PharmButton(
                             label = s.reportsTabEod,
                             onClick = callbacks.onCloseEod,
-                            size = PharmButtonSize.Md,
+                            size = PharmButtonSize.Sm,
                             leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
                         )
                     }

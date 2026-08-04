@@ -172,7 +172,6 @@ internal fun StockTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { drug -> callbacks.onEditDrug(drug) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

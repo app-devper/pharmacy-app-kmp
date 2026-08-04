@@ -85,7 +85,6 @@ internal fun ProfitTable(
         columns = columns,
         key = { it.drugId },
         modifier = modifier,
-        rowHeight = 48.dp,
         emptyContent = {
             Text(text = pharmStrings.reportsSectionDailySalesEmpty, style = PharmText.meta)
         },

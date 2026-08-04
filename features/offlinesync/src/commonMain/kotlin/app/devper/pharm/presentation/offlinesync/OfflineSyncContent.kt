@@ -50,19 +50,15 @@ fun OfflineSyncContent(
     PharmListScaffold(
         toolbar = {
             PharmListToolbar(
-            title = s.navOfflineSync,
-            subtitle = s.offlineSyncSubtitle,
-            compactTopbarActions = true,
-            actions = {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
+                title = s.navOfflineSync,
+                subtitle = s.offlineSyncSubtitle,
+                compactTopbarActions = true,
+                actions = {
                     PharmButton(
                         label = s.offlineSyncRetryAllCta,
                         onClick = callbacks.onSyncAll,
                         variant = PharmButtonVariant.Primary,
-                        size = PharmButtonSize.Md,
+                        size = PharmButtonSize.Sm,
                         enabled = state.totalCount > 0,
                         loading = state.syncingAll,
                         leadingIcon = {
@@ -73,7 +69,6 @@ fun OfflineSyncContent(
                             )
                         },
                     )
-                }
                 },
             )
         },

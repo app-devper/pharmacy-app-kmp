@@ -82,7 +82,7 @@ internal fun ProfitFilterBar(
                         )
                     )
                 },
-                size = PharmButtonSize.Md,
+                size = PharmButtonSize.Sm,
                 variant = PharmButtonVariant.Outline,
                 loading = state.exporting,
                 leadingIcon = {

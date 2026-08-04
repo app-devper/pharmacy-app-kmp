@@ -117,7 +117,6 @@ internal fun SuppliersListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { supplier -> callbacks.onOpenDetail(supplier) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(

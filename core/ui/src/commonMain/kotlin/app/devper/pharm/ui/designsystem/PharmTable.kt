@@ -70,8 +70,8 @@ fun <T> PharmTable(
 ) {
     val t = pharmTokens
     val density = LocalPharmDensity.current
-    val effRowHeight = if (rowHeight == Dp.Unspecified) density.rowHeight else rowHeight
-    val effHeaderHeight = if (headerHeight == Dp.Unspecified) density.headerHeight else headerHeight
+    val effRowHeight = resolvedRowHeight(rowHeight, density)
+    val effHeaderHeight = resolvedHeaderHeight(headerHeight, density)
     val listState = rememberLazyListState()
 
     BoxWithConstraints(

@@ -106,7 +106,6 @@ internal fun UsersListTable(
         key = { it.id },
         modifier = modifier,
         onRowClick = { callbacks.onEditUser(it) },
-        rowHeight = 52.dp,
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(
