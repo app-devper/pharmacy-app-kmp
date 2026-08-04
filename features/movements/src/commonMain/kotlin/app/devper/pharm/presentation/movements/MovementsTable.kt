@@ -65,6 +65,7 @@ internal fun MovementsTable(
             ),
             PharmTableColumn(
                 header = s.commonQty,
+                compactTrailing = true,
                 weight = 0.9f,
                 align = PharmColumnAlign.End,
                 cell = { m -> QtyCell(m) },

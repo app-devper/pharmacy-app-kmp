@@ -88,6 +88,7 @@ internal fun BulkImportResultTable(
         ),
         PharmTableColumn(
             header = s.commonStatus,
+            compactTrailing = true,
             weight = 1.1f,
             cell = { row -> BulkImportStatusBadge(row.status) },
         ),

@@ -80,6 +80,7 @@ internal fun StockCountFormTable(
             ),
             PharmTableColumn(
                 header = s.stockCountFormDelta,
+                compactTrailing = true,
                 weight = 0.8f,
                 align = PharmColumnAlign.End,
                 cell = { row -> StockCountDeltaCell(row) },

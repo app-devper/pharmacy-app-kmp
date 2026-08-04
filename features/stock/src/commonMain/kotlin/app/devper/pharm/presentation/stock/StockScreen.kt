@@ -6,7 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.ui.common.LocalPharmSnackbar
-import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.common.toToast
 import app.devper.pharm.ui.common.ReloadOnResume
 import app.devper.pharm.ui.i18n.localize
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -33,7 +33,7 @@ fun StockScreen(
     val s = pharmStrings
     LaunchedEffect(state.messageState) {
         state.messageState?.let {
-            snackbar.showToast(PharmToast.Info(it.localize(s)))
+            snackbar.showToast(it.toToast(s))
             viewModel.dismissMessage()
         }
     }

@@ -27,7 +27,6 @@ object StockStringsTh : StockStrings {
     override val stockHeaderMinStock = "สต็อกขั้นต่ำ"
     override val stockBadgeHerb = "สมุนไพร"
     override val stockUnitPlaceholder = "เม็ด / แคปซูล / ขวด…"
-    override val stockDrugSavedToast = "บันทึกข้อมูลยาเรียบร้อย"
     override val stockFormTitleEdit = "แก้ไขยา"
     override val stockFormTitleAdd = "เพิ่มยา"
     override val movementTypeImport = "นำเข้า"

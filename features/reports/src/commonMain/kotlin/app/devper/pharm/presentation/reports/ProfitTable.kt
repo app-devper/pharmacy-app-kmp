@@ -67,6 +67,7 @@ internal fun ProfitTable(
         ),
         PharmTableColumn(
             header = s.reportsHeaderProfit,
+            compactTrailing = true,
             weight = 1.2f,
             align = PharmColumnAlign.End,
             cell = { row -> MoneyCell(row.profit, bold = true) },

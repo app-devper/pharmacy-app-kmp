@@ -94,6 +94,7 @@ internal fun ExpiryTable(
         ),
         PharmTableColumn(
             header = s.commonStatus,
+            compactTrailing = true,
             weight = 1.2f,
             cell = { lot -> ExpiryStatusBadge(lot.daysLeft) },
         ),

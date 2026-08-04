@@ -27,7 +27,6 @@ object StockStringsEn : StockStrings {
     override val stockHeaderMinStock = "Min stock"
     override val stockBadgeHerb = "Herbal"
     override val stockUnitPlaceholder = "tablet / capsule / bottle…"
-    override val stockDrugSavedToast = "Drug saved"
     override val stockFormTitleEdit = "Edit drug"
     override val stockFormTitleAdd = "Add drug"
     override val movementTypeImport = "Import"

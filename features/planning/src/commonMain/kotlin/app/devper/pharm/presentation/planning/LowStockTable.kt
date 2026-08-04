@@ -55,6 +55,7 @@ internal fun LowStockTable(
             ),
             PharmTableColumn(
                 header = s.commonStatus,
+                compactTrailing = true,
                 weight = 1.0f,
                 align = PharmColumnAlign.End,
                 cell = { drug -> LowStockStatusCell(drug) },

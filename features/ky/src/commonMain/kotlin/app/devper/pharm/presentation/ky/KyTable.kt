@@ -104,6 +104,7 @@ private fun kyColumns(
     ),
     PharmTableColumn(
         header = s.kyValueAmount,
+        compactTrailing = true,
         weight = 1.1f,
         align = PharmColumnAlign.End,
         cell = { row -> TotalCell(row.totalValue) },

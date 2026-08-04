@@ -1,6 +1,9 @@
 package app.devper.pharm.presentation.customers
 
 import androidx.compose.runtime.Composable
+import app.devper.pharm.ui.common.LocalPharmSnackbar
+import app.devper.pharm.ui.common.PharmToast
+import app.devper.pharm.ui.i18n.pharmStrings
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -16,6 +19,8 @@ fun CustomerFormScreen(
     viewModel: CustomerFormViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbar = LocalPharmSnackbar.current
+    val s = pharmStrings
     RegisterUnsavedChanges(state.hasUnsavedChanges)
 
     LaunchedEffect(customerId) {
@@ -27,6 +32,7 @@ fun CustomerFormScreen(
     LaunchedEffect(state.saved) {
         if (state.saved) {
             viewModel.resetSaved()
+            snackbar.showToast(PharmToast.Success(s.commonSaved))
             onBack()
         }
     }
