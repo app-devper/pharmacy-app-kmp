@@ -329,12 +329,7 @@ private fun <T> PharmTableHeader(columns: List<PharmTableColumn<T>>, height: Dp)
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.border),
-        )
+        PharmDivider(color = t.colors.border)
     }
 }
 
@@ -380,12 +375,7 @@ private fun <T> PharmTableRow(
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.divider),
-        )
+        PharmDivider()
     }
 }
 

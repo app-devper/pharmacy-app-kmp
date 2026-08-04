@@ -42,6 +42,8 @@ import app.devper.pharm.ui.common.ReloadOnResume
 import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.designsystem.PharmVerticalDivider
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
 import app.devper.pharm.ui.designsystem.PharmMotion
@@ -181,7 +183,7 @@ private fun SettingsCategoryRail(
                 )
             }
         }
-        Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(t.colors.divider))
+        PharmVerticalDivider()
     }
 }
 
@@ -271,7 +273,7 @@ private fun SettingsPane(
                 )
             }
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (state.loading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

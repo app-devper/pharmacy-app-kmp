@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.sell
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import app.devper.pharm.ui.designsystem.PharmVerticalDivider
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -166,7 +166,7 @@ fun SellScreen(
                         modifier = Modifier.weight(1f),
                         searchFocusRequester = searchFocus,
                     )
-                    VerticalDivider(color = t.colors.divider)
+                    PharmVerticalDivider()
                     Column(modifier = Modifier.width(cartWidth)) {
                         if (!showRail) {
                             CartTabStrip(

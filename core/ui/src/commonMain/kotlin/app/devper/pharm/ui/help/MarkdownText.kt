@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
@@ -185,7 +186,7 @@ private fun RenderBlock(block: MdBlock) {
                             )
                         }
                     }
-                    MarkdownDivider()
+                    PharmDivider()
                 }
                 block.rows.forEach { row ->
                     Row {
@@ -203,7 +204,7 @@ private fun RenderBlock(block: MdBlock) {
             }
         }
 
-        MdBlock.HorizontalRule -> MarkdownDivider(modifier = Modifier.padding(vertical = 4.dp))
+        MdBlock.HorizontalRule -> PharmDivider(modifier = Modifier.padding(vertical = 4.dp))
     }
 }
 
@@ -265,12 +266,3 @@ private fun renderInline(text: String): AnnotatedString = buildAnnotatedString {
     }
 }
 
-@Composable
-private fun MarkdownDivider(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
-}

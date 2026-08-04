@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PriceTierBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
@@ -85,12 +86,7 @@ fun CustomerPickerSheet(
                     else -> LazyColumn(contentPadding = PaddingValues(bottom = 32.dp)) {
                         items(filtered, key = { it.id }) { customer ->
                             CustomerRow(customer, onClick = { onPick(customer) })
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp)
-                                    .background(t.colors.borderSubtle),
-                            )
+                            PharmDivider(color = t.colors.borderSubtle)
                         }
                     }
                 }

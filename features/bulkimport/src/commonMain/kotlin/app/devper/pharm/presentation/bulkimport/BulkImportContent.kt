@@ -34,6 +34,7 @@ import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.presentation.bulkimport.i18n.localizeBulkImport
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -130,7 +131,7 @@ fun BulkImportContent(
                         .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
                 ) {
                     BulkImportResultHeader(rows = state.rows)
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                    PharmDivider()
                     Box(modifier = Modifier.heightIn(min = 240.dp, max = 480.dp)) {
                         BulkImportResultTable(rows = state.rows)
                     }

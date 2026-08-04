@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyRequired
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmHelpHint
@@ -83,7 +84,7 @@ fun KyCaptureSheet(
                 style = PharmText.body.copy(color = t.colors.fg2),
             )
 
-            Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
 
             if (required.needsKy11) {
                 Ky11Section(

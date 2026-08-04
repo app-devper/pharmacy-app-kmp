@@ -202,12 +202,7 @@ fun PharmModal(
                             )
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(t.colors.divider),
-                    )
+                    PharmDivider()
                 }
 
                 val contentModifier = Modifier
@@ -226,12 +221,7 @@ fun PharmModal(
                 }
 
                 if (footer != null) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(t.colors.divider),
-                    )
+                    PharmDivider()
                     FlowRow(
                         modifier = Modifier
                             .fillMaxWidth()

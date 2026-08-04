@@ -32,6 +32,7 @@ import app.devper.pharm.presentation.stockcount.components.DraftActionConfirmMod
 import app.devper.pharm.presentation.stockcount.components.SubmitConfirmModal
 import app.devper.pharm.presentation.stockcount.i18n.localizeStockCount
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmSaveAction
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -79,7 +80,7 @@ fun StockCountFormContent(
         )
         Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
             StockCountFormToolbar(state = state, callbacks = callbacks)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 when {

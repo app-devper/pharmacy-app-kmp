@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.presentation.planning.i18n.localizePlanning
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -90,7 +91,7 @@ fun ReorderSuggestionsContent(
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
             PharmListResultLine(total = state.suggestions.size, noun = s.planningCountNoun)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
             when {
                 state.loading && state.suggestions.isEmpty() -> PharmListSkeleton()
                 state.suggestions.isEmpty() ->

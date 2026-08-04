@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -216,12 +217,7 @@ private fun SlotBadge(slotNumber: Int, dimmed: Boolean = false) {
 
 @Composable
 private fun SheetDivider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }
 
 @Composable
