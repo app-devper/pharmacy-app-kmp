@@ -27,4 +27,5 @@ interface SuppliersStrings {
     val suppliersFormAddressPlaceholder: String
     val suppliersFormTaxId: String
     val suppliersFormNotesPlaceholder: String
+    val suppliersSubtitle: String
 }
