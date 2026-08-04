@@ -38,6 +38,7 @@ internal fun ImportsListTable(
         listOf(
         PharmTableColumn<PurchaseOrderSummary>(
             header = s.commonDate,
+            hideInCompact = true,
             weight = 1.0f,
             cell = { row -> DateCell(row) },
         ),
@@ -54,6 +55,7 @@ internal fun ImportsListTable(
         ),
         PharmTableColumn(
             header = s.importsHeaderInvoicePlaceholder,
+            hideInCompact = true,
             weight = 1.4f,
             cell = { row -> InvoiceCell(row) },
         ),
