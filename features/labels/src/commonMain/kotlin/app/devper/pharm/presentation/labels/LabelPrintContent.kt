@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
@@ -45,13 +47,15 @@ fun LabelPrintContent(
         modifier = Modifier
             .fillMaxSize()
             .background(t.colors.bgPage),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         PharmListToolbar(
-            title = pharmStrings.navLabelPrint,
             subtitle = pharmStrings.labelsSubtitle,
+            modifier = Modifier.widthIn(max = t.dimens.dashboardContentMaxWidth),
         )
         BoxWithConstraints(
             modifier = Modifier
+                .widthIn(max = t.dimens.dashboardContentMaxWidth)
                 .fillMaxWidth()
                 .weight(1f)
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),

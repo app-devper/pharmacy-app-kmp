@@ -23,6 +23,8 @@ import app.devper.pharm.ui.designsystem.PharmAvatarSize
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
+import app.devper.pharm.ui.designsystem.label
+import app.devper.pharm.ui.designsystem.tone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmIcons
@@ -237,18 +239,4 @@ private fun UsersRowActions(
     PharmActionMenu(actions = actions)
 }
 
-internal fun Role.label(s: PharmStrings): String = when (this) {
-    Role.SUPER   -> s.usersRoleSuper
-    Role.ADMIN   -> s.usersRoleAdmin
-    Role.MANAGER -> s.usersRoleManager
-    Role.USER    -> s.usersRoleUser
-    Role.UNKNOWN -> s.usersRoleUnknown
-}
 
-internal fun Role.tone(): PharmBadgeTone = when (this) {
-    Role.SUPER   -> PharmBadgeTone.Purple
-    Role.ADMIN   -> PharmBadgeTone.Blue
-    Role.MANAGER -> PharmBadgeTone.Indigo
-    Role.USER    -> PharmBadgeTone.Gray
-    Role.UNKNOWN -> PharmBadgeTone.Gray
-}

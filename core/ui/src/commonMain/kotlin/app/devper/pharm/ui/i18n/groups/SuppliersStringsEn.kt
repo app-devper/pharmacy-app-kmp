@@ -29,4 +29,5 @@ object SuppliersStringsEn : SuppliersStrings {
     override val suppliersFormTaxId = "Tax identification number"
     override val suppliersFormNotesPlaceholder = "Order terms / discounts / additional details…"
     override val suppliersFormNotFound = "Supplier not found"
+    override val suppliersSubtitle = "Suppliers and their contacts"
 }
