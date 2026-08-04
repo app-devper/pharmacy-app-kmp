@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -363,10 +364,10 @@ private fun <T> PharmTableRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(height)
+                .heightIn(min = height)
                 .background(bg)
                 .then(clickable)
-                .padding(horizontal = 18.dp),
+                .padding(horizontal = 18.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
