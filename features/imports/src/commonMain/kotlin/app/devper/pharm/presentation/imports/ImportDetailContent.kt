@@ -29,6 +29,7 @@ import app.devper.pharm.domain.model.PurchaseOrderItem
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.presentation.imports.i18n.localizeImports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmCircularProgress
@@ -155,7 +156,7 @@ private fun Body(po: PurchaseOrder) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item("header") { HeaderBlock(po) }
         item("header-divider") {
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
         item("section") {
             Text(
@@ -170,7 +171,7 @@ private fun Body(po: PurchaseOrder) {
         ) { index, item ->
             ImportDetailItemRow(item)
             if (index < po.items.lastIndex) {
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                PharmDivider()
             }
         }
     }
@@ -196,7 +197,7 @@ private fun HeaderBlock(po: PurchaseOrder) {
             text = s.importsFormItemTotal(fmtBaht(po.totalCost.amount)),
             style = PharmText.h2.tabular(),
         )
-        Box(Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
         DetailRow(s.importsFormSupplier, po.supplier.ifBlank { "-" })
         DetailRow(s.importsHeaderInvoiceNo, po.invoiceNo.ifBlank { "-" })
         DetailRow(s.importsFormReceiveDate, localDateToBuddhist(po.receiveDate).ifBlank { "-" })

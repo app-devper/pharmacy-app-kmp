@@ -32,6 +32,7 @@ import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
 import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -117,12 +118,7 @@ fun StockAdjustmentsDialogs(
 
 @Composable
 private fun Divider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }
 
 @Composable

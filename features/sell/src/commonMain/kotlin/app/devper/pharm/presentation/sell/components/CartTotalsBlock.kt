@@ -26,6 +26,7 @@ import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmIcons
 
 @Composable
@@ -54,7 +55,7 @@ fun CartTotalsBlock(
             Text(fmtBaht(grossSubtotal), style = PharmText.bodySm.copy(color = t.colors.fg2))
         }
 
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         if (hasDiscounts) {
             Column(modifier = Modifier.fillMaxWidth()) {

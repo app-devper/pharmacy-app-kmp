@@ -23,6 +23,7 @@ import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.i18n.localizedLabel
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
@@ -64,7 +65,7 @@ fun DrugHistoryContent(
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
             PharmListResultLine(total = state.items.size, noun = pharmStrings.stockHistoryCountNoun)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
 
             when {
                 state.loading && state.items.isEmpty() -> PharmListSkeleton()

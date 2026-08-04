@@ -26,12 +26,7 @@ fun PharmStickyTotalRow(
 ) {
     val t = pharmTokens
     Column(modifier = modifier.fillMaxWidth().background(t.colors.bgPage)) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.border),
-        )
+        PharmDivider(color = t.colors.border)
         Row(
             modifier = Modifier
                 .fillMaxWidth()

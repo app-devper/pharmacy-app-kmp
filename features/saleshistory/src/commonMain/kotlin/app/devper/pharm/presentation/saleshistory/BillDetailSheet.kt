@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
@@ -168,10 +169,5 @@ private fun TotalRow(label: String, value: Double, emphasize: Boolean = false) {
 
 @Composable
 private fun Divider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }

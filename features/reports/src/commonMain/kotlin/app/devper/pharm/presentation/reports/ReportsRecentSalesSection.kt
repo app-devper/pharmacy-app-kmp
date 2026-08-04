@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmFormCard
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.ui.designsystem.PharmStatus
@@ -92,11 +93,6 @@ private fun RecentSaleRow(sale: SaleSummary) {
                 textAlign = TextAlign.End,
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(t.colors.divider),
-        )
+        PharmDivider()
     }
 }

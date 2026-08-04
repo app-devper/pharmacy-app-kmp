@@ -29,6 +29,7 @@ import app.devper.pharm.presentation.reports.components.EodClosedReceiptCard
 import app.devper.pharm.presentation.reports.components.EodHeader
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -128,11 +129,11 @@ private fun EodBillsCard(report: EodReport) {
         Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
             EodBillsHeader(count = report.billCount)
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
         report.bills.forEachIndexed { index, bill ->
             EodBillRow(bill = bill)
             if (index < report.bills.lastIndex) {
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                PharmDivider()
             }
         }
     }

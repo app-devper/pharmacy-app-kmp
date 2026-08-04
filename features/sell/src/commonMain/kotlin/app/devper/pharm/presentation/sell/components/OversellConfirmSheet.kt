@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.OversellShortfall
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.common.pharmToggleable
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
@@ -166,10 +167,5 @@ private fun ShortfallRow(row: OversellShortfall) {
 
 @Composable
 private fun Divider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }

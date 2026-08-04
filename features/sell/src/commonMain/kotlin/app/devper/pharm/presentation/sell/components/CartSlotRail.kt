@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell.components
 
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.i18n.pharmStrings
 
 import androidx.compose.foundation.background
@@ -43,7 +44,7 @@ internal fun CartSlotRail(
             .width(44.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         slots.forEachIndexed { index, parked ->
             SlotChip(
@@ -52,7 +53,7 @@ internal fun CartSlotRail(
                 selected = index == selectedSlot,
                 onClick = { onTapSlot(index) },
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
 
         Spacer(modifier = Modifier.weight(1f))

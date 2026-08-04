@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ParkedCart
+import app.devper.pharm.ui.designsystem.PharmVerticalDivider
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
@@ -38,11 +40,11 @@ internal fun CartTabStrip(
 ) {
     val t = pharmTokens
     Box(modifier = modifier.fillMaxWidth()) {
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.TopCenter))
+        PharmDivider(modifier = Modifier.align(Alignment.TopCenter))
         Row(modifier = Modifier.fillMaxWidth().height(48.dp)) {
             slots.forEachIndexed { index, parked ->
                 if (index > 0) {
-                    Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(t.colors.divider))
+                    PharmVerticalDivider()
                 }
                 TabChip(
                     number = index + 1,
@@ -53,7 +55,7 @@ internal fun CartTabStrip(
                 )
             }
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider).align(Alignment.BottomCenter))
+        PharmDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 

@@ -31,6 +31,7 @@ import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.presentation.customers.i18n.localizeCustomerDetail
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.format.localDateTimeToBuddhist
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PriceTierBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
@@ -85,7 +86,7 @@ fun CustomerDetailContent(
                 .border(1.dp, t.colors.borderSubtle, t.shapes.lg),
         ) {
             CustomerHeader(customer = state.customer, loading = state.customerLoading)
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
             SalesSection(state = state)
         }
     }
@@ -196,7 +197,7 @@ private fun SalesSection(state: CustomerDetailUiState) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(state.sales, key = { it.id }) { sale ->
                         SaleRow(sale)
-                        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                        PharmDivider()
                     }
                 }
             }

@@ -8,25 +8,32 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
-fun PharmDivider(modifier: Modifier = Modifier) {
+fun PharmDivider(
+    modifier: Modifier = Modifier,
+    color: Color = pharmTokens.colors.divider,
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(1.dp)
-            .background(pharmTokens.colors.divider),
+            .background(color),
     )
 }
 
 @Composable
-fun PharmVerticalDivider(modifier: Modifier = Modifier) {
+fun PharmVerticalDivider(
+    modifier: Modifier = Modifier,
+    color: Color = pharmTokens.colors.divider,
+) {
     Box(
         modifier = modifier
             .fillMaxHeight()
             .width(1.dp)
-            .background(pharmTokens.colors.divider),
+            .background(color),
     )
 }

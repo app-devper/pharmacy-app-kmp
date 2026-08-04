@@ -22,6 +22,7 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.common.pharmClickable
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.i18n.pharmStrings
 
@@ -95,10 +96,5 @@ private fun UnitRow(label: String, factorHint: String?, price: Double, onClick: 
 
 @Composable
 private fun Divider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.borderSubtle),
-    )
+    PharmDivider(color = pharmTokens.colors.borderSubtle)
 }

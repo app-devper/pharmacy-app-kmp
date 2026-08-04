@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.SaleItemSnapshot
 import app.devper.pharm.domain.model.SaleSummary
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -102,12 +103,7 @@ fun ReturnSaleSheet(
                 color = t.colors.fg2,
             )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(pharmTokens.colors.border),
-            )
+            PharmDivider(color = pharmTokens.colors.border)
 
             if (itemsLoading && items.isEmpty()) {
                 Box(
@@ -132,12 +128,7 @@ fun ReturnSaleSheet(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(pharmTokens.colors.border),
-            )
+            PharmDivider(color = pharmTokens.colors.border)
 
             if (itemsError) {
                 Text(

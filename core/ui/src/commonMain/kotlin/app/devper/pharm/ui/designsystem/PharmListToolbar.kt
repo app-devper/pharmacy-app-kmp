@@ -357,12 +357,7 @@ fun PharmListToolbar(
                 }
             }
             if (compact) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(t.colors.divider),
-                )
+                PharmDivider()
             }
         }
     }

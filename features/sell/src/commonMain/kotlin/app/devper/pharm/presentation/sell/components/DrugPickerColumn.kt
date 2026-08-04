@@ -43,6 +43,7 @@ import kotlinx.coroutines.delay
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.DrugCard
 import app.devper.pharm.ui.designsystem.DrugCardType
 import app.devper.pharm.ui.designsystem.PharmEmptyState
@@ -116,11 +117,11 @@ fun DrugPickerColumn(
                 endSlot = { ScannerFieldIcon() },
             )
         }
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         ResultLine(query, total = drugs.size, visibleCount = visible.size)
 
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+        PharmDivider()
 
         addedDrugName?.let { name ->
             Text(
@@ -131,7 +132,7 @@ fun DrugPickerColumn(
                     .background(t.colors.successBg)
                     .padding(horizontal = 16.dp, vertical = 6.dp),
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
 
         visible.firstOrNull { it.id == armedDrugId }?.let { armed ->
@@ -143,7 +144,7 @@ fun DrugPickerColumn(
                     .background(t.colors.accentBgSoft)
                     .padding(horizontal = 16.dp, vertical = 6.dp),
             )
-            Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+            PharmDivider()
         }
 
         when {

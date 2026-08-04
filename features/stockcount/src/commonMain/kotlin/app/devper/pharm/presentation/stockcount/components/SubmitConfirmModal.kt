@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.presentation.stockcount.StockCountDiscrepancy
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -75,7 +76,7 @@ internal fun SubmitConfirmModal(
 
             if (topDiscrepancies.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
-                Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(t.colors.divider))
+                PharmDivider()
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = s.stockCountFormTopDiscrepancy(topDiscrepancies.size),

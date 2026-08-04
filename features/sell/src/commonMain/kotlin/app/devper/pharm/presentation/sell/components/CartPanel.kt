@@ -38,6 +38,7 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.ui.common.ShortcutHint
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.pharmBannerEnter
 import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.PharmAnimatedBaht
@@ -306,12 +307,7 @@ private fun CartPayButton(
 
 @Composable
 private fun CartSectionDivider() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(pharmTokens.colors.divider),
-    )
+    PharmDivider()
 }
 
 @Composable

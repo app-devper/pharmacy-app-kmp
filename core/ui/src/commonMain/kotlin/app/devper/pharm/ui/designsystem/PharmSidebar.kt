@@ -687,14 +687,7 @@ private fun SidebarAccountSummary(
 
 @Composable
 private fun SidebarAccountDivider() {
-    val t = pharmTokens
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .height(1.dp)
-            .background(t.colors.divider),
-    )
+    PharmDivider(modifier = Modifier.padding(vertical = 6.dp))
 }
 
 @Composable
