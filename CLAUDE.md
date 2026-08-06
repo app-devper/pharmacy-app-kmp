@@ -1,7 +1,7 @@
 # CLAUDE.md — pharmacy-app KMP companion
 
 Project-scoped instructions for Claude Code in
-`/Users/admin/ProjectPos/pharmacy-app/app-kmp/` — a Compose Multiplatform
+`/Users/admin/ProjectPos/devper-pharmacy/app-kmp/` — a Compose Multiplatform
 app shipped to Android / iOS / JVM / wasmJs.
 
 **26 Gradle modules**: `:composeApp` (entry, only module with platform
@@ -49,8 +49,8 @@ there is no per-feature `ShelledScreen`.
 - Each feature exposes `fun NavGraphBuilder.<x>Nav(...)` in
   `presentation/<x>/navigation/<X>Nav.kt`. Leaf features take no params;
   features with sub-pages take `navController`; cross-feature jumps take
-  a hoisted `() -> Unit` callback (only `stockNav`'s `onOpenReorderSuggestions`
-  today).
+  hoisted `() -> Unit` callbacks (`stockNav`'s `onOpenReorderSuggestions` /
+  `onOpenExpiry` / `onOpenImports`, and `planningNav`).
 
 ## Code style — NO COMMENTS
 
@@ -86,14 +86,14 @@ license headers required by upstream libraries.
             :core:{common,domain,ui,data}:jvmTest \
             :features:{auth,bulkimport,customers,expiry,help,imports,ky,labels,movements,offlinesync,planning,profile,reports,saleshistory,sell,settings,stock,stockcount,suppliers,users}:jvmTest
   ```
-  Quick smoke: `./gradlew :composeApp:check`. Current test count: **960
-  `@Test` functions across 126 commonTest files** (re-measure with
-  `grep -rn '@Test' core features composeApp --include='*.kt' | wc -l`).
+  Quick smoke: `./gradlew :composeApp:check`. Current test count: **1,253
+  `@Test` functions across 179 commonTest files** (re-measure with
+  `grep -rn '@Test' core features composeApp --include='*.kt' | grep -v /build/ | wc -l`).
 
 - **Coverage (Kover)**: `./gradlew koverVerify` enforces a **line-coverage
-  floor** (`COVERAGE_FLOOR` in root `build.gradle.kts`, currently **50%** —
-  a ratchet to raise over time toward the 80% target, not a one-shot gate;
-  measured ~55% today). `koverHtmlReport` → `build/reports/kover/html/`.
+  floor** (`COVERAGE_FLOOR` in root `build.gradle.kts`, currently **55%** —
+  a ratchet to raise over time toward the 80% target, not a one-shot gate).
+  `koverHtmlReport` → `build/reports/kover/html/`.
   Filters exclude UI composables (`@Composable`, `*Screen`/`*Content`),
   the i18n string tables (`i18n.groups`), `ui.print`, and DTOs — the
   measured layers are domain / use-case / VM / mappers / localizers. CI
@@ -207,7 +207,7 @@ license headers required by upstream libraries.
   primitives in `ui/designsystem/Pharm*.kt`. **No M3 widgets** in net-new
   files — use `PharmButton` / `PharmBadge` / `PharmTextField` / `FormField` /
   `PharmModal` / `MetricCard` / `DrugCard` / `PharmTable` / `PharmStaticTable` /
-  `PharmFilterChips` / `PharmIcons` (32 SVG vectors).
+  `PharmFilterChips` / `PharmIcons` (45 SVG vectors).
 
 - **Page scaffold primitives** (every screen looks the same):
   - `PharmListToolbar(title, subtitle, onBack, searchValue, filters, actions)`
@@ -295,8 +295,8 @@ license headers required by upstream libraries.
   production UI code).
   - **The system is the Kotlin-typed string table** —
     `:core:ui/.../i18n/PharmStrings.kt`: a composite interface built by
-    **delegation over ~25 per-module group interfaces**
-    (`i18n/groups/<G>Strings.kt` + `Th`/`En` objects; ~990 keys). Read in
+    **delegation over 25 per-module group interfaces**
+    (`i18n/groups/<G>Strings.kt` + `Th`/`En` objects; ~1,130 keys). Read in
     Composables via `pharmStrings.<key>` (a `@ReadOnlyComposable` getter
     on `LocalPharmStrings`); interpolated copy uses lambda keys
     (`sellKyIncomplete: (String, String) -> String`). `App {}` wraps

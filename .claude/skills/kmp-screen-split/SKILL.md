@@ -1,29 +1,30 @@
 ---
 name: kmp-screen-split
-description: Refactor a fat Compose screen in a Compose Multiplatform project into the canonical Screen ↔ Content + Callbacks + @Preview split, including responsive layout via BoxWithConstraints/WindowSize. Use when a screen mixes state-collection with rendering, lacks previews, or needs responsive behavior.
+description: Refactor a fat Compose screen in the pharmacy app into the canonical Screen ↔ Content + Callbacks + @Preview split. Use when a screen mixes state-collection with rendering, lacks previews, or has grown past ~300 lines.
 ---
 
 # kmp-screen-split
 
-Every screen splits into a **stateful `Screen`** (Koin + state collection) and a **stateless
-`Content`** (pure, previewable). One file per concept — no `Screen`+`Content` in the same file.
+Every screen splits into a **stateful `Screen`** (Koin + state collection) and a
+**stateless `Content`** (pure, previewable). One file per concept — never
+`Screen` and `Content` in the same file.
 
-**No comments. `Brand*` primitives only** (no raw Material 3 in net-new). See **kmp-design-system**
-for the primitive list, **kmp-layout-pattern** for the page structure.
+No comments anywhere. `Pharm*` primitives only. See `kmp-design-system` for the
+primitive list and `kmp-layout-pattern` for the page structure this produces.
 
 ## Target shape
 
 ```kotlin
 // <X>Screen.kt — stateful
 @Composable
-fun ThingsScreen(viewModel: ThingsViewModel = koinViewModel()) {
+fun StockScreen(viewModel: StockViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ReloadOnResume(viewModel::reload)                    // list/dashboard pages only
-    ThingsContent(
+    StockContent(
         state = state,
-        callbacks = ThingsCallbacks(
+        callbacks = StockCallbacks(
             onReload = viewModel::reload,
-            onRowClick = viewModel::onRowClick,
+            onSearch = viewModel::onSearch,
             onDismissError = viewModel::dismissError,
         ),
     )
@@ -31,87 +32,87 @@ fun ThingsScreen(viewModel: ThingsViewModel = koinViewModel()) {
 
 // <X>Content.kt — stateless, previewable
 @Composable
-fun ThingsContent(state: ThingsUiState, callbacks: ThingsCallbacks = ThingsCallbacks()) {
-    val t = brandTokens
-    Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
-        BrandListToolbar(title = "Things", subtitle = "…", actions = { … })
-        Column(
-            modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            // loading / empty / data
+fun StockContent(state: StockUiState, callbacks: StockCallbacks = StockCallbacks()) {
+    val s = pharmStrings
+    PharmListScaffold(
+        toolbar = { StockToolbar(state = state, callbacks = callbacks) },
+        resultLine = { PharmListResultLine(total = state.drugs.size, noun = s.stockCountNoun) },
+    ) {
+        when {
+            state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
+            state.errorState != null && state.drugs.isEmpty() -> PharmErrorState()
+            state.drugs.isEmpty() -> PharmEmptyState(icon = PharmIcons.Stock, title = s.stockListEmpty)
+            else -> StockTable(drugs = state.filtered, callbacks = callbacks)
         }
     }
-    ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(
+        message = state.errorState.unlessPageShowsError(state.drugs.isEmpty())?.localizeStock(s),
+        onDismiss = callbacks.onDismissError,
+    )
 }
 
-@Preview @Composable private fun ThingsContent_Loaded_Preview() {
-    BrandTheme { ThingsContent(state = ThingsUiState(rows = sampleRows)) }
+@Preview @Composable private fun StockContent_Loaded_Preview() {
+    PharmacyTheme { StockContent(state = StockUiState(drugs = sampleDrugs)) }
 }
-@Preview @Composable private fun ThingsContent_Loading_Preview() {
-    BrandTheme { ThingsContent(state = ThingsUiState(loading = true)) }
+@Preview @Composable private fun StockContent_Loading_Preview() {
+    PharmacyTheme { StockContent(state = StockUiState(loading = true)) }
 }
-@Preview @Composable private fun ThingsContent_Empty_Preview() {
-    BrandTheme { ThingsContent(state = ThingsUiState()) }
+@Preview @Composable private fun StockContent_Empty_Preview() {
+    PharmacyTheme { StockContent(state = StockUiState()) }
 }
 ```
 
 ## Refactor steps
 
-1. **Extract `Content`** — move all rendering into `<X>Content(state, callbacks)`. It takes no
-   VM, does no `koinInject`/`koinViewModel`, launches no coroutines, and must compile in a
-   `@Preview` with no backend.
-2. **Create `<X>Callbacks`** — a `data class` of lambdas, every one defaulted to `{}`. Replace
-   direct `viewModel::foo` calls inside the body with `callbacks.foo`.
-3. **Slim `Screen`** — keep only `koinViewModel()`, `collectAsStateWithLifecycle()` (NEVER
-   `collectAsState` — battery), and the `Callbacks(...)` wiring.
-   - For **list/dashboard screens** also call `ReloadOnResume(vm::reload)` so adding/editing on a
-     child page reflects when the user navigates back. Use whichever public refetch fn the VM
-     exposes (`reload`, or `applyFilter` / `loadList` for filter-driven VMs).
-4. **Add ≥3 `@Preview`** — at least loaded / loading / empty using `BrandTheme { … }` and local
-   sample data (`private val sampleRows = …`). Previews must compile without a backend.
-5. **Strip comments** as part of the edit; rename unclear locals instead of commenting.
-6. **Split files** — if `Screen` and `Content` were in the same file, extract `Content` to its
-   own `<X>Content.kt`. Same for `UiState`/`ViewModel`/`Callbacks` if any of them shared a file
-   (the file-per-class rule).
+1. **Extract `Content`** — move all rendering into `<X>Content(state, callbacks)`.
+   It takes no ViewModel, does no `koinInject` / `koinViewModel`, launches no
+   coroutines, and must compile in a `@Preview` with no backend.
+2. **Create `<X>Callbacks`** — a `data class` of lambdas, every one defaulted to
+   `{}` (or a `Preview` companion instance where the callbacks are non-optional,
+   as `UsersListCallbacks.Preview` does). Replace `viewModel::foo` in the body
+   with `callbacks.foo`.
+3. **Slim `Screen`** — only `koinViewModel()`, `collectAsStateWithLifecycle()`
+   (never `collectAsState` — battery), `ReloadOnResume(vm::reload)` on
+   list/dashboard pages, and the `Callbacks(...)` wiring.
+4. **Split further when the Content passes ~300 lines.** The convention is
+   sibling stateless composables in the same package: `<X>Toolbar.kt`,
+   `<X>Table.kt`, `<X>MetricsRow.kt`, `<X>Card.kt`. Forms go one level down in
+   a `form/` package.
+5. **Add ≥3 `@Preview`** — loaded / loading / empty, wrapped in
+   `PharmacyTheme { … }` with local `private val sample*` data. Sample data may
+   contain Thai literals; A29 skips everything from the first `@Preview` or
+   `private val sample*` marker onward.
+6. **Strip comments** as part of the edit; rename unclear locals instead.
 
-## Layout pattern
+## What the split must fix on the way through
 
-Use the single unified pattern from **kmp-layout-pattern**: `Column { BrandListToolbar ; weighted
-content column }`. Sub-pages differ only by passing `onBack` to the toolbar — there is **no**
-separate `SubPageScaffold` / `DetailScaffold` abstraction.
+- Typed errors: `state.errorState: AppException?`, never `error: String?`.
+  Localize at render with `localize<X>(pharmStrings)` — never in the ViewModel.
+- Copy comes from `pharmStrings`. In `remember {}` / `semantics {}` /
+  `LaunchedEffect` bodies you cannot call `pharmStrings`, so capture
+  `val s = pharmStrings` at composable scope and key caches with it
+  (`remember(s) { columns() }`) so tables rebuild on locale switch.
+- A list page hand-rolling `Column { toolbar ; surface card }` becomes
+  `PharmListScaffold`.
+- A sub-page content column using `fillMaxSize()` becomes `weight(1f)`.
+- A sub-page drawing its own back arrow passes `onBack` to `PharmListToolbar`.
+- A form with a bottom save bar moves to `PharmSaveAction` in the toolbar
+  `actions` slot, and picks up `pharmFormContentWidth()` +
+  `pharmFormContentPadding()`.
+- Money/Quantity: display unwraps at the call site (`fmtBaht(x.amount)`,
+  `qty.value`); the state keeps the value classes.
 
-Anti-patterns to fix during the split:
-- Toolbar nested inside the table surface card → toolbar must be flush at the top of the page.
-- Content column using `fillMaxSize` instead of `weight(1f)` → content slips behind the toolbar.
-- Form centering itself with `widthIn(max = …)` while neighbouring list pages are full-width.
-- A sub-page rendering its own back arrow / breadcrumb instead of using `BrandListToolbar(onBack)`.
-- Form with a bottom save bar instead of `BrandSaveAction` in the toolbar `actions` slot.
+## Responsive
 
-## Responsive layout
-
-Match these breakpoints when splitting layout:
-
-| Width | Meaning | Helper |
-|---|---|---|
-| `< 320dp` | not supported | floor enforced by `window.minimumSize` / `min-width: 320px` |
-| `< 360dp` | tightest phone | `BoxWithConstraints { if (maxWidth < 360.dp) Column else Row }` |
-| `< 600dp` | **Compact** (mobile) | `WindowSize.Compact`; `BrandTable` auto-renders **card mode** |
-| `600–840dp` | **Medium** | `WindowSize.Medium` |
-| `≥ 840dp` | **Expanded** | `WindowSize.Expanded` |
-| `≥ 720dp` | metric cards go 4-up | inside `MetricCardRow` |
-
-- Use `WindowSize.fromWidth(maxWidth)` for shell-level decisions.
-- Use `BoxWithConstraints { maxWidth … }` + `FlowRow` (wraps) for content-level reflow; stack
-  `Row`→`Column` below ~360–700dp rather than letting weighted children crush.
-- `BrandTable` already switches to card mode `< 600dp` and h-scrolls when columns overflow — set
-  `hideInCompact = true` on low-priority columns and `compactTitle = true` on the primary one.
-- Desktop window floors at 600px (`Main.kt` `window.minimumSize`); web floors via `index.html`
-  `min-width: 600px`. Don't design inner screens that assume `< 600dp` on desktop/web.
+Two named tiers — `isCompactShell` (< 840dp, chrome) and `isCompactContent`
+(< 600dp, data density). Never compare the raw `WindowSize` enum. Full table
+and the platform floors are in `kmp-layout-pattern` §5.
 
 ## Verify
 
 ```bash
 ./gradlew :features:<feat>:jvmTest :composeApp:compileTestKotlinWasmJs
-./gradlew :composeApp:run                  # desktop; resize to eyeball reflow at 320 / 600 / 720 / 1100
 ```
+
+Then actually look at it — the `run` skill drives the wasm build in headless
+Edge and screenshots it at whatever widths you ask for.

@@ -1,27 +1,28 @@
 ---
 name: kmp-build-logic
-description: Set up the build infrastructure for a Compose Multiplatform Clean-Architecture project — convention plugins (KMP library + Compose library), version catalog, settings.gradle.kts, and the auditArchitecture Gradle task that enforces module + DTO + platform rules. Use when bootstrapping a new KMP project or extending the audit ruleset.
+description: The build infrastructure of the pharmacy app — the two convention plugins in build-logic/, the version catalog, the auditArchitecture task and its 11 rules, Kover coverage, and the Cloud Build deploy. Use when adding a module, changing a dependency, or extending the audit ruleset.
 ---
 
 # kmp-build-logic
 
-The infrastructure layer that makes every module look the same and prevents drift from the rules
-in **kmp-rules** + **kmp-code-pattern**.
+Four pieces keep 26 modules identical:
 
-Three pieces:
-1. **Convention plugins** in an included build `build-logic/` — apply once per module.
-2. **Version catalog** in `gradle/libs.versions.toml` — single source of dependency versions.
-3. **`auditArchitecture` Gradle task** — greps source for rule violations, fails the build.
+1. **Convention plugins** in the `build-logic/` included build.
+2. **Version catalog** `gradle/libs.versions.toml`.
+3. **`auditArchitecture`** — greps source for rule violations and fails the build.
+4. **Kover** — a line-coverage floor enforced by `koverVerify`.
 
-## 1. `build-logic/` included build
+Stack: Kotlin 2.3.21 / Compose Multiplatform 1.11.0 / AGP 8.13.2 / Gradle 8.14.3 /
+Ktor 3.5.0 / Koin 4.2.1 / Kover 0.9.1. JDK 17. Targets: `androidTarget`, `jvm`,
+`iosArm64`, `iosSimulatorArm64`, `wasmJs`. compileSdk 36, minSdk 24.
 
-`settings.gradle.kts` (root):
+## 1. `build-logic/`
+
 ```kotlin
+// settings.gradle.kts
 pluginManagement { includeBuild("build-logic") }
-```
 
-`build-logic/build.gradle.kts`:
-```kotlin
+// build-logic/build.gradle.kts
 plugins { `kotlin-dsl` }
 dependencies {
     implementation(libs.android.gradle.plugin)
@@ -32,239 +33,176 @@ dependencies {
 }
 ```
 
-### Base KMP-library plugin — `build-logic/src/main/kotlin/<project>.kmp.library.gradle.kts`
-```kotlin
-plugins {
-    id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.library")
-}
-extensions.configure<KotlinMultiplatformExtension>("kotlin") {
-    jvmToolchain(17)
-    androidTarget()
-    jvm()
-    iosArm64()
-    iosSimulatorArm64()
-    @OptIn(ExperimentalWasmDsl::class) wasmJs { browser() }
-}
-```
-Apply to **pure-Kotlin** modules: `:core:common`, `:core:domain`, `:core:data`,
+That last line is what makes `the<LibrariesForLibs>()` — the `libs` catalog —
+usable inside the precompiled script plugins.
+
+### `pharmacy.kmp.library`
+
+Applies `kotlin.multiplatform` + `com.android.library`, sets `jvmToolchain(17)`,
+declares all five targets, adds `libs.kotlin.test` to `commonTest`, and
+configures Android `compileSdk` / `minSdk` / Java 17 compatibility from the
+catalog.
+
+Used by the pure modules: `:core:common`, `:core:domain`, `:core:data`,
 `:features:test-fixtures`.
 
-### Compose-flavored plugin — `<project>.kmp.compose.library.gradle.kts`
-```kotlin
-plugins {
-    id("<project>.kmp.library")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
-}
-extensions.configure<KotlinMultiplatformExtension>("kotlin") {
-    sourceSets.named("commonMain") {
-        dependencies {
-            val compose = ComposePlugin.Dependencies(project)
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-        }
-    }
-    sourceSets.named("androidMain") {
-        dependencies { implementation(ComposePlugin.Dependencies(project).uiTooling) }
-    }
-}
-```
-Apply to **Compose-aware** modules: `:core:ui`, every `:features:<x>`.
+### `pharmacy.kmp.compose.library`
+
+Applies `pharmacy.kmp.library` + `org.jetbrains.compose` +
+`org.jetbrains.kotlin.plugin.compose`, adds the Compose deps to `commonMain`
+(runtime, foundation, material3, materialIconsExtended, ui,
+components.resources, ui-tooling-preview, lifecycle-runtime-compose) and
+`compose.uiTooling` to `androidMain`, enables `publicResClass` /
+`generateResClass`, and points the Compose compiler at
+`compose_compiler_config.conf` for stability configuration.
+
+Used by `:core:ui` and all 20 `:features:<x>`.
+
+### `pharmacy.architecture.audit`
+
+Registers `auditArchitecture` and wires it into `check`. Applied by
+`:composeApp` only — the task walks from `rootProject.projectDir`, so one
+application covers the whole repo.
 
 ### Per-module build files
+
 ```kotlin
 // core/domain/build.gradle.kts
-plugins { id("<project>.kmp.library") }
-
-// core/ui/build.gradle.kts
-plugins { id("<project>.kmp.compose.library") }
+plugins { id("pharmacy.kmp.library") }
 
 // features/<x>/build.gradle.kts
 plugins {
-    id("<project>.kmp.compose.library")
-    alias(libs.plugins.kotlin.serialization)         // ← REQUIRED if the module declares @Serializable routes / DTOs
+    id("pharmacy.kmp.compose.library")
+    alias(libs.plugins.kotlin.serialization)   // required if the module declares @Serializable routes
 }
 kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:domain"))
             implementation(project(":core:ui"))
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.navigation.compose)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
-            implementation(project(":features:test-fixtures"))   // when using shared fakes
+            implementation(project(":features:test-fixtures"))
         }
     }
 }
-android { namespace = "<base>.features.<x>" }
+android { namespace = "app.devper.pharm.features.<x>" }
 ```
 
-**Gotcha**: a feature module declaring `@Serializable` route objects but missing the
-`kotlin.serialization` plugin → compile passes, runtime throws `SerializationException:
-Serializer for class '<Route>' is not found`. Common foot-gun.
+**Gotcha**: a module declaring `@Serializable` routes without the serialization
+plugin compiles green and throws `SerializationException` at runtime.
 
-## 2. Version catalog — `gradle/libs.versions.toml`
+## 2. Version catalog
 
-Single source of dependency versions. Pin everything:
+`gradle/libs.versions.toml` is the single source of versions — nothing is
+pinned in a module build file. Two keys matter beyond dependencies:
 
-```toml
-[versions]
-kotlin = "2.3.21"
-kotlinx-coroutines = "1.10.2"
-kotlinx-serialization-json = "1.11.0"
-compose = "1.11.0"
-ktor = "3.3.1"
-koin = "4.2.0"
-agp = "8.13.2"
+- **`app-version`** — the deploy pipeline tags `v<app-version>` on merge to
+  `main`. **Bump it in every release/hotfix PR** or the deploy runs but skips
+  tagging.
+- **`app-versionCode`** — the Android version code.
 
-[libraries]
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
-compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+## 3. `auditArchitecture`
 
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+`build-logic/src/main/kotlin/pharmacy.architecture.audit.gradle.kts` — ~240
+lines of file walking. Writes `build/reports/architecture-audit.txt` and throws
+`GradleException` listing every violation with `file:line`.
 
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+| Rule | Scope | Fails on |
+|---|---|---|
+| A10 | `core/**` | `import app.devper.pharm.presentation.` |
+| A17 | everything | `import app.devper.pharm.domain.common.` (removed package) |
+| A19 | everything | stale pre-split `:core:ui` packages (`presentation.theme`, `presentation.designsystem`, `presentation.common.Base*`, `presentation.components.{AppShell,ErrorBottomSheet,WindowSize}`, `presentation.format.`, `scanner.`, …) |
+| A20 | `features/**` | `import app.devper.pharm.data.` |
+| A23 | `features/**/di/*Module.kt` | importing `domain.usecase` / `domain.observer` / `domain.parser` |
+| A24 | `core/data/**/*Dto.kt` | a `val` line inside a `@Serializable` block without `@SerialName` |
+| A25 | `core/data/**/*Dto.kt` | a snake_case Kotlin property name |
+| A26 | `core/*`, `features` | any `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` / platform test folder |
+| A27 | `core`, `features`, `composeApp` | `expect class/fun/val/var/object/interface/typealias` |
+| A28 | `core`, `features` production | `throw` or `Result.failure(` of `IllegalStateException` / `IllegalArgumentException` / `RuntimeException` / `Exception` / `UnsupportedOperationException` / `NullPointerException` |
+| A29 | `core/ui`, `core/domain`, `features`, `composeApp` commonMain | a Thai string literal |
 
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+A28 skips `commonTest` / `jvmTest` / `androidUnitTest` and
+`:features:test-fixtures`. A29 skips `i18n/groups/`, `ui/print/`, filenames
+containing `Preview`, `:features:test-fixtures`, lines containing `.contains(`,
+everything after the first `@Preview` or `private val sample*`/`preview*`
+marker, and a hardcoded `a29AllowedFiles` allowlist (12 domain/VM files holding
+Thai stored-data defaults).
 
-# … etc
+### Extending the ruleset
 
-[plugins]
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-```
+The task is a series of `grepFiles(label, dir, regex)` calls plus a few bespoke
+walkers. To add a rule: take the next `A<n>`, add the call, and update the task
+`description`, `kmp-review`'s P0 table and `kmp-code-pattern` §6. Numbers stay
+stable — PR comments cite them.
 
-## 3. `auditArchitecture` Gradle task
+Deliberately **not** audited, because they need parsing rather than grepping:
+raw Material 3 usage, hex colors outside `theme/`, comments, `!!`, file length,
+and the file-per-class rule. Those live in `kmp-review`.
 
-A precompiled script plugin `<project>.architecture.audit.gradle.kts` that adds an
-`auditArchitecture` task. Apply it to `:composeApp` (or any module that depends on every module
-you want audited).
+## 4. Kover
 
-Skeleton:
+The root `build.gradle.kts` applies Kover to every subproject and aggregates
+the 24 measured modules (everything but `:composeApp` and
+`:features:test-fixtures`).
+
 ```kotlin
-tasks.register("auditArchitecture") {
-    group = "verification"
-    description = "Audits inward-only module rules, DTO conventions, platform ownership, no expect/actual, typed errors."
-
-    val projectRoot = rootProject.projectDir
-    val outputFile = layout.buildDirectory.file("reports/architecture-audit.txt")
-    outputs.upToDateWhen { false }
-    outputs.file(outputFile)
-
-    doLast {
-        val violations = mutableListOf<String>()
-
-        // RULE: :core:* must not import a features/<x> presentation package
-        val coreRoot = projectRoot.resolve("core")
-        coreRoot.walkTopDown()
-            .filter { it.isFile && it.extension == "kt" && !it.absolutePath.contains("/build/") }
-            .forEach { f ->
-                f.useLines { lines ->
-                    lines.forEachIndexed { i, line ->
-                        if (line.matches(Regex("^import <base>\\.presentation\\..*"))) {
-                            violations += "core-imports-presentation  ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
-                        }
-                    }
-                }
-            }
-
-        // RULE: DTOs must use @SerialName + camelCase Kotlin names
-        val dtoRoot = projectRoot.resolve("core/data/src/commonMain/kotlin")
-        // … grep `@Serializable data class` blocks, check each `val foo: T,` line is camelCase
-        // and the line above is `@SerialName("…")`. If not, add to violations.
-
-        // RULE: platform folders only inside :composeApp
-        listOf("core", "features").forEach { topDir ->
-            val root = projectRoot.resolve(topDir)
-            if (root.exists()) {
-                root.walkTopDown()
-                    .filter { it.isDirectory && it.name in setOf("androidMain", "iosMain", "jvmMain", "wasmJsMain") }
-                    .forEach { d ->
-                        violations += "platform-folder-outside-composeApp  ${d.relativeTo(projectRoot)}"
-                    }
-            }
-        }
-
-        // RULE: no expect/actual anywhere
-        val expectRe = Regex("""^\s*(expect\s+(class|fun|val|var|object)|actual\s+(class|fun|val|var|object))\b""")
-        // walk everything; grep for expectRe; report.
-
-        // RULE: no generic exception in production
-        val genericExceptionRe = Regex(
-            """\b(throw|Result\.failure\()\s*(IllegalStateException|IllegalArgumentException|RuntimeException|Exception|UnsupportedOperationException|NullPointerException)\("""
-        )
-        listOf("core", "features").forEach { topDir ->
-            val root = projectRoot.resolve(topDir)
-            if (!root.exists()) return@forEach
-            root.walkTopDown()
-                .filter { it.isFile && it.extension == "kt" && !it.absolutePath.contains("/build/") }
-                .filter { f -> !f.absolutePath.let { it.contains("/commonTest/") || it.contains("/jvmTest/") } }
-                .filter { f -> !f.absolutePath.contains("/features/test-fixtures/") }
-                .forEach { f ->
-                    f.useLines { lines ->
-                        lines.forEachIndexed { i, line ->
-                            if (genericExceptionRe.containsMatchIn(line)) {
-                                violations += "generic-exception-in-production  ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
-                            }
-                        }
-                    }
-                }
-        }
-
-        // RULE: file-per-class — no two of {Screen, Content, ViewModel, UiState} in the same file
-        // …
-
-        val report = outputFile.get().asFile
-        report.parentFile.mkdirs()
-        report.writeText(violations.joinToString("\n"))
-
-        if (violations.isNotEmpty()) {
-            throw GradleException(
-                "auditArchitecture: ${violations.size} violation(s):\n" + violations.joinToString("\n  ", prefix = "  ")
-            )
-        }
-    }
-}
+val COVERAGE_FLOOR = 55
 ```
 
-Each rule corresponds to a numbered audit code (`A10`, `A20`, `A24`, `A26`, `A27`, `A28`,
-file-per-class, …) — see **kmp-review**'s P0 table. The numbers are stable so PR comments can
-reference them.
+`koverVerify` enforces that as a **line-coverage minimum**. It is a ratchet
+toward 80, not a fixed gate — raise it in the same PR that adds the tests.
+Excluded from measurement: packages `ui.i18n.groups` and `ui.print`, classes
+`*Screen` / `*Content` / `*ComposableSingletons*` / `*Dto`, and anything
+annotated `@Composable`. What remains is domain / use case / VM / mapper /
+localizer.
 
-## 4. Settings + `:composeApp` setup
+`./gradlew koverHtmlReport` → `build/reports/kover/html/`.
 
-`settings.gradle.kts`:
+## 5. Settings
+
 ```kotlin
-pluginManagement { includeBuild("build-logic") }
-
-include(":composeApp",
-        ":core:common", ":core:domain", ":core:ui", ":core:data",
-        ":features:test-fixtures",
-        ":features:auth", ":features:<feat1>", … )
+include(
+    ":composeApp",
+    ":core:common", ":core:domain", ":core:ui", ":core:data",
+    ":features:test-fixtures",
+    ":features:auth", ":features:bulkimport", … ":features:users",
+)
 ```
 
-`:composeApp/build.gradle.kts` applies `<project>.architecture.audit` in its plugins block (so
-the task is registered).
+26 entries. `:composeApp/build.gradle.kts` applies
+`pharmacy.architecture.audit` so the task exists.
 
-## 5. Verify
+## 6. Deploy
+
+Merging to `main` fires the Cloud Build trigger `deploy-pharm-app` (project
+`devperpos`, config `cloudbuild.yaml`): it builds
+`:composeApp:wasmJsBrowserDistribution`, deploys to Firebase Hosting site
+`pharm-app`, and pushes tag `v<app-version>` if that tag doesn't exist yet.
+
+Manual:
+```bash
+./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app
+```
+
+The required CI check on both `main` and `develop` is
+`Linux (JVM + Android + WasmJs + audit)`.
+
+## 7. Verify
 
 ```bash
 ./gradlew :composeApp:auditArchitecture \
           :composeApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
-          :composeApp:compileTestKotlinWasmJs
+          :composeApp:compileTestKotlinWasmJs \
+          :core:{common,domain,ui,data}:jvmTest \
+          :features:{auth,bulkimport,customers,expiry,help,imports,ky,labels,movements,offlinesync,planning,profile,reports,saleshistory,sell,settings,stock,stockcount,suppliers,users}:jvmTest \
+          koverVerify
 ```
-A green sweep means: layout compiles on every target, audit rules hold, tests pass.
+
+Quick smoke: `./gradlew :composeApp:check`.
