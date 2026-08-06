@@ -25,6 +25,8 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 
+private val MonthlyChartHeight = 144.dp
+
 @Composable
 internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Modifier = Modifier) {
     val t = pharmTokens
@@ -40,19 +42,23 @@ internal fun ReportsMonthlyGroupedBars(monthly: List<MonthlySales>, modifier: Mo
             Text(text = "${recent.size} ${s.reportsRangeThisMonth}", style = PharmText.meta)
         },
     ) {
-        PharmGroupedBarChart(
-            revenue = revenueData,
-            cost = costData,
-            height = 144.dp,
-            valueFormatter = { fmtBaht(it) },
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            LegendDot(color = t.colors.accent, label = pharmStrings.reportsHeaderRevenue)
-            LegendDot(color = t.colors.warningFg, label = pharmStrings.reportsHeaderCost)
+        if (recent.isEmpty()) {
+            ReportsChartEmpty(height = MonthlyChartHeight)
+        } else {
+            PharmGroupedBarChart(
+                revenue = revenueData,
+                cost = costData,
+                height = MonthlyChartHeight,
+                valueFormatter = { fmtBaht(it) },
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                LegendDot(color = t.colors.accent, label = pharmStrings.reportsHeaderRevenue)
+                LegendDot(color = t.colors.warningFg, label = pharmStrings.reportsHeaderCost)
+            }
         }
     }
 }

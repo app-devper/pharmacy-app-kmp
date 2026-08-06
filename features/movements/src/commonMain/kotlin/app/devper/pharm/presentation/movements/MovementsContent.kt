@@ -3,18 +3,20 @@ package app.devper.pharm.presentation.movements
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.presentation.movements.i18n.localizeMovements
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.i18n.pharmStrings
-import app.devper.pharm.ui.theme.PharmacyTheme
-import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.theme.PharmacyTheme
 
 @Composable
 fun MovementsContent(
@@ -35,6 +37,8 @@ fun MovementsContent(
         when {
             state.loading && state.items.isEmpty() ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.errorState != null && state.items.isEmpty() ->
+                PharmErrorState()
             state.items.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.Movements,
                 title = if (state.hasActiveFilters) {
@@ -47,7 +51,7 @@ fun MovementsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.items.isEmpty())?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleMovements = listOf(

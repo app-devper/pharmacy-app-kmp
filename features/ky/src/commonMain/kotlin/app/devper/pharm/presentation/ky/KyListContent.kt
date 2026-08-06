@@ -2,22 +2,24 @@ package app.devper.pharm.presentation.ky
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import app.devper.pharm.domain.model.KyFormType
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.model.Ky10Entry
 import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
+import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun KyListContent(
@@ -50,6 +52,8 @@ fun KyListContent(
     ) {
         when {
             state.loading && state.rows.isEmpty() -> PharmListSkeleton()
+            state.errorState != null && state.rows.isEmpty() ->
+                PharmErrorState()
             state.rows.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.KyForms,
                 title = pharmStrings.kyEmptyMonth,
@@ -58,7 +62,7 @@ fun KyListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.rows.isEmpty())?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private fun rowTotalValue(row: KyRow): Double = when (row) {

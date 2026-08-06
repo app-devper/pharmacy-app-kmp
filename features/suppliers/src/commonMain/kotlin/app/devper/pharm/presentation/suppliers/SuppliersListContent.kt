@@ -2,13 +2,16 @@ package app.devper.pharm.presentation.suppliers
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.presentation.suppliers.i18n.localizeSuppliersList
+import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -18,7 +21,6 @@ import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SuppliersListContent(
@@ -37,6 +39,8 @@ fun SuppliersListContent(
     ) {
         when {
             state.loading && state.suppliers.isEmpty() -> PharmListSkeleton()
+            state.errorState != null && state.suppliers.isEmpty() ->
+                PharmErrorState()
             state.suppliers.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.Suppliers,
                 title = s.suppliersListEmpty,
@@ -65,7 +69,7 @@ fun SuppliersListContent(
         )
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeSuppliersList(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.suppliers.isEmpty())?.localizeSuppliersList(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

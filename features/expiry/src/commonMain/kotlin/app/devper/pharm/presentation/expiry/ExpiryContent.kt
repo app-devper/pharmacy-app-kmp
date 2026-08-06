@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffFailure
@@ -25,18 +26,19 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListResultLine
+import app.devper.pharm.ui.designsystem.PharmListScaffold
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmListResultLine
-import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
 fun ExpiryContent(
@@ -68,6 +70,8 @@ fun ExpiryContent(
         when {
             state.loading && state.lots.isEmpty() ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.errorState != null && state.lots.isEmpty() ->
+                PharmErrorState()
             state.lots.isEmpty() -> PharmEmptyState(
                 icon = PharmIcons.Expiry,
                 title = pharmStrings.expiryEmpty,
@@ -97,7 +101,7 @@ fun ExpiryContent(
         WriteoffResultDialog(result = result, onDismiss = callbacks.onDismissResult)
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeExpiry(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.lots.isEmpty())?.localizeExpiry(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable
