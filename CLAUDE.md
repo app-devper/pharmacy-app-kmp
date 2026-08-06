@@ -260,11 +260,29 @@ license headers required by upstream libraries.
 - **Adding a new feature** → 6-step recipe in
   [MODULE_GRAPH.md § Per-feature recipe](./MODULE_GRAPH.md#per-feature-recipe).
 
-- **Skills** (`.claude/skills/`) — reach for these before hand-rolling:
-  `pharmacy-kmp-feature` (scaffold), `pharmacy-kmp-add-form`
-  (`BaseFormViewModel`), `pharmacy-kmp-test` (`runVmTest` + fakes),
-  `pharmacy-kmp-screen-split` (Screen↔Content + responsive),
-  `pharmacy-kmp-review` (audit a diff against the build-enforced rules).
+- **Skills** (`.claude/skills/`, versioned with the code) — reach for
+  these before hand-rolling. They are written against a generic
+  `Brand*` / `:core:*` KMP project, so read the placeholder names as
+  `Pharm*` and this repo's modules.
+
+  | Skill | Use it for |
+  |---|---|
+  | `kmp-feature` | scaffold a vertical slice (domain → data → presentation → nav → DI) |
+  | `kmp-add-form` | a create/edit screen on `BaseFormViewModel` |
+  | `kmp-screen-split` | fat screen → Screen ↔ Content + Callbacks + `@Preview` |
+  | `kmp-layout-pattern` | page scaffold, toolbar, responsive tiers |
+  | `kmp-design-system` | tokens + `Pharm*` primitives |
+  | `kmp-navigation` | two-level NavHost + single shell |
+  | `kmp-data-layer` | Ktor `Api`, DTOs, `RepositoryImpl`, mappers |
+  | `kmp-error-handling` | typed `AppException` → UiState → localize |
+  | `kmp-platform` | interface + Koin instead of `expect`/`actual` |
+  | `kmp-build-logic` | convention plugins, `build-logic/`, audit task |
+  | `kmp-code-pattern` / `kmp-rules` | layering contracts, cross-cutting conventions |
+  | `kmp-test` | `runVmTest` + `Fake<X>Repository` |
+  | `kmp-review` | audit a diff against the build-enforced rules |
+  | `kotlin-coding-style` / `compose-multiplatform-patterns` | language + Compose reference |
+  | `run` | build, serve and drive the app for real (screenshots over CDP) |
+  | `git-flow` / `pr` | branching, and landing the open PR |
 
 - **Localization — COMPLETE & build-enforced** (default ภาษาไทย, English
   switchable live; **A29** fails the build on any new Thai literal in
