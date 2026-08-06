@@ -32,7 +32,8 @@ xcuserdata/
 DerivedData/
 
 # Claude Code
-.claude/
+.claude/*
+!.claude/skills/
 
 # Firebase
 .firebase/
