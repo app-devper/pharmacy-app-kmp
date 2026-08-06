@@ -1,25 +1,34 @@
 ---
 name: kmp-test
-description: Write a ViewModel unit test in a Compose Multiplatform project using runVmTest + Fake<X>Repository. Enforces the coverage rule — every VM ships a <X>ViewModelTest.kt and non-trivial use cases get a unit test. Use when adding/updating tests.
+description: Write a ViewModel unit test in the pharmacy app using runVmTest + a Fake<X>Repository from :features:test-fixtures. Covers the coverage rule, the kover floor, and what to assert. Use when adding or updating tests.
 ---
 
 # kmp-test
 
-Tests live in `commonTest` (JVM-run via `jvmTest`). **No comments anywhere**, including in test
-code and fakes — descriptive function names instead.
+Tests live in `commonTest` and run on the JVM via `jvmTest`. No comments
+anywhere, including in tests and fakes — descriptive `@Test` names instead.
 
-## Coverage rule
+Current size: **1,253 `@Test` functions across 179 commonTest files**
+(`grep -rn '@Test' core features composeApp --include='*.kt' | grep -v /build/ | wc -l`).
 
-- **Every ViewModel** ships a `<X>ViewModelTest.kt` next to it under
-  `features/<feat>/src/commonTest/.../presentation/<feat>/`. **Audit it**: grep every
-  `*ViewModel.kt` against a matching `*ViewModelTest.kt`. The only acceptable exception is a VM
-  with no injectable dependencies (e.g. it reads a bundled resource) and the parsing logic is
-  covered separately.
-- **Non-trivial use cases / parsers / validators / pricing** get a unit test in `:core:domain`.
-- `:composeApp`'s `AppModuleWiringTest` (instantiates every VM via the DI graph) already guards
-  every `factoryOf` binding — don't duplicate it per feature.
+## Coverage rules
 
-## The test harness — `runVmTest` (place in `:core:ui/ui/common/`)
+- **Every ViewModel** ships a `<X>ViewModelTest.kt` beside it in
+  `features/<feat>/src/commonTest/kotlin/app/devper/pharm/presentation/<feat>/`.
+- **Non-trivial use cases, parsers, validators and pricing logic** get a unit
+  test in `:core:domain`. Pure helpers extracted from a primitive (a fit
+  calculation, a predicate) get one in `:core:ui`.
+- `composeApp/src/commonTest/…/di/AppModuleWiringTest.kt` instantiates every VM
+  through the real DI graph — it already guards every `factoryOf`, so don't
+  duplicate that per feature.
+- **`koverVerify` enforces a line-coverage floor** (`COVERAGE_FLOOR` in the root
+  `build.gradle.kts`, currently **55**). It is a ratchet toward 80, not a
+  one-shot gate: when you add tests that push coverage up, raise the floor in
+  the same PR. `./gradlew koverHtmlReport` → `build/reports/kover/html/`.
+  Kover excludes UI composables, the i18n string tables, `ui.print` and DTOs —
+  what is measured is domain / use case / VM / mapper / localizer.
+
+## The harness — `runVmTest`
 
 ```kotlin
 fun runVmTest(block: suspend TestScope.(AppDispatchers) -> Unit) = runTest {
@@ -30,125 +39,124 @@ fun runVmTest(block: suspend TestScope.(AppDispatchers) -> Unit) = runTest {
 }
 ```
 
-It hands you an `AppDispatchers` wired to the test scheduler — pass it into use cases that take
-one in their constructor. `advanceUntilIdle()` advances virtual time.
+Lives in `:core:ui/ui/common/RunVmTest.kt`. It hands you an `AppDispatchers`
+wired to the test scheduler — pass it to every use case constructor.
+`advanceUntilIdle()` advances virtual time.
 
 ## Fakes — `:features:test-fixtures`
 
-Shared fakes live in `features/test-fixtures/.../domain/repository/Fake<X>Repository.kt` in
-**commonMain** (not commonTest), so any feature module can depend on them via
-`implementation(project(":features:test-fixtures"))`. They expose `seed`/`throws` config + call
-tracking, and may **throw `RuntimeException` as a deliberate test signal** (the only A28-exempt
-module).
+18 shared fakes in
+`features/test-fixtures/src/commonMain/kotlin/app/devper/pharm/domain/repository/`
+— **commonMain, not commonTest**, so any feature can depend on them with
+`implementation(project(":features:test-fixtures"))`.
+
+Convention: constructor flags for seeding and failure, plus captured
+call-tracking properties with private setters.
 
 ```kotlin
 class FakeCustomerRepository(
     private val seed: List<Customer> = emptyList(),
     private val listThrows: Boolean = false,
+    private val addThrowsOn: String? = null,
 ) : CustomerRepository {
-    var listCallCount = 0; private set
-    val captured = mutableListOf<AddCustomerParam>()
+
+    var lastAdd: CustomerInput? = null
+        private set
 
     override suspend fun list(): List<Customer> {
-        listCallCount++
-        if (listThrows) throw RuntimeException("list failed")
+        if (listThrows) throw ServerException("list failed")
         return seed
     }
-    override suspend fun add(param: AddCustomerParam): Customer {
-        captured += param
-        return Customer(id = "new", name = param.name, phone = param.phone)
+
+    override suspend fun add(input: CustomerInput): Customer {
+        if (input.name == addThrowsOn) throw ServerException("backend rejected: $addThrowsOn")
+        lastAdd = input
+        return …
     }
 }
 ```
 
-If a fake is used by exactly one feature, **co-locate** it in that feature's `commonTest` rather
-than growing the shared module.
+This is the only A28-exempt module — fakes may throw whatever makes the test
+signal clearest. Prefer typed exceptions anyway, since VM tests assert on the
+resulting `errorState` type.
 
-## Canonical test (list VM)
+If a fake is used by exactly one feature, co-locate it in that feature's
+`commonTest` instead of growing the shared module.
+
+## Canonical list-VM test
 
 ```kotlin
 @OptIn(ExperimentalCoroutinesApi::class)
 class CustomersListViewModelTest {
-    private fun customer(id: String) = Customer(id = id, name = "Customer $id", phone = null)
+
+    private fun customer(id: String) = Customer(
+        id = id, name = "Customer $id", phone = null, priceTier = "", allergyNote = null,
+    )
 
     @Test
-    fun load_populates_state() = runVmTest { d ->
+    fun init_loads_customers() = runVmTest { d ->
         val repo = FakeCustomerRepository(seed = listOf(customer("a"), customer("b")))
         val vm = CustomersListViewModel(GetCustomersUseCase(repo, d))
         advanceUntilIdle()
         assertEquals(2, vm.state.value.customers.size)
         assertFalse(vm.state.value.loading)
-        assertNull(vm.state.value.error)
+        assertNull(vm.state.value.errorState)
     }
 
     @Test
-    fun load_failure_sets_error_and_clears_loading() = runVmTest { d ->
+    fun load_failure_uses_customer_specific_error() = runVmTest { d ->
         val vm = CustomersListViewModel(GetCustomersUseCase(FakeCustomerRepository(listThrows = true), d))
         advanceUntilIdle()
-        assertNotNull(vm.state.value.error)
+        assertIs<CustomersListUiStateError.LoadCustomersFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
     }
-
-    @Test
-    fun query_change_updates_state() = runVmTest { d ->
-        val vm = CustomersListViewModel(GetCustomersUseCase(FakeCustomerRepository(), d))
-        advanceUntilIdle()
-        vm.onQueryChange("สมศรี")
-        assertEquals("สมศรี", vm.state.value.query)
-    }
 }
 ```
 
-## Canonical test (form VM — `BaseFormViewModel`)
+**Assert the error type, not its message.** The message is a dotted log key;
+the user-facing copy lives in `PharmStrings` and is tested separately.
+
+## Canonical form-VM test
+
+A `newVm(...)` helper returning the VM keeps the multi-use-case constructors
+readable:
 
 ```kotlin
-@Test
-fun submit_valid_saves_and_records_form() = runVmTest { d ->
-    val repo = FakeCustomerRepository()
-    val vm = CustomerFormViewModel(AddCustomerUseCase(repo, d))
-    vm.onNameChange("สมศรี")
-    vm.onPhoneChange("0812345678")
-    vm.submit()
-    advanceUntilIdle()
-    assertTrue(vm.state.value.saved)
-    assertEquals("สมศรี", repo.captured.first().name)
-}
-
-@Test
-fun submit_blank_is_noop() = runVmTest { d ->
-    val repo = FakeCustomerRepository()
-    val vm = CustomerFormViewModel(AddCustomerUseCase(repo, d))
-    vm.submit()
-    advanceUntilIdle()
-    assertFalse(vm.state.value.saved)
-    assertTrue(repo.captured.isEmpty())
-}
-
-@Test
-fun submit_failure_sets_error_and_clears_saving() = runVmTest { d ->
-    val repo = FakeCustomerRepository(addThrows = true)
-    val vm = CustomerFormViewModel(AddCustomerUseCase(repo, d))
-    vm.onNameChange("สมศรี")
-    vm.submit()
-    advanceUntilIdle()
-    assertNotNull(vm.state.value.error)
-    assertFalse(vm.state.value.saving)
+private fun newVm(
+    dispatchers: AppDispatchers,
+    repo: FakeCustomerRepository = FakeCustomerRepository(),
+): Pair<CustomerFormViewModel, FakeCustomerRepository> {
+    val vm = CustomerFormViewModel(
+        getCustomers = GetCustomersUseCase(repo, dispatchers),
+        addCustomer = AddCustomerUseCase(repo, dispatchers),
+        updateCustomer = UpdateCustomerUseCase(repo, dispatchers),
+    )
+    return vm to repo
 }
 ```
+
+Cover, at minimum:
+
+| Case | Assert |
+|---|---|
+| add mode starts empty | fields blank, `!canSubmit`, `!hasUnsavedChanges` |
+| edit mode hydrates | fields populated **and** `!hasUnsavedChanges` (baseline was set) |
+| required field fills | `canSubmit` flips true |
+| `submit()` succeeds | `saved`, `!saving`, and the repo captured the right input |
+| `submit()` fails | typed `errorState`, `!saving` |
+| `submit()` when `!canSubmit` | no-op — nothing captured, `!saved` |
 
 ## Rules of thumb
 
-- **Always `advanceUntilIdle()`** after constructing a VM (its `init` launches work) and after
-  each action.
-- **Assert directly on `vm.state.value`** — no Turbine / Flow.test() for the basic shape (use
-  Turbine when you need to verify intermediate emissions).
-- **Cover at least**: initial/success path, failure path (`error` set, `loading` false), and any
-  domain-specific branch (validation, special-case computations, conditional reloads).
-- **No comments in tests** — name `@Test` functions descriptively.
+- **Always `advanceUntilIdle()`** after constructing a VM (its `init` launches
+  work) and after each action.
+- Assert directly on `vm.state.value`. Reach for Turbine only when you need to
+  verify intermediate emissions.
+- Cover the success path, the failure path, and every domain-specific branch
+  (validation, conditional reload, special-case computation).
+- Name the test after the behaviour — that name is the documentation.
 
-## build.gradle.kts (per feature)
-
-Only needed when the feature uses shared fakes:
+## Per-feature build.gradle.kts
 
 ```kotlin
 commonTest.dependencies {
@@ -161,5 +169,6 @@ commonTest.dependencies {
 
 ```bash
 ./gradlew :features:<feat>:jvmTest          # one feature
-./gradlew :composeApp:check                 # full dependent tree
+./gradlew koverVerify                        # coverage floor
+./gradlew :composeApp:check                  # audit + full dependent tree
 ```

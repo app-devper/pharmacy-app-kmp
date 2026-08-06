@@ -1,231 +1,215 @@
 ---
 name: kmp-data-layer
-description: Build or extend the data layer of a Compose Multiplatform Clean-Architecture project — Ktor HttpClient, Api class, @Serializable DTOs, RepositoryImpl that maps DTO ↔ domain, multi-tenant client switching, DI bindings. Use when adding/changing an HTTP endpoint, fixing a DTO mapping, or wiring a new transport.
+description: Build or extend :core:data in the pharmacy app — the shared Ktor client and its response validator, ApiConfig URLs, @Serializable DTOs, mappers in repository/internal/, RepositoryImpls, local storage, DI. Use when adding an endpoint, fixing a mapping, or wiring a new transport.
 ---
 
 # kmp-data-layer
 
-The data layer lives in `:core:data`. It is the only place that:
-- knows about HTTP / DTOs / Ktor
-- depends on `:core:domain` (to implement repository interfaces, never to leak DTOs upward)
-- is bound by `:composeApp` (no `:features:*` may touch it — audit rule A20)
+`:core:data` is the only module that knows about HTTP, DTOs and Ktor. It
+implements the repository interfaces from `:core:domain` and is bound only by
+`:composeApp` — no `:features:*` may import it (audit A20).
 
 ```
-[ ViewModel ]──→[ UseCase ]──→[ Repository (interface in :core:domain) ]
-                                          ▲
-                                          │ implements
-                                          │
-                                [ RepositoryImpl ]──→[ <X>Api ]──→[ Ktor HttpClient ]
-                                                       │
-                                                       └→ <X>Dto / Add<X>Request (@Serializable)
-                                  domain Param → wire Request via toRequest()
-                                  wire Dto      → domain via toDomain()
+[ ViewModel ]→[ UseCase ]→[ Repository interface (:core:domain) ]
+                                     ▲ implements
+                          [ RepositoryImpl ]→[ <X>Api ]→[ shared Ktor HttpClient ]
+                                     │                        └ HttpResponseValidator → typed AppException
+                                     └ repository/internal/<X>Mapper.kt : Dto → domain, Input → Dto
 ```
 
-## 1. The Ktor `HttpClient`
+```
+core/data/src/commonMain/kotlin/app/devper/pharm/data/
+  network/     HttpClient.kt, ApiConfig.kt
+  remote/api/  <X>Api.kt
+  remote/dto/  <X>Dto.kt
+  repository/  <X>RepositoryImpl.kt
+  repository/internal/  <X>Mapper.kt
+  storage/     TokenStorage, ParkedCartStorage, StockCountDraftStorage, OfflineSaleQueueImpl, *Dto
+  internal/    DateConv.kt
+  di/          DataModule.kt
+```
 
-Engine is platform-bound (see **kmp-platform**); the Ktor `HttpClient` itself is bound in
-`:core:data/data/di/DataModule.kt`:
+## 1. The shared client — `network/HttpClient.kt`
 
 ```kotlin
-val dataModule = module {
-    single { provideHttpClient(engine = get(), settings = get()) }
-    singleOf(::<X>Api)
-    singleOf(::<X>RepositoryImpl) bind <X>Repository::class
-    // … one Api + one RepositoryImpl pair per domain
-}
-
-private fun provideHttpClient(engine: HttpClientEngine, settings: Settings): HttpClient =
-    HttpClient(engine) {
-        expectSuccess = true
-        install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true; explicitNulls = false }) }
-        install(Logging) { level = LogLevel.INFO }
-        install(HttpTimeout) { requestTimeoutMillis = 15_000 }
-        defaultRequest {
-            url(settings.getString(KEY_BASE_URL, ""))
-            settings.getStringOrNull(KEY_AUTH_TOKEN)?.let { header(HttpHeaders.Authorization, "Bearer $it") }
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-        }
-        install(HttpRequestRetry) { retryOnExceptionOrServerErrors(maxRetries = 2); exponentialDelay() }
-    }
+fun <T : HttpClientEngineConfig> buildHttpClient(
+    engine: HttpClientEngineFactory<T>,
+    tokenStorage: TokenStorage,
+    sessionExpiry: SessionExpiryProvider,
+    json: Json = AppJson,
+    enableLogging: Boolean = false,
+    installTimeout: Boolean = true,
+): HttpClient
 ```
 
-- `expectSuccess = true` makes non-2xx responses throw `ClientRequestException` /
-  `ServerResponseException` — the repository can catch and map them to typed `AppException`
-  subclasses (see **kmp-error-handling**).
-- Settings come from `multiplatform-settings`, bound per platform in `:composeApp/<plat>Main`'s
-  Koin module.
+Built **per platform** (each entry point passes its engine — OkHttp / Darwin /
+Js), so the factory lives here but the binding lives in `<plat>PlatformModule`.
 
-For **multi-tenant** apps (one Mongo DB / one base URL per `clientId`), the `defaultRequest`
-reads `KEY_BASE_URL` from settings — switching tenant means writing a new value and rebuilding
-no client.
+- `expectSuccess = false` **on purpose** — an explicit `HttpResponseValidator`
+  does the translating, so there is one place that maps status → typed
+  exception instead of two competing mechanisms. Don't "fix" it to `true`.
+- `DefaultRequest` sets JSON content type and the `Authorization: Bearer`
+  header from `TokenStorage`.
+- Timeouts: connect 15s, request 30s, socket 30s.
+- `AppJson` is `ignoreUnknownKeys = true`, `isLenient = true`,
+  `encodeDefaults = false`, `explicitNulls = false`.
+- The validator throws `AuthException` (and clears the token + marks the
+  session expired), `ForbiddenException`, `NotFoundException`,
+  `ConflictException(payload)`, else `ServerException(statusCode, body)`;
+  transport failures become `NetworkException`. Full detail in
+  `kmp-error-handling`.
 
-## 2. The `<X>Api` class
-
-Plain Ktor calls. Takes DTO/Request directly, returns DTOs:
+## 2. URLs — `network/ApiConfig.kt`
 
 ```kotlin
-// core/data/src/commonMain/kotlin/<base>/data/remote/api/CustomerApi.kt
-class CustomerApi(private val http: HttpClient) {
-
-    suspend fun list(): List<CustomerDto> =
-        http.get("api/v1/customers").body()
-
-    suspend fun add(request: AddCustomerRequest): CustomerDto =
-        http.post("api/v1/customers") { setBody(request) }.body()
-
-    suspend fun update(id: String, request: UpdateCustomerRequest) {
-        http.put("api/v1/customers/$id") { setBody(request) }
-    }
-
-    suspend fun delete(id: String) {
-        http.delete("api/v1/customers/$id")
-    }
+data class ApiConfig(val apiBaseUrl: String = "https://api.devper.app") {
+    fun pharmacy(path: String): String = "$apiBaseUrl/api/pharmacy/v1${path.ensureLeadingSlash()}"
+    fun umUser(path: String = ""): String = "$apiBaseUrl/api/um/v1/user${path.ensureLeadingSlash()}"
+    val umAuthLogin: String get() = "$apiBaseUrl/api/um/v1/auth/login"
+    …
 }
 ```
 
-- No `try/catch` here. Let Ktor throw; the repository decides what to do (typically pass it up
-  to `BaseUseCase`'s `runCatching`).
-- One method per endpoint. URL paths are inline string literals — they're not magic numbers,
-  they're contract identifiers.
-- Header overrides for special endpoints go in `block: HttpRequestBuilder.() -> Unit`.
+Apis never hardcode a host — they take `ApiConfig` and call `config.pharmacy("/customers")`.
+Auth goes to the UM hub; everything else to the pharmacy service.
 
-## 3. The DTOs — `@SerialName` + camelCase
+`localQaApiBaseUrl(pageHost, rawQuery)` lets the web build point at a local
+mock via `?apiBaseUrl=…`, but **only** when the page host is localhost. Keep
+that guard.
+
+## 3. `<X>Api`
 
 ```kotlin
-// core/data/src/commonMain/kotlin/<base>/data/remote/dto/CustomerDto.kt
+class CustomerApi(
+    private val client: HttpClient,
+    private val config: ApiConfig,
+) {
+    suspend fun list(): List<CustomerDto> = client.get(config.pharmacy("/customers")).body()
+
+    suspend fun add(request: CustomerInputDto): CustomerDto =
+        client.post(config.pharmacy("/customers")) { setBody(request) }.body()
+
+    suspend fun update(id: String, request: CustomerInputDto) {
+        client.put(config.pharmacy("/customers/$id")) { setBody(request) }
+    }
+}
+```
+
+No `try/catch` — the validator already threw typed. One method per endpoint,
+DTOs in and out.
+
+## 4. DTOs — `@SerialName` on everything (A24/A25)
+
+```kotlin
 @Serializable
 data class CustomerDto(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
     @SerialName("phone") val phone: String? = null,
-    @SerialName("price_tier") val priceTier: String = "",
-    @SerialName("allergy_note") val allergyNote: String? = null,
-)
-
-@Serializable
-data class AddCustomerRequest(
-    @SerialName("name") val name: String,
-    @SerialName("phone") val phone: String? = null,
     @SerialName("price_tier") val priceTier: String? = null,
-    @SerialName("allergy_note") val allergyNote: String? = null,
+    @SerialName("disease") val disease: String? = null,
 )
 ```
 
-Rules (audit-enforced A24/A25):
-- **Every** `@Serializable` property has an explicit `@SerialName("…")` — even when the wire
-  name matches the Kotlin name. This makes the wire contract obvious and lets us rename Kotlin
-  fields without breaking serialization.
-- Kotlin name is **always camelCase**; the snake_case (or whatever the wire uses) lives in
-  `@SerialName`. **A diff that adds a `val foo_bar` Kotlin name fails the audit.**
-- Single-line format: `@SerialName("…") val foo: T = default,`. Defaults make optional fields
-  forgiving.
-- Don't migrate legacy embedded DTOs into the Kotlin name — keep the old shape as a separate
-  type that the impl reads, then map to the new domain model.
+- **Every** property carries an explicit `@SerialName`, even when it matches
+  the Kotlin name — the audit fails otherwise, and it makes the wire contract
+  readable at a glance.
+- Kotlin names are always camelCase; a `val price_tier` fails A25.
+- One line each, with a default so optional fields decode forgivingly.
+- DTOs stay `Double` / `Int`. `Money` and `Quantity` are domain types — the
+  wire doesn't know about them.
+- Wire names sometimes disagree with the domain (`disease` → `allergyNote`).
+  Keep the wire name in the DTO and rename in the mapper; don't rename the wire.
 
-## 4. The `RepositoryImpl`
+## 5. Mappers — `repository/internal/<X>Mapper.kt`
 
-Implements the **domain** interface. Maps DTO ↔ domain at the file bottom. **Domain never sees
-DTOs.**
+Mapping lives in its own file as `internal fun` extensions, **not** private at
+the bottom of the impl — 18 mappers share the package and several are reused by
+more than one repository.
 
 ```kotlin
-// core/data/src/commonMain/kotlin/<base>/data/repository/CustomerRepositoryImpl.kt
-class CustomerRepositoryImpl(private val api: CustomerApi) : CustomerRepository {
-
-    override suspend fun list(): List<Customer> =
-        api.list().map { it.toDomain() }
-
-    override suspend fun add(param: AddCustomerParam): Customer =
-        api.add(param.toRequest()).toDomain()
-
-    override suspend fun update(param: UpdateCustomerParam) {
-        api.update(param.id, param.toRequest())
-    }
-
-    override suspend fun delete(id: String) {
-        api.delete(id)
-    }
-}
-
-private fun CustomerDto.toDomain(): Customer = Customer(
+internal fun CustomerDto.toDomain(): Customer = Customer(
     id = id,
     name = name,
-    phone = phone,
-    priceTier = priceTier,
-    allergyNote = allergyNote,
+    phone = phone?.takeIf { it.isNotBlank() },
+    priceTier = priceTier?.takeIf { it.isNotBlank() } ?: "",
+    allergyNote = disease?.takeIf { it.isNotBlank() },
 )
 
-private fun AddCustomerParam.toRequest(): AddCustomerRequest = AddCustomerRequest(
-    name = name,
-    phone = phone,
-    priceTier = priceTier,
-    allergyNote = allergyNote,
-)
-
-private fun UpdateCustomerParam.toRequest(): UpdateCustomerRequest = UpdateCustomerRequest(
-    name = name,
-    phone = phone,
-    priceTier = priceTier,
-    allergyNote = allergyNote,
+internal fun CustomerInput.toDto(): CustomerInputDto = CustomerInputDto(
+    name = name.trim(),
+    phone = phone.trim(),
+    disease = allergyNote.trim(),
+    priceTier = priceTier.trim(),
 )
 ```
 
-Rules:
-- **No `runCatching`/`try/catch` in repo impls** — let typed exceptions propagate; the
-  `BaseUseCase` wraps once. (Known exceptions exist for use cases that need to recover mid-flow,
-  but **never** at the repository level.)
-- Return **bare `T`**, not `Result<T>`.
-- Mapping functions are file-private (`private fun X.toDomain()`) at the file bottom — same file
-  as the impl. Don't extract them to a `Mappers.kt`; keep them next to the only caller.
-- A repository impl that touches **two** APIs (e.g. read from Mongo cache then fall through to
-  HTTP) is allowed, but composing repos is not — keep the repository the boundary.
+Conventions: `toDomain()` inbound, `toDto()` outbound; normalise here (`trim()`,
+blank → null); wrap value classes inbound (`Money(dto.sellPrice)`) and unwrap
+outbound (`input.price.amount`); dates go through
+`String?.parseLocalDateTimeOrNull()` / `parseLocalDateOrNull()`
+(`data/internal/DateConv.kt`), which convert UTC → Bangkok when an offset
+marker is present and accept both `YYYY-MM-DD` and full datetimes.
 
-## 5. DI binding
+## 6. `RepositoryImpl`
 
 ```kotlin
-// core/data/src/commonMain/kotlin/<base>/data/di/DataModule.kt
-val dataModule = module {
-    single { provideHttpClient(get(), get()) }
-    singleOf(::CustomerApi)
-    singleOf(::CustomerRepositoryImpl) bind CustomerRepository::class
-    // … more pairs
+class CustomerRepositoryImpl(private val api: CustomerApi) : CustomerRepository {
+    override suspend fun list(): List<Customer> = api.list().map { it.toDomain() }
+    override suspend fun add(input: CustomerInput): Customer = api.add(input.toDto()).toDomain()
+    override suspend fun update(id: String, input: CustomerInput) { api.update(id, input.toDto()) }
 }
 ```
 
-`:composeApp/di/AppModule.kt` `includes(commonModule, domainModule, dataModule, + every feature
-module)` — `dataModule` is included in `:composeApp` only (audit A20: features can't see it).
+Bare `T` returns, no `Result`, no `runCatching`, no `try/catch`. **Domain never
+sees a DTO.** A repository may talk to more than one Api or to local storage,
+but repositories never compose other repositories.
 
-## 6. Testing the data layer
+## 7. Local storage
 
-- **API tests** (in `:core:data/commonTest`) use Ktor's `MockEngine`:
-  ```kotlin
-  val mockEngine = MockEngine { request ->
-      when (request.url.encodedPath) {
-          "/api/v1/customers" -> respond(
-              content = Json.encodeToString(testCustomers),
-              headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
-          )
-          else -> respondError(HttpStatusCode.NotFound)
-      }
-  }
-  val client = HttpClient(mockEngine) { install(ContentNegotiation) { json() } }
-  ```
-- **Repository tests** assert the DTO↔domain mapping (round-trip on a representative DTO) and
-  that the impl translates errors correctly (a `ServerResponseException` becomes a
-  `ServerException`, etc. — see **kmp-error-handling**).
-- **Feature tests** never use a `RepositoryImpl`; they use a `Fake<X>Repository` against the
-  domain interface (see **kmp-test**).
+`data/storage/` holds the non-HTTP side: `TokenStorage`, `ParkedCartStorage`,
+`StockCountDraftStorage`, `OfflineSaleQueueImpl` (the offline sale queue), and
+their `*Dto` types. Those DTOs follow the same A24/A25 rules — the audit scans
+every `*Dto.kt` under `data/`.
 
-## 7. Anti-patterns to flag
+## 8. DI — `data/di/DataModule.kt`
 
-- **`@Serializable` without `@SerialName`** on every property → audit A24, fail.
-- **snake_case Kotlin name** in a DTO → audit A25, fail.
-- **Repository impl wrapping calls in `runCatching`/`try/catch`** → typed exceptions get
-  swallowed; let them propagate.
-- **DTO leaking out of `:core:data`** — a `@Serializable` type imported into `:core:domain` or
-  `:features:*` → fail.
-- **`:features:*` importing `:core:data`** → audit A20, fail. Use the `:core:domain` repository
-  interface.
-- **Endpoint URL constructed from user input without sanitization** → security review.
-- **`expectSuccess = false`** on the shared `HttpClient` — masks errors, makes the contract
-  unclear. Only override per-call when you genuinely want to inspect a non-2xx body.
+```kotlin
+val dataModule = module {
+    singleOf(::CustomerApi)
+    singleOf(::CustomerRepositoryImpl) bind CustomerRepository::class
+    …
+}
+```
+
+One `Api` + `RepositoryImpl` pair per domain. The `HttpClient`, `Settings` and
+`SecureStorage` come from the platform module. `dataModule` is included by
+`:composeApp/di/AppModule.kt` only.
+
+## 9. Testing
+
+`:core:data:commonTest` already covers the shapes worth copying:
+
+- **`HttpResponseValidatorTest`** — status → typed exception, using `MockEngine`.
+- **`*ApiContractTest`** (Drug / Inventory / Sale) — the request path, body
+  shape and decoding against a `MockEngine`.
+- **`SaleDtoTest` / `AppJsonTest`** — serialization edge cases.
+- **`DateConvTest`** — timezone conversion.
+- **`TokenStorageTest`, `OfflineSaleQueueTest`, `StockCountDraftStorageTest`** —
+  storage, using `MemorySettings` / `InMemorySecureStorage` fakes from the same
+  source set.
+
+Feature tests never touch a `RepositoryImpl` — they fake the domain interface
+(`kmp-test`).
+
+## 10. Anti-patterns
+
+- A `@Serializable` property without `@SerialName` (A24) or with a snake_case
+  Kotlin name (A25).
+- `runCatching` / `try/catch` in an Api or `RepositoryImpl`.
+- A DTO imported into `:core:domain` or `:features:*`.
+- `:features:*` importing `app.devper.pharm.data.*` (A20).
+- An Api hardcoding a host instead of taking `ApiConfig`.
+- Flipping `expectSuccess` to `true` — it would double up with the validator.
+- Widening `localQaApiBaseUrl` beyond localhost.
+- Mapping logic inlined in the repository instead of `repository/internal/`.

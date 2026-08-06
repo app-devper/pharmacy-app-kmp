@@ -1,125 +1,134 @@
 ---
 name: kmp-rules
-description: Cross-cutting coding conventions for a Compose Multiplatform project — no-comments, immutability, naming, null-safety, file size, side-effect bans, copy language. Use as the single source for "what makes our code OUR code", and as the first review checklist.
+description: Cross-cutting coding conventions of the pharmacy app — no-comments, immutability, naming, null-safety, file size, value classes, determinism, localized copy. Use as the single source for "what makes our code OUR code", and as the first review checklist.
 ---
 
 # kmp-rules
 
-The conventions every line of code in the project obeys. Each rule is short, opinionated, and
-enforceable by a `grep` or a Gradle audit task. **Net-new code is held to the full bar; legacy
-code is brought up to the bar when you touch it.**
+The conventions every line obeys. Net-new code is held to the full bar; legacy
+code is brought up to it when you touch it.
 
 ## 1. No comments
 
-**No `//`, no `/* */`, no KDoc, no TODO/FIXME/NOTE/HACK, no file header banners.** Anywhere in
-`.kt` — production, tests, fakes, fixtures. Code is self-documenting via:
+No `//`, no `/* */`, no KDoc, no TODO / FIXME / NOTE / HACK, no file-header
+banners — anywhere in `.kt`, including tests, fakes and `:features:test-fixtures`.
+Code documents itself through:
 
-- descriptive names (rename the function/local, don't comment it)
+- descriptive names (rename, don't annotate)
 - small focused functions (split when the body needs a section banner)
-- types (a `Customer` argument doesn't need `// the customer to add`)
-- tests (test names document the behavior)
+- types (a `Customer` parameter doesn't need explaining)
+- tests (the `@Test` name is the documentation)
 
-**Acceptable exceptions** (annotation, not comment):
-- `@Suppress("…")` annotations
-- tool/compiler directives (`//go:build`, `// eslint-disable-…`, `// @ts-expect-error`, Kotlin
-  `@OptIn(…)`, Dart `// ignore_for_file:`)
-- license headers required by upstream libraries (none in this project today)
+Exceptions, because they are annotations rather than prose: `@Suppress("…")`,
+`@OptIn(…)`, and license headers required by an upstream library (none today).
 
-When editing legacy code with comments, **strip them as part of the edit**.
+When editing code that has comments, strip them as part of the edit.
 
 ## 2. Immutability
 
-- Prefer `val` over `var`. Use `var` only when mutation is genuinely required (loop counters, etc.).
-- `data class` for value types; immutable collections (`List`, `Map`, `Set`) in public APIs.
-- State updates are copy-on-write: `state.copy(field = newValue)` via `setState { copy(...) }`.
-- **Never** mutate a parameter; never call `.add`/`.remove` on a `MutableList` exposed from a
-  shared layer (return a new list).
+- `val` by default; `var` only where mutation is genuinely required.
+- `data class` for value types; `List` / `Map` / `Set` in public APIs.
+- State changes are copy-on-write: `setState { copy(field = value) }`.
+- Never mutate a parameter, and never hand a `MutableList` across a layer
+  boundary — return a new list.
 
 ## 3. Naming
 
-Follow Kotlin conventions; deviations require a CLAUDE.md note:
-
-- `camelCase` — functions, properties, locals.
-- `PascalCase` — classes, interfaces, objects, type aliases.
-- `UPPER_SNAKE_CASE` — `const val` or `@JvmStatic` true constants.
-- **Booleans** start with `is` / `has` / `should` / `can` (`isLoading`, `hasError`, `canSubmit`).
-- **Interfaces** name the behavior, not "I"-prefixed: `Clickable`, not `IClickable`.
-- **ViewModels** end in `ViewModel`, **States** end in `UiState`, **Callbacks** end in `Callbacks`.
-- File name == primary class/function. `<X>ViewModel.kt` contains `<X>ViewModel` and nothing
-  else of equal weight.
+- `camelCase` functions/properties, `PascalCase` types, `UPPER_SNAKE_CASE` for
+  `const val`.
+- Booleans start with `is` / `has` / `should` / `can` (`isLoading`,
+  `canSubmit`, `hasUnsavedChanges`).
+- Interfaces name the behaviour — `Clickable`, never `IClickable`.
+- Suffix conventions: `…ViewModel`, `…UiState`, `…Callbacks`, `…UiStateError`,
+  `…Repository`, `…UseCase`, `…Dto`, `…Api`, `…RepositoryImpl`, `…Nav`.
+- Design-system primitives are `Pharm…`; the file name is the primary
+  declaration.
 
 ## 4. Null safety — no `!!`
 
-**No `!!` operator in production.** Use:
-- `?.` for safe navigation
-- `?: default` for fallback values
-- `requireNotNull(value) { "context message" }` when you guarantee non-null and want a typed
-  failure
-- `?.let { … }` for scoped null-safe operations (max 2 levels of nesting)
+There is currently **zero `!!` in production code**. Keep it that way: `?.`,
+`?: default`, `requireNotNull(value) { "context" }`, `?.let { … }` (max two
+levels of nesting).
 
-The one acceptable `!!` is on `KClass.qualifiedName` inside the navigation `routeKey` helper
-where the qualified name is a compile-time invariant of the route type — and even that should
-move to `requireNotNull(...) { "..." }` if rewritten.
+## 5. File size and focus
 
-## 5. File size + focus
+- Typical file 200–400 lines; **hard cap 800**. Nothing in the repo exceeds
+  800 today, and only 8 files exceed 400 — the largest is `PharmSidebar.kt` at
+  748.
+- One concept per file: Screen / Content / ViewModel / UiState / Callbacks each
+  live alone (`kmp-code-pattern`).
+- Functions under ~50 lines; nesting depth ≤ 4; prefer early returns.
 
-- Typical file: **200–400 lines**. Hard cap: **800 lines**.
-- One concept per file (see the file-per-class rule in **kmp-code-pattern**: Screen / Content /
-  ViewModel / UiState each in its own file).
-- Function size: small, ideally **< 50 lines**. Split larger functions into named pieces with
-  clear responsibilities.
-- Nesting depth: **≤ 4**. Prefer early returns over stacked `if`s.
+## 6. No magic numbers, no magic strings
 
-## 6. No magic numbers / no magic strings
+- Sizing comes from `pharmTokens` (`dimens.controlHeight`, `spacing.s4`,
+  `shapes.lg`), not sprinkled `.dp` literals. If a value is new, add the token.
+- Thresholds, delays and limits are `const val` at file top.
+- Route names, storage keys and protocol constants are `const val` — never
+  repeated literals.
 
-- Use named constants (`const val` at file top, or token values) for thresholds, delays, limits,
-  paddings. `dimens.controlHeight` not `40.dp` sprinkled around the codebase.
-- Error messages and labels can be inline string literals (user-facing copy) — but identifiers,
-  keys, route names, and protocol constants must be `const val`.
+## 7. Value classes for money and quantity
 
-## 7. Determinism / side-effects bans
+Every monetary field on a domain model or param is `Money`; every counted-stock
+field is `Quantity` (`:core:common/value/`).
 
-Forbidden in production code (`.kt` outside `:composeApp/<plat>Main` and tests):
-- `Date.now()` / `System.currentTimeMillis()` — pass a `Clock` or timestamp through arguments.
-- `Math.random()` / `kotlin.random.Random()` without a passed-in seed — pass a `Random` source.
-- Reading environment variables at top-level — read them once at startup in `:composeApp`.
+- Defaults are `Money.Zero` / `Quantity.Zero`, never `0.0` / `0`.
+- Predicates are `isPositive` / `isZero`, not `> 0` / `== 0.0`.
+- Aggregate in Money space:
+  `items.fold(Money.Zero) { acc, x -> acc + x.lineTotal }`, not
+  `sumOf { it.lineTotal.amount }`.
+- Unwrap only at the boundary: `.amount` / `.value` at the display call site or
+  in a mapper. DTOs stay `Double` / `Int`.
+- Form fields stay `String` while editing and are wrapped at submit.
+- Deliberately still `Double`: `ReportSummary`, `DailySales`, `MonthlySales`,
+  and receipt-template wire fields.
 
-These rules let workflows (test, replay, resume) cache or re-run code deterministically.
+## 8. Determinism
 
-## 8. Copy language
+In production code (outside `:composeApp/<plat>Main` and tests), avoid hidden
+sources of nondeterminism: take a timestamp or clock as a parameter rather than
+reading the wall clock, and thread a seeded source rather than calling
+`Random` inline. The one accepted exception is
+`domain/extension/RequestIdExt.kt`, where `newClientRequestId()` deliberately
+generates a random idempotency key for the offline sale queue.
 
-User-facing strings respect the project's primary language. For the Thai-first project:
-- All UI copy, error messages from VMs, and toast text are **Thai**.
-- Identifier/constant/log strings remain English.
-- `lang="th"` set on root layouts (web) / `Locale` configured at app startup (mobile/desktop).
+## 9. Copy is localized, never literal
 
-For a project with a different primary language, swap "Thai" for that language and keep this
-rule.
+User-facing text comes from `pharmStrings` — the Kotlin-typed table in
+`:core:ui/i18n/`. Default is Thai, English switches live.
 
-## 9. Imports + dependency direction
+- A29 fails the build on a Thai literal in production UI code. **English
+  literals are not caught** — they are still wrong, and reviewers must flag
+  them.
+- Adding copy means adding the key to the group interface **and** both the `Th`
+  and `En` objects. There is no other supported path.
+- Identifiers, log strings, error `message` keys and protocol constants stay
+  English and are not localized.
+- `remember {}` / `semantics {}` / `LaunchedEffect` bodies can't call
+  `pharmStrings` — capture `val s = pharmStrings` at composable scope and key
+  caches with it (`remember(s) { … }`).
+- Enum display labels are `label(s)` extension functions, never a
+  `label: String` field.
+- Legitimately still Thai: `PharmStringsTh` itself, `@Preview` sample data,
+  `.contains(…)` matching tokens, stored-data defaults, printed receipts
+  (`ui/print/`), bulk-import example JSON, and KY official form copy.
 
-- `import` order: standard, third-party, project — separated by blank lines (the IDE settles
-  this).
-- **Never** import across feature boundaries — `:features:<x>` importing `:features:<y>` is a
-  compile error (see **kmp-code-pattern**).
-- **Never** import `:core:data` from a `:features:*` module.
-- Wildcard imports (`import foo.bar.*`) discouraged; let the IDE expand.
+## 10. Imports and dependency direction
 
-## 10. Tests are code
+- Never import across feature boundaries; never import `:core:data` from a
+  feature (A20). Both are build-enforced.
+- No wildcard imports.
+- Import order is whatever the IDE settles on — nobody hand-sorts.
 
-The same rules apply: no comments, immutable test data, descriptive `@Test` names. Tests don't
-get a free pass to be sloppy.
+## 11. Tests are code
 
-Sloppy test = unmaintained test = false-confidence safety net.
+Same rules: no comments, immutable fixtures, descriptive `@Test` names. A
+sloppy test is an unmaintained test, which is a false safety net.
 
-## How to enforce
+## What the build actually checks
 
-A Gradle audit task should grep for the testable subset:
-- `\s//(?!\s*(go:|eslint-|@ts-|noinspection)|\s/\*[^*]` → comment in `.kt`
-- `!!` outside known-safe patterns → fail
-- `Date\.now\(|System\.currentTimeMillis\(|Math\.random\(|Random\.nextInt\(\)` in production → fail
-- a `.kt` file > 800 lines → fail
-- two or more of `class .*ViewModel|fun .*Screen\(|fun .*Content\(|class .*UiState` in the same file → fail
-
-See **kmp-build-logic** for how to wire that as an `auditArchitecture` task, and **kmp-review**
-for severity classification.
+`auditArchitecture` enforces A10 / A17 / A19 / A20 / A23–A29 — layering, DTO
+conventions, platform folders, no `expect`, typed errors, no Thai literals.
+It does **not** check comments, `!!`, file length, magic numbers or M3 leakage.
+Those are review-time; see `kmp-review` for severities and `kmp-build-logic`
+for how the task is wired.

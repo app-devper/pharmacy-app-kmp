@@ -1,203 +1,206 @@
 ---
 name: kmp-error-handling
-description: The typed-error pattern for a Compose Multiplatform Clean-Architecture project — AppException hierarchy in :core:common, RepositoryImpl translates Ktor/network/IO errors to typed exceptions, BaseUseCase wraps once into Result<T>, ViewModel renders state.error, Screen shows ErrorBottomSheet. Use when adding a new error case, mapping HTTP status, or auditing for swallowed exceptions.
+description: The typed-error pattern of the pharmacy app end-to-end — AppException in :core:common, HttpClient response validator translates HTTP, BaseUseCase wraps once, the UiState carries a typed errorState, and localization happens at render. Use when adding an error case, mapping a status code, or auditing for swallowed exceptions.
 ---
 
 # kmp-error-handling
 
-The project bans generic exceptions in production (audit A28). Errors flow through a fixed
-3-layer translation:
+There is **no `String` error anywhere** in this project. An error is a typed
+`AppException` from the moment it is created until the instant it is rendered.
+Generic exceptions in production fail the build (audit A28).
 
 ```
-HTTP / IO failure (Ktor throws ClientRequestException, IOException, …)
-   │
-   │ RepositoryImpl catches + throws typed AppException subclass
+HTTP failure
+   │ HttpResponseValidator (:core:data/network/HttpClient.kt) throws a typed AppException
    ▼
-[ Repository ] ──→ throws AppException
-   │
-   │ BaseUseCase wraps once via runCatching → Result<R>
+[ Repository ] ──→ throws AppException (bare T return, no runCatching)
+   │ BaseUseCase.invoke wraps once → Result<R>
    ▼
-[ UseCase ] ──→ returns Result<R>
-   │
-   │ ViewModel.launchResult(...) onSuccess { copy(...) } onFailure { copy(error = e.message) }
+[ UseCase ] ──→ Result<R>
+   │ ViewModel.launchResult { onFailure = { setState { copy(errorState = <Feature>Error.X(it)) } } }
    ▼
-[ ViewModel ] ──→ state.error: String?
-   │
+[ UiState ] ──→ errorState: AppException?
+   │ Content: state.errorState?.localize<X>(pharmStrings)
    ▼
-[ Screen ] renders ErrorBottomSheet(state.error, onDismiss = vm::dismissError)
+[ ErrorBottomSheet(message: String?, onDismiss) ]
 ```
 
-Domain code, use cases, and ViewModels **NEVER** throw generic `Exception`/`RuntimeException`/
-`IllegalStateException`. Fakes in `:features:test-fixtures` are the only A28-exempt module.
-
-## 1. The `AppException` hierarchy in `:core:common`
+## 1. Transport exceptions — `:core:common/AppException.kt`
 
 ```kotlin
-// core/common/src/commonMain/kotlin/<base>/common/AppException.kt
-sealed class AppException(message: String, cause: Throwable? = null) : Throwable(message, cause)
-
-class AuthException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class ForbiddenException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class NotFoundException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class ConflictException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class ValidationException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class NetworkException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class ServerException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class StorageException(message: String, cause: Throwable? = null) : AppException(message, cause)
-class UnsupportedPlatformException(message: String, cause: Throwable? = null) : AppException(message, cause)
+abstract class AppException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
 ```
 
-The naming maps roughly to HTTP semantics:
-- **Auth (401)** — user not signed in / token expired
-- **Forbidden (403)** — signed in but lacks permission
-- **NotFound (404)** — record absent
-- **Conflict (409)** — duplicate, optimistic-lock failure, invariant violated
-- **Validation (4xx with body)** — client-side or server-side rule failed
-- **Network** — no connection / DNS / TLS handshake / timeout
-- **Server (5xx)** — backend error
-- **Storage** — local disk / preferences / IndexedDB / MediaStore failure
-- **UnsupportedPlatform** — the platform genuinely can't do this op (e.g. no native printer)
+Nine concrete subclasses, each with a default message so call sites can throw
+bare: `AuthException`, `ForbiddenException`, `NotFoundException`,
+`ConflictException(payload: String?)`, `NetworkException`,
+`ServerException(statusCode: Int?, body: String?)`, `ValidationException`,
+`StorageException`, `UnsupportedPlatformException`.
 
-## 2. Translating Ktor errors in `RepositoryImpl`
+Their `message` values are **English internal identifiers**, not user copy —
+localization happens at render, so nothing here is ever shown as-is. The one
+exception is `ValidationException`, whose message is domain-authored and passes
+through verbatim.
 
-The shared `HttpClient` has `expectSuccess = true`, so Ktor throws `ClientRequestException`
-(4xx), `ServerResponseException` (5xx), or `IOException` (transport). Catch them at the
-**repository boundary**, NOT inside `<X>Api`:
+## 2. Translation happens in the HttpClient, not in repositories
+
+`:core:data/data/network/HttpClient.kt` installs an `HttpResponseValidator`:
 
 ```kotlin
-class CustomerRepositoryImpl(private val api: CustomerApi) : CustomerRepository {
-
-    override suspend fun list(): List<Customer> = withTranslated { api.list().map { it.toDomain() } }
-    override suspend fun add(p: AddCustomerParam): Customer = withTranslated { api.add(p.toRequest()).toDomain() }
-    // … etc
-}
-
-private suspend inline fun <T> withTranslated(block: () -> T): T =
-    try {
-        block()
-    } catch (e: ClientRequestException) {
-        throw translateClient(e)
-    } catch (e: ServerResponseException) {
-        throw ServerException(e.message, e)
-    } catch (e: IOException) {
-        throw NetworkException(e.message ?: "เชื่อมต่อเครือข่ายไม่ได้", e)
+HttpResponseValidator {
+    validateResponse { response ->
+        if (response.status.isSuccess()) return@validateResponse
+        val body = response.bodyAsText()
+        throw when (response.status) {
+            HttpStatusCode.Unauthorized -> {
+                tokenStorage.clear(); sessionExpiry.markExpired(); AuthException()
+            }
+            HttpStatusCode.Forbidden -> ForbiddenException()
+            HttpStatusCode.NotFound  -> NotFoundException()
+            HttpStatusCode.Conflict  -> ConflictException(payload = body)
+            else -> ServerException(statusCode = response.status.value, body = body)
+        }
     }
-    // do NOT catch CancellationException; do NOT catch Throwable — let unknown errors fail loud
-
-private fun translateClient(e: ClientRequestException): AppException = when (e.response.status.value) {
-    401 -> AuthException("กรุณาเข้าสู่ระบบใหม่", e)
-    403 -> ForbiddenException("คุณไม่มีสิทธิ์ดำเนินการนี้", e)
-    404 -> NotFoundException("ไม่พบข้อมูล", e)
-    409 -> ConflictException(e.message, e)
-    422 -> ValidationException(parseValidationBody(e) ?: "ข้อมูลไม่ถูกต้อง", e)
-    else -> ServerException(e.message, e)
+    handleResponseExceptionWithRequest { cause, _ ->
+        if (cause is CancellationException) throw cause
+        if (cause is AppException) throw cause
+        throw NetworkException(cause = cause)
+    }
 }
 ```
 
-Rules:
-- Translate **only at the repository boundary** — never inside Apis (they stay plain Ktor),
-  never inside use cases (they wrap once via `BaseUseCase`).
-- **Never catch `CancellationException`** — always rethrow it (it carries coroutine cancellation
-  semantics).
-- **Never catch `Throwable`** — leave unknown failures loud so they're caught by review/CI
-  instead of silently translated to a `ServerException`.
-- The translator inline function is `private suspend inline fun <T>` to avoid the lambda
-  allocation and to keep `suspend` happy.
+So repositories and Apis contain **no try/catch at all** — every HTTP call
+already surfaces a typed exception. A `try/catch` inside a `RepositoryImpl` is
+a smell, not the pattern. Repositories only map DTO ↔ domain.
 
-## 3. `BaseUseCase` wraps once
+401 has a side effect on purpose: it clears the token and marks the session
+expired, which is what drives the app back to the login graph.
+
+## 3. Domain validation is structured, not stringly
+
+`:core:domain/validation/`:
+
+- `FieldValidationError(field: FieldLabel, …)` — `Required`, `InvalidDate`,
+  `NotANumber`, `MustBePositive`, `MustBeNonNegative`; thrown by the `Field.*`
+  validators. `:core:ui` composes rule × field label into copy.
+- `SaleValidationError` — `EmptyCart`, `Return*`, `VoidReasonRequired`.
+- `BulkImportParseError` — `EmptyInput`, `NotArrayOrObject`, `RowNotObject(row)`,
+  `RowMissingName`.
+
+## 4. Feature and common UiState errors
+
+Generic operations reuse `:core:common/error/CommonUiStateError`:
+`LoadFailed`, `SaveFailed`, `DeleteFailed`, `ExportFailed` — each takes a
+`cause` so the original is preserved for logs.
+
+Anything feature-specific gets a sealed class in
+`presentation/<x>/exception/<X>UiStateError.kt`:
 
 ```kotlin
-abstract class BaseUseCase<P, R>(private val dispatchers: AppDispatchers) {
-    abstract suspend fun execute(param: P): R
-    suspend operator fun invoke(param: P): Result<R> =
-        withContext(dispatchers.io) { runCatching { execute(param) } }
+sealed class CustomersListUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
+    class LoadCustomersFailed(cause: Throwable? = null) :
+        CustomersListUiStateError("customers.list_load_failed", cause)
 }
 ```
 
-The use case **never** wraps in another `runCatching` (audit-flagged). It **never** catches
-specific exceptions to recover — that's the VM's job via `onFailure`.
+The message is a dotted key for logs; the user-facing text lives in
+`PharmStrings`.
 
-Known exceptions to "no runCatching in use cases" are checkout / multi-step submission flows
-that explicitly want to recover mid-flight (e.g. retry the next bill on failure). Those should
-be commented in the use case header **via the test name** (`@Test fun checkout_partial_failure_continues_with_remaining_bills()`), not via code comments.
-
-## 4. ViewModel surfaces `state.error`
+## 5. The ViewModel stores it typed
 
 ```kotlin
 fun reload() {
-    setState { copy(loading = true, error = null) }
+    setState { copy(loading = true, errorState = null) }
     launchResult(
         block = { getCustomers() },
         onSuccess = { list -> setState { copy(loading = false, customers = list) } },
-        onFailure = { e -> setState { copy(loading = false, error = e.message ?: "โหลดข้อมูลไม่สำเร็จ") } },
+        onFailure = { e -> setState { copy(loading = false, errorState = CustomersListUiStateError.LoadCustomersFailed(e)) } },
     )
 }
-fun dismissError() = setState { copy(error = null) }
 ```
 
-Rules:
-- The string in `state.error` is **already user-facing** (Thai for a Thai-first project). The
-  `AppException` subclass carries one, repository translation builds one, fallback covers the
-  rest.
-- Special-case branching by type when the screen wants to react differently:
-  ```kotlin
-  onFailure = { e ->
-      when (e) {
-          is AuthException -> callbacks.onAuthExpired()
-          is ConflictException -> setState { copy(conflict = e.message) }
-          else -> setState { copy(error = e.message ?: "…") }
-      }
-  }
-  ```
-- VMs **never** re-throw. They land on a state.
+- The UiState exposes `errorState: AppException?` plus
+  `override val domainError get() = errorState` and `withDomainError(...)` from
+  `LoadableUiState` / `BaseFormUiState`.
+- `BaseLoadableViewModel` provides `dismissError()`; `BaseFormViewModel` routes
+  save failures through `mapSaveError(cause)` — passes `AppException`s through,
+  wraps unknowns in `CommonUiStateError.SaveFailed`.
+- **Never localize in a ViewModel.** No `pharmStrings`, no Thai literals.
+- Info messages are a parallel channel, not errors: a plain sealed
+  `messageState` (`CommonUiStateMessage.{Saved, ExportEmpty, ExportDone}` or a
+  feature-specific one) rendered as a toast.
 
-## 5. Screen renders `ErrorBottomSheet`
+## 6. Localize at render
 
-Every screen ends with:
+Each feature ships `presentation/<x>/i18n/<X>ErrorLocalize.kt`:
+
 ```kotlin
-ErrorBottomSheet(message = state.error, onDismiss = callbacks.onDismissError)
+fun AppException.localizeCustomersList(s: PharmStrings): String = when (this) {
+    is CustomersListUiStateError.LoadCustomersFailed -> s.customersListLoadFailed
+    else -> localizeCommon(s)
+}
 ```
 
-`ErrorBottomSheet` is a `Brand*` primitive (see **kmp-design-system**): a bottom-sheet that
-shows when `message != null`, closes on swipe-down or button tap, and calls `onDismiss`. **No
-SnackBar** for errors — errors must demand acknowledgement.
+`localizeCommon` (`:core:ui/i18n/CommonErrorLocalize.kt`) is the fallback: it
+covers `FieldValidationError` (rule × field label), all four
+`CommonUiStateError`s, all nine transport types, passes
+`ValidationException.message` through verbatim, and lands on
+`s.commonErrorGeneric`.
 
-## 6. Testing
+Render:
 
-- Repository tests with `MockEngine`:
-  ```kotlin
-  @Test fun list_401_translates_to_AuthException() = runTest {
-      val engine = MockEngine { respond("", status = HttpStatusCode.Unauthorized) }
-      val impl = CustomerRepositoryImpl(CustomerApi(httpClient(engine)))
-      val ex = assertFailsWith<AuthException> { impl.list() }
-      assertTrue(ex.message.contains("กรุณาเข้าสู่ระบบใหม่"))
-  }
-  ```
-- VM tests with a `Fake<X>Repository` configured to throw a typed exception:
-  ```kotlin
-  @Test fun load_failure_sets_error_and_clears_loading() = runVmTest { d ->
-      val vm = CustomersListViewModel(GetCustomersUseCase(FakeCustomerRepository(throws = NetworkException("offline")), d))
-      advanceUntilIdle()
-      assertEquals("offline", vm.state.value.error)
-      assertFalse(vm.state.value.loading)
-  }
-  ```
+```kotlin
+ErrorBottomSheet(
+    message = state.errorState.unlessPageShowsError(rows.isEmpty())?.localizeCustomersList(s),
+    onDismiss = callbacks.onDismissError,
+)
+```
 
-Fakes are the only place that may `throw RuntimeException(...)` (deliberate A28-exempt test
-signal); production code must use the typed subclasses.
+`unlessPageShowsError` keeps the sheet quiet when the page is already showing
+`PharmErrorState` for an empty failed list — one message, and it does not
+vanish on dismiss.
 
-## 7. Anti-patterns to flag
+No SnackBar for errors — the bottom sheet demands acknowledgement. Snackbars
+(`LocalPharmSnackbar` / `PharmToast`) are for success and info only.
 
-- **`throw Exception(...)` / `throw RuntimeException(...)` / `throw IllegalStateException(...)`
-  in production code** → audit A28, fail.
-- **`runCatching` in a `RepositoryImpl`** → swallows typed translation; let the typed exception
-  propagate.
-- **`runCatching` in a use case `execute()`** → `BaseUseCase.invoke` already wraps; double
-  wrapping returns `Result<Result<R>>` semantically.
-- **Catching `Throwable` / `CancellationException`** → masks bugs / breaks coroutine cancellation.
-- **Repository impl translating to a `String` and rethrowing as a different shape** → keep the
-  typed exception; the VM/use case differentiates by `is` checks.
-- **VM rendering `e.toString()`** or `e::class.simpleName` to the user → use `e.message` with a
-  fallback string.
-- **SnackBar for an error** → use `ErrorBottomSheet` for anything that requires acknowledgement.
-- **VM that re-throws** instead of setting `state.error` → never propagate from a VM.
+## 7. Adding a new error case
+
+1. Add the case to the feature's `exception/<X>UiStateError.kt` (or reuse
+   `CommonUiStateError`), taking `cause`.
+2. Add the copy key to the feature's group interface in
+   `:core:ui/i18n/groups/<Feature>Strings.kt` **and** its `Th` and `En` objects.
+3. Map it in `presentation/<x>/i18n/<X>ErrorLocalize.kt` before the
+   `else -> localizeCommon(s)`.
+4. Set it from the ViewModel's `onFailure`.
+5. Test it — assert the typed class, not a string.
+
+## 8. Testing
+
+```kotlin
+@Test
+fun load_failure_sets_typed_error_and_clears_loading() = runVmTest { d ->
+    val repo = FakeCustomerRepository(listThrows = true)
+    val vm = CustomersListViewModel(GetCustomersUseCase(repo, d))
+    advanceUntilIdle()
+    assertIs<CustomersListUiStateError.LoadCustomersFailed>(vm.state.value.errorState)
+    assertFalse(vm.state.value.loading)
+}
+```
+
+Assert on the type. Asserting on `message` couples the test to a log key, and
+asserting on rendered copy belongs in a localization test, not a VM test.
+
+`:features:test-fixtures` is the only A28-exempt module — its fakes throw
+generic exceptions on purpose.
+
+## 9. Anti-patterns
+
+- `throw Exception/RuntimeException/IllegalStateException` in production → A28.
+- `runCatching` inside a `RepositoryImpl` or a use case `execute()` — the
+  transport already translates and `BaseUseCase` already wraps.
+- `try/catch` in a repository to convert HTTP errors — that job belongs to the
+  HttpClient validator.
+- Catching `Throwable`, or catching `CancellationException` without rethrowing.
+- A `String` error field on a UiState, or `e.message` shown to the user.
+- Localizing in the ViewModel, or a Thai literal outside `PharmStringsTh` (A29).
+- A ViewModel that re-throws instead of landing on a state.
