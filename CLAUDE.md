@@ -284,6 +284,12 @@ license headers required by upstream libraries.
   | `run` | build, serve and drive the app for real (screenshots over CDP) |
   | `git-flow` / `pr` | branching, and landing the open PR |
 
+- **Agents** (`.claude/agents/`) — `kmp-reviewer` reviews a diff against
+  this project's module boundaries, audit rules, MVVM contracts and
+  design-system patterns. It is the strict counterpart to the user-level
+  `kotlin-reviewer` (which stays global, for looser Kotlin projects), and
+  hands off to the user-level `security-reviewer` on a CRITICAL finding.
+
 - **Localization — COMPLETE & build-enforced** (default ภาษาไทย, English
   switchable live; **A29** fails the build on any new Thai literal in
   production UI code).
