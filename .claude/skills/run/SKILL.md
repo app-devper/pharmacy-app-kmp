@@ -55,7 +55,16 @@ DRIVE_OUT=/tmp/shots ../../mock-api/.venv/bin/python .claude/skills/run/drive.py
 ```
 
 Steps: `click:X:Y` · `type:TEXT` · `wait:SECONDS` · `shot:NAME` ·
-`eval:JS`. **Look at every screenshot you take** — that is the check.
+`eval:JS` · `header:NAME=VALUE` (empty value clears it).
+**Look at every screenshot you take** — that is the check.
+
+Extra headers live on the CDP session, so they vanish when the script
+exits. Sign in and switch scenario in the **same** invocation:
+
+```bash
+... drive.py click:636:398 type:admin click:636:483 type:qa1234 click:636:551 wait:8 \
+    header:X-Mock-Scenario=error click:130:192 wait:5 shot:stock-error
+```
 
 A fresh `--user-data-dir` resets theme, density, font size and language,
 so set them explicitly when a test depends on them.

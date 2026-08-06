@@ -1,9 +1,5 @@
 package app.devper.pharm.presentation.reports
 
-import app.devper.pharm.ui.components.PharmBreakpoint
-import app.devper.pharm.common.value.Money
-import app.devper.pharm.common.value.Quantity
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,32 +12,37 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.domain.model.Dashboard
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.DailySales
+import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.domain.model.ReportSummary
 import app.devper.pharm.domain.model.SaleSummary
-import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import androidx.compose.material3.Icon
+import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun ReportsContent(
@@ -81,6 +82,8 @@ fun ReportsContent(
                 when {
                     state.loading && dashboard == null ->
                         PharmListSkeleton(modifier = Modifier.fillMaxSize())
+                    state.errorState != null && dashboard == null ->
+                        PharmErrorState(onRetry = callbacks.onReload)
                     dashboard == null ->
                         PharmEmptyState(
                             icon = PharmIcons.Reports,
@@ -132,7 +135,7 @@ fun ReportsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.dashboard == null)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

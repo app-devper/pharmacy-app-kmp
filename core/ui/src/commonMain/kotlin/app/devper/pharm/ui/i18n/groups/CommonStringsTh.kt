@@ -113,4 +113,5 @@ object CommonStringsTh : CommonStrings {
     override val commonErrorStorage = "ไม่สามารถบันทึกไฟล์ได้"
     override val commonErrorUnsupported = "ยังไม่รองรับฟีเจอร์นี้บนแพลตฟอร์มนี้"
     override val commonErrorGeneric = "เกิดข้อผิดพลาด"
+    override val commonLoadFailedHint = "ตรวจการเชื่อมต่อแล้วลองอีกครั้ง"
 }

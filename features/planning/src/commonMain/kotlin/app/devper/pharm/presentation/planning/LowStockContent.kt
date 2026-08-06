@@ -1,8 +1,5 @@
 package app.devper.pharm.presentation.planning
 
-import app.devper.pharm.common.value.Money
-import app.devper.pharm.common.value.Quantity
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +13,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.planning.i18n.localizePlanning
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -24,6 +24,8 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -32,7 +34,6 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LowStockContent(
@@ -56,6 +57,8 @@ fun LowStockContent(
     ) {
         when {
             state.loading && state.drugs.isEmpty() -> PharmListSkeleton()
+            state.errorState != null && state.drugs.isEmpty() ->
+                PharmErrorState(onRetry = callbacks.onReload)
             state.drugs.isEmpty() ->
                 PharmEmptyState(
                     icon = PharmIcons.Stock,
@@ -71,7 +74,7 @@ fun LowStockContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizePlanning(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.drugs.isEmpty())?.localizePlanning(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

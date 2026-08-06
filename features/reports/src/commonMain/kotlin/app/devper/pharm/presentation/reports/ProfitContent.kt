@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.ProfitReport
@@ -21,15 +22,16 @@ import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 
 @Composable
 fun ProfitContent(
@@ -49,6 +51,7 @@ fun ProfitContent(
     ) {
         when {
             state.loading && state.report == null -> PharmListSkeleton()
+            state.errorState != null && state.report == null -> PharmErrorState()
             rows.isEmpty() && state.report != null ->
                 PharmEmptyState(
                     icon = PharmIcons.Profit,
@@ -59,7 +62,7 @@ fun ProfitContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.report == null)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

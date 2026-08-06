@@ -113,4 +113,5 @@ interface CommonStrings {
     val commonErrorStorage: String
     val commonErrorUnsupported: String
     val commonErrorGeneric: String
+    val commonLoadFailedHint: String
 }

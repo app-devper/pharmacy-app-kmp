@@ -113,4 +113,5 @@ object CommonStringsEn : CommonStrings {
     override val commonErrorStorage = "Cannot save the file"
     override val commonErrorUnsupported = "This feature isn't supported on this platform yet"
     override val commonErrorGeneric = "Something went wrong"
+    override val commonLoadFailedHint = "Check the connection and try again"
 }

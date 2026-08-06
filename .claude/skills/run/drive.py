@@ -58,9 +58,18 @@ async def main(steps):
         s = Session(ws)
         await s.send("Page.enable")
         await s.send("Runtime.enable")
+        await s.send("Network.enable")
+        headers = {}
         for step in steps:
             kind, *args = step.split(":", 2)
-            if kind == "click":
+            if kind == "header":
+                name, _, value = args[0].partition("=")
+                if value:
+                    headers[name] = value
+                else:
+                    headers.pop(name, None)
+                await s.send("Network.setExtraHTTPHeaders", headers=dict(headers))
+            elif kind == "click":
                 await s.click(float(args[0]), float(args[1]))
             elif kind == "type":
                 await s.type(args[0])
