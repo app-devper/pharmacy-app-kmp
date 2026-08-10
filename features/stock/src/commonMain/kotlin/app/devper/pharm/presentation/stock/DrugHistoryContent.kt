@@ -16,19 +16,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.presentation.stock.i18n.localizeStock
-import app.devper.pharm.ui.i18n.localizedLabel
-import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.designsystem.PharmDivider
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeSize
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
+import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -36,10 +37,11 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
 import app.devper.pharm.ui.format.isoDateTimeToBuddhist
+import app.devper.pharm.ui.i18n.localizedLabel
+import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DrugHistoryContent(
@@ -47,6 +49,7 @@ fun DrugHistoryContent(
     onBack: () -> Unit,
     onDismissError: () -> Unit,
 ) {
+    val pageIsEmpty = state.items.isEmpty()
     val t = pharmTokens
 
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
@@ -68,13 +71,14 @@ fun DrugHistoryContent(
             PharmDivider()
 
             when {
-                state.loading && state.items.isEmpty() -> PharmListSkeleton()
+                state.loading && pageIsEmpty -> PharmListSkeleton()
+                state.errorState != null && pageIsEmpty -> PharmErrorState()
                 else -> DrugHistoryTable(items = state.items)
             }
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeStock(pharmStrings), onDismiss = onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeStock(pharmStrings), onDismiss = onDismissError)
 }
 
 @Composable

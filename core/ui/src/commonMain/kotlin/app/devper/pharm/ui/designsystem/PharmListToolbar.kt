@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
@@ -64,6 +65,18 @@ internal fun listToolbarSectionSpacing(
 } else {
     pharmListToolbarDefaultSectionSpacing
 }
+
+internal fun hidesToolbarTitleForSearch(
+    compact: Boolean,
+    hasSearch: Boolean,
+    availableWidth: Dp,
+): Boolean = !compact && hasSearch && availableWidth < PharmBreakpoint.FormThreeCol
+
+internal fun searchSharesRowWithActions(
+    compact: Boolean,
+    hasSearch: Boolean,
+    hasInlineActions: Boolean,
+): Boolean = compact && hasSearch && hasInlineActions
 
 internal fun combinesCompactToolbarControls(
     compact: Boolean,
@@ -147,10 +160,22 @@ fun PharmListToolbar(
             else -> actions
         }
         val topbarAction = compactTopbarAction ?: actions
+        val hasSearch = searchValue != null && onSearchChange != null
+        val searchRowTakesActions = searchSharesRowWithActions(
+            compact = compact,
+            hasSearch = hasSearch,
+            hasInlineActions = inlineActions != null,
+        )
+        val controlRowActions = inlineActions.takeUnless { searchRowTakesActions }
+        val hideTitleForSearch = hidesToolbarTitleForSearch(
+            compact = compact,
+            hasSearch = hasSearch,
+            availableWidth = maxWidth,
+        )
         val combineCompactControls = combinesCompactToolbarControls(
             compact = compact,
             hasFilters = filters != null,
-            hasInlineActions = inlineActions != null,
+            hasInlineActions = controlRowActions != null,
             allowSharedRow = compactControlsSharedRow,
         )
         if (moveSubpageHeaderToTopbar && guardedBack != null) {
@@ -167,7 +192,7 @@ fun PharmListToolbar(
         val hasCompactContent = hasCompactToolbarContent(
             showTitle = localShowTitle,
             hasBack = localBack != null,
-            hasSearch = searchValue != null && onSearchChange != null,
+            hasSearch = hasSearch,
             hasFilters = filters != null,
             hasBadge = badge != null,
             hasInlineActions = inlineActions != null,
@@ -228,15 +253,26 @@ fun PharmListToolbar(
                             }
                         }
                     }
-                    if (searchValue != null && onSearchChange != null) {
-                        PharmSearchField(
-                            value = searchValue,
-                            onValueChange = onSearchChange,
-                            placeholder = searchPlaceholder,
-                            onSearch = onSearch,
-                            searching = searching,
+                    if (hasSearch && searchValue != null && onSearchChange != null) {
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                        )
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            PharmSearchField(
+                                value = searchValue,
+                                onValueChange = onSearchChange,
+                                placeholder = searchPlaceholder,
+                                onSearch = onSearch,
+                                searching = searching,
+                                modifier = Modifier.weight(1f),
+                            )
+                            if (searchRowTakesActions) {
+                                CompositionLocalProvider(LocalCompactTopbarActions provides true) {
+                                    inlineActions?.invoke()
+                                }
+                            }
+                        }
                     }
                     if (combineCompactControls) {
                         Row(
@@ -254,10 +290,10 @@ fun PharmListToolbar(
                                 filters?.invoke(this)
                             }
                             CompositionLocalProvider(LocalCompactTopbarActions provides true) {
-                                inlineActions?.invoke()
+                                controlRowActions?.invoke()
                             }
                         }
-                    } else if (filters != null || badge != null || inlineActions != null) {
+                    } else if (filters != null || badge != null || controlRowActions != null) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -271,7 +307,7 @@ fun PharmListToolbar(
                                     content = filters,
                                 )
                             }
-                            if (badge != null || inlineActions != null) {
+                            if (badge != null || controlRowActions != null) {
                                 FlowRow(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = if (badge == null) {
@@ -284,7 +320,7 @@ fun PharmListToolbar(
                                 ) {
                                     badge?.invoke()
                                     CompositionLocalProvider(LocalCompactTopbarActions provides true) {
-                                        inlineActions?.invoke()
+                                        controlRowActions?.invoke()
                                     }
                                 }
                             }
@@ -314,17 +350,21 @@ fun PharmListToolbar(
                                 )
                             }
                         }
-                        if (showTitle) {
+                        if (showTitle && !hideTitleForSearch) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = effectiveTitle,
                                     style = titleStyle,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.semantics { heading() },
                                 )
                                 if (subtitle != null) {
                                     Text(
                                         text = subtitle,
                                         style = PharmText.micro.copy(color = t.colors.fgMuted),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }

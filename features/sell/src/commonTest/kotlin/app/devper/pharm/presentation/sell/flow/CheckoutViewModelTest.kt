@@ -348,7 +348,7 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun cart_change_invalidates_precaptured_ky() = runVmTest { dispatchers ->
+    fun cart_change_invalidates_precaptured_ky_but_keeps_the_fields_for_review() = runVmTest { dispatchers ->
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val otherLine = line(drug = drug(id = "d2", name = "Other"))
         val cart = FakeCartRepository(
@@ -365,7 +365,7 @@ class CheckoutViewModelTest {
         cart.remove(otherLine.key)
         advanceUntilIdle()
         assertFalse(vm.state.value.kyCaptured)
-        assertNull(vm.state.value.capturedKyFields)
+        assertEquals("Buyer", vm.state.value.capturedKyFields?.ky10BuyerName)
         assertTrue(vm.state.value.kyPrecaptureInvalidated)
         vm.openKyPrecapture()
         advanceUntilIdle()

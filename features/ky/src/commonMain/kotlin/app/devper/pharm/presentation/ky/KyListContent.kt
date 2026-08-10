@@ -2,28 +2,31 @@ package app.devper.pharm.presentation.ky
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import app.devper.pharm.domain.model.KyFormType
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.model.Ky10Entry
 import app.devper.pharm.domain.model.Ky11Entry
 import app.devper.pharm.domain.model.Ky12Entry
+import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun KyListContent(
     state: KyListUiState,
     callbacks: KyListCallbacks = KyListCallbacks(),
 ) {
+    val pageIsEmpty = state.rows.isEmpty()
     val t = pharmTokens
     PharmListScaffold(
         toolbar = {
@@ -49,8 +52,10 @@ fun KyListContent(
         },
     ) {
         when {
-            state.loading && state.rows.isEmpty() -> PharmListSkeleton()
-            state.rows.isEmpty() -> PharmEmptyState(
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.KyForms,
                 title = pharmStrings.kyEmptyMonth,
             )
@@ -58,7 +63,7 @@ fun KyListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private fun rowTotalValue(row: KyRow): Double = when (row) {

@@ -56,8 +56,8 @@ fun CustomerDetailContent(
     val s = pharmStrings
     Column(modifier = Modifier.fillMaxSize().background(t.colors.bgPage)) {
         PharmListToolbar(
-            title = state.customer?.name ?: s.navCustomers,
-            subtitle = s.navCustomers,
+            title = s.customersDetailTitle,
+            subtitle = state.customer?.name,
             onBack = callbacks.onBack,
             actions = {
                 Box(

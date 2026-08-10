@@ -3,26 +3,29 @@ package app.devper.pharm.presentation.customers
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import app.devper.pharm.domain.model.Customer
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.extension.Tier
-import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.presentation.customers.i18n.localizeCustomersList
-import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
-import androidx.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.theme.PharmacyTheme
 
 @Composable
 fun CustomersListContent(
     state: CustomersListUiState,
     callbacks: CustomersListCallbacks = CustomersListCallbacks(),
 ) {
+    val pageIsEmpty = state.customers.isEmpty()
     val s = pharmStrings
     val visible = state.filtered
     val searching = state.query.isNotBlank()
@@ -39,8 +42,10 @@ fun CustomersListContent(
         },
     ) {
         when {
-            state.loading && state.customers.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.customers.isEmpty() -> PharmEmptyState(
+            state.loading && pageIsEmpty -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Customers,
                 title = s.customersListEmpty,
                 action = {
@@ -59,7 +64,7 @@ fun CustomersListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeCustomersList(s), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeCustomersList(s), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleCustomers = listOf(

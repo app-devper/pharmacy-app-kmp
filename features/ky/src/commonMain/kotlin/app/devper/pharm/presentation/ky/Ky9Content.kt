@@ -14,27 +14,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Ky9Entry
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListScaffold
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun Ky9Content(
     state: Ky9UiState,
     callbacks: Ky9Callbacks = Ky9Callbacks(),
 ) {
+    val pageIsEmpty = state.entries.isEmpty()
     val t = pharmTokens
     val rows = state.entries.map { KyRow.Ky9(it) }
     val totalValue = state.entries.sumOf { it.totalValue }
@@ -61,8 +64,10 @@ fun Ky9Content(
         },
     ) {
         when {
-            state.loading && state.entries.isEmpty() -> PharmListSkeleton()
-            state.entries.isEmpty() -> PharmEmptyState(
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.KyForms,
                 title = pharmStrings.kyEmptyMonth,
             )
@@ -70,7 +75,7 @@ fun Ky9Content(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleKy9Entries = listOf(

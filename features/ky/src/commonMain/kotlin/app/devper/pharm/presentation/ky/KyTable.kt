@@ -66,6 +66,7 @@ private fun kyColumns(
 ): List<PharmTableColumn<KyRowDisplay>> = listOf(
     PharmTableColumn(
         header = "#",
+        hideInCompact = true,
         weight = 0.4f,
         cell = { row -> IndexCell(row.index) },
     ),
@@ -87,6 +88,7 @@ private fun kyColumns(
     ),
     PharmTableColumn(
         header = s.commonUnit,
+        hideInCompact = true,
         weight = 0.7f,
         cell = { row -> MetaCell(row.unit) },
     ),
@@ -111,11 +113,13 @@ private fun kyColumns(
     ),
     PharmTableColumn(
         header = partyHeader,
+        hideInCompact = true,
         weight = 1.6f,
         cell = { row -> PartyCell(row.party) },
     ),
     PharmTableColumn(
         header = refHeader,
+        hideInCompact = true,
         weight = 1.4f,
         cell = { row -> MetaCell(row.reference) },
     ),

@@ -2,13 +2,16 @@ package app.devper.pharm.presentation.suppliers
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.presentation.suppliers.i18n.localizeSuppliersList
+import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -18,13 +21,13 @@ import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SuppliersListContent(
     state: SuppliersListUiState,
     callbacks: SuppliersListCallbacks = SuppliersListCallbacks(),
 ) {
+    val pageIsEmpty = state.suppliers.isEmpty()
     val s = pharmStrings
     val visible = state.filtered
     val searching = state.query.isNotBlank()
@@ -36,8 +39,10 @@ fun SuppliersListContent(
         },
     ) {
         when {
-            state.loading && state.suppliers.isEmpty() -> PharmListSkeleton()
-            state.suppliers.isEmpty() -> PharmEmptyState(
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Suppliers,
                 title = s.suppliersListEmpty,
                 action = {
@@ -65,7 +70,7 @@ fun SuppliersListContent(
         )
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeSuppliersList(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeSuppliersList(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

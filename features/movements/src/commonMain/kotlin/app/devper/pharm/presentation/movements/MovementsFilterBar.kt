@@ -34,7 +34,6 @@ internal fun MovementsListToolbar(
 
     PharmListToolbar(
         modifier = modifier,
-        title = s.navMovements,
         subtitle = s.movementsSubtitle,
         searchValue = state.drugName,
         onSearchChange = callbacks.onSearchChange,

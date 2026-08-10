@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.ui.designsystem.PharmBadge
+import app.devper.pharm.ui.designsystem.RoleBadge
 import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
@@ -41,7 +42,7 @@ internal fun ProfileHeaderCard(user: UmUser) {
             Text(text = user.displayName, style = PharmText.h1)
             Text(text = "@${user.username}", style = PharmText.body.copy(color = t.colors.fgMuted))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                PharmBadge(text = user.role.label(), tone = user.role.tone())
+                RoleBadge(role = user.role)
                 PharmBadge(
                     text = if (user.status.isActive) pharmStrings.commonStatusActive else pharmStrings.commonStatusInactive,
                     tone = if (user.status.isActive) PharmBadgeTone.Green else PharmBadgeTone.Gray,
@@ -51,18 +52,4 @@ internal fun ProfileHeaderCard(user: UmUser) {
     }
 }
 
-private fun Role.label(): String = when (this) {
-    Role.SUPER   -> "Super Admin"
-    Role.ADMIN   -> "Admin"
-    Role.MANAGER -> "Manager"
-    Role.USER    -> "User"
-    Role.UNKNOWN -> "-"
-}
 
-private fun Role.tone(): PharmBadgeTone = when (this) {
-    Role.SUPER   -> PharmBadgeTone.Purple
-    Role.ADMIN   -> PharmBadgeTone.Blue
-    Role.MANAGER -> PharmBadgeTone.Amber
-    Role.USER    -> PharmBadgeTone.Gray
-    Role.UNKNOWN -> PharmBadgeTone.Gray
-}

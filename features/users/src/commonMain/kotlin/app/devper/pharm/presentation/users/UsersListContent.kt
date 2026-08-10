@@ -3,17 +3,20 @@ package app.devper.pharm.presentation.users
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.presentation.users.i18n.localizeUsers
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -22,13 +25,13 @@ import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun UsersListContent(
     state: UsersListUiState,
     callbacks: UsersListCallbacks,
 ) {
+    val pageIsEmpty = state.users.isEmpty()
     val s = pharmStrings
     val visible = state.filtered
     val searching = state.searchQuery.isNotBlank()
@@ -45,8 +48,9 @@ fun UsersListContent(
         },
     ) {
         when {
-            state.loading && state.users.isEmpty() -> PharmListSkeleton()
-            state.users.isEmpty() && state.searchQuery.isBlank() -> PharmEmptyState(
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty -> PharmErrorState()
+            pageIsEmpty && state.searchQuery.isBlank() -> PharmEmptyState(
                 icon = PharmIcons.Users,
                 title = s.usersListEmpty,
                 action = {
@@ -72,7 +76,7 @@ fun UsersListContent(
     }
 
     ActionDialog(state = state, callbacks = callbacks)
-    ErrorBottomSheet(message = state.errorState?.localizeUsers(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeUsers(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable
@@ -86,7 +90,6 @@ private fun UsersListToolbar(
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,
-        titleStyle = PharmText.h2,
         compactTopbarActions = true,
         actions = {
             if (state.currentUserRole.canManageUsers()) {

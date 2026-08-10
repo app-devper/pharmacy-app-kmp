@@ -3,24 +3,27 @@ package app.devper.pharm.presentation.movements
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.presentation.movements.i18n.localizeMovements
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import app.devper.pharm.ui.i18n.pharmStrings
-import app.devper.pharm.ui.theme.PharmacyTheme
-import androidx.compose.ui.tooling.preview.Preview
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.theme.PharmacyTheme
 
 @Composable
 fun MovementsContent(
     state: MovementsUiState,
     callbacks: MovementsCallbacks = MovementsCallbacks(),
 ) {
+    val pageIsEmpty = state.items.isEmpty()
     PharmListScaffold(
         toolbar = { MovementsListToolbar(state = state, callbacks = callbacks) },
         resultLine = {
@@ -33,9 +36,11 @@ fun MovementsContent(
         },
     ) {
         when {
-            state.loading && state.items.isEmpty() ->
+            state.loading && pageIsEmpty ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.items.isEmpty() -> PharmEmptyState(
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Movements,
                 title = if (state.hasActiveFilters) {
                     pharmStrings.movementsEmptySearching
@@ -47,7 +52,7 @@ fun MovementsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleMovements = listOf(

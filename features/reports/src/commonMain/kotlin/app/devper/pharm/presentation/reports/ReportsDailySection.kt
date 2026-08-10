@@ -23,6 +23,8 @@ import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
 
+private val DailyChartHeight = 128.dp
+
 @Composable
 internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = Modifier) {
     val t = pharmTokens
@@ -41,13 +43,15 @@ internal fun ReportsDailyBarChart(daily: List<DailySales>, modifier: Modifier = 
         },
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            PharmMiniBarChart(
-                data = data,
-                height = 128.dp,
-                barColor = t.colors.accent,
-                valueFormatter = { fmtBaht(it) },
-            )
-            if (data.isNotEmpty()) {
+            if (data.isEmpty()) {
+                ReportsChartEmpty(height = DailyChartHeight)
+            } else {
+                PharmMiniBarChart(
+                    data = data,
+                    height = DailyChartHeight,
+                    barColor = t.colors.accent,
+                    valueFormatter = { fmtBaht(it) },
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(2.dp),

@@ -13,29 +13,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
-import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.presentation.stockcount.i18n.localizeStockCount
-import app.devper.pharm.ui.i18n.pharmStrings
-import app.devper.pharm.ui.theme.PharmText
-import app.devper.pharm.ui.theme.PharmacyTheme
-import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.ui.theme.PharmacyTheme
+import app.devper.pharm.ui.theme.pharmTokens
 
 @Composable
 fun StockCountsListContent(
     state: StockCountsListUiState,
     callbacks: StockCountsListCallbacks = StockCountsListCallbacks(),
 ) {
+    val pageIsEmpty = state.counts.isEmpty()
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
@@ -51,9 +54,11 @@ fun StockCountsListContent(
         },
     ) {
         when {
-            state.loading && state.counts.isEmpty() ->
+            state.loading && pageIsEmpty ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.counts.isEmpty() -> PharmEmptyState(
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.StockCount,
                 title = pharmStrings.stockCountHistoryEmpty,
                 action = {
@@ -72,7 +77,7 @@ fun StockCountsListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeStockCount(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeStockCount(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleCounts = listOf(

@@ -72,7 +72,7 @@ class CheckoutViewModel(
                     precaptureItems = null
                 }
                 setState {
-                    if (invalidatePrecapture) copy(cartIsEmpty = snap.isEmpty, kyCaptured = false, capturedKyFields = null, kyPrecaptureInvalidated = true)
+                    if (invalidatePrecapture) copy(cartIsEmpty = snap.isEmpty, kyCaptured = false, kyPrecaptureInvalidated = true)
                     else copy(cartIsEmpty = snap.isEmpty)
                 }
             }

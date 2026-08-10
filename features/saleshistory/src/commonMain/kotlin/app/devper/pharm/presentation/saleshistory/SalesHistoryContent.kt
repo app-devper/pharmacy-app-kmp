@@ -1,29 +1,31 @@
 package app.devper.pharm.presentation.saleshistory
 
-import app.devper.pharm.common.value.Money
-import app.devper.pharm.common.value.Quantity
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.SaleSummary
-import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.presentation.saleshistory.i18n.localizeSalesHistory
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
-import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun SalesHistoryContent(
     state: SalesHistoryUiState,
     callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
 ) {
+    val pageIsEmpty = state.sales.isEmpty()
     val s = pharmStrings
     val searching = state.query.isNotBlank()
 
@@ -39,8 +41,10 @@ fun SalesHistoryContent(
         },
     ) {
         when {
-            state.loading && state.sales.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.sales.isEmpty() -> PharmEmptyState(
+            state.loading && pageIsEmpty -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.errorState != null && pageIsEmpty ->
+                PharmErrorState()
+            pageIsEmpty -> PharmEmptyState(
                 icon = if (searching) PharmIcons.Search else PharmIcons.SalesHistory,
                 title = if (searching) s.salesHistoryEmptySearching else s.salesHistoryEmptyDateRange,
             )
@@ -52,7 +56,7 @@ fun SalesHistoryContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeSalesHistory(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeSalesHistory(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleSales = listOf(

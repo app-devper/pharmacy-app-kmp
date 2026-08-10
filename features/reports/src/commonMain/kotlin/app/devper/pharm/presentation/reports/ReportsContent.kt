@@ -1,9 +1,5 @@
 package app.devper.pharm.presentation.reports
 
-import app.devper.pharm.ui.components.PharmBreakpoint
-import app.devper.pharm.common.value.Money
-import app.devper.pharm.common.value.Quantity
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,38 +12,44 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.domain.model.Dashboard
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.DailySales
+import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.domain.model.ReportSummary
 import app.devper.pharm.domain.model.SaleSummary
-import kotlinx.datetime.LocalDateTime
 import app.devper.pharm.domain.model.SlowDrug
 import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
-import androidx.compose.material3.Icon
+import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmErrorState
+import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import app.devper.pharm.ui.theme.pharmTokens
-import androidx.compose.ui.tooling.preview.Preview
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun ReportsContent(
     state: ReportsUiState,
     callbacks: ReportsCallbacks = ReportsCallbacks(),
 ) {
+    val pageIsEmpty = state.dashboard == null
     val t = pharmTokens
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
@@ -63,36 +65,27 @@ fun ReportsContent(
             val s = pharmStrings
             val dashboard = state.dashboard
             PharmListToolbar(
-                title = s.reportsTabSummary,
                 subtitle = s.reportsSubtitle,
-                compactControlsSharedRow = false,
+                compactTopbarActions = true,
+                compactTopbarAction = { ReportsCloseEodButton(callbacks = callbacks) },
+                compactInlineActions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
                 filters = {
                     ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
                 },
                 actions = {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        PharmButton(
-                            label = s.commonRefresh,
-                            onClick = callbacks.onReload,
-                            size = PharmButtonSize.Sm,
-                            variant = PharmButtonVariant.Outline,
-                            loading = state.loading,
-                            leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-                        )
-                        PharmButton(
-                            label = s.reportsTabEod,
-                            onClick = callbacks.onCloseEod,
-                            size = PharmButtonSize.Sm,
-                            leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
-                        )
+                        ReportsRefreshButton(state = state, callbacks = callbacks)
+                        ReportsCloseEodButton(callbacks = callbacks)
                     }
                 },
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 when {
-                    state.loading && dashboard == null ->
+                    state.loading && pageIsEmpty ->
                         PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                    dashboard == null ->
+                    state.errorState != null && pageIsEmpty ->
+                        PharmErrorState(onRetry = callbacks.onReload)
+                    pageIsEmpty ->
                         PharmEmptyState(
                             icon = PharmIcons.Reports,
                             title = s.reportsEmptyNoData,
@@ -143,7 +136,29 @@ fun ReportsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+}
+
+@Composable
+private fun ReportsRefreshButton(state: ReportsUiState, callbacks: ReportsCallbacks) {
+    PharmButton(
+        label = pharmStrings.commonRefresh,
+        onClick = callbacks.onReload,
+        size = PharmButtonSize.Sm,
+        variant = PharmButtonVariant.Outline,
+        loading = state.loading,
+        leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
+    )
+}
+
+@Composable
+private fun ReportsCloseEodButton(callbacks: ReportsCallbacks) {
+    PharmButton(
+        label = pharmStrings.reportsTabEod,
+        onClick = callbacks.onCloseEod,
+        size = PharmButtonSize.Sm,
+        leadingIcon = { Icon(PharmIcons.Reports, contentDescription = null) },
+    )
 }
 
 private val previewSummary = ReportSummary(
