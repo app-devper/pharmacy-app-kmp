@@ -19,13 +19,13 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.ReorderSuggestion
 import app.devper.pharm.presentation.planning.i18n.localizePlanning
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
@@ -40,6 +40,7 @@ fun ReorderSuggestionsContent(
     onBack: () -> Unit,
     callbacks: ReorderSuggestionsCallbacks = ReorderSuggestionsCallbacks(),
 ) {
+    val pageIsEmpty = state.suggestions.isEmpty()
     val t = pharmTokens
     val s = pharmStrings
 
@@ -94,10 +95,10 @@ fun ReorderSuggestionsContent(
             PharmListResultLine(total = state.suggestions.size, noun = s.planningCountNoun)
             PharmDivider()
             when {
-                state.loading && state.suggestions.isEmpty() -> PharmListSkeleton()
-                state.errorState != null && state.suggestions.isEmpty() ->
+                state.loading && pageIsEmpty -> PharmListSkeleton()
+                state.errorState != null && pageIsEmpty ->
                     PharmErrorState(onRetry = callbacks.onReload)
-                state.suggestions.isEmpty() ->
+                pageIsEmpty ->
                     PharmEmptyState(
                         icon = PharmIcons.Reports,
                         title = s.planningReorderEmptyTitle,
@@ -112,7 +113,7 @@ fun ReorderSuggestionsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.suggestions.isEmpty())?.localizePlanning(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizePlanning(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleSuggestions = listOf(

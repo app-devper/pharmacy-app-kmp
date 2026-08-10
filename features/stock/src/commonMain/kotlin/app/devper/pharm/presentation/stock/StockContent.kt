@@ -9,11 +9,11 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.presentation.stock.i18n.localizeStock
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -26,6 +26,7 @@ fun StockContent(
     state: StockUiState,
     callbacks: StockCallbacks = StockCallbacks(),
 ) {
+    val pageIsEmpty = state.drugs.isEmpty()
     val visible = state.filtered
     val searching = state.query.isNotBlank() || state.typeFilter != StockTypeFilter.All
 
@@ -48,11 +49,11 @@ fun StockContent(
         },
     ) {
         when {
-            state.loading && state.drugs.isEmpty() ->
+            state.loading && pageIsEmpty ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && state.drugs.isEmpty() ->
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.drugs.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Stock,
                 title = pharmStrings.stockListEmpty,
                 action = {
@@ -71,7 +72,7 @@ fun StockContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.drugs.isEmpty())?.localizeStock(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeStock(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleDrugs = listOf(

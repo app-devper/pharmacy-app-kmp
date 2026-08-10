@@ -8,9 +8,9 @@ import app.devper.pharm.domain.model.MovementType
 import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.presentation.movements.i18n.localizeMovements
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -23,6 +23,7 @@ fun MovementsContent(
     state: MovementsUiState,
     callbacks: MovementsCallbacks = MovementsCallbacks(),
 ) {
+    val pageIsEmpty = state.items.isEmpty()
     PharmListScaffold(
         toolbar = { MovementsListToolbar(state = state, callbacks = callbacks) },
         resultLine = {
@@ -35,11 +36,11 @@ fun MovementsContent(
         },
     ) {
         when {
-            state.loading && state.items.isEmpty() ->
+            state.loading && pageIsEmpty ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && state.items.isEmpty() ->
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.items.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Movements,
                 title = if (state.hasActiveFilters) {
                     pharmStrings.movementsEmptySearching
@@ -51,7 +52,7 @@ fun MovementsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.items.isEmpty())?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleMovements = listOf(

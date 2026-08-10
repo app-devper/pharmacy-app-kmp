@@ -23,12 +23,12 @@ import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.presentation.offlinesync.i18n.localize
 import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -46,6 +46,7 @@ fun OfflineSyncContent(
     state: OfflineSyncUiState,
     callbacks: OfflineSyncCallbacks = OfflineSyncCallbacks(),
 ) {
+    val pageIsEmpty = state.pending.isEmpty()
     val t = pharmTokens
     val s = pharmStrings
 
@@ -82,10 +83,10 @@ fun OfflineSyncContent(
         },
     ) {
         when {
-            state.loading && state.pending.isEmpty() -> PharmListSkeleton()
-            state.errorState != null && state.pending.isEmpty() ->
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.pending.isEmpty() -> EmptyOfflineSync()
+            pageIsEmpty -> EmptyOfflineSync()
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -132,7 +133,7 @@ fun OfflineSyncContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.pending.isEmpty())?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

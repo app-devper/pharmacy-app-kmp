@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -100,8 +101,7 @@ fun MainShell(appViewModel: AppViewModel) {
     val nestedNav = rememberNavController()
     val backEntry by nestedNav.currentBackStackEntryAsState()
     val (title, sectionKey) = destInfoFor(backEntry?.destination?.route)
-    val currentRouteBase = backEntry?.destination?.route?.substringBefore('/')?.substringBefore('?')
-    val isSubPage = currentRouteBase in SUB_PAGE_ROUTE_KEYS
+    val isSubPage = backEntry?.destination?.route.toRouteKey() in SUB_PAGE_ROUTE_KEYS
     val navItems = rememberMainNavItems()
     var settingsOpen by remember { mutableStateOf(false) }
 
@@ -124,10 +124,11 @@ fun MainShell(appViewModel: AppViewModel) {
                 settingsOpen = true
             } else if (key != sectionKey) {
                 routeForKey(key)?.let { route ->
+                    if (isSubPage) nestedNav.popSubPagesOffTheStack()
                     nestedNav.navigate(route) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(Sell) { saveState = !isSubPage }
+                        popUpTo(Sell) { saveState = true }
                     }
                 }
             }
@@ -179,3 +180,11 @@ fun MainShell(appViewModel: AppViewModel) {
         onDismiss = { settingsOpen = false },
     )
 }
+
+private fun NavController.popSubPagesOffTheStack() {
+    while (currentDestination?.route.toRouteKey() in SUB_PAGE_ROUTE_KEYS) {
+        if (!popBackStack()) return
+    }
+}
+
+internal fun String?.toRouteKey(): String? = this?.substringBefore('/')?.substringBefore('?')

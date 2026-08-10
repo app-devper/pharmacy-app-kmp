@@ -9,9 +9,9 @@ import app.devper.pharm.domain.model.Ky12Entry
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -26,6 +26,7 @@ fun KyListContent(
     state: KyListUiState,
     callbacks: KyListCallbacks = KyListCallbacks(),
 ) {
+    val pageIsEmpty = state.rows.isEmpty()
     val t = pharmTokens
     PharmListScaffold(
         toolbar = {
@@ -51,10 +52,10 @@ fun KyListContent(
         },
     ) {
         when {
-            state.loading && state.rows.isEmpty() -> PharmListSkeleton()
-            state.errorState != null && state.rows.isEmpty() ->
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.rows.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.KyForms,
                 title = pharmStrings.kyEmptyMonth,
             )
@@ -62,7 +63,7 @@ fun KyListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.rows.isEmpty())?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private fun rowTotalValue(row: KyRow): Double = when (row) {
