@@ -30,12 +30,12 @@ import app.devper.pharm.domain.model.TopDrug
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.PharmBreakpoint
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -49,6 +49,7 @@ fun ReportsContent(
     state: ReportsUiState,
     callbacks: ReportsCallbacks = ReportsCallbacks(),
 ) {
+    val pageIsEmpty = state.dashboard == null
     val t = pharmTokens
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
@@ -80,11 +81,11 @@ fun ReportsContent(
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 when {
-                    state.loading && dashboard == null ->
+                    state.loading && pageIsEmpty ->
                         PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                    state.errorState != null && dashboard == null ->
+                    state.errorState != null && pageIsEmpty ->
                         PharmErrorState(onRetry = callbacks.onReload)
-                    dashboard == null ->
+                    pageIsEmpty ->
                         PharmEmptyState(
                             icon = PharmIcons.Reports,
                             title = s.reportsEmptyNoData,
@@ -135,7 +136,7 @@ fun ReportsContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.dashboard == null)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

@@ -19,11 +19,11 @@ import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.domain.model.StockCountLine
 import app.devper.pharm.presentation.stockcount.i18n.localizeStockCount
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -38,6 +38,7 @@ fun StockCountsListContent(
     state: StockCountsListUiState,
     callbacks: StockCountsListCallbacks = StockCountsListCallbacks(),
 ) {
+    val pageIsEmpty = state.counts.isEmpty()
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
@@ -53,11 +54,11 @@ fun StockCountsListContent(
         },
     ) {
         when {
-            state.loading && state.counts.isEmpty() ->
+            state.loading && pageIsEmpty ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && state.counts.isEmpty() ->
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.counts.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.StockCount,
                 title = pharmStrings.stockCountHistoryEmpty,
                 action = {
@@ -76,7 +77,7 @@ fun StockCountsListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.counts.isEmpty())?.localizeStockCount(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeStockCount(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleCounts = listOf(

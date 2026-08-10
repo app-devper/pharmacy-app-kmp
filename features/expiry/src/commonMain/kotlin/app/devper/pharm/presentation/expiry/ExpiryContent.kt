@@ -23,12 +23,12 @@ import app.devper.pharm.domain.model.WriteoffFailure
 import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.presentation.expiry.i18n.localizeExpiry
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -45,6 +45,7 @@ fun ExpiryContent(
     state: ExpiryUiState,
     callbacks: ExpiryCallbacks = ExpiryCallbacks(),
 ) {
+    val pageIsEmpty = state.lots.isEmpty()
     val visible = state.filteredLots
     val searching = state.query.isNotBlank()
     PharmListScaffold(
@@ -68,11 +69,11 @@ fun ExpiryContent(
         },
     ) {
         when {
-            state.loading && state.lots.isEmpty() ->
+            state.loading && pageIsEmpty ->
                 PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && state.lots.isEmpty() ->
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.lots.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Expiry,
                 title = pharmStrings.expiryEmpty,
             )
@@ -101,7 +102,7 @@ fun ExpiryContent(
         WriteoffResultDialog(result = result, onDismiss = callbacks.onDismissResult)
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.lots.isEmpty())?.localizeExpiry(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeExpiry(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

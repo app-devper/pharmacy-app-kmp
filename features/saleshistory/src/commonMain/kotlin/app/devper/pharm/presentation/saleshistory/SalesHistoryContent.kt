@@ -9,9 +9,9 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.presentation.saleshistory.i18n.localizeSalesHistory
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -25,6 +25,7 @@ fun SalesHistoryContent(
     state: SalesHistoryUiState,
     callbacks: SalesHistoryCallbacks = SalesHistoryCallbacks(),
 ) {
+    val pageIsEmpty = state.sales.isEmpty()
     val s = pharmStrings
     val searching = state.query.isNotBlank()
 
@@ -40,10 +41,10 @@ fun SalesHistoryContent(
         },
     ) {
         when {
-            state.loading && state.sales.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && state.sales.isEmpty() ->
+            state.loading && pageIsEmpty -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.sales.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = if (searching) PharmIcons.Search else PharmIcons.SalesHistory,
                 title = if (searching) s.salesHistoryEmptySearching else s.salesHistoryEmptyDateRange,
             )
@@ -55,7 +56,7 @@ fun SalesHistoryContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.sales.isEmpty())?.localizeSalesHistory(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeSalesHistory(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleSales = listOf(

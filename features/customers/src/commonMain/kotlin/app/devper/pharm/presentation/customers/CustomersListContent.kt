@@ -8,11 +8,11 @@ import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.presentation.customers.i18n.localizeCustomersList
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -25,6 +25,7 @@ fun CustomersListContent(
     state: CustomersListUiState,
     callbacks: CustomersListCallbacks = CustomersListCallbacks(),
 ) {
+    val pageIsEmpty = state.customers.isEmpty()
     val s = pharmStrings
     val visible = state.filtered
     val searching = state.query.isNotBlank()
@@ -41,10 +42,10 @@ fun CustomersListContent(
         },
     ) {
         when {
-            state.loading && state.customers.isEmpty() -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && state.customers.isEmpty() ->
+            state.loading && pageIsEmpty -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.customers.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Customers,
                 title = s.customersListEmpty,
                 action = {
@@ -63,7 +64,7 @@ fun CustomersListContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.customers.isEmpty())?.localizeCustomersList(s), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeCustomersList(s), onDismiss = callbacks.onDismissError)
 }
 
 private val sampleCustomers = listOf(

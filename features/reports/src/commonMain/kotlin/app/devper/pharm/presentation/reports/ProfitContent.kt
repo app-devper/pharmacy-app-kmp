@@ -21,9 +21,9 @@ import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -38,6 +38,7 @@ fun ProfitContent(
     state: ProfitUiState,
     callbacks: ProfitCallbacks = ProfitCallbacks(),
 ) {
+    val pageIsEmpty = state.report == null
     val rows = state.sortedRows
     val totals = rows.takeIf { it.isNotEmpty() }?.let { buildTotals(it) }
 
@@ -50,8 +51,8 @@ fun ProfitContent(
         resultLine = { PharmListResultLine(total = rows.size, noun = pharmStrings.movementsCountNoun) },
     ) {
         when {
-            state.loading && state.report == null -> PharmListSkeleton()
-            state.errorState != null && state.report == null -> PharmErrorState()
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty -> PharmErrorState()
             rows.isEmpty() && state.report != null ->
                 PharmEmptyState(
                     icon = PharmIcons.Profit,
@@ -62,7 +63,7 @@ fun ProfitContent(
         }
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.report == null)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable

@@ -21,12 +21,12 @@ import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
 import app.devper.pharm.presentation.imports.i18n.localizeImports
 import app.devper.pharm.ui.components.ErrorBottomSheet
+import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
 import app.devper.pharm.ui.designsystem.PharmErrorState
-import app.devper.pharm.ui.designsystem.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
@@ -43,6 +43,7 @@ fun ImportsListContent(
     state: ImportsListUiState,
     callbacks: ImportsListCallbacks = ImportsListCallbacks(),
 ) {
+    val pageIsEmpty = state.orders.isEmpty()
     val visible = state.filtered
     val searching = state.query.isNotBlank()
 
@@ -59,10 +60,10 @@ fun ImportsListContent(
         },
     ) {
         when {
-            state.loading && state.orders.isEmpty() -> PharmListSkeleton()
-            state.errorState != null && state.orders.isEmpty() ->
+            state.loading && pageIsEmpty -> PharmListSkeleton()
+            state.errorState != null && pageIsEmpty ->
                 PharmErrorState()
-            state.orders.isEmpty() -> PharmEmptyState(
+            pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Imports,
                 title = pharmStrings.importsListEmpty,
                 action = {
@@ -99,7 +100,7 @@ fun ImportsListContent(
         )
     }
 
-    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(state.orders.isEmpty())?.localizeImports(pharmStrings), onDismiss = callbacks.onDismissError)
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeImports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
 @Composable
