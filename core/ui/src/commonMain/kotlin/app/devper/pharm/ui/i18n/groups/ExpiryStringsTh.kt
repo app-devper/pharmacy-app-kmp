@@ -29,7 +29,7 @@ object ExpiryStringsTh : ExpiryStrings {
     override val expiryEmpty = "ไม่มีล็อตในช่วงเวลานี้"
     override val expiryConfirmTitle = "ตัดจำหน่ายล็อต?"
     override val expiryConfirmMessage: (Int) -> String = { count ->
-        "ระบบจะลบ $count ล็อต และลด stock ตาม remaining ของแต่ละล็อต — " +
+        "ระบบจะลบ $count ล็อต และหักสต็อกตามจำนวนคงเหลือของแต่ละล็อต — " +
         "บันทึกการตัดจำหน่ายไว้สำหรับตรวจสอบ"
     }
     override val expiryResultSuccessTitle = "ตัดจำหน่ายสำเร็จ"

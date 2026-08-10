@@ -13,7 +13,9 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
+import androidx.compose.material3.Text
 import app.devper.pharm.ui.i18n.pharmStrings
+import app.devper.pharm.ui.theme.PharmText
 
 @Stable
 class UnsavedChangesController {
@@ -81,7 +83,6 @@ fun UnsavedChangesDialog(controller: UnsavedChangesController) {
         open = controller.dialogOpen,
         onDismiss = controller::keepEditing,
         title = s.commonUnsavedChangesTitle,
-        subtitle = s.commonUnsavedChangesMessage,
         size = PharmModalSize.Sm,
         footer = {
             PharmButton(
@@ -95,5 +96,7 @@ fun UnsavedChangesDialog(controller: UnsavedChangesController) {
                 variant = PharmButtonVariant.Danger,
             )
         },
-    ) {}
+    ) {
+        Text(text = s.commonUnsavedChangesMessage, style = PharmText.body)
+    }
 }

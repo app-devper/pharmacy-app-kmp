@@ -127,7 +127,7 @@ fun MainShell(appViewModel: AppViewModel) {
                     nestedNav.navigate(route) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(Sell) { saveState = true }
+                        popUpTo(Sell) { saveState = !isSubPage }
                     }
                 }
             }
