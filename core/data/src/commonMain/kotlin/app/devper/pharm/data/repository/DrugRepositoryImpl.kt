@@ -12,13 +12,36 @@ import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.domain.param.inventory.ReorderSuggestionsParam
 import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 import app.devper.pharm.domain.repository.inventory.DrugRepository
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
+
+private val LIST_CACHE_TTL = 30.seconds
 
 class DrugRepositoryImpl(
     private val api: DrugApi,
     private val stockChangeBus: StockChangeBus,
 ) : DrugRepository {
 
-    override suspend fun list(): List<Drug> = api.list().map { it.toDomain() }
+    private val listCacheLock = Mutex()
+    private var cachedList: List<Drug>? = null
+    private var cachedGeneration: Int = -1
+    private var cachedAt: TimeSource.Monotonic.ValueTimeMark? = null
+
+    override suspend fun list(): List<Drug> = listCacheLock.withLock {
+        val generation = stockChangeBus.generation.value
+        val cached = cachedList
+        val age = cachedAt?.elapsedNow()
+        if (cached != null && cachedGeneration == generation && age != null && age < LIST_CACHE_TTL) {
+            return@withLock cached
+        }
+        val fresh = api.list().map { it.toDomain() }
+        cachedList = fresh
+        cachedGeneration = generation
+        cachedAt = TimeSource.Monotonic.markNow()
+        fresh
+    }
 
     override suspend fun add(param: AddDrugParam): Drug {
         val drug = api.add(param.toRequest()).toDomain()

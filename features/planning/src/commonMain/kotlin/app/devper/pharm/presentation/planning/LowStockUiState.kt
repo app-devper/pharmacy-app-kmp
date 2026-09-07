@@ -16,5 +16,5 @@ data class LowStockUiState(
     override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
-    val filtered: List<Drug> = drugs.searchByQuery(query)
+    val filtered: List<Drug> by lazy { drugs.searchByQuery(query) }
 }
