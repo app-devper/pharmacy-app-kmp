@@ -201,6 +201,18 @@ class CheckoutViewModel(
             block = { checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit) },
             onSuccess = { outcome ->
                 when (outcome) {
+                    CheckoutOutcome.CartChanged -> {
+                        clearPendingTokens()
+                        precaptureItems = null
+                        setState {
+                            copy(
+                                checkingOut = false,
+                                kyCaptured = false,
+                                capturedKyFields = null,
+                                errorState = CheckoutUiStateError.CartChanged(),
+                            )
+                        }
+                    }
                     CheckoutOutcome.OfflineSaved -> {
                         clearPendingTokens()
                         setState {

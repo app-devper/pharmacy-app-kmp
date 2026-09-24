@@ -94,6 +94,7 @@ interface SellStrings {
     val sellKyError: (String, String) -> String
     val sellOfflineSaved: String
     val sellCheckoutFailed: String
+    val sellCheckoutCartChanged: String
 
     val sellCart: String
     val sellSearchPlaceholder: String

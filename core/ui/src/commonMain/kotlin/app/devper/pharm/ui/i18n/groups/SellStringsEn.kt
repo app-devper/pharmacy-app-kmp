@@ -164,5 +164,6 @@ object SellStringsEn : SellStrings {
     override val sellKyError: (String, String) -> String = { billNo, cause -> "Bill $billNo saved, but KY recording error: $cause" }
     override val sellOfflineSaved = "Network unavailable — bill queued to sync later"
     override val sellCheckoutFailed = "Failed to issue receipt"
+    override val sellCheckoutCartChanged = "Cart changed. Review the sale and confirm payment again."
     override val sellCheckoutEmptyCart = "Cart is empty"
 }

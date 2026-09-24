@@ -93,7 +93,9 @@ class CheckoutUseCaseTest {
         val sales = FakeSales()
         val short = CartLine(drug = drug("short", stock = 1), qty = 3)
         val ok = CartLine(drug = drug("ok", stock = 50), qty = 2)
-        val outcome = useCase(cart(short, ok), sales).invoke(received = Money(100.0), allowOversell = true).getOrThrow()
+        val checkout = useCase(cart(short, ok), sales)
+        assertTrue(checkout.invoke(received = Money(100.0)).getOrThrow() is CheckoutOutcome.NeedsOversellConfirm)
+        val outcome = checkout.invoke(received = Money(100.0), allowOversell = true).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         val param = sales.lastParam!!
         assertTrue(param.items.first { it.drugId == "short" }.allowOversell)
@@ -175,6 +177,37 @@ class CheckoutUseCaseTest {
     }
 
     @Test
+    fun network_and_queue_failure_retry_reuses_request_id() = runTest {
+        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
+        val queueFailure = RuntimeException("storage full")
+        val checkout = CheckoutUseCase(cart, sales, FakeOfflineSaleQueue(enqueueThrows = queueFailure), testDispatchers())
+
+        assertEquals(queueFailure, checkout.invoke(Money(100.0)).exceptionOrNull())
+        val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
+        assertEquals(queueFailure, checkout.invoke(Money(100.0)).exceptionOrNull())
+
+        assertEquals(firstRequestId, sales.lastParam?.clientRequestId)
+        assertTrue(cart.state.value.active.items.isNotEmpty())
+    }
+
+    @Test
+    fun changed_cart_after_oversell_prompt_is_not_sold_on_confirmation() = runTest {
+        val initial = cart(CartLine(drug = drug("a", stock = 1), qty = 3))
+        val fakeCart = FakeCart(initial)
+        val sales = FakeSales()
+        val checkout = CheckoutUseCase(fakeCart, sales, FakeOfflineSaleQueue(), testDispatchers())
+
+        assertTrue(checkout.invoke(Money(100.0)).getOrThrow() is CheckoutOutcome.NeedsOversellConfirm)
+        fakeCart.replaceActive(cart(CartLine(drug = drug("a", stock = 1), qty = 4)))
+        val outcome = checkout.invoke(Money(100.0), allowOversell = true).getOrThrow()
+
+        assertEquals(CheckoutOutcome.CartChanged, outcome)
+        assertNull(sales.lastParam)
+        assertNull(fakeCart.committed)
+    }
+
+    @Test
     fun failed_attempt_reuses_request_id_for_same_sale_payload() = runTest {
         val sales = FakeSales(failWith = RuntimeException("validation: missing field"))
         val checkout = useCase(cart(CartLine(drug = drug("a", stock = 10), qty = 1)), sales)
@@ -219,6 +252,8 @@ private class FakeCart(active: ActiveCart) : CartRepository {
 
     var committed: Sale? = null
         private set
+
+    fun replaceActive(active: ActiveCart) { _state.value = CartState(active = active) }
 
     override fun commitReceipt(sale: Sale) { committed = sale }
 
