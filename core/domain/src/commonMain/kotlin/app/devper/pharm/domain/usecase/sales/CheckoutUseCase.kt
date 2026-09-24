@@ -6,6 +6,7 @@ import kotlinx.coroutines.CancellationException
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.domain.extension.looksLikeNetworkError
+import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.validation.SaleValidationError
 
@@ -28,13 +29,16 @@ class CheckoutUseCase(
     dispatchers: AppDispatchers,
 ) : BaseUseCase<RunCheckoutParam, CheckoutOutcome>(dispatchers) {
 
+    private data class Attempt(val request: CheckoutParam, val clientRequestId: String)
+
+    private var pendingAttempt: Attempt? = null
+
     suspend operator fun invoke(
         received: Money,
         allowOversell: Boolean = false,
-        clientRequestId: String? = null,
         kySkippedByCashier: Boolean = false,
     ): Result<CheckoutOutcome> = invoke(
-        RunCheckoutParam(received, allowOversell, clientRequestId, kySkippedByCashier),
+        RunCheckoutParam(received, allowOversell, kySkippedByCashier),
     )
 
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
@@ -79,27 +83,31 @@ class CheckoutUseCase(
             customerId = customer?.id,
             discount = discountAmount,
             priceTier = tier,
-            clientRequestId = param.clientRequestId,
             kySkippedByCashier = param.kySkippedByCashier,
         )
 
-        val serialized = serializeForOfflineQueue(checkoutParam)
+        val requestId = pendingAttempt
+            ?.takeIf { it.request == checkoutParam }
+            ?.clientRequestId
+            ?: newClientRequestId()
+        pendingAttempt = Attempt(checkoutParam, requestId)
+        val request = checkoutParam.copy(clientRequestId = requestId)
+
+        val serialized = serializeForOfflineQueue(request)
         val sale = try {
-            sales.checkout(checkoutParam)
+            sales.checkout(request)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            if (e.looksLikeNetworkError() && serialized != null && param.clientRequestId != null) {
-                offlineQueue.enqueue(EnqueueOfflineSaleParam(param.clientRequestId, serialized))
+            if (e.looksLikeNetworkError() && serialized != null) {
+                offlineQueue.enqueue(EnqueueOfflineSaleParam(requestId, serialized))
                 cart.clear()
+                pendingAttempt = null
                 return CheckoutOutcome.OfflineSaved
             }
-            throw CheckoutFailure(
-                cause = e,
-                serializedRequest = serialized,
-                clientRequestId = param.clientRequestId,
-            )
+            throw CheckoutFailure(e)
         }
         cart.commitReceipt(sale)
+        pendingAttempt = null
         return CheckoutOutcome.Success(sale)
     }
 

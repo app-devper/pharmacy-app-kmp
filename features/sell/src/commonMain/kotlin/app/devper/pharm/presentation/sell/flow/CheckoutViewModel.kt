@@ -6,7 +6,6 @@ import app.devper.pharm.presentation.sell.exception.CheckoutUiStateError
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
-import app.devper.pharm.domain.model.CartSnapshot
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
 import app.devper.pharm.domain.model.Customer
@@ -22,7 +21,6 @@ import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
 import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.domain.extension.calculateKyRequired
-import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
@@ -49,9 +47,6 @@ class CheckoutViewModel(
         val received: Double,
     )
 
-    private var pendingClientRequestId: String? = null
-    private var pendingCheckoutSnapshot: CartSnapshot? = null
-    private var pendingCheckoutKySkipped: Boolean = false
     private var pendingKyFields: KyCaptureFields? = null
     private var pendingKyRequired: KyRequired? = null
     private var pendingKySkippedByCashier: Boolean = false
@@ -117,7 +112,7 @@ class CheckoutViewModel(
                 return
             }
         }
-        startNewCheckout(allowOversell = false)
+        runCheckout(allowOversell = false)
     }
 
     fun openKyPrecapture() {
@@ -139,7 +134,7 @@ class CheckoutViewModel(
     fun confirmKyCapture(fields: KyCaptureFields) {
         pendingKyFields = fields
         setState { copy(kyCapturePending = null) }
-        startNewCheckout(allowOversell = false)
+        runCheckout(allowOversell = false)
     }
 
     fun requestSkipKy() {
@@ -157,7 +152,7 @@ class CheckoutViewModel(
         pendingKySkippedByCashier = true
         precaptureItems = null
         setState { copy(kyCapturePending = null, showSkipKyConfirm = false, kyCaptured = false, capturedKyFields = null) }
-        startNewCheckout(allowOversell = false)
+        runCheckout(allowOversell = false)
     }
 
     fun dismissKyCapture() {
@@ -191,20 +186,7 @@ class CheckoutViewModel(
         }
     }
 
-    private fun startNewCheckout(allowOversell: Boolean) {
-        val snapshot = cartState.current.copy(lastReceipt = null)
-        if (pendingCheckoutSnapshot != snapshot || pendingCheckoutKySkipped != pendingKySkippedByCashier) {
-            pendingClientRequestId = null
-        }
-        pendingClientRequestId = pendingClientRequestId ?: newClientRequestId()
-        pendingCheckoutSnapshot = snapshot
-        pendingCheckoutKySkipped = pendingKySkippedByCashier
-        runCheckout(allowOversell = allowOversell)
-    }
-
     private fun runCheckout(allowOversell: Boolean) {
-        val requestId = pendingClientRequestId
-
         val kyRequiredAtSubmit = pendingKyRequired
         val kyFieldsAtSubmit = pendingKyFields
         val kySkippedAtSubmit = pendingKySkippedByCashier
@@ -216,7 +198,7 @@ class CheckoutViewModel(
 
         setState { copy(checkingOut = true, errorState = null) }
         launchResult(
-            block = { checkout(Money(receivedSnapshot), allowOversell, requestId, kySkippedAtSubmit) },
+            block = { checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit) },
             onSuccess = { outcome ->
                 when (outcome) {
                     CheckoutOutcome.OfflineSaved -> {
@@ -299,9 +281,6 @@ class CheckoutViewModel(
     }
 
     private fun clearPendingTokens() {
-        pendingClientRequestId = null
-        pendingCheckoutSnapshot = null
-        pendingCheckoutKySkipped = false
         pendingKyRequired = null
         pendingKyFields = null
         pendingKySkippedByCashier = false

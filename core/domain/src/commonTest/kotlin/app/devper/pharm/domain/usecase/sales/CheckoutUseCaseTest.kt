@@ -36,6 +36,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -139,22 +141,22 @@ class CheckoutUseCaseTest {
             sales,
             FakeOfflineSaleQueue(),
             testDispatchers(),
-        ).invoke(received = Money(100.0), clientRequestId = "req-1")
+        ).invoke(received = Money(100.0))
         assertTrue(result.isFailure)
         val failure = result.exceptionOrNull() as CheckoutFailure
         assertEquals(boom, failure.cause)
-        assertEquals("serialized", failure.serializedRequest)
-        assertEquals("req-1", failure.clientRequestId)
+        assertNotNull(sales.lastParam?.clientRequestId)
     }
     @Test
     fun network_failure_clears_cart_only_after_queue_accepts_payload() = runTest {
         val active = cart(CartLine(drug = drug("a", stock = 10), qty = 1))
         val cart = FakeCart(active)
         val queue = FakeOfflineSaleQueue()
-        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), queue, testDispatchers())
-            .invoke(Money(100.0), clientRequestId = "request-1").getOrThrow()
+        val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
+        val result = CheckoutUseCase(cart, sales, queue, testDispatchers())
+            .invoke(Money(100.0)).getOrThrow()
         assertEquals(CheckoutOutcome.OfflineSaved, result)
-        assertEquals("request-1", queue.lastEnqueue?.clientRequestId)
+        assertEquals(sales.lastParam?.clientRequestId, queue.lastEnqueue?.clientRequestId)
         assertEquals("serialized", queue.lastEnqueue?.payloadJson)
         assertTrue(cart.state.value.active.items.isEmpty())
         assertNull(cart.committed)
@@ -166,10 +168,46 @@ class CheckoutUseCaseTest {
         val cart = FakeCart(active)
         val error = RuntimeException("storage full")
         val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), FakeOfflineSaleQueue(enqueueThrows = error), testDispatchers())
-            .invoke(Money(100.0), clientRequestId = "request-1")
+            .invoke(Money(100.0))
         assertEquals(error, result.exceptionOrNull())
         assertEquals(active, cart.state.value.active)
         assertNull(cart.committed)
+    }
+
+    @Test
+    fun failed_attempt_reuses_request_id_for_same_sale_payload() = runTest {
+        val sales = FakeSales(failWith = RuntimeException("validation: missing field"))
+        val checkout = useCase(cart(CartLine(drug = drug("a", stock = 10), qty = 1)), sales)
+
+        checkout.invoke(Money(100.0))
+        val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
+        checkout.invoke(Money(100.0))
+
+        assertEquals(firstRequestId, sales.lastParam?.clientRequestId)
+    }
+
+    @Test
+    fun changed_sale_payload_gets_new_request_id() = runTest {
+        val sales = FakeSales(failWith = RuntimeException("validation: missing field"))
+        val checkout = useCase(cart(CartLine(drug = drug("a", stock = 10), qty = 1)), sales)
+
+        checkout.invoke(Money(100.0))
+        val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
+        checkout.invoke(Money(101.0))
+
+        assertNotEquals(firstRequestId, sales.lastParam?.clientRequestId)
+    }
+
+    @Test
+    fun successful_sale_clears_request_identity_for_next_sale() = runTest {
+        val sales = FakeSales()
+        val checkout = useCase(cart(CartLine(drug = drug("a", stock = 10), qty = 1)), sales)
+
+        checkout.invoke(Money(100.0))
+        val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
+        checkout.invoke(Money(100.0))
+
+        assertNotEquals(firstRequestId, sales.lastParam?.clientRequestId)
     }
 
 }
