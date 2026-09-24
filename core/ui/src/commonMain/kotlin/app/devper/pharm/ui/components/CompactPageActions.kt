@@ -31,7 +31,7 @@ fun CompactPageActions(actions: @Composable () -> Unit) {
     SideEffect {
         controller.content = CompactPageActionsContent(token, actions)
     }
-    DisposableEffect(Unit) {
+    DisposableEffect(controller, token) {
         onDispose {
             if (controller.content?.token === token) {
                 controller.content = null

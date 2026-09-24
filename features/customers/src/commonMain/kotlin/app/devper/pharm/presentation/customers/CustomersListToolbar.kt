@@ -23,8 +23,7 @@ internal fun CustomersListToolbar(
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.customersSearchPlaceholder,
         modifier = modifier,
-        compactTopbarActions = true,
-        actions = {
+        primaryAction = {
             PharmButton(
                 label = s.customersAddCta,
                 onClick = callbacks.onOpenAdd,

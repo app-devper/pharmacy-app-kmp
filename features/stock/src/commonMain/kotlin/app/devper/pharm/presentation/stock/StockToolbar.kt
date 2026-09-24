@@ -2,18 +2,14 @@ package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.presentation.stock.i18n.label
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
-import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmAction
-import app.devper.pharm.ui.designsystem.PharmActionMenu
+import app.devper.pharm.ui.designsystem.PharmToolbarMenu
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -47,12 +43,9 @@ internal fun StockToolbar(
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = pharmStrings.stockSearchPlaceholder,
-        compactTopbarActions = true,
-        compactTopbarAction = {
-            StockAddDrugButton(callbacks = callbacks)
-        },
-        compactInlineActions = {
-            PharmActionMenu(
+        primaryAction = { StockAddDrugButton(callbacks = callbacks) },
+        actions = {
+            PharmToolbarMenu(
                 actions = listOf(
                     PharmAction(
                         label = "Excel",
@@ -60,15 +53,15 @@ internal fun StockToolbar(
                         icon = PharmIcons.Excel,
                     ),
                     PharmAction(
-                        label = pharmStrings.stockActionImport,
+                        label = s.stockActionImport,
                         onClick = callbacks.onImport,
                         icon = PharmIcons.Imports,
                     ),
-                    PharmAction(
-                        label = pharmStrings.stockActionPurchase,
-                        onClick = callbacks.onOpenReorderSuggestions,
-                        icon = PharmIcons.OfflineSync,
-                    ),
+                ),
+                promotedAction = PharmAction(
+                    label = s.stockActionPurchase,
+                    onClick = callbacks.onOpenReorderSuggestions,
+                    icon = PharmIcons.OfflineSync,
                 ),
             )
         },
@@ -78,35 +71,6 @@ internal fun StockToolbar(
                 activeId = typeFilter.name,
                 onSelect = { id -> callbacks.onTypeFilterChange(StockTypeFilter.valueOf(id)) },
             )
-        },
-        actions = {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                PharmActionMenu(
-                    actions = listOf(
-                        PharmAction(
-                            label = "Excel",
-                            onClick = { callbacks.onExportExcel(exportHeaders) },
-                            icon = PharmIcons.Excel,
-                        ),
-                        PharmAction(
-                            label = pharmStrings.stockActionImport,
-                            onClick = callbacks.onImport,
-                            icon = PharmIcons.Imports,
-                        ),
-                    ),
-                )
-                PharmButton(
-                    label = pharmStrings.stockActionPurchase,
-                    onClick = callbacks.onOpenReorderSuggestions,
-                    variant = PharmButtonVariant.Outline,
-                    size = PharmButtonSize.Sm,
-                    leadingIcon = { Icon(PharmIcons.OfflineSync, contentDescription = null) },
-                )
-                StockAddDrugButton(callbacks = callbacks)
-            }
         },
     )
 }

@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 
 import app.devper.pharm.domain.validation.SaleValidationError
@@ -46,7 +48,7 @@ class CheckoutUseCaseTest {
     )
 
     private fun useCase(active: ActiveCart, sales: FakeSales) =
-        CheckoutUseCase(FakeCart(active), sales, testDispatchers())
+        CheckoutUseCase(FakeCart(active), sales, FakeOfflineSaleQueue(), testDispatchers())
 
     private fun cart(vararg lines: CartLine, received: String = "100") =
         ActiveCart(items = lines.toList(), cashReceived = received)
@@ -123,18 +125,19 @@ class CheckoutUseCaseTest {
     fun success_commits_receipt_to_cart() = runTest {
         val sales = FakeSales()
         val fakeCart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
-        val outcome = CheckoutUseCase(fakeCart, sales, testDispatchers()).invoke(received = Money(100.0)).getOrThrow()
+        val outcome = CheckoutUseCase(fakeCart, sales, FakeOfflineSaleQueue(), testDispatchers()).invoke(received = Money(100.0)).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         assertEquals(sales.sale.id, fakeCart.committed?.id)
     }
 
     @Test
     fun checkout_throwing_wraps_in_checkout_failure_with_payload() = runTest {
-        val boom = RuntimeException("network down")
+        val boom = RuntimeException("server rejected checkout")
         val sales = FakeSales(failWith = boom)
         val result = CheckoutUseCase(
             FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1))),
             sales,
+            FakeOfflineSaleQueue(),
             testDispatchers(),
         ).invoke(received = Money(100.0), clientRequestId = "req-1")
         assertTrue(result.isFailure)
@@ -143,6 +146,32 @@ class CheckoutUseCaseTest {
         assertEquals("serialized", failure.serializedRequest)
         assertEquals("req-1", failure.clientRequestId)
     }
+    @Test
+    fun network_failure_clears_cart_only_after_queue_accepts_payload() = runTest {
+        val active = cart(CartLine(drug = drug("a", stock = 10), qty = 1))
+        val cart = FakeCart(active)
+        val queue = FakeOfflineSaleQueue()
+        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), queue, testDispatchers())
+            .invoke(Money(100.0), clientRequestId = "request-1").getOrThrow()
+        assertEquals(CheckoutOutcome.OfflineSaved, result)
+        assertEquals("request-1", queue.lastEnqueue?.clientRequestId)
+        assertEquals("serialized", queue.lastEnqueue?.payloadJson)
+        assertTrue(cart.state.value.active.items.isEmpty())
+        assertNull(cart.committed)
+    }
+
+    @Test
+    fun queue_failure_preserves_cart_and_surfaces_failure() = runTest {
+        val active = cart(CartLine(drug = drug("a", stock = 10), qty = 1))
+        val cart = FakeCart(active)
+        val error = RuntimeException("storage full")
+        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), FakeOfflineSaleQueue(enqueueThrows = error), testDispatchers())
+            .invoke(Money(100.0), clientRequestId = "request-1")
+        assertEquals(error, result.exceptionOrNull())
+        assertEquals(active, cart.state.value.active)
+        assertNull(cart.committed)
+    }
+
 }
 
 private class FakeCart(active: ActiveCart) : CartRepository {
@@ -164,7 +193,7 @@ private class FakeCart(active: ActiveCart) : CartRepository {
     override fun setCartDiscount(discount: CartDiscount) {}
     override fun setCashReceived(value: String) {}
     override fun dismissReceipt() {}
-    override fun clear() {}
+    override fun clear() { _state.value = CartState() }
     override fun parkCart(slot: Int) {}
     override fun restoreCart(slot: Int) {}
     override fun discardSlot(slot: Int) {}

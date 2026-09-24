@@ -17,13 +17,10 @@ import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
-import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
-import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
 import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.domain.extension.calculateKyRequired
-import app.devper.pharm.domain.extension.looksLikeNetworkError
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.ui.common.BaseLoadableViewModel
@@ -39,10 +36,8 @@ class CheckoutViewModel(
     settings: SettingsProvider,
     private val timeZoneProvider: TimeZoneProvider,
     private val checkout: CheckoutUseCase,
-    private val clearCart: ClearCartUseCase,
     private val dismissReceiptUseCase: DismissReceiptUseCase,
     private val submitKyForms: SubmitKyFormsUseCase,
-    private val enqueueOfflineSale: EnqueueOfflineSaleUseCase,
     private val setCashReceived: SetCashReceivedUseCase,
     private val receiptPrinter: ReceiptPrinter,
 ) : BaseLoadableViewModel<CheckoutUiState>(CheckoutUiState()) {
@@ -216,6 +211,12 @@ class CheckoutViewModel(
             block = { checkout(Money(receivedSnapshot), allowOversell, requestId, kySkippedAtSubmit) },
             onSuccess = { outcome ->
                 when (outcome) {
+                    CheckoutOutcome.OfflineSaved -> {
+                        clearPendingTokens()
+                        setState {
+                            copy(checkingOut = false, paymentOpen = false, errorState = CheckoutUiStateError.OfflineSaved())
+                        }
+                    }
                     is CheckoutOutcome.Success -> handleSuccess(
                         sale = outcome.sale,
                         kyRequired = kyRequiredAtSubmit,
@@ -281,21 +282,9 @@ class CheckoutViewModel(
 
         val cf = error as? CheckoutFailure
         val cause = cf?.cause ?: error
-        val payload = cf?.serializedRequest
-        val crid = cf?.clientRequestId
-        if (cause.looksLikeNetworkError() && payload != null && crid != null) {
-
-            enqueueOfflineSale(crid, payload)
-            clearCart()
-            clearPendingTokens()
-            setState {
-                copy(checkingOut = false, paymentOpen = false, errorState = CheckoutUiStateError.OfflineSaved())
-            }
-        } else {
-            clearPendingTokens()
-            setState {
-                copy(checkingOut = false, errorState = (cause as? AppException) ?: CheckoutUiStateError.CheckoutFailed(cause))
-            }
+        clearPendingTokens()
+        setState {
+            copy(checkingOut = false, errorState = (cause as? AppException) ?: CheckoutUiStateError.CheckoutFailed(cause))
         }
     }
 

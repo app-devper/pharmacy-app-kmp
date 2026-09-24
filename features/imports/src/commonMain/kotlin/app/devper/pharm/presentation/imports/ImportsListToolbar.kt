@@ -26,7 +26,6 @@ internal fun ImportsListToolbar(
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.importsSearchPlaceholder,
         modifier = modifier,
-        compactTopbarActions = true,
         badge = {
             if (draftCount > 0) {
                 PharmBadge(
@@ -36,7 +35,7 @@ internal fun ImportsListToolbar(
                 )
             }
         },
-        actions = {
+        primaryAction = {
             PharmButton(
                 label = s.importsAddCta,
                 onClick = callbacks.onCreateImport,

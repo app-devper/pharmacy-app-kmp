@@ -1,7 +1,12 @@
 package app.devper.pharm.domain.usecase.sales
 
+import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
+import kotlinx.coroutines.CancellationException
+
 import app.devper.pharm.domain.usecase.BaseUseCase
 
+import app.devper.pharm.domain.extension.looksLikeNetworkError
+import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.validation.SaleValidationError
 
 import app.devper.pharm.common.AppDispatchers
@@ -19,6 +24,7 @@ import app.devper.pharm.domain.repository.sales.SaleRepository
 class CheckoutUseCase(
     private val cart: CartRepository,
     private val sales: SaleRepository,
+    private val offlineQueue: OfflineSaleQueue,
     dispatchers: AppDispatchers,
 ) : BaseUseCase<RunCheckoutParam, CheckoutOutcome>(dispatchers) {
 
@@ -81,6 +87,12 @@ class CheckoutUseCase(
         val sale = try {
             sales.checkout(checkoutParam)
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            if (e.looksLikeNetworkError() && serialized != null && param.clientRequestId != null) {
+                offlineQueue.enqueue(EnqueueOfflineSaleParam(param.clientRequestId, serialized))
+                cart.clear()
+                return CheckoutOutcome.OfflineSaved
+            }
             throw CheckoutFailure(
                 cause = e,
                 serializedRequest = serialized,
