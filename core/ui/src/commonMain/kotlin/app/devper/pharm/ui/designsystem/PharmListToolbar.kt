@@ -94,12 +94,6 @@ internal fun hasCompactToolbarContent(
     hasInlineActions: Boolean,
 ): Boolean = showTitle || hasBack || hasSearch || hasFilters || hasBadge || hasInlineActions
 
-internal fun movesListToolbarActionsToTopbar(
-    windowSize: WindowSize,
-    hasBack: Boolean,
-    compactTopbarActions: Boolean,
-): Boolean = windowSize.isCompactShell && !hasBack && compactTopbarActions
-
 internal fun movesSubpageHeaderToTopbar(windowSize: WindowSize, hasBack: Boolean): Boolean =
     windowSize.isCompactShell && hasBack
 
@@ -119,9 +113,7 @@ fun PharmListToolbar(
     badge: (@Composable () -> Unit)? = null,
     filters: (@Composable FlowRowScope.() -> Unit)? = null,
     actions: (@Composable () -> Unit)? = null,
-    compactTopbarActions: Boolean = false,
-    compactTopbarAction: (@Composable () -> Unit)? = null,
-    compactInlineActions: (@Composable () -> Unit)? = null,
+    primaryAction: (@Composable () -> Unit)? = null,
     compactHeaderActions: Boolean = true,
     compactControlsSharedRow: Boolean = true,
 ) {
@@ -144,22 +136,32 @@ fun PharmListToolbar(
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val compact = usesCompactListToolbar(windowSize, maxWidth)
         val showTitle = effectiveTitle.isNotEmpty()
-        val moveListActionsToTopbar = movesListToolbarActionsToTopbar(
-            windowSize = windowSize,
-            hasBack = guardedBack != null,
-            compactTopbarActions = compactTopbarActions,
-        )
-        val moveSubpageHeaderToTopbar = movesSubpageHeaderToTopbar(
-            windowSize = windowSize,
-            hasBack = guardedBack != null,
-        )
-        val moveSubpageActionsToTopbar = moveSubpageHeaderToTopbar && compactHeaderActions
-        val inlineActions = when {
-            moveListActionsToTopbar -> compactInlineActions
-            moveSubpageActionsToTopbar -> null
-            else -> actions
-        }
-        val topbarAction = compactTopbarAction ?: actions
+        val placement = toolbarActionPlacement(windowSize, guardedBack != null, compactHeaderActions)
+        val moveSubpageHeaderToTopbar = movesSubpageHeaderToTopbar(windowSize, guardedBack != null)
+        val inlineActions: (@Composable () -> Unit)? = if (
+            (actions != null && !placement.secondaryInTopbar) || (primaryAction != null && !placement.primaryInTopbar)
+        ) {
+            {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(t.spacing.s2),
+                    verticalArrangement = Arrangement.spacedBy(t.spacing.s2),
+                    itemVerticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (!placement.secondaryInTopbar) actions?.invoke()
+                    if (!placement.primaryInTopbar) primaryAction?.invoke()
+                }
+            }
+        } else null
+        val topbarAction: (@Composable () -> Unit)? = if (
+            (primaryAction != null && placement.primaryInTopbar) || (actions != null && placement.secondaryInTopbar)
+        ) {
+            {
+                Row(horizontalArrangement = Arrangement.spacedBy(t.spacing.s2), verticalAlignment = Alignment.CenterVertically) {
+                    if (placement.secondaryInTopbar) actions?.invoke()
+                    if (placement.primaryInTopbar) primaryAction?.invoke()
+                }
+            }
+        } else null
         val hasSearch = searchValue != null && onSearchChange != null
         val searchRowTakesActions = searchSharesRowWithActions(
             compact = compact,
@@ -182,9 +184,9 @@ fun PharmListToolbar(
             CompactPageHeader(
                 title = effectiveTitle,
                 onBack = guardedBack,
-                actions = topbarAction.takeIf { moveSubpageActionsToTopbar },
+                actions = topbarAction,
             )
-        } else if (moveListActionsToTopbar && topbarAction != null) {
+        } else if (topbarAction != null) {
             CompactPageActions(topbarAction)
         }
         val localShowTitle = showTitle && !moveSubpageHeaderToTopbar

@@ -69,8 +69,7 @@ fun BulkImportContent(
         PharmListToolbar(
             title = s.bulkImportTitle,
             subtitle = s.bulkImportSubtitle,
-            compactTopbarActions = true,
-            actions = {
+            primaryAction = {
                 PharmButton(
                     label = s.bulkImportDownloadTemplate,
                     onClick = callbacks.onDownloadTemplate,

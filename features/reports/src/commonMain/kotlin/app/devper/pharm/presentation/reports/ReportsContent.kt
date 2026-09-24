@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.common.value.Money
-import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.MonthlySales
@@ -66,17 +64,10 @@ fun ReportsContent(
             val dashboard = state.dashboard
             PharmListToolbar(
                 subtitle = s.reportsSubtitle,
-                compactTopbarActions = true,
-                compactTopbarAction = { ReportsCloseEodButton(callbacks = callbacks) },
-                compactInlineActions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
+                primaryAction = { ReportsCloseEodButton(callbacks = callbacks) },
+                actions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
                 filters = {
                     ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
-                },
-                actions = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ReportsRefreshButton(state = state, callbacks = callbacks)
-                        ReportsCloseEodButton(callbacks = callbacks)
-                    }
                 },
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
