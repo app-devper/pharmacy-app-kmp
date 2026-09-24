@@ -27,13 +27,13 @@ class PharmListToolbarCompositionTest {
         var width by mutableIntStateOf(320)
         var searching by mutableStateOf(false)
         var pageVisible by mutableStateOf(true)
-        val topbarActions = CompactPageActionsController()
+        val topbarActions = CompactPageChromeController()
 
         composeRule.setContent {
             PharmacyTheme(darkTheme = false) {
                 CompositionLocalProvider(
                     LocalWindowSize provides WindowSize.fromWidth(width.dp),
-                    LocalCompactPageActionsController provides topbarActions,
+                    LocalCompactPageChromeController provides topbarActions,
                 ) {
                     Column {
                         if (pageVisible) {

@@ -18,6 +18,7 @@ sealed class CustomerPickerUiStateError(message: String, cause: Throwable? = nul
 }
 
 sealed class CheckoutUiStateError(message: String, cause: Throwable? = null) : AppException(message, cause) {
+    class CartChanged : CheckoutUiStateError("sell.cart_changed")
     class PrintReceiptUnsupported : CheckoutUiStateError("sell.print_receipt_unsupported")
     class KyIncomplete(val billNo: String, val failed: List<String>) : CheckoutUiStateError("sell.ky_incomplete")
     class KyError(val billNo: String, cause: Throwable? = null) : CheckoutUiStateError("sell.ky_error", cause)

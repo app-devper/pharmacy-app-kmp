@@ -13,14 +13,44 @@ import kotlin.test.assertSame
 
 class CompactPageRegistrationTest {
     @Test
+    fun header_replaces_actions_and_stale_action_disposal_keeps_header() = runTest {
+        val controller = CompactPageChromeController()
+        val recomposer = Recomposer(coroutineContext)
+        val listPage = Composition(EmptyApplier(), recomposer)
+        val detailPage = Composition(EmptyApplier(), recomposer)
+        try {
+            listPage.setContent {
+                CompositionLocalProvider(LocalCompactPageChromeController provides controller) {
+                    RegisterCompactPageChrome(CompactPageChrome.Actions {})
+                }
+            }
+            assertNotNull(controller.content as? CompactPageChrome.Actions)
+
+            detailPage.setContent {
+                CompositionLocalProvider(LocalCompactPageChromeController provides controller) {
+                    RegisterCompactPageChrome(CompactPageChrome.Header("Detail", {}, null))
+                }
+            }
+            listPage.dispose()
+            assertEquals("Detail", (controller.content as? CompactPageChrome.Header)?.title)
+            detailPage.dispose()
+            assertNull(controller.content)
+        } finally {
+            listPage.dispose()
+            detailPage.dispose()
+            recomposer.close()
+        }
+    }
+
+    @Test
     fun leaving_a_page_removes_its_topbar_actions() = runTest {
-        val controller = CompactPageActionsController()
+        val controller = CompactPageChromeController()
         val recomposer = Recomposer(coroutineContext)
         val page = Composition(EmptyApplier(), recomposer)
         try {
             page.setContent {
-                CompositionLocalProvider(LocalCompactPageActionsController provides controller) {
-                    CompactPageActions {}
+                CompositionLocalProvider(LocalCompactPageChromeController provides controller) {
+                    RegisterCompactPageChrome(CompactPageChrome.Actions {})
                 }
             }
             assertNotNull(controller.content)
@@ -34,25 +64,25 @@ class CompactPageRegistrationTest {
 
     @Test
     fun disposing_previous_page_does_not_clear_new_pages_header() = runTest {
-        val controller = CompactPageHeaderController()
+        val controller = CompactPageChromeController()
         val recomposer = Recomposer(coroutineContext)
         val previous = Composition(EmptyApplier(), recomposer)
         val next = Composition(EmptyApplier(), recomposer)
         try {
             previous.setContent {
-                CompositionLocalProvider(LocalCompactPageHeaderController provides controller) {
-                    CompactPageHeader("Previous", {}, null)
+                CompositionLocalProvider(LocalCompactPageChromeController provides controller) {
+                    RegisterCompactPageChrome(CompactPageChrome.Header("Previous", {}, null))
                 }
             }
             next.setContent {
-                CompositionLocalProvider(LocalCompactPageHeaderController provides controller) {
-                    CompactPageHeader("Next", {}, null)
+                CompositionLocalProvider(LocalCompactPageChromeController provides controller) {
+                    RegisterCompactPageChrome(CompactPageChrome.Header("Next", {}, null))
                 }
             }
             val nextContent = assertNotNull(controller.content)
             previous.dispose()
             assertSame(nextContent, controller.content)
-            assertEquals("Next", controller.content?.title)
+            assertEquals("Next", (controller.content as? CompactPageChrome.Header)?.title)
             next.dispose()
             assertNull(controller.content)
         } finally {

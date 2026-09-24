@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.components.CompactPageActions
-import app.devper.pharm.ui.components.CompactPageHeader
+import app.devper.pharm.ui.components.CompactPageChrome
 import app.devper.pharm.ui.components.LocalPageTitle
 import app.devper.pharm.ui.components.LocalUnsavedChangesController
+import app.devper.pharm.ui.components.RegisterCompactPageChrome
 import app.devper.pharm.ui.components.LocalWindowSize
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.components.WindowSize
@@ -130,9 +130,7 @@ fun PharmListToolbar(
         expandedPadding = t.dimens.pageTopPaddingExpanded,
     )
     val unsavedChanges = LocalUnsavedChangesController.current
-    val guardedBack = onBack?.let { action ->
-        { unsavedChanges?.request(action) ?: action() }
-    }
+    val guardedBack = onBack?.let { action -> unsavedChanges?.guarded(action) ?: action }
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val compact = usesCompactListToolbar(windowSize, maxWidth)
         val showTitle = effectiveTitle.isNotEmpty()
@@ -181,13 +179,15 @@ fun PharmListToolbar(
             allowSharedRow = compactControlsSharedRow,
         )
         if (moveSubpageHeaderToTopbar && guardedBack != null) {
-            CompactPageHeader(
-                title = effectiveTitle,
-                onBack = guardedBack,
-                actions = topbarAction,
+            RegisterCompactPageChrome(
+                CompactPageChrome.Header(
+                    title = effectiveTitle,
+                    onBack = guardedBack,
+                    actions = topbarAction,
+                ),
             )
         } else if (topbarAction != null) {
-            CompactPageActions(topbarAction)
+            RegisterCompactPageChrome(CompactPageChrome.Actions(topbarAction))
         }
         val localShowTitle = showTitle && !moveSubpageHeaderToTopbar
         val localBack = guardedBack.takeUnless { moveSubpageHeaderToTopbar }

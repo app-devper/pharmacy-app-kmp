@@ -6,12 +6,14 @@ import kotlinx.coroutines.CancellationException
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.domain.extension.looksLikeNetworkError
+import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.validation.SaleValidationError
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
 import app.devper.pharm.domain.model.OversellShortfall
@@ -28,40 +30,87 @@ class CheckoutUseCase(
     dispatchers: AppDispatchers,
 ) : BaseUseCase<RunCheckoutParam, CheckoutOutcome>(dispatchers) {
 
+    private data class Attempt(val request: CheckoutParam, val clientRequestId: String)
+    private data class OversellConfirmation(
+        val cart: ActiveCart,
+        val received: Money,
+        val kySkippedByCashier: Boolean,
+    )
+
+    private var pendingAttempt: Attempt? = null
+    private var pendingOversell: OversellConfirmation? = null
+
     suspend operator fun invoke(
         received: Money,
         allowOversell: Boolean = false,
-        clientRequestId: String? = null,
         kySkippedByCashier: Boolean = false,
     ): Result<CheckoutOutcome> = invoke(
-        RunCheckoutParam(received, allowOversell, clientRequestId, kySkippedByCashier),
+        RunCheckoutParam(received, allowOversell, kySkippedByCashier),
     )
 
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
         val snapshot = cart.state.value.active
         val lines = snapshot.items
+        oversellOutcome(snapshot, param)?.let { return it }
         if (lines.isEmpty()) {
             throw CheckoutFailure(SaleValidationError.EmptyCart())
         }
 
-        if (!param.allowOversell) {
-            val shortfalls = computeShortfalls(lines)
-            if (shortfalls.isNotEmpty()) {
-                return CheckoutOutcome.NeedsOversellConfirm(shortfalls)
+        val checkoutParam = buildCheckoutParam(snapshot, param)
+
+        val requestId = pendingAttempt
+            ?.takeIf { it.request == checkoutParam }
+            ?.clientRequestId
+            ?: newClientRequestId()
+        pendingAttempt = Attempt(checkoutParam, requestId)
+        val request = checkoutParam.copy(clientRequestId = requestId)
+
+        val serialized = serializeForOfflineQueue(request)
+        val sale = try {
+            sales.checkout(request)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            if (e.looksLikeNetworkError() && serialized != null) {
+                offlineQueue.enqueue(EnqueueOfflineSaleParam(requestId, serialized))
+                cart.clear()
+                pendingAttempt = null
+                return CheckoutOutcome.OfflineSaved
             }
+            throw CheckoutFailure(e)
+        }
+        cart.commitReceipt(sale)
+        pendingAttempt = null
+        return CheckoutOutcome.Success(sale)
+    }
+
+    private fun oversellOutcome(snapshot: ActiveCart, param: RunCheckoutParam): CheckoutOutcome? {
+        if (param.allowOversell) {
+            val confirmation = pendingOversell
+            pendingOversell = null
+            return if (
+                confirmation?.cart != snapshot ||
+                confirmation.received != param.received ||
+                confirmation.kySkippedByCashier != param.kySkippedByCashier
+            ) CheckoutOutcome.CartChanged else null
         }
 
-        val customer = snapshot.customer
-        val tier = snapshot.activeTier
-        val cartDiscount = snapshot.cartDiscount
-        val subtotal = lines.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
-        val discountAmount = cartDiscount.apply(subtotal)
+        val shortfalls = computeShortfalls(snapshot.items)
+        pendingOversell = if (shortfalls.isNotEmpty()) {
+            OversellConfirmation(snapshot, param.received, param.kySkippedByCashier)
+        } else null
+        return if (shortfalls.isNotEmpty()) CheckoutOutcome.NeedsOversellConfirm(shortfalls) else null
+    }
 
+    private fun buildCheckoutParam(snapshot: ActiveCart, param: RunCheckoutParam): CheckoutParam {
+        val lines = snapshot.items
+        val tier = snapshot.activeTier
+        val subtotal = lines.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
+        val discountAmount = snapshot.cartDiscount.apply(subtotal)
         val oversoldDrugIds = if (param.allowOversell) {
             computeShortfalls(lines).map { it.drugId }.toSet()
         } else emptySet()
 
-        val checkoutParam = CheckoutParam(
+        return CheckoutParam(
             items = lines.map { line ->
                 CheckoutLineParam(
                     drugId = line.drug.id,
@@ -76,31 +125,11 @@ class CheckoutUseCase(
                 )
             },
             received = param.received,
-            customerId = customer?.id,
+            customerId = snapshot.customer?.id,
             discount = discountAmount,
             priceTier = tier,
-            clientRequestId = param.clientRequestId,
             kySkippedByCashier = param.kySkippedByCashier,
         )
-
-        val serialized = serializeForOfflineQueue(checkoutParam)
-        val sale = try {
-            sales.checkout(checkoutParam)
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            if (e.looksLikeNetworkError() && serialized != null && param.clientRequestId != null) {
-                offlineQueue.enqueue(EnqueueOfflineSaleParam(param.clientRequestId, serialized))
-                cart.clear()
-                return CheckoutOutcome.OfflineSaved
-            }
-            throw CheckoutFailure(
-                cause = e,
-                serializedRequest = serialized,
-                clientRequestId = param.clientRequestId,
-            )
-        }
-        cart.commitReceipt(sale)
-        return CheckoutOutcome.Success(sale)
     }
 
     private fun serializeForOfflineQueue(param: CheckoutParam): String? = try {

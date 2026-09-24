@@ -528,6 +528,26 @@ class CheckoutViewModelTest {
     }
 
     @Test
+    fun changed_cart_before_oversell_confirmation_requires_review() = runVmTest { dispatchers ->
+        val lowStock = drug(stock = Quantity(1))
+        val cart = FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100")
+        val (vm, _, sales) = newVm(dispatchers, cart)
+        advanceUntilIdle()
+
+        vm.submit()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.oversellPending)
+
+        cart.setCashReceived("101")
+        vm.confirmOversell()
+        advanceUntilIdle()
+
+        assertNull(sales.lastCheckout)
+        assertIs<CheckoutUiStateError.CartChanged>(vm.state.value.errorState)
+        assertNull(vm.state.value.oversellPending)
+    }
+
+    @Test
     fun dismissOversell_clears_pending_without_rerun() = runVmTest { dispatchers ->
         val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
