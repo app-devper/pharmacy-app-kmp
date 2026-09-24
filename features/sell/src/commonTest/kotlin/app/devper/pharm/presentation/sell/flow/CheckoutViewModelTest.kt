@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -584,6 +585,49 @@ class CheckoutViewModelTest {
         assertTrue(vm.state.value.paymentOpen)
         assertFalse(vm.state.value.checkingOut)
         assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
+    }
+
+    @Test
+    fun offline_storage_failure_retry_reuses_client_request_id() = runVmTest { dispatchers ->
+        val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
+        val (vm) = newVm(
+            dispatchers,
+            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            sales = sales,
+            offline = FakeOfflineSaleQueue(enqueueThrows = RuntimeException("disk full")),
+        )
+        advanceUntilIdle()
+
+        vm.submit()
+        advanceUntilIdle()
+        val firstRequestId = assertNotNull(sales.lastCheckout?.clientRequestId)
+
+        vm.submit()
+        advanceUntilIdle()
+        assertEquals(firstRequestId, sales.lastCheckout?.clientRequestId)
+    }
+
+    @Test
+    fun changed_checkout_after_offline_storage_failure_uses_new_client_request_id() = runVmTest { dispatchers ->
+        val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
+        val cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100")
+        val (vm) = newVm(
+            dispatchers,
+            cart = cart,
+            sales = sales,
+            offline = FakeOfflineSaleQueue(enqueueThrows = RuntimeException("disk full")),
+        )
+        advanceUntilIdle()
+
+        vm.submit()
+        advanceUntilIdle()
+        val firstRequestId = assertNotNull(sales.lastCheckout?.clientRequestId)
+
+        cart.setCashReceived("101")
+        advanceUntilIdle()
+        vm.submit()
+        advanceUntilIdle()
+        assertNotEquals(firstRequestId, sales.lastCheckout?.clientRequestId)
     }
 
     @Test

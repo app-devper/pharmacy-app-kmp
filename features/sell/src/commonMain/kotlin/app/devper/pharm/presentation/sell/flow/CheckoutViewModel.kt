@@ -6,6 +6,7 @@ import app.devper.pharm.presentation.sell.exception.CheckoutUiStateError
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.domain.model.CartSnapshot
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
 import app.devper.pharm.domain.model.Customer
@@ -49,6 +50,8 @@ class CheckoutViewModel(
     )
 
     private var pendingClientRequestId: String? = null
+    private var pendingCheckoutSnapshot: CartSnapshot? = null
+    private var pendingCheckoutKySkipped: Boolean = false
     private var pendingKyFields: KyCaptureFields? = null
     private var pendingKyRequired: KyRequired? = null
     private var pendingKySkippedByCashier: Boolean = false
@@ -189,8 +192,13 @@ class CheckoutViewModel(
     }
 
     private fun startNewCheckout(allowOversell: Boolean) {
-
-        pendingClientRequestId = newClientRequestId()
+        val snapshot = cartState.current.copy(lastReceipt = null)
+        if (pendingCheckoutSnapshot != snapshot || pendingCheckoutKySkipped != pendingKySkippedByCashier) {
+            pendingClientRequestId = null
+        }
+        pendingClientRequestId = pendingClientRequestId ?: newClientRequestId()
+        pendingCheckoutSnapshot = snapshot
+        pendingCheckoutKySkipped = pendingKySkippedByCashier
         runCheckout(allowOversell = allowOversell)
     }
 
@@ -282,7 +290,9 @@ class CheckoutViewModel(
 
         val cf = error as? CheckoutFailure
         val cause = cf?.cause ?: error
-        clearPendingTokens()
+        pendingKyRequired = null
+        pendingKyFields = null
+        pendingKySkippedByCashier = false
         setState {
             copy(checkingOut = false, errorState = (cause as? AppException) ?: CheckoutUiStateError.CheckoutFailed(cause))
         }
@@ -290,6 +300,8 @@ class CheckoutViewModel(
 
     private fun clearPendingTokens() {
         pendingClientRequestId = null
+        pendingCheckoutSnapshot = null
+        pendingCheckoutKySkipped = false
         pendingKyRequired = null
         pendingKyFields = null
         pendingKySkippedByCashier = false

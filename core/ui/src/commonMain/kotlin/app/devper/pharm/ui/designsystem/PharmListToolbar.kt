@@ -143,8 +143,8 @@ fun PharmListToolbar(
         ) {
             {
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(t.spacing.s2),
+                    verticalArrangement = Arrangement.spacedBy(t.spacing.s2),
                     itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (!placement.secondaryInTopbar) actions?.invoke()
@@ -156,7 +156,7 @@ fun PharmListToolbar(
             (primaryAction != null && placement.primaryInTopbar) || (actions != null && placement.secondaryInTopbar)
         ) {
             {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(horizontalArrangement = Arrangement.spacedBy(t.spacing.s2), verticalAlignment = Alignment.CenterVertically) {
                     if (placement.secondaryInTopbar) actions?.invoke()
                     if (placement.primaryInTopbar) primaryAction?.invoke()
                 }

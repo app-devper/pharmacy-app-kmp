@@ -81,12 +81,7 @@ fun MainShell(appViewModel: AppViewModel) {
                 settingsOpen = true
             } else if (key != sectionKey) {
                 routeForKey(key)?.let { route ->
-                    if (isSubPage) nestedNav.popSubPagesOffTheStack()
-                    nestedNav.navigate(route) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(Sell) { saveState = true }
-                    }
+                    nestedNav.navigateToSection(route)
                 }
             }
         },
@@ -136,6 +131,15 @@ fun MainShell(appViewModel: AppViewModel) {
         open = settingsOpen,
         onDismiss = { settingsOpen = false },
     )
+}
+
+internal fun NavController.navigateToSection(route: Any) {
+    popSubPagesOffTheStack()
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = route != Sell
+        popUpTo(Sell) { saveState = true }
+    }
 }
 
 private fun NavController.popSubPagesOffTheStack() {
