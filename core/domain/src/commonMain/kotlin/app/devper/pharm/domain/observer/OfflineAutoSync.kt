@@ -2,7 +2,7 @@ package app.devper.pharm.domain.observer
 
 import app.devper.pharm.common.Logger
 import app.devper.pharm.common.platform.ConnectivityObserver
-import app.devper.pharm.domain.extension.looksLikeNetworkError
+import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
 import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -32,8 +32,8 @@ class OfflineAutoSync(
         for (sale in pending) {
             val result = retry(sale.id)
             val error = result.exceptionOrNull() ?: continue
-            if (error.looksLikeNetworkError()) {
-                logger.debug(TAG, "network error during sync — aborting remaining ${pending.size - pending.indexOf(sale) - 1} sale(s)")
+            if (error.looksLikeTemporaryOutage()) {
+                logger.debug(TAG, "temporary outage during sync — aborting remaining ${pending.size - pending.indexOf(sale) - 1} sale(s)")
                 return
             }
         }

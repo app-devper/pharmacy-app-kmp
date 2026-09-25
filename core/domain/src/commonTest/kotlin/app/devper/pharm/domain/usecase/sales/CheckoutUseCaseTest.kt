@@ -8,6 +8,7 @@ import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 
 import app.devper.pharm.domain.validation.SaleValidationError
 
+import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -160,6 +161,19 @@ class CheckoutUseCaseTest {
         assertEquals(CheckoutOutcome.OfflineSaved, result)
         assertEquals(sales.lastParam?.clientRequestId, queue.lastEnqueue?.clientRequestId)
         assertEquals("serialized", queue.lastEnqueue?.payloadJson)
+        assertTrue(cart.state.value.active.items.isEmpty())
+        assertNull(cart.committed)
+    }
+
+    @Test
+    fun identity_outage_keeps_the_sale_pending_like_a_network_failure() = runTest {
+        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val queue = FakeOfflineSaleQueue()
+        val sales = FakeSales(failWith = IdentityUnavailableException())
+        val result = CheckoutUseCase(cart, sales, queue, testDispatchers())
+            .invoke(Money(100.0)).getOrThrow()
+        assertEquals(CheckoutOutcome.OfflineSaved, result)
+        assertEquals(sales.lastParam?.clientRequestId, queue.lastEnqueue?.clientRequestId)
         assertTrue(cart.state.value.active.items.isEmpty())
         assertNull(cart.committed)
     }

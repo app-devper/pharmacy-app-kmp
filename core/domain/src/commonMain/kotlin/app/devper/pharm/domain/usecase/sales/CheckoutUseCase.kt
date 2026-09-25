@@ -5,7 +5,7 @@ import kotlinx.coroutines.CancellationException
 
 import app.devper.pharm.domain.usecase.BaseUseCase
 
-import app.devper.pharm.domain.extension.looksLikeNetworkError
+import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.validation.SaleValidationError
@@ -70,7 +70,7 @@ class CheckoutUseCase(
             sales.checkout(request)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            if (e.looksLikeNetworkError() && serialized != null) {
+            if (e.looksLikeTemporaryOutage() && serialized != null) {
                 offlineQueue.enqueue(EnqueueOfflineSaleParam(requestId, serialized))
                 cart.clear()
                 pendingAttempt = null

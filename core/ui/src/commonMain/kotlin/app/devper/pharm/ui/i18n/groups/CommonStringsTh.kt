@@ -108,6 +108,7 @@ object CommonStringsTh : CommonStrings {
     override val commonErrorNotFound = "ไม่พบข้อมูล"
     override val commonErrorConflict = "เกิดข้อขัดแย้ง — ตรวจสอบข้อมูลและลองใหม่"
     override val commonErrorNetwork = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์"
+    override val commonErrorIdentityUnavailable = "ยืนยันตัวตนไม่ได้ชั่วคราว กรุณาลองใหม่อีกครั้ง"
     override val commonErrorServer = "เซิร์ฟเวอร์ขัดข้อง"
     override val commonErrorValidation = "ตรวจสอบข้อมูลไม่ผ่าน"
     override val commonErrorStorage = "ไม่สามารถบันทึกไฟล์ได้"
