@@ -39,6 +39,14 @@ These are agreed working rules from the whole-project design interview. The cont
 - Confirm the available device clock and server-time evidence on each platform before relying on offline sale timestamps.
 - Measure deployed client versions before retiring an API contract under the initial support floor.
 
+## Recommended implementation order
+
+1. Protect money and sale intent: make returns idempotent, preserve damaged offline entries, and distinguish replay conflicts from retryable failures.
+2. Make the sale contract explicit across KMP and backend: preserve sale time and approved price, validate clock evidence, and reconcile late sales against closed periods. Align the end-of-day close endpoint with the durable close model.
+3. Align authorization and compliance: define route-level MANAGER permissions, then build reviewable KY exceptions after checking the applicable requirements.
+4. Tighten other ownership and visibility: connect purchase orders to supplier IDs, show report freshness, and keep Catalog price changes separate from Inventory stock changes.
+5. Strengthen release confidence: require iOS compilation and measure active client versions before retiring old API behavior.
+
 ## Feature-module map
 
 - **Sales**: `sell`, `saleshistory`, `offlinesync`.
