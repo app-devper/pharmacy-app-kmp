@@ -1,0 +1,3 @@
+# Shared role policy
+
+Roles and permissions must have one agreed meaning across the access service, pharmacy API, and KMP navigation. A client-visible route cannot imply permission that the backend denies. MANAGER is a real role for day-to-day stock, customer, and goods-receipt operations, but cannot administer users, store configuration, or financial reports. MANAGER may view KY exception status; only ADMIN or SUPER may resolve it, subject to validation against the applicable requirements. KMP currently exposes MANAGER in administrative navigation while the pharmacy API rejects that role on administrative endpoints. Align route permissions and navigation before treating the role as supported.
