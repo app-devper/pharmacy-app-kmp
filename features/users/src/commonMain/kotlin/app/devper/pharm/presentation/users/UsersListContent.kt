@@ -90,8 +90,7 @@ private fun UsersListToolbar(
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,
-        compactTopbarActions = true,
-        actions = {
+        primaryAction = {
             if (state.currentUserRole.canManageUsers()) {
                 PharmButton(
                     label = s.usersAddCta,

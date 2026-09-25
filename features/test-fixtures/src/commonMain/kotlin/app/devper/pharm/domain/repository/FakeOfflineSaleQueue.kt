@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class FakeOfflineSaleQueue(
     seed: List<PendingSale> = emptyList(),
+    private val enqueueThrows: Throwable? = null,
     private val markSyncedThrows: Throwable? = null,
 ) : OfflineSaleQueue {
 
@@ -29,6 +30,7 @@ class FakeOfflineSaleQueue(
     }
 
     override fun enqueue(param: EnqueueOfflineSaleParam): String {
+        enqueueThrows?.let { throw it }
         lastEnqueue = param
         val id = "fake-${pendingState.value.size}"
         val now = pendingState.value.size.toLong() * 1000L

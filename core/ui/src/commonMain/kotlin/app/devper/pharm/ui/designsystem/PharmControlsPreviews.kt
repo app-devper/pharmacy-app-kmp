@@ -265,3 +265,25 @@ private fun PharmKeypad_Preview() {
 private fun PharmKeypad_Dark_Preview() {
     PharmDarkPreview { PharmKeypad_Body() }
 }
+
+@Preview
+@Composable
+private fun PharmToolbarMenu_Preview() {
+    PharmLightPreview {
+        PharmToolbarMenu(
+            actions = listOf(PharmAction("Export", {}, PharmIcons.Excel)),
+            promotedAction = PharmAction("Purchase", {}, PharmIcons.OfflineSync),
+        )
+    }
+}
+
+@Preview(name = "dark")
+@Composable
+private fun PharmToolbarMenu_Dark_Preview() {
+    PharmDarkPreview {
+        PharmToolbarMenu(
+            actions = listOf(PharmAction("Export", {}, PharmIcons.Excel)),
+            promotedAction = PharmAction("Purchase", {}, PharmIcons.OfflineSync),
+        )
+    }
+}

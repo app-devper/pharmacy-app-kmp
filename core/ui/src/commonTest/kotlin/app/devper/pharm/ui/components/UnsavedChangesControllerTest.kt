@@ -2,9 +2,38 @@ package app.devper.pharm.ui.components
 
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class UnsavedChangesControllerTest {
+    @Test
+    fun guarded_navigation_callback_waits_and_preserves_its_destination() {
+        val controller = UnsavedChangesController()
+        controller.register(Any(), true)
+        var destination: String? = null
+        val navigate = controller.guarded<String> { destination = it }
+
+        navigate("stock")
+        assertNull(destination)
+        assertTrue(controller.dialogOpen)
+
+        controller.discardChanges()
+        assertEquals("stock", destination)
+    }
+
+    @Test
+    fun guarded_exit_callback_uses_the_same_confirmation() {
+        val controller = UnsavedChangesController()
+        controller.register(Any(), true)
+        var exited = false
+        val exit = controller.guarded { exited = true }
+
+        exit()
+        assertFalse(exited)
+        controller.discardChanges()
+        assertTrue(exited)
+    }
     @Test
     fun request_executes_immediately_when_form_is_clean() {
         val controller = UnsavedChangesController()

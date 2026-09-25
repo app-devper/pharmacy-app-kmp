@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.common.value.Money
-import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.MonthlySales
@@ -49,6 +47,10 @@ fun ReportsContent(
     state: ReportsUiState,
     callbacks: ReportsCallbacks = ReportsCallbacks(),
 ) {
+    if (state.slowDrugsOnly) {
+        ReportsSlowDrugsOnlyContent(state = state, callbacks = callbacks)
+        return
+    }
     val pageIsEmpty = state.dashboard == null
     val t = pharmTokens
     BoxWithConstraints(
@@ -66,17 +68,10 @@ fun ReportsContent(
             val dashboard = state.dashboard
             PharmListToolbar(
                 subtitle = s.reportsSubtitle,
-                compactTopbarActions = true,
-                compactTopbarAction = { ReportsCloseEodButton(callbacks = callbacks) },
-                compactInlineActions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
+                primaryAction = { ReportsCloseEodButton(callbacks = callbacks) },
+                actions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
                 filters = {
                     ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
-                },
-                actions = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ReportsRefreshButton(state = state, callbacks = callbacks)
-                        ReportsCloseEodButton(callbacks = callbacks)
-                    }
                 },
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -131,6 +126,48 @@ fun ReportsContent(
                             item("recent") { ReportsRecentSalesSection(recent = dashboard.recentSales) }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+}
+
+/** MANAGER view (ADR-0004): only the operational slow-drugs report. */
+@Composable
+private fun ReportsSlowDrugsOnlyContent(state: ReportsUiState, callbacks: ReportsCallbacks) {
+    val t = pharmTokens
+    val s = pharmStrings
+    val pageIsEmpty = state.slowDrugs.isEmpty()
+    Box(
+        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = t.dimens.dashboardContentMaxWidth)
+                .fillMaxSize(),
+        ) {
+            PharmListToolbar(
+                subtitle = s.reportsSubtitle,
+                actions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
+            )
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                when {
+                    state.loading && pageIsEmpty ->
+                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
+                    state.errorState != null && pageIsEmpty ->
+                        PharmErrorState(onRetry = callbacks.onReload)
+                    else ->
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                        ) {
+                            item("slow") {
+                                ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
+                            }
+                        }
                 }
             }
         }

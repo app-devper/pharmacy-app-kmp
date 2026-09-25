@@ -58,8 +58,7 @@ fun HelpContent(
         PharmListToolbar(
             title = s.navHelp,
             subtitle = s.helpSubtitle,
-            compactTopbarActions = true,
-            actions = {
+            primaryAction = {
                 PharmButton(
                     label = s.commonRefresh,
                     onClick = callbacks.onReload,

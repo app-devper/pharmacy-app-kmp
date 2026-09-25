@@ -54,8 +54,7 @@ fun OfflineSyncContent(
         toolbar = {
             PharmListToolbar(
                 subtitle = s.offlineSyncSubtitle,
-                compactTopbarActions = true,
-                actions = {
+                primaryAction = {
                     PharmButton(
                         label = s.offlineSyncRetryAllCta,
                         onClick = callbacks.onSyncAll,

@@ -6,6 +6,7 @@ import app.devper.pharm.common.AuthException
 import app.devper.pharm.domain.observer.SessionExpiryProvider
 import app.devper.pharm.common.ConflictException
 import app.devper.pharm.common.ForbiddenException
+import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.NetworkException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.ServerException
@@ -85,7 +86,9 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
                 HttpStatusCode.Forbidden     -> ForbiddenException()
                 HttpStatusCode.NotFound      -> NotFoundException()
                 HttpStatusCode.Conflict      -> ConflictException(payload = body)
-                else -> ServerException(
+                else -> if (status == HttpStatusCode.ServiceUnavailable &&
+                    body.contains(IDENTITY_UNAVAILABLE_ERROR)
+                ) IdentityUnavailableException() else ServerException(
                     message = if (status.value in 500..599) "Server error (${status.value})"
                               else "HTTP error (${status.value})",
                     statusCode = status.value,
@@ -100,6 +103,9 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
         }
     }
 }
+
+// pharmacy-api's 503 body when it cannot confirm the session (ADR-0016).
+private const val IDENTITY_UNAVAILABLE_ERROR = "identity service unavailable"
 
 private fun HttpStatusCode.isSuccess(): Boolean = value in 200..299
 

@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.IdentityUnavailableException
+
 private val NETWORK_CLASS_HINTS = listOf(
     "ConnectException",
     "ConnectTimeoutException",
@@ -35,3 +37,11 @@ fun Throwable.looksLikeNetworkError(): Boolean {
     }
     return false
 }
+
+/**
+ * True when the request never reached a decision on the server and is worth
+ * retrying later: a network failure, or the pharmacy API being unable to
+ * confirm the session (ADR-0016). A sale that fails this way stays pending.
+ */
+fun Throwable.looksLikeTemporaryOutage(): Boolean =
+    this is IdentityUnavailableException || looksLikeNetworkError()
