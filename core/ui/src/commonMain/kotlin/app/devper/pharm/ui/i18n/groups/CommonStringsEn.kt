@@ -108,6 +108,7 @@ object CommonStringsEn : CommonStrings {
     override val commonErrorNotFound = "Not found"
     override val commonErrorConflict = "A conflict occurred — check the data and try again"
     override val commonErrorNetwork = "Cannot connect to the server"
+    override val commonErrorIdentityUnavailable = "Could not verify your session right now. Please try again."
     override val commonErrorServer = "Server error"
     override val commonErrorValidation = "Validation failed"
     override val commonErrorStorage = "Cannot save the file"
