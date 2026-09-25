@@ -5,5 +5,5 @@ Access is the context for user identity, roles, and permission to perform pharma
 ## Language
 
 **Manager**:
-A pharmacy user role permitted to run day-to-day stock, customer, and goods-receipt operations, but not user administration, store configuration, or financial reporting.
+A pharmacy user role permitted to count and adjust stock, receive goods, manage suppliers and customer profiles, and print labels, but not change drug identity or selling prices, void a whole bill, administer KY, users or store configuration, or access financial reports.
 _Avoid_: Administrator

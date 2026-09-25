@@ -31,6 +31,9 @@ This map records agreed domain boundaries across the pharmacy app and its connec
 - **Catalog → Inventory**: Catalog identifies a drug and its configured prices; Inventory owns its on-hand quantity and lots.
 - **Catalog → Sales**: Sales retains the cashier-approved transaction-time price; a later Catalog price change cannot silently reprice an offline sale.
 - **Identity service → pharmacy API**: the identity service owns accounts, login, and role assignment; the pharmacy API enforces the agreed role policy on pharmacy operations.
+- **Identity service → pharmacy API session status**: pharmacy writes and sensitive reads must reflect a revoked session, deactivated account, or changed role within 60 seconds.
+- **Tenant → pharmacy data**: a SUPER role alone does not grant access across pharmacy tenants; any cross-tenant support requires explicit, auditable delegation to a named tenant.
 - **Catalog, Sales, Compliance → output**: labels, receipts, and KY PDFs render facts from their owning contexts and do not become the source of those facts.
 
 Supporting UI, reporting, printing, and export capabilities are mapped in [architecture notes](./docs/ARCHITECTURE-NOTES.md); they do not own the underlying business facts.
+The current and target contracts between KMP, `pharmacy-api`, and `um-api` are mapped in [cross-repository contracts](./docs/INTEGRATION-CONTRACTS.md).

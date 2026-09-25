@@ -26,6 +26,7 @@ These are agreed working rules from the whole-project design interview. The cont
 
 - Return requests lack the agreed retry identity and can create a second return after an ambiguous response.
 - The pharmacy API rejects MANAGER on administrative routes while KMP exposes administrative navigation to that role.
+- The pharmacy API currently exposes six report routes to USER; the agreed policy moves `summary`, `dashboard`, `daily`, `monthly`, and `top-drugs` to ADMIN+ and `slow-drugs` to MANAGER+.
 - KY skip currently records a boolean, without reason, actor, time, review state, or resolution.
 - A malformed offline sale queue is currently cleared instead of preserved for recovery.
 - Reports do not expose a clear freshness time or failed-refresh state.
@@ -43,11 +44,21 @@ These are agreed working rules from the whole-project design interview. The cont
 - The available mock API fixture has only six drugs; no repeatable 10,000-item search fixture or end-to-end performance harness is present.
 - Offline sync displays raw errors with the same Retry/Cancel actions for transient failures and business conflicts, and a failed refresh can leave the page without a retry action.
 - Reports can retain old values after a failed refresh without showing when those values were last confirmed.
+- `um-api` reloads the current user and session on its protected requests, while `pharmacy-api` authorizes pharmacy requests from JWT claims without checking whether the UM session or role was revoked. A role change or deactivation can therefore remain effective in pharmacy operations until the token expires.
+- Pharmacy returns are currently allowed for USER and above; the agreed policy retains this but requires a bill reference, actor, reason, and retry identity. Whole-bill void remains ADMIN+.
+- KMP, `pharmacy-api`, and `um-api` have separate CI checks, with no cross-repository API contract gate.
+- The target 60-second revocation bound for pharmacy writes and sensitive reads is not enforced by `pharmacy-api` today.
+- `um-api` has no dedicated session-verification endpoint for other services; `pharmacy-api` has no 30-second session-status cache.
+- `um-api` has an OpenAPI contract, while `pharmacy-api` has no OpenAPI file; KMP's mock API and unit tests do not check the live three-service contract.
 
 ## Checks required before implementation
 
 - Verify the applicable KY requirements before enforcing who may skip capture or resolve an exception; the role decision here does not establish legal compliance.
 - Turn the agreed MANAGER policy into an explicit route-by-route permission matrix shared by the identity service, pharmacy API, and KMP navigation.
+- Add a dedicated UM session/role verification endpoint and a pharmacy API cache keyed by session ID for at most 30 seconds. Do not share UM Redis or databases with the pharmacy API.
+- Keep the product-wide context map and ADRs here, maintain endpoint contracts in their owning API repos, link the three READMEs, and add cross-repository checks for the API contracts KMP consumes.
+- Treat customer identifying data, sale history, bill items and customer-bearing receipts, KY, financial reports, user data, business-rule settings, and every write as requiring current permission. On identity-service outage after the cached check expires, stop confirming these operations; any client-retained sale remains pending. An ordinary catalog read may continue under a valid signed token.
+- Add pharmacy API OpenAPI with route/response checks, keep UM API OpenAPI in its owner repo, and verify KMP's used endpoints and DTOs in each affected PR. Run a three-service checkout/authorization smoke test nightly and before release rather than on every PR.
 - Define the recovery and review procedures for corrupted or conflicted offline entries without discarding the original sale intent.
 - Confirm the available device clock and server-time evidence on each platform before relying on offline submission timestamps. A persisted server-time anchor and clock history are candidate mechanisms, not yet verified implementation requirements.
 - Measure deployed client versions before retiring an API contract under the initial support floor.
