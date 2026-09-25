@@ -78,6 +78,16 @@ class OfflineAutoSyncTest {
     }
 
     @Test
+    fun syncPending_aborts_loop_when_identity_cannot_be_confirmed() = runTest {
+        val queue = Queue(listOf(pending("p1"), pending("p2"), pending("p3")))
+        val sales = Sales(failWith = app.devper.pharm.common.IdentityUnavailableException())
+        autoSync(MutableStateFlow(true), queue, sales).syncPending()
+
+        assertEquals(1, sales.replayCount)
+        assertEquals(setOf("p1"), queue.failedIds)
+    }
+
+    @Test
     fun syncPending_continues_loop_on_non_network_error() = runTest {
         val queue = Queue(listOf(pending("p1"), pending("p2"), pending("p3")))
         val sales = Sales(failWith = IllegalStateException("validation error"))
