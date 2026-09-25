@@ -9,6 +9,7 @@ import app.devper.pharm.presentation.ky.Ky9
 import app.devper.pharm.presentation.settings.Settings
 import app.devper.pharm.ui.i18n.PharmStringsEn
 import app.devper.pharm.ui.i18n.PharmStringsTh
+import app.devper.pharm.domain.model.Role
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -68,5 +69,19 @@ class MainDestinationTest {
         assertNull(destinationFor(null))
         assertNull(destinationFor("unknown/argument"))
         assertNull(routeForKey("unknown"))
+    }
+
+    @Test
+    fun sidebar_minimum_roles_follow_the_shared_role_policy() {
+        val minRoles: Map<String, Role> = mainDestinations.mapNotNull { d -> d.sidebar?.let { d.route.simpleName.orEmpty() to it.minRole } }.toMap()
+        val expected: Map<String, Role> = mapOf(
+            "Sell" to Role.USER, "SalesHistory" to Role.USER, "Customers" to Role.USER,
+            "Stock" to Role.USER, "Movements" to Role.USER, "OfflineSync" to Role.USER, "Help" to Role.USER,
+            "StockCounts" to Role.MANAGER, "Expiry" to Role.MANAGER, "LabelPrint" to Role.MANAGER,
+            "Imports" to Role.MANAGER, "Suppliers" to Role.MANAGER, "Reports" to Role.MANAGER,
+            "Users" to Role.MANAGER,
+            "Profit" to Role.ADMIN, "Ky9" to Role.ADMIN, "Settings" to Role.ADMIN,
+        )
+        assertEquals(expected, minRoles)
     }
 }

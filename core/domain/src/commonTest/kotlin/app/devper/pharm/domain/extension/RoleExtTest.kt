@@ -72,4 +72,21 @@ class RoleExtTest {
         assertFalse(Role.USER.canViewUsers())
         assertFalse(Role.UNKNOWN.canViewUsers())
     }
+
+    @Test
+    fun atLeast_follows_user_manager_admin_super_order() {
+        val order = listOf(Role.USER, Role.MANAGER, Role.ADMIN, Role.SUPER)
+        for ((i, role) in order.withIndex()) {
+            for ((j, min) in order.withIndex()) {
+                assertEquals(i >= j, role.atLeast(min), "$role atLeast $min")
+            }
+        }
+    }
+
+    @Test
+    fun unknown_role_meets_no_minimum() {
+        for (min in listOf(Role.USER, Role.MANAGER, Role.ADMIN, Role.SUPER)) {
+            assertFalse(Role.UNKNOWN.atLeast(min))
+        }
+    }
 }

@@ -47,16 +47,27 @@ class FakeReportsRepository(
     var eodCallCount: Int = 0
         private set
 
-    override suspend fun dashboard(param: DashboardRangeParam): Dashboard = Dashboard(
-        summary = ReportSummary(0.0, 0, 0.0, 0.0, 0, 0),
-        daily = emptyList(),
-        monthly = emptyList(),
-        recentSales = emptyList(),
-    )
+    var dashboardCalls: Int = 0
+        private set
+    var slowDrugsCalls: Int = 0
+        private set
+
+    override suspend fun dashboard(param: DashboardRangeParam): Dashboard {
+        dashboardCalls++
+        return Dashboard(
+            summary = ReportSummary(0.0, 0, 0.0, 0.0, 0, 0),
+            daily = emptyList(),
+            monthly = emptyList(),
+            recentSales = emptyList(),
+        )
+    }
 
     override suspend fun topDrugs(param: TopOrSlowDrugsParam): List<TopDrug> = emptyList()
 
-    override suspend fun slowDrugs(param: TopOrSlowDrugsParam): List<SlowDrug> = emptyList()
+    override suspend fun slowDrugs(param: TopOrSlowDrugsParam): List<SlowDrug> {
+        slowDrugsCalls++
+        return emptyList()
+    }
 
     var profitReport: ProfitReport = ProfitReport(
         summary = ProfitSummary(0.0, 0.0, 0.0, 0.0, 0),
