@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.extension.atLeast
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.LocalCompactTopbarActions
@@ -73,7 +74,8 @@ data class NavItem(
     val route: String,
     val label: String,
     val icon: ImageVector,
-    val admin: Boolean = false,
+    /** Lowest role that may open this screen; matches pharmacy-api's route permissions. */
+    val minRole: Role = Role.USER,
     val pinned: Boolean = false,
     val sectionLabel: String = "",
 )
@@ -87,8 +89,6 @@ data class SidebarState(
 
 val LocalSidebarState = staticCompositionLocalOf { SidebarState() }
 val LocalPageTitle = staticCompositionLocalOf { "" }
-
-private fun Role.canSeeAdminNav(): Boolean = this == Role.SUPER || this == Role.ADMIN || this == Role.MANAGER
 
 @Composable
 fun AppShell(
@@ -115,12 +115,12 @@ fun AppShell(
 
         val sidebarItems = remember(items, role) {
             items
-                .filter { !it.admin || role.canSeeAdminNav() }
+                .filter { role.atLeast(it.minRole) }
                 .map {
                     SidebarNavItem(
                         id = it.route,
                         icon = it.icon,
-                        admin = it.admin,
+                        admin = it.minRole != Role.USER,
                         pinned = it.pinned,
                         label = it.label,
                         sectionLabel = it.sectionLabel,

@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.navigation
 import app.devper.pharm.ui.i18n.navTitle
 import androidx.compose.runtime.Composable
 import app.devper.pharm.domain.model.KyFormType
+import app.devper.pharm.domain.model.Role
 import app.devper.pharm.presentation.bulkimport.BulkImport
 import app.devper.pharm.presentation.customers.CustomerAdd
 import app.devper.pharm.presentation.customers.CustomerDetail
@@ -97,7 +98,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = StockCounts,
             icon = PharmIcons.StockCount,
-            admin = true,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupInventory },
         ),
     ),
@@ -106,7 +107,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = Expiry,
             icon = PharmIcons.Expiry,
-            admin = true,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupInventory },
         ),
     ),
@@ -115,7 +116,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = LabelPrint,
             icon = PharmIcons.Print,
-            admin = true,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupInventory },
         ),
     ),
@@ -140,7 +141,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = Imports,
             icon = PharmIcons.Imports,
-            admin = true,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupInventory },
         ),
     ),
@@ -149,7 +150,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = Suppliers,
             icon = PharmIcons.Suppliers,
-            admin = true,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupInventory },
         ),
     ),
@@ -158,6 +159,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = Reports,
             icon = PharmIcons.Reports,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupReports },
         ),
     ),
@@ -166,7 +168,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = Profit,
             icon = PharmIcons.Profit,
-            admin = true,
+            minRole = Role.ADMIN,
             sectionLabel = { it.navGroupReports },
         ),
     ),
@@ -176,7 +178,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
             target = Ky9,
             icon = PharmIcons.KyForms,
             label = { it.navKyForms },
-            admin = true,
+            minRole = Role.ADMIN,
             sectionLabel = { it.navGroupReports },
         ),
     ),
@@ -185,7 +187,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = Users,
             icon = PharmIcons.Users,
-            admin = true,
+            minRole = Role.MANAGER,
             sectionLabel = { it.navGroupSystem },
         ),
     ),
@@ -194,7 +196,7 @@ internal val mainDestinations: List<MainDestination> = listOf(
         sidebar = MainSidebarEntry(
             target = SettingsRoute,
             icon = PharmIcons.Settings,
-            admin = true,
+            minRole = Role.ADMIN,
             sectionLabel = { it.navGroupSystem },
         ),
     ),
@@ -247,7 +249,7 @@ internal fun mainNavItems(strings: PharmStrings): List<NavItem> = mainDestinatio
             route = k(destination.route),
             label = entry.label?.invoke(strings) ?: destination.title(strings),
             icon = entry.icon,
-            admin = entry.admin,
+            minRole = entry.minRole,
             pinned = entry.pinned,
             sectionLabel = entry.sectionLabel(strings),
         )

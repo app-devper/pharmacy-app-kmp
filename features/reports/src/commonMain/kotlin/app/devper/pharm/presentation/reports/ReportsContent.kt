@@ -47,6 +47,10 @@ fun ReportsContent(
     state: ReportsUiState,
     callbacks: ReportsCallbacks = ReportsCallbacks(),
 ) {
+    if (state.slowDrugsOnly) {
+        ReportsSlowDrugsOnlyContent(state = state, callbacks = callbacks)
+        return
+    }
     val pageIsEmpty = state.dashboard == null
     val t = pharmTokens
     BoxWithConstraints(
@@ -122,6 +126,48 @@ fun ReportsContent(
                             item("recent") { ReportsRecentSalesSection(recent = dashboard.recentSales) }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
+}
+
+/** MANAGER view (ADR-0004): only the operational slow-drugs report. */
+@Composable
+private fun ReportsSlowDrugsOnlyContent(state: ReportsUiState, callbacks: ReportsCallbacks) {
+    val t = pharmTokens
+    val s = pharmStrings
+    val pageIsEmpty = state.slowDrugs.isEmpty()
+    Box(
+        modifier = Modifier.fillMaxSize().background(t.colors.bgPage),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = t.dimens.dashboardContentMaxWidth)
+                .fillMaxSize(),
+        ) {
+            PharmListToolbar(
+                subtitle = s.reportsSubtitle,
+                actions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
+            )
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                when {
+                    state.loading && pageIsEmpty ->
+                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
+                    state.errorState != null && pageIsEmpty ->
+                        PharmErrorState(onRetry = callbacks.onReload)
+                    else ->
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                        ) {
+                            item("slow") {
+                                ReportsSlowDrugsSection(rows = state.slowDrugs, modifier = Modifier.fillMaxWidth())
+                            }
+                        }
                 }
             }
         }
