@@ -25,10 +25,10 @@ These are agreed working rules from the whole-project design interview. The cont
 - KMP exposes an end-of-day close command, but the current pharmacy API exposes only the end-of-day report read route.
 - Purchase orders currently store a supplier name rather than linking to a supplier ID.
 - Offline queue storage is one JSON list without a raw export or per-entry recovery path.
-- Offline checkout requests do not carry sale time; the backend currently assigns the replay time, so late sync changes the EOD day.
+- Offline checkout requests do not carry cashier submission time; the backend currently assigns the replay time as sale confirmation time, so late sync changes the EOD day.
 - Offline replay records business conflicts as generic failures, without a separate review-and-resolution path.
 - Drug identity/prices and stock are combined in the current model even though Catalog and Inventory have separate ownership.
-- Offline requests lack a cashier-recorded sale time and backend clock-skew review. The agreed online starting tolerance is ±5 minutes; offline sales need a server-time anchor or authorized review.
+- Offline requests lack cashier submission time and backend clock-skew review. The agreed online starting tolerance is ±5 minutes; offline sales without trustworthy time evidence need authorized review.
 - The backend currently re-resolves the configured price when an offline sale arrives, rather than preserving the cashier-approved price snapshot.
 
 ## Checks required before implementation
@@ -36,13 +36,13 @@ These are agreed working rules from the whole-project design interview. The cont
 - Verify the applicable KY requirements before enforcing who may skip capture or resolve an exception; the role decision here does not establish legal compliance.
 - Turn the agreed MANAGER policy into an explicit route-by-route permission matrix shared by the identity service, pharmacy API, and KMP navigation.
 - Define the recovery and review procedures for corrupted or conflicted offline entries without discarding the original sale intent.
-- Confirm the available device clock and server-time evidence on each platform before relying on offline sale timestamps.
+- Confirm the available device clock and server-time evidence on each platform before relying on offline submission timestamps. A persisted server-time anchor and clock history are candidate mechanisms, not yet verified implementation requirements.
 - Measure deployed client versions before retiring an API contract under the initial support floor.
 
 ## Recommended implementation order
 
 1. Protect money and sale intent: make returns idempotent, preserve damaged offline entries, and distinguish replay conflicts from retryable failures.
-2. Make the sale contract explicit across KMP and backend: preserve sale time and approved price, validate clock evidence, and reconcile late sales against closed periods. Align the end-of-day close endpoint with the durable close model.
+2. Make the sale contract explicit across KMP and backend: preserve cashier submission time and approved price, validate clock evidence, and reconcile late sales against closed periods. Align the end-of-day close endpoint with the durable close model.
 3. Align authorization and compliance: define route-level MANAGER permissions, then build reviewable KY exceptions after checking the applicable requirements.
 4. Tighten other ownership and visibility: connect purchase orders to supplier IDs, show report freshness, and keep Catalog price changes separate from Inventory stock changes.
 5. Strengthen release confidence: require iOS compilation and measure active client versions before retiring old API behavior.

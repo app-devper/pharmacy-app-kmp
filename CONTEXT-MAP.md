@@ -26,7 +26,7 @@ This map records agreed domain boundaries across the pharmacy app and its connec
 - **KMP → backend deployment**: backend changes must preserve the contract used by deployed clients before a new KMP version relies on them.
 - **UI features → domain contexts**: feature modules group screens and workflows; they do not redefine ownership of Sales, Inventory, Purchasing, or other domain concepts.
 - **Sales → Reporting**: Sales owns the durable end-of-day close; Reports presents the close record and other read views.
-- **Offline Sales → end-of-day close**: a sale belongs to its cashier-recorded business day; confirmation after that day's close creates an auditable adjustment rather than silently changing the close record.
+- **Offline Sales → end-of-day close**: a confirmed sale belongs to the business day of cashier submission; confirmation after that day's close creates an auditable adjustment rather than silently changing the close record.
 - **Inventory → print output**: labels may display current drug information, but the generated PDF does not own stock or price facts.
 - **Catalog → Inventory**: Catalog identifies a drug and its configured prices; Inventory owns its on-hand quantity and lots.
 - **Catalog → Sales**: Sales retains the cashier-approved transaction-time price; a later Catalog price change cannot silently reprice an offline sale.

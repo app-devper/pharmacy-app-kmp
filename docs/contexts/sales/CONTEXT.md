@@ -12,9 +12,13 @@ _Avoid_: Pending sale, cart
 A cashier's submitted sale intent awaiting authoritative confirmation, including one retained for later delivery while offline.
 _Avoid_: Completed sale
 
-**Sale time**:
-The time the cashier made the sale, distinct from the time it was later confirmed.
-_Avoid_: Sync time
+**Cashier submission time**:
+The time the cashier submitted a sale intent, whether or not the sale has been confirmed.
+_Avoid_: Sale confirmation time
+
+**Sale confirmation time**:
+The time the sale became confirmed by the authoritative system, which may be later than cashier submission when the client was offline.
+_Avoid_: Cashier submission time
 
 **Sale price snapshot**:
 The price recorded for a drug in a confirmed sale, distinct from its configured price at a later time.
