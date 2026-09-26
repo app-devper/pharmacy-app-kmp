@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -172,7 +173,11 @@ internal fun StockTable(
         columns = columns,
         key = { it.id },
         modifier = modifier,
-        onRowClick = { drug -> callbacks.onEditDrug(drug) },
+        onRowClick = if (LocalRolePermissions.current.canEditDrugs) {
+            { drug -> callbacks.onEditDrug(drug) }
+        } else {
+            { drug -> callbacks.onOpenLots(drug) }
+        },
         emptyContent = {
             if (emptySearching) {
                 PharmEmptyState(
@@ -263,14 +268,15 @@ private fun StockStatusBadge(drug: Drug) {
 @Composable
 private fun StockRowActions(drug: Drug, callbacks: StockCallbacks) {
     val s = pharmStrings
-    val actions = remember(drug.id, callbacks, s) {
-        listOf(
+    val permissions = LocalRolePermissions.current
+    val actions = remember(drug.id, callbacks, s, permissions) {
+        listOfNotNull(
             PharmAction(
                 label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 tone = PharmActionTone.Primary,
                 onClick = { callbacks.onEditDrug(drug) },
-            ),
+            ).takeIf { permissions.canEditDrugs },
             PharmAction(
                 label = s.labelsLotPrefix,
                 icon = PharmIcons.Stock,
@@ -281,7 +287,7 @@ private fun StockRowActions(drug: Drug, callbacks: StockCallbacks) {
                 icon = PharmIcons.Pencil,
                 tone = PharmActionTone.Success,
                 onClick = { callbacks.onOpenAdjust(drug) },
-            ),
+            ).takeIf { permissions.canManageStock },
             PharmAction(
                 label = s.stockActionHistory,
                 icon = PharmIcons.Movements,

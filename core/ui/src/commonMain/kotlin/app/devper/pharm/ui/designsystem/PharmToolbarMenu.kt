@@ -12,14 +12,14 @@ import app.devper.pharm.ui.components.LocalWindowSize
 @Composable
 fun PharmToolbarMenu(
     actions: List<PharmAction>,
-    promotedAction: PharmAction,
+    promotedAction: PharmAction?,
     modifier: Modifier = Modifier,
 ) {
     val compact = LocalWindowSize.current.isCompactShell
     val spacing = pharmTokens.spacing.s2
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(spacing), verticalAlignment = Alignment.CenterVertically) {
-        PharmActionMenu(actions = if (compact) actions + promotedAction else actions)
-        if (!compact) {
+        PharmActionMenu(actions = if (compact) actions + listOfNotNull(promotedAction) else actions)
+        if (!compact && promotedAction != null) {
             PharmButton(
                 label = promotedAction.label,
                 onClick = promotedAction.onClick,
