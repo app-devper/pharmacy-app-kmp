@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -171,8 +172,9 @@ private fun CustomerPlaceholderCell() {
 @Composable
 private fun CustomerRowActions(customer: Customer, callbacks: CustomersListCallbacks) {
     val s = pharmStrings
-    val actions = remember(customer.id, callbacks, s) {
-        listOf(
+    val canEdit = LocalRolePermissions.current.canEditCustomers
+    val actions = remember(customer.id, callbacks, s, canEdit) {
+        listOfNotNull(
             PharmAction(
                 label = s.customersActionHistory,
                 icon = PharmIcons.SalesHistory,
@@ -183,13 +185,13 @@ private fun CustomerRowActions(customer: Customer, callbacks: CustomersListCallb
                 label = s.commonEdit,
                 icon = PharmIcons.Pencil,
                 onClick = { callbacks.onOpenEdit(customer) },
-            ),
+            ).takeIf { canEdit },
             PharmAction(
                 label = s.commonDelete,
                 icon = PharmIcons.Trash,
                 tone = PharmActionTone.Danger,
                 onClick = { callbacks.onDelete(customer) },
-            ),
+            ).takeIf { canEdit },
         )
     }
     PharmActionMenu(actions = actions)
