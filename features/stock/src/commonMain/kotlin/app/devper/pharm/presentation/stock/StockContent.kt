@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -56,13 +57,15 @@ fun StockContent(
             pageIsEmpty -> PharmEmptyState(
                 icon = PharmIcons.Stock,
                 title = pharmStrings.stockListEmpty,
-                action = {
-                    PharmButton(
-                        label = pharmStrings.stockAddDrugCta,
-                        onClick = callbacks.onAddDrug,
-                        size = PharmButtonSize.Sm,
-                    )
-                },
+                action = if (LocalRolePermissions.current.canEditDrugs) {
+                    {
+                        PharmButton(
+                            label = pharmStrings.stockAddDrugCta,
+                            onClick = callbacks.onAddDrug,
+                            size = PharmButtonSize.Sm,
+                        )
+                    }
+                } else null,
             )
             else -> StockTable(
                 drugs = visible,

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import androidx.compose.runtime.Composable
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.AltUnit
@@ -182,7 +183,8 @@ internal fun SellOverlays(
                 ReceiptDialog(
                     template = template,
                     onDismiss = callbacks.onDismissReceipt,
-                    onVoid = sale.id.takeIf { it.isNotBlank() }?.let { { callbacks.onOpenVoidSheet() } },
+                    onVoid = sale.id.takeIf { it.isNotBlank() && LocalRolePermissions.current.canVoidSales }
+                        ?.let { { callbacks.onOpenVoidSheet() } },
                     onPrint = { callbacks.onPrintReceipt(sale) },
                 )
             }

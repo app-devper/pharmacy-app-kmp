@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -60,7 +61,7 @@ fun CustomerDetailContent(
             subtitle = state.customer?.name,
             onBack = callbacks.onBack,
             actions = {
-                Box(
+                if (LocalRolePermissions.current.canEditCustomers) Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(t.shapes.md)

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import app.devper.pharm.presentation.stock.i18n.label
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,6 +26,7 @@ internal fun StockToolbar(
     modifier: Modifier = Modifier,
 ) {
     val s = pharmStrings
+    val permissions = LocalRolePermissions.current
     val exportHeaders = listOf(
         s.stockHeaderName,
         s.stockHeaderGeneric,
@@ -43,10 +45,12 @@ internal fun StockToolbar(
         searchValue = query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = pharmStrings.stockSearchPlaceholder,
-        primaryAction = { StockAddDrugButton(callbacks = callbacks) },
+        primaryAction = if (permissions.canEditDrugs) {
+            { StockAddDrugButton(callbacks = callbacks) }
+        } else null,
         actions = {
             PharmToolbarMenu(
-                actions = listOf(
+                actions = listOfNotNull(
                     PharmAction(
                         label = "Excel",
                         onClick = { callbacks.onExportExcel(exportHeaders) },
@@ -56,13 +60,13 @@ internal fun StockToolbar(
                         label = s.stockActionImport,
                         onClick = callbacks.onImport,
                         icon = PharmIcons.Imports,
-                    ),
+                    ).takeIf { permissions.canEditDrugs },
                 ),
                 promotedAction = PharmAction(
                     label = s.stockActionPurchase,
                     onClick = callbacks.onOpenReorderSuggestions,
                     icon = PharmIcons.OfflineSync,
-                ),
+                ).takeIf { permissions.canManageStock },
             )
         },
         filters = {
