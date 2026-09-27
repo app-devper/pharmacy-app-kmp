@@ -40,6 +40,7 @@ class SaleHistoryRepositoryImpl(
             request = DrugReturnRequest(
                 reason = param.reason,
                 items = param.items.map { DrugReturnItemRequest(it.saleItemId, it.qty) },
+                clientRequestId = param.clientRequestId,
             ),
         )
         stockChangeBus.emit()

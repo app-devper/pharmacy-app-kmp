@@ -40,6 +40,7 @@ data class SaleLotSplitDto(
 data class DrugReturnRequest(
     @SerialName("items") val items: List<DrugReturnItemRequest>,
     @SerialName("reason") val reason: String,
+    @SerialName("client_request_id") val clientRequestId: String? = null,
 )
 
 @Serializable

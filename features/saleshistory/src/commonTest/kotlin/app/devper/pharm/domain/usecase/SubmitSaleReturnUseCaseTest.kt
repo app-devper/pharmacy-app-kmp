@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -33,7 +34,38 @@ class SubmitSaleReturnUseCaseTest {
         val result = SubmitSaleReturnUseCase(repo, testDispatchers()).invoke(param)
 
         assertTrue(result.isSuccess)
-        assertEquals(param, repo.lastSubmitReturn)
+        assertEquals(param, repo.lastSubmitReturn?.copy(clientRequestId = null))
+        assertNotNull(repo.lastSubmitReturn?.clientRequestId)
+    }
+
+    private fun returnOf(qty: Int) = SubmitReturnParam(
+        saleId = "s1",
+        reason = "ลูกค้าคืน",
+        items = listOf(ReturnLineParam(saleItemId = "i1", qty = qty)),
+    )
+
+    @Test
+    fun retry_of_the_same_return_reuses_its_request_id() = runTest {
+        val repo = FakeSaleHistoryRepository().apply { failNextSubmit = true }
+        val useCase = SubmitSaleReturnUseCase(repo, testDispatchers())
+
+        assertTrue(useCase(returnOf(1)).isFailure)
+        assertTrue(useCase(returnOf(1)).isSuccess)
+
+        assertEquals(2, repo.submittedRequestIds.size)
+        assertEquals(repo.submittedRequestIds[0], repo.submittedRequestIds[1])
+    }
+
+    @Test
+    fun a_changed_or_new_return_gets_a_new_request_id() = runTest {
+        val repo = FakeSaleHistoryRepository().apply { failNextSubmit = true }
+        val useCase = SubmitSaleReturnUseCase(repo, testDispatchers())
+
+        assertTrue(useCase(returnOf(1)).isFailure)
+        assertTrue(useCase(returnOf(2)).isSuccess) // cashier changed the quantity
+        assertTrue(useCase(returnOf(2)).isSuccess) // a second, separate return
+
+        assertEquals(3, repo.submittedRequestIds.toSet().size)
     }
 
     @Test
