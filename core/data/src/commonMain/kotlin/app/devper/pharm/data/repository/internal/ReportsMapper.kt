@@ -17,6 +17,8 @@ import app.devper.pharm.domain.model.DailySales
 import app.devper.pharm.domain.model.Dashboard
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.model.EodCloseResult
+import app.devper.pharm.domain.model.EodAdjustments
+import app.devper.pharm.domain.model.EodCloseInfo
 import app.devper.pharm.domain.model.EodReport
 import app.devper.pharm.domain.model.MonthlySales
 import app.devper.pharm.domain.model.ProfitReport
@@ -73,6 +75,15 @@ internal fun EodReportDto.toDomain(): EodReport = EodReport(
     totalChange = totalChange,
     netCash = netCash,
     bills = bills.map { it.toDomain() },
+    close = close?.let { EodCloseInfo(closeId = it.closeId, closedAt = it.closedAt.parseLocalDateTimeOrNull(), closedBy = it.closedBy) },
+    adjustments = adjustments?.let {
+        EodAdjustments(
+            count = it.items.size,
+            adjustedBillCount = it.adjustedBillCount,
+            adjustedTotalSales = it.adjustedTotalSales,
+            adjustedNetCash = it.adjustedNetCash,
+        )
+    },
 )
 
 internal fun EodCloseResultDto.toDomain(): EodCloseResult = EodCloseResult(

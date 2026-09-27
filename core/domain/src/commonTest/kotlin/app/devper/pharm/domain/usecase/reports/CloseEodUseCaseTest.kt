@@ -21,6 +21,7 @@ import app.devper.pharm.domain.param.reports.DashboardRangeParam
 import app.devper.pharm.domain.param.reports.EodReportParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
 import app.devper.pharm.domain.param.reports.TopOrSlowDrugsParam
+import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.repository.reports.ReportsRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -90,7 +91,7 @@ class CloseEodUseCaseTest {
     @Test
     fun happy_path_returns_repo_result_and_passes_param_through() = runTest {
         val repo = StubReportsRepository(closeResult = sampleClose)
-        val uc = CloseEodUseCase(repo, testDispatchers())
+        val uc = CloseEodUseCase(repo, FakeProfileRepository(), testDispatchers())
         val outcome = uc(CloseEodParam(date = kotlinx.datetime.LocalDate.parse("2026-05-19")))
         assertTrue(outcome.isSuccess)
         assertEquals(sampleClose, outcome.getOrThrow())
@@ -100,7 +101,7 @@ class CloseEodUseCaseTest {
     @Test
     fun network_failure_propagates_as_typed_AppException_in_Result_failure() = runTest {
         val repo = StubReportsRepository(closeThrows = NetworkException())
-        val uc = CloseEodUseCase(repo, testDispatchers())
+        val uc = CloseEodUseCase(repo, FakeProfileRepository(), testDispatchers())
         val outcome = uc(CloseEodParam(date = kotlinx.datetime.LocalDate.parse("2026-05-19")))
         assertTrue(outcome.isFailure)
         val e = outcome.exceptionOrNull()
@@ -111,11 +112,26 @@ class CloseEodUseCaseTest {
     @Test
     fun conflict_failure_propagates_as_typed_ConflictException_in_Result_failure() = runTest {
         val repo = StubReportsRepository(closeThrows = ConflictException(message = "already closed"))
-        val uc = CloseEodUseCase(repo, testDispatchers())
+        val uc = CloseEodUseCase(repo, FakeProfileRepository(), testDispatchers())
         val outcome = uc(CloseEodParam(date = kotlinx.datetime.LocalDate.parse("2026-05-19")))
         assertTrue(outcome.isFailure)
         val e = outcome.exceptionOrNull()
         assertTrue(e is ConflictException)
         assertEquals("already closed", e.message)
+    }
+
+    @Test
+    fun sends_the_signed_in_users_display_name_for_the_receipt() = runTest {
+        val repo = StubReportsRepository(closeResult = sampleClose)
+        CloseEodUseCase(repo, FakeProfileRepository(), testDispatchers())(CloseEodParam())
+        assertEquals("สมชาย ใจดี", repo.lastCloseParam?.closedByName)
+    }
+
+    @Test
+    fun a_failed_profile_lookup_still_closes_the_day_without_a_name() = runTest {
+        val repo = StubReportsRepository(closeResult = sampleClose)
+        val outcome = CloseEodUseCase(repo, FakeProfileRepository(getFailsWith = NetworkException()), testDispatchers())(CloseEodParam())
+        assertTrue(outcome.isSuccess)
+        assertEquals("", repo.lastCloseParam?.closedByName)
     }
 }
