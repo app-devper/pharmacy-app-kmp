@@ -16,6 +16,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
+import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.OversellShortfall
 import app.devper.pharm.domain.param.sales.CheckoutLineParam
 import app.devper.pharm.domain.param.sales.CheckoutParam
@@ -44,8 +45,9 @@ class CheckoutUseCase(
         received: Money,
         allowOversell: Boolean = false,
         kySkippedByCashier: Boolean = false,
+        kyForms: List<KyForm> = emptyList(),
     ): Result<CheckoutOutcome> = invoke(
-        RunCheckoutParam(received, allowOversell, kySkippedByCashier),
+        RunCheckoutParam(received, allowOversell, kySkippedByCashier, kyForms),
     )
 
     override suspend fun execute(param: RunCheckoutParam): CheckoutOutcome {
@@ -71,7 +73,7 @@ class CheckoutUseCase(
         } catch (e: Exception) {
             if (e is CancellationException) throw e
             if (e.looksLikeTemporaryOutage() && serialized != null) {
-                offlineQueue.enqueue(EnqueueOfflineSaleParam(requestId, serialized))
+                offlineQueue.enqueue(EnqueueOfflineSaleParam(requestId, serialized, param.kyForms))
                 cart.clear()
                 pendingAttempt = null
                 return CheckoutOutcome.OfflineSaved

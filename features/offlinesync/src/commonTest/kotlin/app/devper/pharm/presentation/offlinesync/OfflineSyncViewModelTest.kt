@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.offlinesync
 
+import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.observer.OfflineQueueProvider
@@ -30,7 +31,7 @@ class OfflineSyncViewModelTest {
         val vm = OfflineSyncViewModel(
             offlineQueue = OfflineQueueProvider(queue),
             markSynced = MarkOfflineSaleSyncedUseCase(queue, dispatchers),
-            retrySale = RetryOfflineSaleUseCase(queue, sales, dispatchers),
+            retrySale = RetryOfflineSaleUseCase(queue, sales, FakeKyRepository(), dispatchers),
             timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
         return Triple(vm, queue, sales)

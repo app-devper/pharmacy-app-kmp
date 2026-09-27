@@ -22,5 +22,5 @@ The current pharmacy router has one broad ADMIN group. The agreed target splits 
 | --- | --- |
 | USER and above | Create sales; return items against a bill with actor and reason; read ordinary drug catalog. |
 | MANAGER and above | Stock counts, adjustments and lots; goods receipt and suppliers; customer profile edits; label printing; operational `/report/slow-drugs` read. |
-| ADMIN and above | Drug identity and selling-price edits; whole-bill void; KY administration; store-setting writes; `/report/summary`, `/report/dashboard`, `/report/daily`, `/report/monthly`, and `/report/top-drugs`. |
+| ADMIN and above | Drug identity and selling-price edits; whole-bill void; KY administration (ky9, reading registers, export; recording ky10–12 at checkout is USER+); store-setting writes; `/report/summary`, `/report/dashboard`, `/report/daily`, `/report/monthly`, and `/report/top-drugs`. |
 | Current session required within 60 seconds | Every write and sensitive read, including customer data, sale history, bill items, customer-bearing receipts, KY, financial and user data, and business-rule settings. Ordinary catalog reads may use a valid signed token during an identity-service outage. |

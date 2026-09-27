@@ -6,7 +6,9 @@ import app.devper.pharm.common.value.Money
 
 import app.devper.pharm.common.PrintlnLogger
 import app.devper.pharm.common.platform.ConnectivityObserver
+import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.param.sales.CheckoutParam
 import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
@@ -39,7 +41,7 @@ class OfflineAutoSyncTest {
         return OfflineAutoSync(
             connectivity = object : ConnectivityObserver { override val online = online },
             queue = queue,
-            retry = RetryOfflineSaleUseCase(queue, sales, testDispatchers(d)),
+            retry = RetryOfflineSaleUseCase(queue, sales, FakeKyRepository(), testDispatchers(d)),
             logger = PrintlnLogger(),
         )
     }
@@ -107,6 +109,7 @@ private class Queue(initial: List<PendingSale>) : OfflineSaleQueue {
     override fun enqueue(param: EnqueueOfflineSaleParam): String = ""
     override fun markSynced(id: String) { synced += id }
     override fun markFailed(param: MarkOfflineSaleFailedParam) { failedIds += param.id }
+    override fun setKyForms(id: String, forms: List<KyForm>) {}
     override fun clear() {}
 }
 
