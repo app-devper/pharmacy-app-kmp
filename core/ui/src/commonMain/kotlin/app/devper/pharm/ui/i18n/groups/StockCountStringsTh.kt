@@ -48,6 +48,8 @@ object StockCountStringsTh : StockCountStrings {
     override val stockCountFormEmptySearching = "ไม่พบยาที่ค้นหา"
     override val stockCountFormEmptyDefault = "ยังไม่มีรายการยา"
     override val stockCountFormInvalidCount = "ใส่จำนวน 0 ขึ้นไป"
+    override val stockCountLotStepTitle = "เลือกล็อตสำหรับยาที่นับได้เพิ่ม"
+    override val stockCountLotStepMessage = "ยาที่นับได้มากกว่าในระบบต้องระบุว่าจำนวนที่เพิ่มอยู่ล็อตไหน"
     override val stockCountFormConfirmTitle = "ยืนยันการปรับสต็อก"
     override val stockCountFormConfirmMessage = "ระบบจะปรับสต็อกตามจำนวนที่นับ — ยืนยันแล้วไม่สามารถย้อนกลับได้"
     override val stockCountFormConfirmCta = "ยืนยัน"
