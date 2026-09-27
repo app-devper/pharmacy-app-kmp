@@ -20,6 +20,7 @@ import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
 import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
+import app.devper.pharm.domain.usecase.ky.toForms
 import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.ui.common.BaseLoadableViewModel
@@ -198,7 +199,14 @@ class CheckoutViewModel(
 
         setState { copy(checkingOut = true, errorState = null) }
         launchResult(
-            block = { checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit) },
+            block = {
+                // Blank sale id: the forms are sent with the confirmed id after
+                // checkout, or queued with the bill if it goes offline.
+                val kyForms = if (kyRequiredAtSubmit != null && kyFieldsAtSubmit != null) {
+                    kyRequiredAtSubmit.toForms(saleId = "", captured = kyFieldsAtSubmit, date = todayLocalDate(tzAtSubmit))
+                } else emptyList()
+                checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit, kyForms)
+            },
             onSuccess = { outcome ->
                 when (outcome) {
                     CheckoutOutcome.CartChanged -> {

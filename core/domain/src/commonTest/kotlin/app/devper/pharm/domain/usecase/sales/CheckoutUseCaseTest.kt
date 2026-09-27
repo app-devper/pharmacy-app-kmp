@@ -2,6 +2,8 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.model.KyForm
+import kotlinx.datetime.LocalDate
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
@@ -163,6 +165,21 @@ class CheckoutUseCaseTest {
         assertEquals("serialized", queue.lastEnqueue?.payloadJson)
         assertTrue(cart.state.value.active.items.isEmpty())
         assertNull(cart.committed)
+    }
+
+    @Test
+    fun network_failure_queues_ky_forms_with_the_bill() = runTest {
+        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val queue = FakeOfflineSaleQueue()
+        val form = KyForm.Ky11(
+            saleId = "", date = LocalDate(2026, 9, 27), drugName = "Dextro", regNo = "R2", qty = 1,
+            unit = "tab", buyerName = "A", purpose = "cough", pharmacist = "P",
+        )
+        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), queue, testDispatchers())
+            .invoke(Money(100.0), kyForms = listOf(form)).getOrThrow()
+        assertEquals(CheckoutOutcome.OfflineSaved, result)
+        assertEquals(listOf(form), queue.lastEnqueue?.kyForms)
+        assertEquals(listOf(form), queue.pending.value.single().kyForms)
     }
 
     @Test

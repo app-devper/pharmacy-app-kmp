@@ -18,6 +18,8 @@ class FakeKyRepository(
     private val ky12Throws: Boolean = false,
     private val ky9Throws: Boolean = false,
     private val listThrows: Boolean = false,
+    /** Thrown by submitKy10 instead of ky10Throws' ServerException, e.g. a network failure. */
+    private val ky10Error: Throwable? = null,
 ) : KyRepository {
 
     val ky10Submissions = mutableListOf<KyForm.Ky10>()
@@ -26,6 +28,7 @@ class FakeKyRepository(
     val ky9Adds = mutableListOf<AddKy9Param>()
 
     override suspend fun submitKy10(form: KyForm.Ky10) {
+        ky10Error?.let { throw it }
         if (ky10Throws) throw ServerException("ky10 failed")
         ky10Submissions += form
     }
