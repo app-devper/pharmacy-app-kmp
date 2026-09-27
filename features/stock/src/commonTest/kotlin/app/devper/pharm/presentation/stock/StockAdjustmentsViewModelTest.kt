@@ -3,7 +3,12 @@ package app.devper.pharm.presentation.stock
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
+import app.devper.pharm.domain.repository.FakeLotsRepository
 import app.devper.pharm.domain.repository.FakeStockAdjustmentsRepository
+import app.devper.pharm.domain.model.DrugLot
+import app.devper.pharm.domain.model.LotTarget
+import app.devper.pharm.common.value.Quantity
+import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.domain.usecase.inventory.AddStockAdjustmentUseCase
 import app.devper.pharm.domain.usecase.inventory.GetStockAdjustmentsUseCase
 import app.devper.pharm.ui.common.runVmTest
@@ -39,10 +44,12 @@ class StockAdjustmentsViewModelTest {
     private fun newVm(
         dispatchers: AppDispatchers,
         repo: FakeStockAdjustmentsRepository = FakeStockAdjustmentsRepository(),
+        lots: FakeLotsRepository = FakeLotsRepository(),
     ): Bundle {
         val vm = StockAdjustmentsViewModel(
             getAdjustments = GetStockAdjustmentsUseCase(repo, dispatchers),
             addAdjustment = AddStockAdjustmentUseCase(repo, dispatchers),
+            listLots = ListLotsUseCase(lots, dispatchers),
         )
         return Bundle(vm, repo)
     }
@@ -211,5 +218,66 @@ class StockAdjustmentsViewModelTest {
         assertNotNull(vm.state.value.errorState)
         vm.dismissError()
         assertNull(vm.state.value.errorState)
+    }
+
+    private fun lot(id: String, expiry: String, writtenOff: Boolean = false) = DrugLot(
+        id = id,
+        drugId = "d1",
+        lotNumber = "L-$id",
+        expiryDate = kotlinx.datetime.LocalDate.parse(expiry),
+        importDate = kotlinx.datetime.LocalDate.parse("2026-01-01"),
+        quantity = Quantity(10),
+        remaining = Quantity(10),
+        writtenOff = writtenOff,
+    )
+
+    @Test
+    fun an_increase_of_a_lot_tracked_drug_goes_into_the_latest_expiring_lot_by_default() = runVmTest { dispatchers ->
+        val lots = FakeLotsRepository(seed = listOf(lot("early", "2026-12-31"), lot("late", "2027-06-30"), lot("gone", "2028-01-01", writtenOff = true)))
+        val (vm, repo) = newVm(dispatchers, lots = lots)
+        vm.open("d1", "Paracetamol")
+        advanceUntilIdle()
+        vm.toggleAddForm()
+        vm.onSign(AdjustmentSign.Increase)
+        vm.onAbsDelta("3")
+        assertTrue(vm.state.value.lotNeeded)
+        assertEquals(listOf("late", "early"), vm.state.value.lots.map { it.id })
+
+        vm.submitAdd()
+        advanceUntilIdle()
+        assertEquals(LotTarget.Existing("late"), repo.lastAdd?.lot)
+    }
+
+    @Test
+    fun a_new_lot_needs_its_number_and_expiry() = runVmTest { dispatchers ->
+        val (vm, repo) = newVm(dispatchers, lots = FakeLotsRepository(seed = listOf(lot("a", "2026-12-31"))))
+        vm.open("d1", "Paracetamol")
+        advanceUntilIdle()
+        vm.toggleAddForm()
+        vm.onSign(AdjustmentSign.Increase)
+        vm.onAbsDelta("2")
+        vm.onLotChoice(AdjustmentDraft.NEW_LOT)
+        assertFalse(vm.state.value.canSubmitDraft)
+
+        vm.onNewLotNumber("N1")
+        vm.onNewLotExpiry("2027-03-01")
+        assertTrue(vm.state.value.canSubmitDraft)
+        vm.submitAdd()
+        advanceUntilIdle()
+        assertEquals(LotTarget.New("N1", kotlinx.datetime.LocalDate.parse("2027-03-01")), repo.lastAdd?.lot)
+    }
+
+    @Test
+    fun a_decrease_or_a_drug_without_lots_sends_no_lot() = runVmTest { dispatchers ->
+        val (vm, repo) = newVm(dispatchers)
+        vm.open("d1", "Paracetamol")
+        advanceUntilIdle()
+        vm.toggleAddForm()
+        vm.onSign(AdjustmentSign.Increase)
+        vm.onAbsDelta("1")
+        assertFalse(vm.state.value.lotNeeded)
+        vm.submitAdd()
+        advanceUntilIdle()
+        assertNull(repo.lastAdd?.lot)
     }
 }

@@ -20,6 +20,8 @@ object StockStringsEn : StockStrings {
     override val stockTypeFilterSupplement = "Supplements"
     override val stockLotDeleteBody: (String, Int) -> String = { lot, remaining -> "Lot $lot will be removed; drug stock decreases by $remaining (the movement is recorded)" }
     override val stockLotExpiryRemaining: (String, Int, Int) -> String = { d, a, b -> "Expires $d · $a/$b left" }
+    override val stockIncreaseLot = "Add to lot"
+    override val stockNewLot = "+ New lot"
     override val stockLotDeleteDesc = "Delete lot"
     override val stockLotSaveCta = "Save lot"
     override val stockHeaderStock = "Stock"

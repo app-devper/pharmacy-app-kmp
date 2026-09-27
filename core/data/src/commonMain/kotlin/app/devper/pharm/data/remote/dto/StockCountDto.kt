@@ -32,4 +32,5 @@ data class StockCountInputDto(
 data class StockCountInputItemDto(
     @SerialName("drug_id") val drugId: String,
     @SerialName("counted") val counted: Int,
+    @SerialName("lot") val lot: LotTargetDto? = null,
 )

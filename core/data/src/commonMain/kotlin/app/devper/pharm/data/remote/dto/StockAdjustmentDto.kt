@@ -21,4 +21,12 @@ data class StockAdjustmentInputDto(
     @SerialName("delta") val delta: Int,
     @SerialName("reason") val reason: String,
     @SerialName("note") val note: String = "",
+    @SerialName("lot") val lot: LotTargetDto? = null,
+)
+
+@Serializable
+data class LotTargetDto(
+    @SerialName("lot_id") val lotId: String? = null,
+    @SerialName("lot_number") val lotNumber: String? = null,
+    @SerialName("expiry_date") val expiryDate: String? = null,
 )

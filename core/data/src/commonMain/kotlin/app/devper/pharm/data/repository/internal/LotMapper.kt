@@ -20,6 +20,7 @@ internal fun DrugLotDto.toDomain(): DrugLot = DrugLot(
     sellPrice = sellPrice?.let(::Money),
     quantity = Quantity(quantity),
     remaining = Quantity(remaining),
+    writtenOff = !writtenOffAt.isNullOrBlank(),
 )
 
 internal fun AddLotParam.toRequest(): DrugLotInputDto = DrugLotInputDto(
