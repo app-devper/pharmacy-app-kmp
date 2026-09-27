@@ -37,7 +37,7 @@ A durable record that a responsible user closed a defined sales period at a part
 _Avoid_: End-of-day report
 
 **Late sale adjustment**:
-An auditable addition to an already closed sales period when a sale made earlier is confirmed after that period closed.
+An auditable change to an already closed sales period, recorded when a sale is confirmed on that day after it closed, a bill of that day is voided, or a return is made on that day after it closed. The close's own figures never change; the period's current figures are the close plus its adjustments.
 _Avoid_: Silent close revision
 
 **Sale sync conflict**:

@@ -61,11 +61,35 @@ data class EodReportDto(
     @SerialName("total_change") val totalChange: Double = 0.0,
     @SerialName("net_cash") val netCash: Double = 0.0,
     @SerialName("bills") val bills: List<SaleSummaryDto> = emptyList(),
+    @SerialName("close") val close: EodCloseInfoDto? = null,
+    @SerialName("adjustments") val adjustments: EodAdjustmentsDto? = null,
+)
+
+@Serializable
+data class EodCloseInfoDto(
+    @SerialName("close_id") val closeId: String = "",
+    @SerialName("closed_at") val closedAt: String = "",
+    @SerialName("closed_by") val closedBy: String = "",
+)
+
+@Serializable
+data class EodAdjustmentsDto(
+    @SerialName("items") val items: List<EodAdjustmentDto> = emptyList(),
+    @SerialName("adjusted_bill_count") val adjustedBillCount: Int = 0,
+    @SerialName("adjusted_total_sales") val adjustedTotalSales: Double = 0.0,
+    @SerialName("adjusted_net_cash") val adjustedNetCash: Double = 0.0,
+)
+
+@Serializable
+data class EodAdjustmentDto(
+    @SerialName("kind") val kind: String = "",
+    @SerialName("ref_no") val refNo: String = "",
 )
 
 @Serializable
 data class CloseEodRequestDto(
     @SerialName("date") val date: String = "",
+    @SerialName("closed_by_name") val closedByName: String = "",
 )
 
 @Serializable
