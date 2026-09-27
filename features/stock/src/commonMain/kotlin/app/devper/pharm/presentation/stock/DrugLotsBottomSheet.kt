@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.components.LocalRolePermissions
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -199,7 +200,9 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
                     items(state.lots, key = { it.id }) { lot ->
                         LotRow(
                             lot = lot,
-                            onDelete = { callbacks.onRequestDelete(lot) },
+                            onDelete = if (LocalRolePermissions.current.canManageStock) {
+                                { callbacks.onRequestDelete(lot) }
+                            } else null,
                             enabled = !state.saving,
                         )
                     }
@@ -208,7 +211,7 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
         }
 
         Spacer(Modifier.height(8.dp))
-        PharmButton(
+        if (LocalRolePermissions.current.canManageStock) PharmButton(
             label = if (state.addFormOpen) pharmStrings.stockLotCloseAddForm else pharmStrings.stockLotAddCta,
             onClick = callbacks.onToggleAddForm,
             enabled = !state.saving,
@@ -224,7 +227,7 @@ private fun LotsBody(state: DrugLotsUiState, callbacks: DrugLotsCallbacks) {
 }
 
 @Composable
-private fun LotRow(lot: DrugLot, onDelete: () -> Unit, enabled: Boolean) {
+private fun LotRow(lot: DrugLot, onDelete: (() -> Unit)?, enabled: Boolean) {
     val t = pharmTokens
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -241,7 +244,7 @@ private fun LotRow(lot: DrugLot, onDelete: () -> Unit, enabled: Boolean) {
                 style = PharmText.micro.tabular().copy(color = t.colors.fg2),
             )
         }
-        PharmButton(
+        if (onDelete != null) PharmButton(
             onClick = onDelete,
             enabled = enabled,
             variant = PharmButtonVariant.Ghost,

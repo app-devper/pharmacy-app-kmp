@@ -56,6 +56,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.extension.atLeast
+import app.devper.pharm.domain.model.RolePermissions
+import app.devper.pharm.domain.model.permissions
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.LocalCompactTopbarActions
@@ -90,6 +92,9 @@ data class SidebarState(
 val LocalSidebarState = staticCompositionLocalOf { SidebarState() }
 val LocalPageTitle = staticCompositionLocalOf { "" }
 
+/** The signed-in role's permissions; screens hide actions the backend would refuse. */
+val LocalRolePermissions = staticCompositionLocalOf { RolePermissions.Full }
+
 @Composable
 fun AppShell(
     title: String,
@@ -109,6 +114,10 @@ fun AppShell(
     onUnsavedChangesChanged: (Boolean) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    val permissions = role.permissions()
+    val scopedContent: @Composable () -> Unit = {
+        CompositionLocalProvider(LocalRolePermissions provides permissions, content = content)
+    }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val size = remember(maxWidth) { WindowSize.fromWidth(maxWidth) }
         val useCompactShell = usesCompactAppShell(size)
@@ -162,7 +171,7 @@ fun AppShell(
                     onSyncClick = onSyncClick,
                     user = user,
                     onProfileClick = guardedProfileClick,
-                    content = content,
+                    content = scopedContent,
                 )
             } else {
                 ExpandedShell(
@@ -174,7 +183,7 @@ fun AppShell(
                     onSyncClick = onSyncClick,
                     user = user,
                     onProfileClick = guardedProfileClick,
-                    content = content,
+                    content = scopedContent,
                 )
             }
             UnsavedChangesDialog(unsavedChangesController)
