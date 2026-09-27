@@ -28,6 +28,10 @@ _Avoid_: Current catalog price
 A reversal of some or all goods from a confirmed sale, with its own confirmed outcome.
 _Avoid_: New sale, repeated return
 
+**Commercial command**:
+A sale or return submitted with a stable request identity, so a retry after a lost response yields the originally recorded outcome instead of a second transaction; the same identity with different content is refused.
+_Avoid_: Retry, duplicate submission
+
 **End-of-day close**:
 A durable record that a responsible user closed a defined sales period at a particular time. It is distinct from viewing an end-of-day report.
 _Avoid_: End-of-day report

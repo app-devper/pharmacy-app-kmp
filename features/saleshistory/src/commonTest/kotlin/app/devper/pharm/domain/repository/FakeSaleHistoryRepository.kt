@@ -21,6 +21,10 @@ class FakeSaleHistoryRepository(
         private set
     var lastSubmitReturn: SubmitReturnParam? = null
         private set
+    /** Request id of every submit attempt, including failed ones. */
+    val submittedRequestIds = mutableListOf<String?>()
+    /** When true the next submit fails once, like a lost response. */
+    var failNextSubmit: Boolean = false
     var listCallCount: Int = 0
         private set
     var itemsCallCount: Int = 0
@@ -47,6 +51,11 @@ class FakeSaleHistoryRepository(
     }
 
     override suspend fun submitReturn(param: SubmitReturnParam) {
+        submittedRequestIds += param.clientRequestId
+        if (failNextSubmit) {
+            failNextSubmit = false
+            throw RuntimeException("Failed to connect to host")
+        }
         if (submitThrowsOn != null && param.saleId == submitThrowsOn) {
             throw RuntimeException("submit failed for ${param.saleId}")
         }
