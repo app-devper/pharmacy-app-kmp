@@ -1,5 +1,11 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.domain.model.DrugLot
+import app.devper.pharm.domain.model.LotTarget
+import app.devper.pharm.domain.param.inventory.AddLotParam
+import app.devper.pharm.domain.param.inventory.DeleteLotParam
+import app.devper.pharm.domain.repository.inventory.LotsRepository
+import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -57,6 +63,7 @@ class StockCountFormViewModelTest {
         drugs: FakeDrugRepository = FakeDrugRepository(),
         counts: FakeStockCountsRepository = FakeStockCountsRepository(),
         drafts: FakeStockCountDraftRepository = FakeStockCountDraftRepository(),
+        lots: Map<String, List<DrugLot>> = emptyMap(),
     ): Bundle {
         val vm = StockCountFormViewModel(
             getDrugs = GetDrugsUseCase(drugs, dispatchers),
@@ -64,6 +71,7 @@ class StockCountFormViewModelTest {
             loadDraft = LoadStockCountDraftUseCase(drafts),
             saveDraft = SaveStockCountDraftUseCase(drafts, dispatchers),
             clearDraft = ClearStockCountDraftUseCase(drafts, dispatchers),
+            listLots = ListLotsUseCase(LotsByDrug(lots), dispatchers),
         )
         return Bundle(vm, drugs, counts, drafts)
     }
@@ -407,4 +415,62 @@ class StockCountFormViewModelTest {
         assertEquals(5, tops.size)
         assertEquals(listOf("b", "f", "d", "c", "a"), tops.map { it.drugId })
     }
+
+    private fun lot(id: String, drugId: String, expiry: String) = DrugLot(
+        id = id, drugId = drugId, lotNumber = "L-$id",
+        expiryDate = kotlinx.datetime.LocalDate.parse(expiry), importDate = null,
+        quantity = Quantity(10), remaining = Quantity(10),
+    )
+
+    @Test
+    fun a_counted_increase_of_a_lot_tracked_drug_asks_for_its_lot_before_saving() = runVmTest { dispatchers ->
+        val (vm, _, counts, _) = newVm(
+            dispatchers,
+            drugs = FakeDrugRepository(seed = listOf(drug("up", stock = Quantity(5)), drug("down", stock = Quantity(5)), drug("plain", stock = Quantity(1)))),
+            lots = mapOf("up" to listOf(lot("a", "up", "2026-12-31"), lot("b", "up", "2027-06-30")), "down" to listOf(lot("c", "down", "2026-12-31"))),
+        )
+        advanceUntilIdle()
+        vm.onCountChange("up", "8")
+        vm.onCountChange("down", "2")
+        vm.onCountChange("plain", "3")
+        vm.requestSubmit()
+        vm.confirmSubmit()
+        advanceUntilIdle()
+
+        val step = vm.state.value.lotStep
+        assertEquals(listOf("up"), step?.map { it.drugId }, "only increases of lot-tracked drugs need a lot")
+        assertEquals("b", step?.single()?.choice, "defaults to the latest-expiring lot")
+        assertNull(counts.lastAdd, "nothing is saved before the lots are chosen")
+
+        vm.onLotChoice("up", CountLotLine.NEW_LOT)
+        vm.confirmLotStep()
+        assertNotNull(vm.state.value.lotStep, "a new lot needs its number and expiry")
+        vm.onNewLotNumber("up", "N1")
+        vm.onNewLotExpiry("up", "2027-09-01")
+        vm.confirmLotStep()
+        advanceUntilIdle()
+
+        val saved = counts.lastAdd?.items.orEmpty().associateBy { it.drugId }
+        assertEquals(LotTarget.New("N1", kotlinx.datetime.LocalDate.parse("2027-09-01")), saved["up"]?.lot)
+        assertNull(saved["down"]?.lot)
+        assertNull(saved["plain"]?.lot)
+    }
+
+    @Test
+    fun a_count_with_no_lot_tracked_increase_saves_directly() = runVmTest { dispatchers ->
+        val (vm, _, counts, _) = newVm(dispatchers, drugs = FakeDrugRepository(seed = listOf(drug("plain", stock = Quantity(1)))))
+        advanceUntilIdle()
+        vm.onCountChange("plain", "4")
+        vm.requestSubmit()
+        vm.confirmSubmit()
+        advanceUntilIdle()
+        assertNull(vm.state.value.lotStep)
+        assertEquals(4, counts.lastAdd?.items?.single()?.counted)
+    }
+}
+
+private class LotsByDrug(private val lots: Map<String, List<DrugLot>>) : LotsRepository {
+    override suspend fun listLots(drugId: String): List<DrugLot> = lots[drugId].orEmpty()
+    override suspend fun addLot(param: AddLotParam): DrugLot = error("not used")
+    override suspend fun deleteLot(param: DeleteLotParam) = error("not used")
 }

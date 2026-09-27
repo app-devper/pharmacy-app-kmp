@@ -19,7 +19,7 @@ internal fun StockCountDto.toDomain(): StockCount = StockCount(
 
 internal fun CreateStockCountParam.toDto(): StockCountInputDto = StockCountInputDto(
     note = note.trim(),
-    items = items.map { StockCountInputItemDto(drugId = it.drugId, counted = it.counted) },
+    items = items.map { StockCountInputItemDto(drugId = it.drugId, counted = it.counted, lot = it.lot?.toDto()) },
 )
 
 private fun StockCountItemDto.toLine(): StockCountLine = StockCountLine(

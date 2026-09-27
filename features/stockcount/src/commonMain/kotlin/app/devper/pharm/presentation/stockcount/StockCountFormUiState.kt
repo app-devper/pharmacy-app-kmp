@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.stockcount
 
+import kotlinx.datetime.LocalDate
+import app.devper.pharm.domain.model.LotTarget
+import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.validation.buildStockCountInput
 import app.devper.pharm.domain.validation.parsePendingStockCounts
@@ -16,6 +19,9 @@ data class StockCountFormUiState(
     val note: String = "",
     val query: String = "",
     val showSubmitConfirm: Boolean = false,
+    /** Lots to choose for counted increases of lot-tracked drugs, before saving (ADR-0007). */
+    val lotStep: List<CountLotLine>? = null,
+    val chosenLots: Map<String, LotTarget> = emptyMap(),
     val pendingDraftAction: StockCountDraftAction? = null,
     val errorState: AppException? = null,
 ) : BaseFormUiState<StockCountFormUiState> {
@@ -80,3 +86,30 @@ data class StockCountDiscrepancy(
     val counted: Int,
     val delta: Int,
 )
+
+/** A counted increase of a lot-tracked drug and the lot it goes into. */
+data class CountLotLine(
+    val drugId: String,
+    val drugName: String,
+    val delta: Int,
+    /** Lots in use (not written off), latest expiry first. */
+    val lots: List<DrugLot>,
+    /** A lot id, or [NEW_LOT]. */
+    val choice: String,
+    val newLotNumber: String = "",
+    /** YYYY-MM-DD */
+    val newLotExpiry: String = "",
+) {
+    fun target(): LotTarget? = when (choice) {
+        NEW_LOT -> {
+            val expiry = runCatching { LocalDate.parse(newLotExpiry.trim()) }.getOrNull()
+            if (newLotNumber.isBlank() || expiry == null) null else LotTarget.New(newLotNumber.trim(), expiry)
+        }
+        "" -> null
+        else -> LotTarget.Existing(choice)
+    }
+
+    companion object {
+        const val NEW_LOT = "new"
+    }
+}

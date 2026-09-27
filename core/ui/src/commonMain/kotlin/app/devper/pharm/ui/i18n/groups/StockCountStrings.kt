@@ -49,6 +49,8 @@ interface StockCountStrings {
     val stockCountFormEmptyDefault: String
     val stockCountFormInvalidCount: String
     val stockCountFormConfirmTitle: String
+    val stockCountLotStepTitle: String
+    val stockCountLotStepMessage: String
     val stockCountFormConfirmMessage: String
     val stockCountFormConfirmCta: String
     val stockCountSubtitle: String

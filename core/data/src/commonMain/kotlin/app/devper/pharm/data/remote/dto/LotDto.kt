@@ -15,6 +15,7 @@ data class DrugLotDto(
     @SerialName("sell_price") val sellPrice: Double? = null,
     @SerialName("quantity") val quantity: Int,
     @SerialName("remaining") val remaining: Int,
+    @SerialName("written_off_at") val writtenOffAt: String? = null,
 )
 
 @Serializable
