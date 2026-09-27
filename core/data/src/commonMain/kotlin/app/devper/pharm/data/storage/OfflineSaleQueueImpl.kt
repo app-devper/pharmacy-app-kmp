@@ -1,5 +1,6 @@
 package app.devper.pharm.data.storage
 
+import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
@@ -39,6 +40,7 @@ class OfflineSaleQueueImpl(
             clientRequestId = param.clientRequestId,
             payload = param.payloadJson,
             enqueuedAt = now,
+            ky = param.kyForms.map { it.toPendingDto() },
         )
         val current = readDtos()
         val next = current + newEntry
@@ -62,6 +64,14 @@ class OfflineSaleQueueImpl(
         val next = current.map {
             if (it.id == param.id) it.copy(lastError = param.error, attempts = it.attempts + 1) else it
         }
+        writeDtos(next)
+        _pending.value = next.map { it.toDomain() }
+    }
+
+    override fun setKyForms(id: String, forms: List<KyForm>) {
+        val current = readDtos()
+        if (current.none { it.id == id }) return
+        val next = current.map { if (it.id == id) it.copy(ky = forms.map { form -> form.toPendingDto() }) else it }
         writeDtos(next)
         _pending.value = next.map { it.toDomain() }
     }
@@ -99,5 +109,6 @@ class OfflineSaleQueueImpl(
         enqueuedAt = enqueuedAt,
         lastError = lastError,
         attempts = attempts,
+        kyForms = ky.mapNotNull { it.toDomainOrNull() },
     )
 }

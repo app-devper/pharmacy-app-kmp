@@ -2,6 +2,7 @@ package app.devper.pharm.domain.repository
 
 import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 
+import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
@@ -39,6 +40,7 @@ class FakeOfflineSaleQueue(
             clientRequestId = param.clientRequestId,
             payloadJson = param.payloadJson,
             enqueuedAt = now,
+            kyForms = param.kyForms,
         )
         return id
     }
@@ -51,6 +53,10 @@ class FakeOfflineSaleQueue(
 
     override fun markFailed(param: MarkOfflineSaleFailedParam) {
         lastMarkFailed = param
+    }
+
+    override fun setKyForms(id: String, forms: List<KyForm>) {
+        pendingState.value = pendingState.value.map { if (it.id == id) it.copy(kyForms = forms) else it }
     }
 
     override fun clear() {
