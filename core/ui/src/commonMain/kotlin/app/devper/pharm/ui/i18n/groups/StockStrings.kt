@@ -21,6 +21,8 @@ interface StockStrings {
     val stockLotDeleteBody: (String, Int) -> String
     val stockLotExpiryRemaining: (String, Int, Int) -> String
     val stockLotDeleteDesc: String
+    val stockIncreaseLot: String
+    val stockNewLot: String
     val stockLotSaveCta: String
     val stockHeaderStock: String
     val stockHeaderUnit: String

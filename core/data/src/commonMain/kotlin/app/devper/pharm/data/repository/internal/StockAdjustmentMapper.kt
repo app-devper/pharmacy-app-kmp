@@ -1,5 +1,7 @@
 package app.devper.pharm.data.repository.internal
 
+import app.devper.pharm.data.remote.dto.LotTargetDto
+import app.devper.pharm.domain.model.LotTarget
 import app.devper.pharm.data.remote.dto.StockAdjustmentDto
 import app.devper.pharm.data.remote.dto.StockAdjustmentInputDto
 import app.devper.pharm.domain.model.AdjustmentReason
@@ -22,4 +24,10 @@ internal fun AddStockAdjustmentParam.toDto(): StockAdjustmentInputDto = StockAdj
     delta = delta,
     reason = reason.wire,
     note = note.trim(),
+    lot = lot?.toDto(),
 )
+
+internal fun LotTarget.toDto(): LotTargetDto = when (this) {
+    is LotTarget.Existing -> LotTargetDto(lotId = lotId)
+    is LotTarget.New -> LotTargetDto(lotNumber = lotNumber.trim(), expiryDate = expiryDate.toString())
+}

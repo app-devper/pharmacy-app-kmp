@@ -20,6 +20,8 @@ object StockStringsTh : StockStrings {
     override val stockTypeFilterSupplement = "อาหารเสริม"
     override val stockLotDeleteBody: (String, Int) -> String = { lot, remaining -> "ล็อต $lot จะถูกลบออก stock ของยาจะลดลง $remaining หน่วย (การเคลื่อนไหวจะถูกบันทึกไว้)" }
     override val stockLotExpiryRemaining: (String, Int, Int) -> String = { d, a, b -> "หมดอายุ $d · เหลือ $a/$b" }
+    override val stockIncreaseLot = "เพิ่มเข้าล็อต"
+    override val stockNewLot = "+ ล็อตใหม่"
     override val stockLotDeleteDesc = "ลบล็อต"
     override val stockLotSaveCta = "บันทึกล็อต"
     override val stockHeaderStock = "สต็อก"

@@ -58,6 +58,7 @@ object ReportsStringsTh : ReportsStrings {
     override val reportsEodToday = "วันนี้"
     override val reportsEodConfirmTitle = "ยืนยันปิดยอด"
     override val reportsEodConfirmMessage = "ตรวจยอดให้ตรงก่อนยืนยัน — ปิดแล้วไม่สามารถย้อนกลับได้"
+    override val reportsEodAdjustmentsBanner: (Int, Int, String) -> String = { n, bills, total -> "ปรับยอดหลังปิด $n รายการ — ยอดหลังปรับ $bills บิล $total" }
     override val reportsEodPendingSyncBanner: (Int) -> String = { n -> "มีบิลค้างซิงก์ $n ใบ — ยอดวันนี้ยังไม่รวมบิลเหล่านั้น" }
     override val reportsEodPendingSyncWarning: (Int) -> String = { n -> "มีบิลค้างซิงก์ $n ใบ ยอดยังไม่ครบ — ยืนยันปิดวันทั้งอย่างนี้หรือไม่?" }
     override val reportsEodCloseCta = "ปิดยอด"

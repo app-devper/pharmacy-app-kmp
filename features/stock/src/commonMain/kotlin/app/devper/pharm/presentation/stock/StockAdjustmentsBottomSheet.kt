@@ -56,6 +56,9 @@ data class StockAdjustmentsCallbacks(
     val onAbsDelta: (String) -> Unit = {},
     val onReason: (AdjustmentReason) -> Unit = {},
     val onNote: (String) -> Unit = {},
+    val onLotChoice: (String) -> Unit = {},
+    val onNewLotNumber: (String) -> Unit = {},
+    val onNewLotExpiry: (String) -> Unit = {},
     val onSubmitAdd: () -> Unit = {},
     val onDismissError: () -> Unit = {},
 )
@@ -285,6 +288,10 @@ private fun AddAdjustmentForm(state: StockAdjustmentsUiState, callbacks: StockAd
             }
         }
 
+        if (state.lotNeeded) {
+            AdjustmentLotChoice(state, callbacks)
+        }
+
         FormField(label = strings.stockHeaderReason) {
             PharmSingleSelectChips(
                 chips = AdjustmentReason.pickerOrder.map {
@@ -358,5 +365,41 @@ private fun AdjustmentQuantityField(
             isError = error != null,
             focusRequester = focusRequester,
         )
+    }
+}
+
+/** Where an increase of a lot-tracked drug goes (pharmacy-api ADR-0007). */
+@Composable
+private fun AdjustmentLotChoice(
+    state: StockAdjustmentsUiState,
+    callbacks: StockAdjustmentsCallbacks,
+) {
+    val strings = pharmStrings
+    FormField(label = strings.stockIncreaseLot) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            PharmSingleSelectChips(
+                chips = state.lots.map { lot ->
+                    PharmFilterChip(id = lot.id, label = listOfNotNull(lot.lotNumber, lot.expiryDate?.toString()).joinToString(" · "))
+                } + PharmFilterChip(id = AdjustmentDraft.NEW_LOT, label = strings.stockNewLot),
+                activeId = state.draft.lotChoice,
+                onSelect = callbacks.onLotChoice,
+            )
+            if (state.draft.lotChoice == AdjustmentDraft.NEW_LOT) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PharmTextField(
+                        value = state.draft.newLotNumber,
+                        onValueChange = callbacks.onNewLotNumber,
+                        placeholder = strings.importsFormHeaderLotNumber,
+                        modifier = Modifier.weight(1f),
+                    )
+                    PharmTextField(
+                        value = state.draft.newLotExpiry,
+                        onValueChange = callbacks.onNewLotExpiry,
+                        placeholder = "YYYY-MM-DD",
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+        }
     }
 }
