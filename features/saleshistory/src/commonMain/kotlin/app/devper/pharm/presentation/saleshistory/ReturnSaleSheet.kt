@@ -212,7 +212,7 @@ private fun ReturnLineRow(
             )
             if (item.returnableQty < item.remainingQty) {
                 Text(
-                    text = pharmStrings.salesHistoryReturnCapHint(item.returnableDisplayQty, item.unreturnableQty),
+                    text = pharmStrings.salesHistoryReturnCapHint(item.returnableDisplayQty, item.unlinkedQty),
                     style = PharmText.micro,
                     color = t.colors.warningFg,
                 )

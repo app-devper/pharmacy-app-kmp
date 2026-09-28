@@ -8,11 +8,6 @@ import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 
 class GetSaleItemsUseCase(private val repo: SaleHistoryRepository, dispatchers: AppDispatchers) :
     BaseUseCase<String, List<SaleItemSnapshot>>(dispatchers) {
-    override suspend fun execute(param: String): List<SaleItemSnapshot> {
-        val items = repo.getItems(param)
-        val returnedByItem = runCatching { repo.getReturnedQuantities(param) }
-            .getOrDefault(emptyMap())
-        if (returnedByItem.isEmpty()) return items
-        return items.map { it.copy(returnedQty = returnedByItem[it.id] ?: 0) }
-    }
+    /** Each line carries what it can still return, from the server. */
+    override suspend fun execute(param: String): List<SaleItemSnapshot> = repo.getItems(param)
 }

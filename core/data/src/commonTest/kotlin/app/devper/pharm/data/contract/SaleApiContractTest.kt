@@ -31,24 +31,26 @@ class SaleApiContractTest {
             {"lot_id": "665f1e0aa1b2c3d4e5f60077", "lot_number": "L2406A", "expiry_date": "2027-06-30T00:00:00Z", "qty": 6},
             {"lot_id": "000000000000000000000000", "lot_number": "ADJUST:นับสต็อก", "expiry_date": "0001-01-01T00:00:00Z", "qty": 4}
           ],
-          "oversold_qty": 0
+          "oversold_qty": 0,
+          "returned_qty": 1,
+          "returnable_qty": 5,
+          "unlinked_qty": 4
         }
     """.trimIndent()
 
     @Test
-    fun sale_item_lot_splits_map_and_synthetic_adjust_split_is_excluded_from_lot_bound() {
-        val snapshot = AppJson.decodeFromString<SaleItemDto>(saleItemWithSplitsJson).toDomain(returnedQty = 1)
+    fun sale_item_carries_the_servers_returnable_quantities() {
+        val snapshot = AppJson.decodeFromString<SaleItemDto>(saleItemWithSplitsJson).toDomain()
         assertEquals(10, snapshot.qty)
-        assertEquals(6, snapshot.lotBoundQty)
+        assertEquals(1, snapshot.returnedQty)
         assertEquals(5, snapshot.returnableQty)
-        assertEquals(4, snapshot.unreturnableQty)
+        assertEquals(4, snapshot.unlinkedQty)
     }
 
     @Test
-    fun legacy_sale_item_without_lot_splits_is_not_returnable() {
+    fun sale_item_from_an_older_server_returns_nothing() {
         val json = """{"id": "a", "drug_id": "d", "drug_name": "X", "qty": 3, "price": 5.0}"""
-        val snapshot = AppJson.decodeFromString<SaleItemDto>(json).toDomain(returnedQty = 0)
-        assertEquals(0, snapshot.lotBoundQty)
+        val snapshot = AppJson.decodeFromString<SaleItemDto>(json).toDomain()
         assertEquals(0, snapshot.returnableQty)
     }
 
