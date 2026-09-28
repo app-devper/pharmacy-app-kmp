@@ -19,14 +19,12 @@ import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
-import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
-import app.devper.pharm.domain.usecase.ky.toForms
+import app.devper.pharm.domain.model.capture
 import app.devper.pharm.domain.extension.calculateKyRequired
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
-import app.devper.pharm.ui.format.todayLocalDate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -37,7 +35,6 @@ class CheckoutViewModel(
     private val timeZoneProvider: TimeZoneProvider,
     private val checkout: CheckoutUseCase,
     private val dismissReceiptUseCase: DismissReceiptUseCase,
-    private val submitKyForms: SubmitKyFormsUseCase,
     private val setCashReceived: SetCashReceivedUseCase,
     private val receiptPrinter: ReceiptPrinter,
 ) : BaseLoadableViewModel<CheckoutUiState>(CheckoutUiState()) {
@@ -102,9 +99,10 @@ class CheckoutViewModel(
         val required = snap.items.calculateKyRequired()
         if (!required.isEmpty) {
             if (lastSettings.ky.skipAuto) {
+                // The server records the shop's skip itself (pharmacy-api ADR-0011).
                 pendingKyRequired = null
                 pendingKyFields = null
-                pendingKySkippedByCashier = true
+                pendingKySkippedByCashier = false
             } else if (pendingKyFields != null) {
                 pendingKyRequired = required
             } else {
@@ -200,12 +198,11 @@ class CheckoutViewModel(
         setState { copy(checkingOut = true, errorState = null) }
         launchResult(
             block = {
-                // Blank sale id: the forms are sent with the confirmed id after
-                // checkout, or queued with the bill if it goes offline.
-                val kyForms = if (kyRequiredAtSubmit != null && kyFieldsAtSubmit != null) {
-                    kyRequiredAtSubmit.toForms(saleId = "", captured = kyFieldsAtSubmit, date = todayLocalDate(tzAtSubmit))
-                } else emptyList()
-                checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit, kyForms)
+                // The capture travels with the sale; the server records the forms.
+                val ky = if (kyRequiredAtSubmit != null && kyFieldsAtSubmit != null) {
+                    kyRequiredAtSubmit.capture(kyFieldsAtSubmit)
+                } else null
+                checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit, ky)
             },
             onSuccess = { outcome ->
                 when (outcome) {
@@ -229,8 +226,6 @@ class CheckoutViewModel(
                     }
                     is CheckoutOutcome.Success -> handleSuccess(
                         sale = outcome.sale,
-                        kyRequired = kyRequiredAtSubmit,
-                        kyFields = kyFieldsAtSubmit,
                         tz = tzAtSubmit,
                         cart = cartSnapshot,
                         customer = customerSnapshot,
@@ -244,10 +239,8 @@ class CheckoutViewModel(
         )
     }
 
-    private suspend fun handleSuccess(
+    private fun handleSuccess(
         sale: Sale,
-        kyRequired: KyRequired?,
-        kyFields: KyCaptureFields?,
         tz: kotlinx.datetime.TimeZone,
         cart: List<CartLine>,
         customer: Customer?,
@@ -264,28 +257,6 @@ class CheckoutViewModel(
             soldAtFormatted = todayBuddhistDisplay(tz),
         )
         setState { copy(checkingOut = false, paymentOpen = false, lastReceiptTemplate = template) }
-
-        if (kyRequired != null && kyFields != null) {
-            submitKyForms(
-                sale = sale,
-                required = kyRequired,
-                captured = kyFields,
-                date = todayLocalDate(tz),
-            ).fold(
-                onSuccess = { result ->
-                    if (result.anyFailed) {
-                        setState {
-                            copy(errorState = CheckoutUiStateError.KyIncomplete(sale.billNo, result.failed))
-                        }
-                    }
-                },
-                onFailure = { e ->
-                    setState {
-                        copy(errorState = CheckoutUiStateError.KyError(sale.billNo, e))
-                    }
-                },
-            )
-        }
     }
 
     private fun handleFailure(error: Throwable) {

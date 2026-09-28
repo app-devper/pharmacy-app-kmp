@@ -58,7 +58,6 @@ data class KyCaptureFields(
     val ky10BuyerAddress: String = "",
     val ky10RxNo: String = "",
     val ky10Doctor: String = "",
-    val ky10Balance: Int = 0,
 
     val ky11BuyerName: String = "",
     val ky11Purpose: String = "",
@@ -82,10 +81,20 @@ data class KyRequired(
     val needsKy12: Boolean get() = ky12.isNotEmpty()
 }
 
-data class KySubmissionResult(
-    val attempted: Int,
-    val failed: List<String>,
-) {
-    val allOk: Boolean get() = failed.isEmpty()
-    val anyFailed: Boolean get() = failed.isNotEmpty()
-}
+/**
+ * What the cashier captured for a bill's KY forms, sent with the sale.
+ * pharmacy-api records the forms with it and fills drug, quantity, unit,
+ * value, date and ขย.10 balance from the sale (its ADR-0011).
+ */
+data class SaleKyCapture(
+    val ky10: KyCaptureFields? = null,
+    val ky11: KyCaptureFields? = null,
+    val ky12: KyCaptureFields? = null,
+)
+
+/** The capture for the forms this bill needs. */
+fun KyRequired.capture(fields: KyCaptureFields): SaleKyCapture = SaleKyCapture(
+    ky10 = fields.takeIf { needsKy10 },
+    ky11 = fields.takeIf { needsKy11 },
+    ky12 = fields.takeIf { needsKy12 },
+)

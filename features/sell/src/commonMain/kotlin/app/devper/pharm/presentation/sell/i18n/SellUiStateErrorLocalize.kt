@@ -20,8 +20,6 @@ fun AppException.localizeSell(s: PharmStrings): String = when (this) {
     is CustomerPickerUiStateError.LoadCustomersFailed -> s.sellLoadCustomersFailed
     is CheckoutUiStateError.PrintReceiptUnsupported -> s.sellPrintReceiptUnsupported
     is CheckoutUiStateError.CartChanged -> s.sellCheckoutCartChanged
-    is CheckoutUiStateError.KyIncomplete -> s.sellKyIncomplete(billNo, failed.joinToString("\n"))
-    is CheckoutUiStateError.KyError -> s.sellKyError(billNo, cause?.message ?: s.commonErrorGeneric)
     is CheckoutUiStateError.OfflineSaved -> s.sellOfflineSaved
     is CheckoutUiStateError.CheckoutFailed -> s.sellCheckoutFailed
     else -> localizeCommon(s)
