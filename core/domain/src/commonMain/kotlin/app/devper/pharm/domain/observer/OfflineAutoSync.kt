@@ -2,19 +2,18 @@ package app.devper.pharm.domain.observer
 
 import app.devper.pharm.common.Logger
 import app.devper.pharm.common.platform.ConnectivityObserver
-import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
-import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
-import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
+import app.devper.pharm.domain.pendingsales.PendingSales
+import app.devper.pharm.domain.pendingsales.SyncSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+/** Syncs pending sales whenever the device comes back online. */
 class OfflineAutoSync(
     private val connectivity: ConnectivityObserver,
-    private val queue: OfflineSaleQueue,
-    private val retry: RetryOfflineSaleUseCase,
+    private val pendingSales: PendingSales,
     private val logger: Logger,
 ) {
     fun start(scope: CoroutineScope) {
@@ -26,17 +25,8 @@ class OfflineAutoSync(
     }
 
     suspend fun syncPending() {
-        val pending = queue.pending.value
-        if (pending.isEmpty()) return
-        logger.debug(TAG, "online — syncing ${pending.size} pending sale(s)")
-        for (sale in pending) {
-            val result = retry(sale.id)
-            val error = result.exceptionOrNull() ?: continue
-            if (error.looksLikeTemporaryOutage()) {
-                logger.debug(TAG, "temporary outage during sync — aborting remaining ${pending.size - pending.indexOf(sale) - 1} sale(s)")
-                return
-            }
-        }
+        val summary = pendingSales.syncAll()
+        if (summary != SyncSummary()) logger.debug(TAG, "online — synced pending sales: $summary")
     }
 
     private companion object {

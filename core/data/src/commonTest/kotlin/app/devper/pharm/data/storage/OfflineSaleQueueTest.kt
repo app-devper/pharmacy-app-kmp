@@ -1,7 +1,9 @@
 package app.devper.pharm.data.storage
 
-import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
-import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
+import app.devper.pharm.domain.model.KyForm
+import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.domain.model.PendingSaleState
+import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -9,74 +11,100 @@ import kotlin.test.assertTrue
 
 class OfflineSaleQueueTest {
 
-    @Test
-    fun enqueue_returns_unique_ids_and_preserves_insertion_order() {
-        val queue = OfflineSaleQueueImpl(memorySettings())
-        val first = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "req-1", payloadJson = "{\"a\":1}"))
-        val second = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "req-2", payloadJson = "{\"b\":2}"))
-        val pending = queue.pending.value
-        assertEquals(2, pending.size)
-        assertEquals(first, pending[0].id)
-        assertEquals(second, pending[1].id)
-        assertTrue(first != second)
-    }
+    private fun sale(id: String, at: Long, state: PendingSaleState = PendingSaleState.Pending) = PendingSale(
+        id = id, clientRequestId = "req-$id", payloadJson = """{"id":"$id"}""", enqueuedAt = at, state = state,
+    )
+
+    private val ky11 = KyForm.Ky11(
+        saleId = "s1", date = LocalDate(2026, 9, 27), drugName = "Dextro", regNo = "R2", qty = 1,
+        unit = "tab", buyerName = "A", purpose = "cough", pharmacist = "P",
+    )
 
     @Test
-    fun mark_synced_removes_entry() {
-        val queue = OfflineSaleQueueImpl(memorySettings())
-        val a = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r1", payloadJson = "{}"))
-        val b = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r2", payloadJson = "{}"))
-        queue.markSynced(a)
-        val pending = queue.pending.value
-        assertEquals(1, pending.size)
-        assertEquals(b, pending[0].id)
-    }
-
-    @Test
-    fun mark_failed_increments_attempts_and_stores_error() {
-        val queue = OfflineSaleQueueImpl(memorySettings())
-        val id = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r1", payloadJson = "{}"))
-        queue.markFailed(MarkOfflineSaleFailedParam(id = id, error = "503"))
-        queue.markFailed(MarkOfflineSaleFailedParam(id = id, error = "timeout"))
-        val entry = queue.pending.value.single()
-        assertEquals(2, entry.attempts)
-        assertEquals("timeout", entry.lastError)
-    }
-
-    @Test
-    fun mark_failed_with_unknown_id_does_not_touch_existing_entries() {
-        val queue = OfflineSaleQueueImpl(memorySettings())
-        val id = queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r1", payloadJson = "{}"))
-
-        queue.markFailed(MarkOfflineSaleFailedParam(id = "stale-id", error = "noop"))
-
-        val entry = queue.pending.value.single()
-        assertEquals(id, entry.id)
-        assertEquals(0, entry.attempts)
-        assertNull(entry.lastError)
-    }
-
-    @Test
-    fun clear_empties_queue_and_persists_to_settings() {
+    fun entries_survive_reconstruction_in_enqueue_order() {
         val settings = memorySettings()
         val queue = OfflineSaleQueueImpl(settings)
-        queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r1", payloadJson = "{}"))
-        queue.clear()
-        assertTrue(queue.pending.value.isEmpty())
+        queue.put(sale("b", 2))
+        queue.put(sale("a", 1))
+
+        val reborn = OfflineSaleQueueImpl(settings)
+        assertEquals(listOf("a", "b"), reborn.entries.value.map { it.id })
+        assertEquals("req-a", reborn.entries.value.first().clientRequestId)
+    }
+
+    @Test
+    fun put_replaces_and_remove_deletes_one_entry() {
+        val queue = OfflineSaleQueueImpl(memorySettings())
+        queue.put(sale("a", 1))
+        queue.put(sale("b", 2))
+        queue.put(sale("a", 1).copy(attempts = 2, lastError = "timeout"))
+        queue.remove("b")
+
+        val only = queue.entries.value.single()
+        assertEquals(2, only.attempts)
+        assertEquals("timeout", only.lastError)
+    }
+
+    @Test
+    fun state_bill_and_ky_forms_round_trip() {
+        val settings = memorySettings()
+        OfflineSaleQueueImpl(settings).put(
+            sale("a", 1, PendingSaleState.KyPending).copy(billNo = "B1", kyForms = listOf(ky11)),
+        )
+        val e = OfflineSaleQueueImpl(settings).entries.value.single()
+        assertEquals(PendingSaleState.KyPending, e.state)
+        assertEquals("B1", e.billNo)
+        assertEquals(listOf(ky11), e.kyForms)
+    }
+
+    @Test
+    fun an_unreadable_entry_is_damaged_and_keeps_its_raw_data_without_losing_the_others() {
+        val settings = memorySettings()
+        OfflineSaleQueueImpl(settings).put(sale("good", 5))
+        settings.putString("offline.sale.bad", "{truncated")
+
+        val entries = OfflineSaleQueueImpl(settings).entries.value
+        val damaged = entries.single { it.id == "bad" }
+        assertEquals(PendingSaleState.Damaged, damaged.state)
+        assertEquals("{truncated", damaged.payloadJson)
+        assertEquals(PendingSaleState.Pending, entries.single { it.id == "good" }.state)
+        assertEquals("{truncated", settings.getStringOrNull("offline.sale.bad"))
+    }
+
+    @Test
+    fun the_old_single_list_queue_moves_to_one_entry_each() {
+        val settings = memorySettings()
+        settings.putString(
+            "offline.queue",
+            """[{"id":"a","client_request_id":"r1","payload":"{}","enqueued_at":1,"attempts":2},""" +
+                """{"id":"b","client_request_id":"r2","payload":"{}","enqueued_at":2}]""",
+        )
+        val entries = OfflineSaleQueueImpl(settings).entries.value
+
+        assertEquals(listOf("a", "b"), entries.map { it.id })
+        assertTrue(entries.all { it.state == PendingSaleState.Pending })
+        assertEquals(2, entries.first().attempts)
         assertNull(settings.getStringOrNull("offline.queue"))
     }
 
     @Test
-    fun queue_survives_via_settings_when_reconstructed() {
+    fun an_unreadable_old_queue_is_kept_as_one_damaged_entry() {
         val settings = memorySettings()
-        val first = OfflineSaleQueueImpl(settings)
-        first.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r1", payloadJson = "{\"x\":1}"))
-        first.enqueue(EnqueueOfflineSaleParam(clientRequestId = "r2", payloadJson = "{\"y\":2}"))
+        settings.putString("offline.queue", "[{\"id\":")
 
-        val reborn = OfflineSaleQueueImpl(settings)
-        val pending = reborn.pending.value
-        assertEquals(2, pending.size)
-        assertEquals("r1", pending[0].clientRequestId)
-        assertEquals("r2", pending[1].clientRequestId)
+        val entry = OfflineSaleQueueImpl(settings).entries.value.single()
+
+        assertEquals(PendingSaleState.Damaged, entry.state)
+        assertEquals("[{\"id\":", entry.payloadJson)
+        assertNull(settings.getStringOrNull("offline.queue"))
+    }
+
+    @Test
+    fun a_damaged_entry_stays_raw_when_put_back() {
+        val settings = memorySettings()
+        settings.putString("offline.sale.bad", "{x")
+        val queue = OfflineSaleQueueImpl(settings)
+        queue.put(queue.entries.value.single())
+        assertEquals("{x", settings.getStringOrNull("offline.sale.bad"))
     }
 }

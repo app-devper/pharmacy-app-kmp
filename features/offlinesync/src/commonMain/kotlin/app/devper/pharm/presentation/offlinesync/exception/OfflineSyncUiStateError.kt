@@ -6,5 +6,8 @@ sealed class OfflineSyncUiStateError(message: String, cause: Throwable? = null) 
     class LoadFailed(cause: Throwable? = null) : OfflineSyncUiStateError("offlinesync.load_failed", cause)
     class SyncPartialFailed(val failed: Int, val total: Int) : OfflineSyncUiStateError("offlinesync.sync_partial_failed")
     class RetryFailed(val billId: String, cause: Throwable? = null) : OfflineSyncUiStateError("offlinesync.retry_failed", cause)
+    class StillNotRecorded(val billId: String) : OfflineSyncUiStateError("offlinesync.still_not_recorded")
+    class AbandonFailed(cause: Throwable? = null) : OfflineSyncUiStateError("offlinesync.abandon_failed", cause)
+    class ExportFailed(cause: Throwable? = null) : OfflineSyncUiStateError("offlinesync.export_failed", cause)
     class DiscardFailed(cause: Throwable? = null) : OfflineSyncUiStateError("offlinesync.discard_failed", cause)
 }

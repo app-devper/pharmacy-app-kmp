@@ -20,6 +20,7 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.repository.FakeCartRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
@@ -95,7 +96,7 @@ class CheckoutViewModelTest {
             cartState = CartStateProvider(cart),
             settings = SettingsProvider(settings),
             timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
-            checkout = CheckoutUseCase(cart, sales, offline, dispatchers),
+            checkout = CheckoutUseCase(cart, sales, pendingSalesOf(offline, sales), dispatchers),
             dismissReceiptUseCase = DismissReceiptUseCase(cart),
             submitKyForms = SubmitKyFormsUseCase(ky, dispatchers),
             setCashReceived = SetCashReceivedUseCase(cart),
@@ -577,9 +578,8 @@ class CheckoutViewModelTest {
         vm.submit()
         advanceUntilIdle()
 
-        assertEquals(1, offline.pending.value.size)
-        assertNotNull(offline.lastEnqueue)
-        assertTrue(offline.lastEnqueue!!.payloadJson.contains("client_request_id"))
+        assertEquals(1, offline.entries.value.size)
+        assertTrue(offline.added.single().payloadJson.contains("client_request_id"))
         assertTrue(cart.clearCalled)
 
         assertIs<CheckoutUiStateError.OfflineSaved>(vm.state.value.errorState)
@@ -592,14 +592,14 @@ class CheckoutViewModelTest {
             dispatchers,
             cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
             sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host")),
-            offline = FakeOfflineSaleQueue(enqueueThrows = RuntimeException("disk full")),
+            offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
         )
         advanceUntilIdle()
         vm.openPayment()
         vm.submit()
         advanceUntilIdle()
 
-        assertTrue(offline.pending.value.isEmpty())
+        assertTrue(offline.entries.value.isEmpty())
         assertFalse(cart.clearCalled)
         assertFalse(vm.state.value.cartIsEmpty)
         assertTrue(vm.state.value.paymentOpen)
@@ -614,7 +614,7 @@ class CheckoutViewModelTest {
             dispatchers,
             cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
             sales = sales,
-            offline = FakeOfflineSaleQueue(enqueueThrows = RuntimeException("disk full")),
+            offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
         )
         advanceUntilIdle()
 
@@ -635,7 +635,7 @@ class CheckoutViewModelTest {
             dispatchers,
             cart = cart,
             sales = sales,
-            offline = FakeOfflineSaleQueue(enqueueThrows = RuntimeException("disk full")),
+            offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
         )
         advanceUntilIdle()
 
@@ -662,7 +662,7 @@ class CheckoutViewModelTest {
         vm.submit()
         advanceUntilIdle()
 
-        assertEquals(0, offline.pending.value.size)
+        assertEquals(0, offline.entries.value.size)
         assertFalse(cart.clearCalled)
         assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)

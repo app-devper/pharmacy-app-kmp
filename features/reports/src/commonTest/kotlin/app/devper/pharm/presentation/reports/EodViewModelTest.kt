@@ -8,10 +8,10 @@ import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.EodReport
-import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
@@ -74,7 +74,7 @@ class EodViewModelTest {
         offlineQueue: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
     ): EodViewModel = EodViewModel(
         settings = SettingsProvider(settings),
-        offlineQueue = OfflineQueueProvider(offlineQueue),
+        pendingSales = pendingSalesOf(offlineQueue),
         getEodReport = GetEodReportUseCase(reports, dispatchers),
         closeEod = CloseEodUseCase(reports, FakeProfileRepository(), dispatchers),
         printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
