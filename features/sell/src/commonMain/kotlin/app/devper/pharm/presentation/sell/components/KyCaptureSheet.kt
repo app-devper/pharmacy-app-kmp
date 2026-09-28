@@ -253,15 +253,6 @@ private fun Ky10Section(
                 modifier = Modifier.weight(1f),
             )
         }
-        KyField(
-            label = pharmStrings.sellRemaining,
-            value = fields.ky10Balance.toString(),
-            onValueChange = { v ->
-                onChange(fields.copy(ky10Balance = v.toIntOrNull() ?: 0))
-            },
-            enabled = enabled,
-            keyboardType = KeyboardType.Number,
-        )
     }
 }
 
@@ -301,6 +292,7 @@ private fun Ky12Section(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             KyField(
                 label = pharmStrings.kyDoctorPrescriber,
+                required = true,
                 value = fields.ky12Doctor,
                 onValueChange = { onChange(fields.copy(ky12Doctor = it)) },
                 enabled = enabled,
@@ -358,7 +350,8 @@ private fun validate(required: KyRequired, fields: KyCaptureFields): Boolean {
     ) return false
     if (required.needsKy12 && (
             fields.ky12RxNo.isBlank() ||
-                fields.ky12PatientName.isBlank()
+                fields.ky12PatientName.isBlank() ||
+                fields.ky12Doctor.isBlank()
             )
     ) return false
     return true

@@ -3,7 +3,9 @@
 package app.devper.pharm.domain.usecase
 
 import app.devper.pharm.domain.model.AbandonOutcome
+import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyForm
+import app.devper.pharm.domain.model.SaleKyCapture
 import kotlinx.datetime.LocalDate
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.pendingSalesOf
@@ -170,18 +172,16 @@ class CheckoutUseCaseTest {
     }
 
     @Test
-    fun network_failure_queues_ky_forms_with_the_bill() = runTest {
+    fun ky_capture_travels_with_the_sale_even_when_it_is_queued() = runTest {
         val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
-        val form = KyForm.Ky11(
-            saleId = "", date = LocalDate(2026, 9, 27), drugName = "Dextro", regNo = "R2", qty = 1,
-            unit = "tab", buyerName = "A", purpose = "cough", pharmacist = "P",
-        )
-        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), pendingSalesOf(queue), testDispatchers())
-            .invoke(Money(100.0), kyForms = listOf(form)).getOrThrow()
+        val capture = SaleKyCapture(ky11 = KyCaptureFields(ky11BuyerName = "A", ky11Purpose = "cough", ky11Pharmacist = "P"))
+        val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
+        val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
+            .invoke(Money(100.0), ky = capture).getOrThrow()
         assertEquals(CheckoutOutcome.OfflineSaved, result)
-        assertEquals(listOf(form), queue.added.single().kyForms)
-        assertEquals(listOf(form), queue.entries.value.single().kyForms)
+        assertEquals(capture, sales.lastParam?.ky)
+        assertTrue(queue.added.single().kyForms.isEmpty())
     }
 
     @Test

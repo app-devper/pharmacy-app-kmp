@@ -1,61 +1,9 @@
 package app.devper.pharm.domain.usecase.ky
 
 import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
-import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.KyForm
-import app.devper.pharm.domain.model.KyRequired
 import app.devper.pharm.domain.repository.ky.KyRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.datetime.LocalDate
-
-/**
- * The KY forms a bill needs, built from the lines that require them and what
- * the cashier captured. [saleId] is blank while the bill is not yet confirmed;
- * [withSaleId] attaches the confirmed id before the forms are sent.
- */
-fun KyRequired.toForms(saleId: String, captured: KyCaptureFields, date: LocalDate): List<KyForm> =
-    ky10.map { line ->
-        KyForm.Ky10(
-            saleId = saleId,
-            date = date,
-            drugName = line.drug.name,
-            regNo = line.drug.regNo.orEmpty(),
-            qty = line.qty,
-            unit = line.drug.unit.orEmpty(),
-            buyerName = captured.ky10BuyerName,
-            buyerAddress = captured.ky10BuyerAddress,
-            rxNo = captured.ky10RxNo,
-            doctor = captured.ky10Doctor,
-            balance = captured.ky10Balance,
-        )
-    } + ky11.map { line ->
-        KyForm.Ky11(
-            saleId = saleId,
-            date = date,
-            drugName = line.drug.name,
-            regNo = line.drug.regNo.orEmpty(),
-            qty = line.qty,
-            unit = line.drug.unit.orEmpty(),
-            buyerName = captured.ky11BuyerName,
-            purpose = captured.ky11Purpose,
-            pharmacist = captured.ky11Pharmacist,
-        )
-    } + ky12.map { line ->
-        KyForm.Ky12(
-            saleId = saleId,
-            date = date,
-            drugName = line.drug.name,
-            regNo = line.drug.regNo.orEmpty(),
-            qty = line.qty,
-            unit = line.drug.unit.orEmpty(),
-            rxNo = captured.ky12RxNo,
-            patientName = captured.ky12PatientName,
-            doctor = captured.ky12Doctor,
-            hospital = captured.ky12Hospital,
-            totalValue = (line.unitPrice * line.displayQty).amount,
-            status = captured.ky12Status,
-        )
-    }
 
 fun KyForm.withSaleId(saleId: String): KyForm = when (this) {
     is KyForm.Ky10 -> copy(saleId = saleId)
