@@ -1,5 +1,7 @@
 package app.devper.pharm.domain.param.sales
 
+import app.devper.pharm.domain.model.SaleKyCapture
+
 import app.devper.pharm.common.value.Money
 
 data class CheckoutParam(
@@ -11,6 +13,7 @@ data class CheckoutParam(
 
     val clientRequestId: String? = null,
     val kySkippedByCashier: Boolean = false,
+    val ky: SaleKyCapture? = null,
 )
 
 data class CheckoutLineParam(

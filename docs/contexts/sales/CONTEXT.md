@@ -55,3 +55,7 @@ _Avoid_: Failed sale
 **Damaged pending sale**:
 A pending sale whose stored data this device cannot read; it is kept raw for export and never replayed.
 _Avoid_: Corrupt queue
+
+**KY capture**:
+What the cashier records for a sale's KY forms: the buyer, patient, prescription and pharmacist. It travels with the sale; the server records the forms with the sale and takes the drug, quantity, unit, paid value, date and ขย.10 balance from it (pharmacy-api ADR-0011).
+_Avoid_: KY forms (the recorded register entries)

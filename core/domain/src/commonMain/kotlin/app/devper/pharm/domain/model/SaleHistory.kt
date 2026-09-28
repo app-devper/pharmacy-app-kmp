@@ -25,8 +25,11 @@ data class SaleItemSnapshot(
     val unitFactor: Int,
     val priceTier: String,
 
+    /** Base units returned so far and still returnable, from the server's return rule. */
     val returnedQty: Int = 0,
-    val lotBoundQty: Int = 0,
+    val returnableQty: Int = 0,
+    /** Base units not sold from a lot, which cannot be returned. */
+    val unlinkedQty: Int = 0,
 ) {
     val displayUnit: String get() = unit.ifBlank { "หน่วย" }
     val displayQty: Int
@@ -34,8 +37,6 @@ data class SaleItemSnapshot(
     val remainingQty: Int get() = (qty - returnedQty).coerceAtLeast(0)
     val remainingDisplayQty: Int
         get() = if (unitFactor > 1) remainingQty / unitFactor else remainingQty
-    val returnableQty: Int get() = (lotBoundQty.coerceAtMost(qty) - returnedQty).coerceAtLeast(0)
     val returnableDisplayQty: Int
         get() = if (unitFactor > 1) returnableQty / unitFactor else returnableQty
-    val unreturnableQty: Int get() = (qty - lotBoundQty).coerceAtLeast(0)
 }

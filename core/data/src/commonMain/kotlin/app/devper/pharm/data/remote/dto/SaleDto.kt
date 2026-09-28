@@ -12,6 +12,39 @@ data class SaleRequest(
     @SerialName("customer_id") val customerId: String? = null,
     @SerialName("client_request_id") val clientRequestId: String? = null,
     @SerialName("ky_skipped_by_cashier") val kySkippedByCashier: Boolean = false,
+    @SerialName("ky") val ky: SaleKyCaptureRequest? = null,
+)
+
+/** The bill's KY capture (pharmacy-api ADR-0011). */
+@Serializable
+data class SaleKyCaptureRequest(
+    @SerialName("ky10") val ky10: Ky10CaptureRequest? = null,
+    @SerialName("ky11") val ky11: Ky11CaptureRequest? = null,
+    @SerialName("ky12") val ky12: Ky12CaptureRequest? = null,
+)
+
+@Serializable
+data class Ky10CaptureRequest(
+    @SerialName("buyer_name") val buyerName: String,
+    @SerialName("buyer_address") val buyerAddress: String,
+    @SerialName("rx_no") val rxNo: String,
+    @SerialName("doctor") val doctor: String,
+)
+
+@Serializable
+data class Ky11CaptureRequest(
+    @SerialName("buyer_name") val buyerName: String,
+    @SerialName("purpose") val purpose: String,
+    @SerialName("pharmacist") val pharmacist: String,
+)
+
+@Serializable
+data class Ky12CaptureRequest(
+    @SerialName("rx_no") val rxNo: String,
+    @SerialName("patient_name") val patientName: String,
+    @SerialName("doctor") val doctor: String,
+    @SerialName("hospital") val hospital: String,
+    @SerialName("status") val status: String,
 )
 
 @Serializable
