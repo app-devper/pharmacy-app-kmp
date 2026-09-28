@@ -10,10 +10,8 @@ import app.devper.pharm.domain.param.sales.SubmitReturnParam
 class FakeSaleHistoryRepository(
     private val seed: List<SaleSummary> = emptyList(),
     private val itemsBySale: Map<String, List<SaleItemSnapshot>> = emptyMap(),
-    private val returnsBySale: Map<String, Map<String, Int>> = emptyMap(),
     private val listThrows: Boolean = false,
     private val itemsThrows: Boolean = false,
-    private val returnsThrows: Boolean = false,
     private val submitThrowsOn: String? = null,
 ) : SaleHistoryRepository {
 
@@ -43,11 +41,6 @@ class FakeSaleHistoryRepository(
         itemsCallCount++
         if (itemsThrows) throw RuntimeException("items failed")
         return itemsBySale[saleId].orEmpty()
-    }
-
-    override suspend fun getReturnedQuantities(saleId: String): Map<String, Int> {
-        if (returnsThrows) throw RuntimeException("returns failed")
-        return returnsBySale[saleId].orEmpty()
     }
 
     override suspend fun submitReturn(param: SubmitReturnParam) {

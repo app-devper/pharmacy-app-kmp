@@ -27,6 +27,10 @@ data class SaleItemDto(
     @SerialName("unit_factor") val unitFactor: Int = 0,
     @SerialName("price_tier") val priceTier: String = "",
     @SerialName("lot_splits") val lotSplits: List<SaleLotSplitDto> = emptyList(),
+    /** Base units returned so far and still returnable, by pharmacy-api's return rule (its ADR-0012). */
+    @SerialName("returned_qty") val returnedQty: Int = 0,
+    @SerialName("returnable_qty") val returnableQty: Int = 0,
+    @SerialName("unlinked_qty") val unlinkedQty: Int = 0,
 )
 
 @Serializable
