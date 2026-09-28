@@ -43,3 +43,15 @@ _Avoid_: Silent close revision
 **Sale sync conflict**:
 A pending sale that cannot be confirmed under current business rules and requires an authorized person to resolve or cancel.
 _Avoid_: Transient network failure
+
+**Abandoned sale**:
+A pending sale an authorized person decided will never be recorded, recorded on the server with its payload and reason; the same request is refused afterwards.
+_Avoid_: Discarded sale, deleted sale
+
+**KY pending**:
+A recorded sale whose KY forms the server refused; it stays pending until the forms are recorded or closed with a reason.
+_Avoid_: Failed sale
+
+**Damaged pending sale**:
+A pending sale whose stored data this device cannot read; it is kept raw for export and never replayed.
+_Avoid_: Corrupt queue

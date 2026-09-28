@@ -12,6 +12,9 @@ data class PendingSaleDto(
     @SerialName("last_error") val lastError: String? = null,
     @SerialName("attempts") val attempts: Int = 0,
     @SerialName("ky") val ky: List<PendingKyFormDto> = emptyList(),
+    /** `pending`, `conflict` or `ky_pending`; entries from before states existed are pending. */
+    @SerialName("state") val state: String = "pending",
+    @SerialName("bill_no") val billNo: String? = null,
 )
 
 /** One queued KY form; [form] is `ky10`, `ky11` or `ky12` and selects the fields used. */

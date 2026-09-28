@@ -5,6 +5,8 @@ import app.devper.pharm.domain.repository.sales.SaleRepository
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
+import app.devper.pharm.domain.model.AbandonOutcome
+import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.param.sales.CheckoutParam
 import app.devper.pharm.domain.param.sales.VoidSaleParam
@@ -20,8 +22,13 @@ class FakeSaleRepository(
     ),
     private val checkoutThrows: Throwable? = null,
     private val voidThrows: Throwable? = null,
-    private val replayThrows: Throwable? = null,
+    var replayThrows: Throwable? = null,
+    private val abandonOutcome: AbandonOutcome = AbandonOutcome.Abandoned,
+    private val abandonThrows: Throwable? = null,
 ) : SaleRepository {
+
+    /** (client request id, kind, reason) of each abandonment sent. */
+    val abandoned = mutableListOf<Triple<String, String, String>>()
 
     var lastCheckout: CheckoutParam? = null
         private set
@@ -30,6 +37,8 @@ class FakeSaleRepository(
     var serializeCalls: Int = 0
         private set
     var lastReplay: String? = null
+        private set
+    var replayCount: Int = 0
         private set
 
     override suspend fun checkout(param: CheckoutParam): Sale {
@@ -52,7 +61,19 @@ class FakeSaleRepository(
 
     override suspend fun replayCheckout(payloadJson: String): Sale {
         lastReplay = payloadJson
+        replayCount++
         replayThrows?.let { throw it }
         return successResult
+    }
+
+    override suspend fun abandonSale(clientRequestId: String, payloadJson: String, reason: String): AbandonOutcome {
+        abandonThrows?.let { throw it }
+        abandoned += Triple(clientRequestId, "sale", reason)
+        return abandonOutcome
+    }
+
+    override suspend fun abandonKyForms(clientRequestId: String, forms: List<KyForm>, reason: String) {
+        abandonThrows?.let { throw it }
+        abandoned += Triple(clientRequestId, "ky_forms", reason)
     }
 }

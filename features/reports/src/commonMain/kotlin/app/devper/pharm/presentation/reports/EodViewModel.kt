@@ -5,7 +5,7 @@ import app.devper.pharm.presentation.reports.exception.EodUiStateError
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.observer.OfflineQueueProvider
+import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.reports.CloseEodParam
 import app.devper.pharm.domain.param.reports.EodReportParam
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.onEach
 
 class EodViewModel(
     settings: SettingsProvider,
-    offlineQueue: OfflineQueueProvider,
+    pendingSales: PendingSales,
     private val getEodReport: GetEodReportUseCase,
     private val closeEod: CloseEodUseCase,
     private val printReceiptUseCase: PrintReceiptUseCase,
@@ -32,7 +32,7 @@ class EodViewModel(
         settings.state
             .onEach { lastSettings = it }
             .launchIn(viewModelScope)
-        offlineQueue.pending
+        pendingSales.entries
             .onEach { queue -> setState { copy(pendingSyncCount = queue.size) } }
             .launchIn(viewModelScope)
         reload()

@@ -2,6 +2,7 @@ package app.devper.pharm.data.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class SaleRequest(
@@ -46,4 +47,19 @@ data class StockUpdateDto(
 @Serializable
 data class VoidSaleRequest(
     @SerialName("reason") val reason: String,
+)
+
+/** POST /sales/abandon (pharmacy-api ADR-0009). [payload] is kept verbatim for audit. */
+@Serializable
+data class AbandonRequest(
+    @SerialName("client_request_id") val clientRequestId: String,
+    @SerialName("kind") val kind: String,
+    @SerialName("payload") val payload: JsonElement,
+    @SerialName("reason") val reason: String,
+)
+
+/** The 409 body when the queued sale was recorded before it could be abandoned. */
+@Serializable
+data class AlreadyRecordedResponse(
+    @SerialName("sale") val sale: SaleResponse? = null,
 )

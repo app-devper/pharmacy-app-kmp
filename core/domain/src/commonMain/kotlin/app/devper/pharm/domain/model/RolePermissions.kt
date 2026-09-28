@@ -16,10 +16,12 @@ data class RolePermissions(
     val canVoidSales: Boolean,
     /** Edit or delete customer profiles (MANAGER+). */
     val canEditCustomers: Boolean,
+    /** Abandon a pending sale or close its refused KY forms, with a reason (ADMIN+). */
+    val canResolvePendingSales: Boolean,
 ) {
     companion object {
         /** Everything allowed; the default outside the signed-in shell (previews, tests). */
-        val Full = RolePermissions(canEditDrugs = true, canManageStock = true, canVoidSales = true, canEditCustomers = true)
+        val Full = RolePermissions(canEditDrugs = true, canManageStock = true, canVoidSales = true, canEditCustomers = true, canResolvePendingSales = true)
     }
 }
 
@@ -28,4 +30,5 @@ fun Role.permissions(): RolePermissions = RolePermissions(
     canManageStock = atLeast(Role.MANAGER),
     canVoidSales = atLeast(Role.ADMIN),
     canEditCustomers = atLeast(Role.MANAGER),
+    canResolvePendingSales = atLeast(Role.ADMIN),
 )
