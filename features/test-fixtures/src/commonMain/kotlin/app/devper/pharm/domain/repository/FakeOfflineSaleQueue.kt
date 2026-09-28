@@ -1,65 +1,53 @@
 package app.devper.pharm.domain.repository
 
-import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
-
-import app.devper.pharm.domain.model.KyForm
+import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.domain.model.PendingSale
-import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
-import app.devper.pharm.domain.param.offlinesync.MarkOfflineSaleFailedParam
+import app.devper.pharm.domain.pendingsales.PendingSales
+import app.devper.pharm.domain.repository.ky.KyRepository
+import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
+import app.devper.pharm.domain.repository.sales.SaleRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class FakeOfflineSaleQueue(
     seed: List<PendingSale> = emptyList(),
-    private val enqueueThrows: Throwable? = null,
-    private val markSyncedThrows: Throwable? = null,
+    private val putThrows: Throwable? = null,
 ) : OfflineSaleQueue {
 
-    private val pendingState = MutableStateFlow(seed)
-    override val pending: StateFlow<List<PendingSale>> = pendingState.asStateFlow()
+    private val state = MutableStateFlow(seed)
+    override val entries: StateFlow<List<PendingSale>> = state.asStateFlow()
 
-    var lastEnqueue: EnqueueOfflineSaleParam? = null
-        private set
-    var lastMarkSynced: String? = null
-        private set
-    var lastMarkFailed: MarkOfflineSaleFailedParam? = null
-        private set
+    /** The first stored version of each entry, in order. */
+    val added = mutableListOf<PendingSale>()
 
-    fun push(sale: PendingSale) {
-        pendingState.value = pendingState.value + sale
+    override fun put(entry: PendingSale) {
+        putThrows?.let { throw it }
+        if (state.value.none { it.id == entry.id }) added += entry
+        state.value = state.value.filterNot { it.id == entry.id } + entry
     }
 
-    override fun enqueue(param: EnqueueOfflineSaleParam): String {
-        enqueueThrows?.let { throw it }
-        lastEnqueue = param
-        val id = "fake-${pendingState.value.size}"
-        val now = pendingState.value.size.toLong() * 1000L
-        pendingState.value = pendingState.value + PendingSale(
-            id = id,
-            clientRequestId = param.clientRequestId,
-            payloadJson = param.payloadJson,
-            enqueuedAt = now,
-            kyForms = param.kyForms,
-        )
-        return id
+    override fun remove(id: String) {
+        state.value = state.value.filterNot { it.id == id }
     }
 
-    override fun markSynced(id: String) {
-        markSyncedThrows?.let { throw it }
-        lastMarkSynced = id
-        pendingState.value = pendingState.value.filterNot { it.id == id }
-    }
+    fun entry(id: String): PendingSale? = state.value.firstOrNull { it.id == id }
+}
 
-    override fun markFailed(param: MarkOfflineSaleFailedParam) {
-        lastMarkFailed = param
-    }
+class FakeFileDownloader(private val fails: Throwable? = null) : FileDownloader {
+    val saved = mutableListOf<Pair<String, String>>()
 
-    override fun setKyForms(id: String, forms: List<KyForm>) {
-        pendingState.value = pendingState.value.map { if (it.id == id) it.copy(kyForms = forms) else it }
-    }
-
-    override fun clear() {
-        pendingState.value = emptyList()
+    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> {
+        fails?.let { return Result.failure(it) }
+        saved += filename to bytes.decodeToString()
+        return Result.success("/downloads/$filename")
     }
 }
+
+/** [PendingSales] over fakes. */
+fun pendingSalesOf(
+    queue: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
+    sales: SaleRepository = FakeSaleRepository(),
+    ky: KyRepository = FakeKyRepository(),
+    files: FileDownloader = FakeFileDownloader(),
+): PendingSales = PendingSales(queue, sales, ky, files)

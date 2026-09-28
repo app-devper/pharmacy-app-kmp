@@ -2,9 +2,11 @@
 
 package app.devper.pharm.domain.usecase
 
+import app.devper.pharm.domain.model.AbandonOutcome
 import app.devper.pharm.domain.model.KyForm
 import kotlinx.datetime.LocalDate
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+import app.devper.pharm.domain.repository.pendingSalesOf
 
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 
@@ -53,7 +55,7 @@ class CheckoutUseCaseTest {
     )
 
     private fun useCase(active: ActiveCart, sales: FakeSales) =
-        CheckoutUseCase(FakeCart(active), sales, FakeOfflineSaleQueue(), testDispatchers())
+        CheckoutUseCase(FakeCart(active), sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers())
 
     private fun cart(vararg lines: CartLine, received: String = "100") =
         ActiveCart(items = lines.toList(), cashReceived = received)
@@ -132,7 +134,7 @@ class CheckoutUseCaseTest {
     fun success_commits_receipt_to_cart() = runTest {
         val sales = FakeSales()
         val fakeCart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
-        val outcome = CheckoutUseCase(fakeCart, sales, FakeOfflineSaleQueue(), testDispatchers()).invoke(received = Money(100.0)).getOrThrow()
+        val outcome = CheckoutUseCase(fakeCart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers()).invoke(received = Money(100.0)).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         assertEquals(sales.sale.id, fakeCart.committed?.id)
     }
@@ -144,7 +146,7 @@ class CheckoutUseCaseTest {
         val result = CheckoutUseCase(
             FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1))),
             sales,
-            FakeOfflineSaleQueue(),
+            pendingSalesOf(FakeOfflineSaleQueue()),
             testDispatchers(),
         ).invoke(received = Money(100.0))
         assertTrue(result.isFailure)
@@ -158,11 +160,11 @@ class CheckoutUseCaseTest {
         val cart = FakeCart(active)
         val queue = FakeOfflineSaleQueue()
         val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
-        val result = CheckoutUseCase(cart, sales, queue, testDispatchers())
+        val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
             .invoke(Money(100.0)).getOrThrow()
         assertEquals(CheckoutOutcome.OfflineSaved, result)
-        assertEquals(sales.lastParam?.clientRequestId, queue.lastEnqueue?.clientRequestId)
-        assertEquals("serialized", queue.lastEnqueue?.payloadJson)
+        assertEquals(sales.lastParam?.clientRequestId, queue.added.single().clientRequestId)
+        assertEquals("serialized", queue.added.single().payloadJson)
         assertTrue(cart.state.value.active.items.isEmpty())
         assertNull(cart.committed)
     }
@@ -175,11 +177,11 @@ class CheckoutUseCaseTest {
             saleId = "", date = LocalDate(2026, 9, 27), drugName = "Dextro", regNo = "R2", qty = 1,
             unit = "tab", buyerName = "A", purpose = "cough", pharmacist = "P",
         )
-        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), queue, testDispatchers())
+        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), pendingSalesOf(queue), testDispatchers())
             .invoke(Money(100.0), kyForms = listOf(form)).getOrThrow()
         assertEquals(CheckoutOutcome.OfflineSaved, result)
-        assertEquals(listOf(form), queue.lastEnqueue?.kyForms)
-        assertEquals(listOf(form), queue.pending.value.single().kyForms)
+        assertEquals(listOf(form), queue.added.single().kyForms)
+        assertEquals(listOf(form), queue.entries.value.single().kyForms)
     }
 
     @Test
@@ -187,10 +189,10 @@ class CheckoutUseCaseTest {
         val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
         val sales = FakeSales(failWith = IdentityUnavailableException())
-        val result = CheckoutUseCase(cart, sales, queue, testDispatchers())
+        val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
             .invoke(Money(100.0)).getOrThrow()
         assertEquals(CheckoutOutcome.OfflineSaved, result)
-        assertEquals(sales.lastParam?.clientRequestId, queue.lastEnqueue?.clientRequestId)
+        assertEquals(sales.lastParam?.clientRequestId, queue.added.single().clientRequestId)
         assertTrue(cart.state.value.active.items.isEmpty())
         assertNull(cart.committed)
     }
@@ -200,7 +202,7 @@ class CheckoutUseCaseTest {
         val active = cart(CartLine(drug = drug("a", stock = 10), qty = 1))
         val cart = FakeCart(active)
         val error = RuntimeException("storage full")
-        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), FakeOfflineSaleQueue(enqueueThrows = error), testDispatchers())
+        val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), pendingSalesOf(FakeOfflineSaleQueue(putThrows = error)), testDispatchers())
             .invoke(Money(100.0))
         assertEquals(error, result.exceptionOrNull())
         assertEquals(active, cart.state.value.active)
@@ -212,7 +214,7 @@ class CheckoutUseCaseTest {
         val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
         val queueFailure = RuntimeException("storage full")
-        val checkout = CheckoutUseCase(cart, sales, FakeOfflineSaleQueue(enqueueThrows = queueFailure), testDispatchers())
+        val checkout = CheckoutUseCase(cart, sales, pendingSalesOf(FakeOfflineSaleQueue(putThrows = queueFailure)), testDispatchers())
 
         assertEquals(queueFailure, checkout.invoke(Money(100.0)).exceptionOrNull())
         val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
@@ -227,7 +229,7 @@ class CheckoutUseCaseTest {
         val initial = cart(CartLine(drug = drug("a", stock = 1), qty = 3))
         val fakeCart = FakeCart(initial)
         val sales = FakeSales()
-        val checkout = CheckoutUseCase(fakeCart, sales, FakeOfflineSaleQueue(), testDispatchers())
+        val checkout = CheckoutUseCase(fakeCart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers())
 
         assertTrue(checkout.invoke(Money(100.0)).getOrThrow() is CheckoutOutcome.NeedsOversellConfirm)
         fakeCart.replaceActive(cart(CartLine(drug = drug("a", stock = 1), qty = 4)))
@@ -321,4 +323,6 @@ private class FakeSales(
     override suspend fun void(param: VoidSaleParam) {}
     override fun serializeCheckout(param: CheckoutParam): String = "serialized"
     override suspend fun replayCheckout(payloadJson: String): Sale = sale
+    override suspend fun abandonSale(clientRequestId: String, payloadJson: String, reason: String) = AbandonOutcome.Abandoned
+    override suspend fun abandonKyForms(clientRequestId: String, forms: List<KyForm>, reason: String) {}
 }

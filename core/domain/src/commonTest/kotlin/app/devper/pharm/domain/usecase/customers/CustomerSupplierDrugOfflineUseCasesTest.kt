@@ -9,8 +9,6 @@ import app.devper.pharm.domain.usecase.customers.UpdateCustomerUseCase
 import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase
-import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
-import app.devper.pharm.domain.usecase.offlinesync.MarkOfflineSaleSyncedUseCase
 import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
 import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
 import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
@@ -23,14 +21,12 @@ import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.domain.param.customers.CustomerInput
-import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.param.suppliers.SupplierInput
 import app.devper.pharm.domain.param.customers.UpdateCustomerParam
 import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 import app.devper.pharm.domain.param.suppliers.UpdateSupplierParam
 import app.devper.pharm.domain.repository.FakeCustomerRepository
 import app.devper.pharm.domain.repository.FakeDrugRepository
-import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.FakeSupplierRepository
 import app.devper.pharm.domain.testDispatchers
 import kotlinx.coroutines.test.runTest
@@ -311,54 +307,3 @@ class GetDrugsUseCaseTest {
     }
 }
 
-class EnqueueOfflineSaleUseCaseTest {
-
-    @Test
-    fun forwards_param_and_returns_queue_id() {
-        val queue = FakeOfflineSaleQueue()
-        val param = EnqueueOfflineSaleParam(clientRequestId = "req-1", payloadJson = "{...}")
-
-        val result = EnqueueOfflineSaleUseCase(queue).invoke(param)
-
-        assertEquals(param, queue.lastEnqueue)
-        assertNotNull(result.getOrNull())
-        assertEquals(1, queue.pending.value.size)
-    }
-
-    @Test
-    fun convenience_invoke_builds_param() {
-        val queue = FakeOfflineSaleQueue()
-
-        val result = EnqueueOfflineSaleUseCase(queue).invoke(
-            clientRequestId = "req-2", payloadJson = "[]",
-        )
-
-        assertEquals("req-2", queue.lastEnqueue?.clientRequestId)
-        assertEquals("[]", queue.lastEnqueue?.payloadJson)
-        assertTrue(result.isSuccess)
-    }
-}
-
-class MarkOfflineSaleSyncedUseCaseTest {
-
-    @Test
-    fun forwards_id_and_removes_from_queue() = runTest {
-        val queue = FakeOfflineSaleQueue()
-        queue.enqueue(EnqueueOfflineSaleParam(clientRequestId = "req-1", payloadJson = "{}"))
-        val id = queue.pending.value.single().id
-
-        MarkOfflineSaleSyncedUseCase(queue, testDispatchers()).invoke(id).getOrThrow()
-
-        assertEquals(id, queue.lastMarkSynced)
-        assertTrue(queue.pending.value.isEmpty())
-    }
-
-    @Test
-    fun queue_failure_wraps_in_result() = runTest {
-        val queue = FakeOfflineSaleQueue(markSyncedThrows = RuntimeException("storage failed"))
-
-        val result = MarkOfflineSaleSyncedUseCase(queue, testDispatchers()).invoke("any-id")
-
-        assertTrue(result.isFailure)
-    }
-}

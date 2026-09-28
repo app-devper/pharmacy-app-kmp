@@ -1,13 +1,12 @@
 package app.devper.pharm.domain.usecase.sales
 
-import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
+import app.devper.pharm.domain.pendingsales.PendingSales
 import kotlinx.coroutines.CancellationException
 
 import app.devper.pharm.domain.usecase.BaseUseCase
 
 import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
 import app.devper.pharm.domain.extension.newClientRequestId
-import app.devper.pharm.domain.param.offlinesync.EnqueueOfflineSaleParam
 import app.devper.pharm.domain.validation.SaleValidationError
 
 import app.devper.pharm.common.AppDispatchers
@@ -27,7 +26,7 @@ import app.devper.pharm.domain.repository.sales.SaleRepository
 class CheckoutUseCase(
     private val cart: CartRepository,
     private val sales: SaleRepository,
-    private val offlineQueue: OfflineSaleQueue,
+    private val pendingSales: PendingSales,
     dispatchers: AppDispatchers,
 ) : BaseUseCase<RunCheckoutParam, CheckoutOutcome>(dispatchers) {
 
@@ -73,7 +72,7 @@ class CheckoutUseCase(
         } catch (e: Exception) {
             if (e is CancellationException) throw e
             if (e.looksLikeTemporaryOutage() && serialized != null) {
-                offlineQueue.enqueue(EnqueueOfflineSaleParam(requestId, serialized, param.kyForms))
+                pendingSales.enqueue(requestId, serialized, param.kyForms)
                 cart.clear()
                 pendingAttempt = null
                 return CheckoutOutcome.OfflineSaved

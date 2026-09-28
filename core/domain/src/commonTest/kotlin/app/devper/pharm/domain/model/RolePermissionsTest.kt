@@ -9,11 +9,11 @@ class RolePermissionsTest {
     @Test
     fun permissions_follow_the_shared_role_policy() {
         val expected = mapOf(
-            Role.USER to RolePermissions(canEditDrugs = false, canManageStock = false, canVoidSales = false, canEditCustomers = false),
-            Role.MANAGER to RolePermissions(canEditDrugs = false, canManageStock = true, canVoidSales = false, canEditCustomers = true),
+            Role.USER to RolePermissions(canEditDrugs = false, canManageStock = false, canVoidSales = false, canEditCustomers = false, canResolvePendingSales = false),
+            Role.MANAGER to RolePermissions(canEditDrugs = false, canManageStock = true, canVoidSales = false, canEditCustomers = true, canResolvePendingSales = false),
             Role.ADMIN to RolePermissions.Full,
             Role.SUPER to RolePermissions.Full,
-            Role.UNKNOWN to RolePermissions(canEditDrugs = false, canManageStock = false, canVoidSales = false, canEditCustomers = false),
+            Role.UNKNOWN to RolePermissions(canEditDrugs = false, canManageStock = false, canVoidSales = false, canEditCustomers = false, canResolvePendingSales = false),
         )
         for ((role, permissions) in expected) {
             assertEquals(permissions, role.permissions(), "$role")
