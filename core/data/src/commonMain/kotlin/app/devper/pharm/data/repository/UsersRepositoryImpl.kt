@@ -7,6 +7,7 @@ import app.devper.pharm.data.remote.dto.SetStatusRequest
 import app.devper.pharm.data.repository.internal.toDomain
 import app.devper.pharm.data.repository.internal.toRequest
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.SetUserPasswordParam
 import app.devper.pharm.domain.param.users.SetUserRoleParam
@@ -20,6 +21,8 @@ class UsersRepositoryImpl(
 
     override suspend fun list(): List<UmUser> =
         api.list().map { it.toDomain() }
+
+    override suspend fun rules(): UserRules = api.rules().toDomain()
 
     override suspend fun create(param: CreateUserParam): UmUser =
         api.create(param.toRequest()).toDomain()

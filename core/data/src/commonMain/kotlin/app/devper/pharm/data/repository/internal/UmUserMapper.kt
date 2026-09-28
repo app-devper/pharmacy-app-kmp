@@ -4,11 +4,15 @@ import app.devper.pharm.data.internal.parseLocalDateTimeOrNull
 import app.devper.pharm.data.remote.dto.ChangePasswordRequest
 import app.devper.pharm.data.remote.dto.CreateUserRequest
 import app.devper.pharm.data.remote.dto.UmUserDto
+import app.devper.pharm.data.remote.dto.UserPermissionsDto
+import app.devper.pharm.data.remote.dto.UserRulesDto
 import app.devper.pharm.data.remote.dto.UpdateProfileRequest
 import app.devper.pharm.data.remote.dto.UpdateUserRequest
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.domain.model.UserPermissions
+import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.param.profile.ChangePasswordParam
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.profile.UpdateProfileParam
@@ -26,7 +30,20 @@ internal fun UmUserDto.toDomain(): UmUser = UmUser(
     email = email,
     createdDate = createdDate.parseLocalDateTimeOrNull(),
     updatedDate = updatedDate.parseLocalDateTimeOrNull(),
+    can = can?.toDomain() ?: UserPermissions.None,
 )
+
+internal fun UserPermissionsDto.toDomain(): UserPermissions = UserPermissions(
+    edit = edit,
+    delete = delete,
+    setStatus = setStatus,
+    setRole = setRole,
+    setPassword = setPassword,
+    unlock = unlock,
+    assignableRoles = assignableRoles.map { Role.parse(it) },
+)
+
+internal fun UserRulesDto.toDomain(): UserRules = UserRules(creatableRoles.map { Role.parse(it) })
 
 internal fun CreateUserParam.toRequest(): CreateUserRequest = CreateUserRequest(
     firstName = firstName.trim(),

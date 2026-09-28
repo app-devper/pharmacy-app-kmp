@@ -9,6 +9,7 @@ import app.devper.pharm.domain.param.users.SetUserRoleParam
 import app.devper.pharm.domain.param.users.SetUserStatusParam
 import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.usecase.users.GetUserRulesUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
@@ -19,6 +20,7 @@ import app.devper.pharm.ui.common.BaseLoadableViewModel
 class UsersListViewModel(
     private val getProfile: GetProfileUseCase,
     private val getUsers: GetUsersUseCase,
+    private val getUserRules: GetUserRulesUseCase,
     private val deleteUser: DeleteUserUseCase,
     private val setUserRole: SetUserRoleUseCase,
     private val setUserStatus: SetUserStatusUseCase,
@@ -38,6 +40,12 @@ class UsersListViewModel(
             onFailure = { e ->
                 setState { copy(loading = false, errorState = UsersUiStateError.LoadUsersFailed(e)) }
             },
+        )
+        // Without the rules nothing can be created; the list still shows.
+        launchResult(
+            block = { getUserRules() },
+            onSuccess = { rules -> setState { copy(creatableRoles = rules.creatableRoles) } },
+            onFailure = { setState { copy(creatableRoles = emptyList()) } },
         )
     }
 
