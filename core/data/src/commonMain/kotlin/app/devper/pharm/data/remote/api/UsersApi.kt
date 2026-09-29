@@ -6,6 +6,7 @@ import app.devper.pharm.data.remote.dto.SetPasswordRequest
 import app.devper.pharm.data.remote.dto.SetRoleRequest
 import app.devper.pharm.data.remote.dto.SetStatusRequest
 import app.devper.pharm.data.remote.dto.UmUserDto
+import app.devper.pharm.data.remote.dto.UserRulesDto
 import app.devper.pharm.data.remote.dto.UpdateUserRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -23,6 +24,9 @@ class UsersApi(
 
     suspend fun list(): List<UmUserDto> =
         client.get(config.umUser()).body()
+
+    suspend fun rules(): UserRulesDto =
+        client.get(config.umUser("rules")).body()
 
     suspend fun create(request: CreateUserRequest): UmUserDto =
         client.post(config.umUser()) { setBody(request) }.body()
