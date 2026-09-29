@@ -5,6 +5,7 @@ import app.devper.pharm.domain.repository.users.UsersRepository
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.SetUserPasswordParam
 import app.devper.pharm.domain.param.users.SetUserRoleParam
@@ -20,6 +21,7 @@ class FakeUsersRepository(
     private val setRoleFailsWith: Throwable? = null,
     private val setStatusFailsWith: Throwable? = null,
     private val setPasswordFailsWith: Throwable? = null,
+    private val rules: UserRules = UserRules(listOf(Role.MANAGER, Role.USER)),
 ) : UsersRepository {
 
     private val data: MutableList<UmUser> = initial.toMutableList()
@@ -37,6 +39,8 @@ class FakeUsersRepository(
         private set
 
     val snapshot: List<UmUser> get() = data.toList()
+
+    override suspend fun rules(): UserRules = rules
 
     override suspend fun list(): List<UmUser> {
         listFailsWith?.let { throw it }

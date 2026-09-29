@@ -16,4 +16,22 @@ data class UmUserDto(
     @SerialName("email") val email: String = "",
     @SerialName("createdDate") val createdDate: String = "",
     @SerialName("updatedDate") val updatedDate: String = "",
+    @SerialName("can") val can: UserPermissionsDto? = null,
+)
+
+/** um-api ADR-0006. */
+@Serializable
+data class UserPermissionsDto(
+    @SerialName("edit") val edit: Boolean = false,
+    @SerialName("delete") val delete: Boolean = false,
+    @SerialName("setStatus") val setStatus: Boolean = false,
+    @SerialName("setRole") val setRole: Boolean = false,
+    @SerialName("setPassword") val setPassword: Boolean = false,
+    @SerialName("unlock") val unlock: Boolean = false,
+    @SerialName("assignableRoles") val assignableRoles: List<String> = emptyList(),
+)
+
+@Serializable
+data class UserRulesDto(
+    @SerialName("creatableRoles") val creatableRoles: List<String> = emptyList(),
 )

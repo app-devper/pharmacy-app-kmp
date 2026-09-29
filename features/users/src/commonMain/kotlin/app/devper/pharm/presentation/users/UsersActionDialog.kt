@@ -95,7 +95,8 @@ private fun RoleDialogBody(
 ) {
     val s = pharmStrings
     Text(text = "@${target.username}", style = PharmText.micro.copy(color = pharmTokens.colors.fgMuted))
-    val options = roleOptionsFor(actorRole)
+    // What UM lets the signed-in user assign (um-api ADR-0006); SUPER is never offered.
+    val options = target.can.assignableRoles.filter { it != Role.SUPER }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { role ->
             PharmButton(
@@ -214,8 +215,3 @@ private fun PasswordDialogBody(
     }
 }
 
-internal fun roleOptionsFor(actor: Role): List<Role> = when (actor) {
-    Role.SUPER -> listOf(Role.ADMIN, Role.MANAGER, Role.USER)
-    Role.ADMIN -> listOf(Role.MANAGER, Role.USER)
-    else       -> emptyList()
-}

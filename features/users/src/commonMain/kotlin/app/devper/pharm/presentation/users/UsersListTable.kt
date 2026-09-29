@@ -12,8 +12,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.extension.canManage
-import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
@@ -92,12 +90,7 @@ internal fun UsersListTable(
             align = PharmColumnAlign.End,
             compactTrailing = true,
             cell = { user ->
-                UsersRowActions(
-                    user = user,
-                    actorRole = actorRole,
-                    isSelf = user.id == currentUserId,
-                    callbacks = callbacks,
-                )
+                UsersRowActions(user = user, callbacks = callbacks)
             },
         ),
         )
@@ -185,25 +178,26 @@ private fun UserPhoneCell(user: UmUser) {
     }
 }
 
+/** Only what UM says the signed-in user may do to this user (um-api ADR-0006). */
 @Composable
 private fun UsersRowActions(
     user: UmUser,
-    actorRole: Role,
-    isSelf: Boolean,
     callbacks: UsersListCallbacks,
 ) {
     val s = pharmStrings
-    val canManage = actorRole.canManage(target = user.role, isSelf = isSelf)
+    val can = user.can
     val actions = buildList {
-        add(
-            PharmAction(
-                label = s.commonEdit,
-                icon = PharmIcons.Pencil,
-                tone = PharmActionTone.Primary,
-                onClick = { callbacks.onEditUser(user) },
-            ),
-        )
-        if (canManage) {
+        if (can.edit) {
+            add(
+                PharmAction(
+                    label = s.commonEdit,
+                    icon = PharmIcons.Pencil,
+                    tone = PharmActionTone.Primary,
+                    onClick = { callbacks.onEditUser(user) },
+                ),
+            )
+        }
+        if (can.setRole && can.assignableRoles.any { it != Role.SUPER }) {
             add(
                 PharmAction(
                     label = s.usersActionChangeRole,
@@ -211,6 +205,8 @@ private fun UsersRowActions(
                     onClick = { callbacks.onRequestRoleEdit(user) },
                 ),
             )
+        }
+        if (can.setStatus) {
             add(
                 PharmAction(
                     label = if (user.status.isActive) s.usersActionSuspend else s.usersActionEnable,
@@ -218,6 +214,8 @@ private fun UsersRowActions(
                     onClick = { callbacks.onRequestStatusToggle(user) },
                 ),
             )
+        }
+        if (can.setPassword) {
             add(
                 PharmAction(
                     label = s.usersActionSetPassword,
@@ -226,6 +224,8 @@ private fun UsersRowActions(
                     onClick = { callbacks.onRequestPasswordSet(user) },
                 ),
             )
+        }
+        if (can.delete) {
             add(
                 PharmAction(
                     label = s.commonDelete,
@@ -236,7 +236,7 @@ private fun UsersRowActions(
             )
         }
     }
-    PharmActionMenu(actions = actions)
+    if (actions.isNotEmpty()) PharmActionMenu(actions = actions)
 }
 
 

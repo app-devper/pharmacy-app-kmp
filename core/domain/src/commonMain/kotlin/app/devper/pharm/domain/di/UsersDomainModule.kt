@@ -2,6 +2,7 @@ package app.devper.pharm.domain.di
 
 import app.devper.pharm.domain.usecase.users.CreateUserUseCase
 import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
+import app.devper.pharm.domain.usecase.users.GetUserRulesUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
@@ -12,6 +13,7 @@ import org.koin.dsl.module
 
 val usersDomainModule = module {
     factoryOf(::GetUsersUseCase)
+    factoryOf(::GetUserRulesUseCase)
     factoryOf(::CreateUserUseCase)
     factoryOf(::UpdateUserUseCase)
     factoryOf(::DeleteUserUseCase)
