@@ -9,7 +9,6 @@ import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
 import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
-import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -23,5 +22,4 @@ val kyDomainModule = module {
     factoryOf(::AddKy11UseCase)
     factoryOf(::AddKy12UseCase)
     factoryOf(::ExportKyFormUseCase)
-    factoryOf(::SubmitKyFormsUseCase)
 }

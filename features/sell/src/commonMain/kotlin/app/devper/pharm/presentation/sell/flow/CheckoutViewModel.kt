@@ -17,19 +17,14 @@ import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
-import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
-import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
-import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
+import app.devper.pharm.domain.model.capture
 import app.devper.pharm.domain.extension.calculateKyRequired
-import app.devper.pharm.domain.extension.looksLikeNetworkError
-import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
-import app.devper.pharm.ui.format.todayLocalDate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -39,10 +34,7 @@ class CheckoutViewModel(
     settings: SettingsProvider,
     private val timeZoneProvider: TimeZoneProvider,
     private val checkout: CheckoutUseCase,
-    private val clearCart: ClearCartUseCase,
     private val dismissReceiptUseCase: DismissReceiptUseCase,
-    private val submitKyForms: SubmitKyFormsUseCase,
-    private val enqueueOfflineSale: EnqueueOfflineSaleUseCase,
     private val setCashReceived: SetCashReceivedUseCase,
     private val receiptPrinter: ReceiptPrinter,
 ) : BaseLoadableViewModel<CheckoutUiState>(CheckoutUiState()) {
@@ -53,7 +45,6 @@ class CheckoutViewModel(
         val received: Double,
     )
 
-    private var pendingClientRequestId: String? = null
     private var pendingKyFields: KyCaptureFields? = null
     private var pendingKyRequired: KyRequired? = null
     private var pendingKySkippedByCashier: Boolean = false
@@ -108,9 +99,10 @@ class CheckoutViewModel(
         val required = snap.items.calculateKyRequired()
         if (!required.isEmpty) {
             if (lastSettings.ky.skipAuto) {
+                // The server records the shop's skip itself (pharmacy-api ADR-0011).
                 pendingKyRequired = null
                 pendingKyFields = null
-                pendingKySkippedByCashier = true
+                pendingKySkippedByCashier = false
             } else if (pendingKyFields != null) {
                 pendingKyRequired = required
             } else {
@@ -119,7 +111,7 @@ class CheckoutViewModel(
                 return
             }
         }
-        startNewCheckout(allowOversell = false)
+        runCheckout(allowOversell = false)
     }
 
     fun openKyPrecapture() {
@@ -141,7 +133,7 @@ class CheckoutViewModel(
     fun confirmKyCapture(fields: KyCaptureFields) {
         pendingKyFields = fields
         setState { copy(kyCapturePending = null) }
-        startNewCheckout(allowOversell = false)
+        runCheckout(allowOversell = false)
     }
 
     fun requestSkipKy() {
@@ -159,7 +151,7 @@ class CheckoutViewModel(
         pendingKySkippedByCashier = true
         precaptureItems = null
         setState { copy(kyCapturePending = null, showSkipKyConfirm = false, kyCaptured = false, capturedKyFields = null) }
-        startNewCheckout(allowOversell = false)
+        runCheckout(allowOversell = false)
     }
 
     fun dismissKyCapture() {
@@ -193,15 +185,7 @@ class CheckoutViewModel(
         }
     }
 
-    private fun startNewCheckout(allowOversell: Boolean) {
-
-        pendingClientRequestId = newClientRequestId()
-        runCheckout(allowOversell = allowOversell)
-    }
-
     private fun runCheckout(allowOversell: Boolean) {
-        val requestId = pendingClientRequestId
-
         val kyRequiredAtSubmit = pendingKyRequired
         val kyFieldsAtSubmit = pendingKyFields
         val kySkippedAtSubmit = pendingKySkippedByCashier
@@ -213,13 +197,35 @@ class CheckoutViewModel(
 
         setState { copy(checkingOut = true, errorState = null) }
         launchResult(
-            block = { checkout(Money(receivedSnapshot), allowOversell, requestId, kySkippedAtSubmit) },
+            block = {
+                // The capture travels with the sale; the server records the forms.
+                val ky = if (kyRequiredAtSubmit != null && kyFieldsAtSubmit != null) {
+                    kyRequiredAtSubmit.capture(kyFieldsAtSubmit)
+                } else null
+                checkout(Money(receivedSnapshot), allowOversell, kySkippedAtSubmit, ky)
+            },
             onSuccess = { outcome ->
                 when (outcome) {
+                    CheckoutOutcome.CartChanged -> {
+                        clearPendingTokens()
+                        precaptureItems = null
+                        setState {
+                            copy(
+                                checkingOut = false,
+                                kyCaptured = false,
+                                capturedKyFields = null,
+                                errorState = CheckoutUiStateError.CartChanged(),
+                            )
+                        }
+                    }
+                    CheckoutOutcome.OfflineSaved -> {
+                        clearPendingTokens()
+                        setState {
+                            copy(checkingOut = false, paymentOpen = false, errorState = CheckoutUiStateError.OfflineSaved())
+                        }
+                    }
                     is CheckoutOutcome.Success -> handleSuccess(
                         sale = outcome.sale,
-                        kyRequired = kyRequiredAtSubmit,
-                        kyFields = kyFieldsAtSubmit,
                         tz = tzAtSubmit,
                         cart = cartSnapshot,
                         customer = customerSnapshot,
@@ -233,10 +239,8 @@ class CheckoutViewModel(
         )
     }
 
-    private suspend fun handleSuccess(
+    private fun handleSuccess(
         sale: Sale,
-        kyRequired: KyRequired?,
-        kyFields: KyCaptureFields?,
         tz: kotlinx.datetime.TimeZone,
         cart: List<CartLine>,
         customer: Customer?,
@@ -253,54 +257,21 @@ class CheckoutViewModel(
             soldAtFormatted = todayBuddhistDisplay(tz),
         )
         setState { copy(checkingOut = false, paymentOpen = false, lastReceiptTemplate = template) }
-
-        if (kyRequired != null && kyFields != null) {
-            submitKyForms(
-                sale = sale,
-                required = kyRequired,
-                captured = kyFields,
-                date = todayLocalDate(tz),
-            ).fold(
-                onSuccess = { result ->
-                    if (result.anyFailed) {
-                        setState {
-                            copy(errorState = CheckoutUiStateError.KyIncomplete(sale.billNo, result.failed))
-                        }
-                    }
-                },
-                onFailure = { e ->
-                    setState {
-                        copy(errorState = CheckoutUiStateError.KyError(sale.billNo, e))
-                    }
-                },
-            )
-        }
     }
 
     private fun handleFailure(error: Throwable) {
 
         val cf = error as? CheckoutFailure
         val cause = cf?.cause ?: error
-        val payload = cf?.serializedRequest
-        val crid = cf?.clientRequestId
-        if (cause.looksLikeNetworkError() && payload != null && crid != null) {
-
-            enqueueOfflineSale(crid, payload)
-            clearCart()
-            clearPendingTokens()
-            setState {
-                copy(checkingOut = false, paymentOpen = false, errorState = CheckoutUiStateError.OfflineSaved())
-            }
-        } else {
-            clearPendingTokens()
-            setState {
-                copy(checkingOut = false, errorState = (cause as? AppException) ?: CheckoutUiStateError.CheckoutFailed(cause))
-            }
+        pendingKyRequired = null
+        pendingKyFields = null
+        pendingKySkippedByCashier = false
+        setState {
+            copy(checkingOut = false, errorState = (cause as? AppException) ?: CheckoutUiStateError.CheckoutFailed(cause))
         }
     }
 
     private fun clearPendingTokens() {
-        pendingClientRequestId = null
         pendingKyRequired = null
         pendingKyFields = null
         pendingKySkippedByCashier = false

@@ -1,0 +1,3 @@
+# Preserve unsynced sales on queue corruption
+
+An offline sale is an unconfirmed commercial intent that may be the only local record of a cashier's work. Store entries independently and durably rather than as one all-or-nothing JSON list. If an entry cannot be decoded, preserve its raw data for export and recovery, alert the operator, and stop automatic replay of that damaged entry. Never silently discard an unconfirmed sale. `OfflineSaleQueueImpl` stores one settings key per entry (`offline.sale.<id>`) and moves the old single-list key into it on start; an entry it cannot decode is reported as damaged with its raw data, which `PendingSales.export` saves to a file before an ADMIN+ user may discard it.

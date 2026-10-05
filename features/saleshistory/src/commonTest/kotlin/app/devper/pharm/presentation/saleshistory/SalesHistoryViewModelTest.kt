@@ -115,14 +115,13 @@ class SalesHistoryViewModelTest {
     }
 
     @Test
-    fun onSelectSale_loads_items_with_merged_returns() = runVmTest { dispatchers ->
+    fun onSelectSale_loads_items_with_what_each_can_still_return() = runVmTest { dispatchers ->
         val sale = summary("s1")
         val (vm, _) = newVm(
             dispatchers,
             FakeSaleHistoryRepository(
                 seed = listOf(sale),
-                itemsBySale = mapOf("s1" to listOf(item("i1", qty = 5), item("i2", qty = 3))),
-                returnsBySale = mapOf("s1" to mapOf("i1" to 2)),
+                itemsBySale = mapOf("s1" to listOf(item("i1", qty = 5).copy(returnedQty = 2, returnableQty = 3), item("i2", qty = 3))),
             ),
         )
         advanceUntilIdle()
@@ -134,25 +133,6 @@ class SalesHistoryViewModelTest {
         assertEquals(2, s.items.first { it.id == "i1" }.returnedQty)
         assertEquals(0, s.items.first { it.id == "i2" }.returnedQty)
         assertFalse(s.itemsLoading)
-    }
-
-    @Test
-    fun onSelectSale_returns_failure_falls_back_to_zero_returned() = runVmTest { dispatchers ->
-        val sale = summary("s1")
-        val (vm, _) = newVm(
-            dispatchers,
-            FakeSaleHistoryRepository(
-                seed = listOf(sale),
-                itemsBySale = mapOf("s1" to listOf(item("i1", qty = 5))),
-                returnsThrows = true,
-            ),
-        )
-        advanceUntilIdle()
-        vm.onSelectSale(sale)
-        advanceUntilIdle()
-        assertEquals(0, vm.state.value.items.single().returnedQty)
-        assertFalse(vm.state.value.itemsLoading)
-        assertNull(vm.state.value.errorState)
     }
 
     @Test

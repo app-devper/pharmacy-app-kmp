@@ -58,6 +58,7 @@ object ReportsStringsEn : ReportsStrings {
     override val reportsEodToday = "Today"
     override val reportsEodConfirmTitle = "Confirm EOD"
     override val reportsEodConfirmMessage = "Verify totals before confirming — once closed, this cannot be reverted"
+    override val reportsEodAdjustmentsBanner: (Int, Int, String) -> String = { n, bills, total -> "$n adjustment(s) after close — now $bills bill(s), $total" }
     override val reportsEodPendingSyncBanner: (Int) -> String = { n -> "$n bill(s) awaiting sync — today's totals exclude them" }
     override val reportsEodPendingSyncWarning: (Int) -> String = { n -> "$n bill(s) still awaiting sync — close the day anyway?" }
     override val reportsEodCloseCta = "Close day"

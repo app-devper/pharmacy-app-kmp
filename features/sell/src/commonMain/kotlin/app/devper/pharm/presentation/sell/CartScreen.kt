@@ -1,4 +1,5 @@
 package app.devper.pharm.presentation.sell
+import app.devper.pharm.ui.components.LocalRolePermissions
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.VoidSaleViewModel
 import app.devper.pharm.presentation.sell.flow.ParkedCartViewModel
@@ -212,7 +213,7 @@ fun CartScreen(
 
                     onBack()
                 },
-                onVoid = sale.id.takeIf { it.isNotBlank() }
+                onVoid = sale.id.takeIf { it.isNotBlank() && LocalRolePermissions.current.canVoidSales }
                     ?.let { { voidSaleVM.openSheet() } },
                 onPrint = { checkoutVM.printLastReceipt(sale) },
             )

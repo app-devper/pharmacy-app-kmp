@@ -7,5 +7,8 @@ fun OfflineSyncUiStateError.localize(s: PharmStrings): String = when (this) {
     is OfflineSyncUiStateError.LoadFailed -> s.offlineSyncLoadFailed
     is OfflineSyncUiStateError.SyncPartialFailed -> s.offlineSyncSyncPartialFailed(failed, total)
     is OfflineSyncUiStateError.RetryFailed -> s.offlineSyncRetryFailed(billId)
+    is OfflineSyncUiStateError.StillNotRecorded -> s.offlineSyncStillNotRecorded(billId)
+    is OfflineSyncUiStateError.AbandonFailed -> s.offlineSyncAbandonFailed
+    is OfflineSyncUiStateError.ExportFailed -> s.offlineSyncExportFailed
     is OfflineSyncUiStateError.DiscardFailed -> s.offlineSyncDiscardFailed
 }

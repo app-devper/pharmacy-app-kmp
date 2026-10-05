@@ -1,6 +1,7 @@
 package app.devper.pharm.domain.repository.users
 
 import app.devper.pharm.domain.model.UmUser
+import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.SetUserPasswordParam
 import app.devper.pharm.domain.param.users.SetUserRoleParam
@@ -9,6 +10,7 @@ import app.devper.pharm.domain.param.users.UpdateUserParam
 
 interface UsersRepository {
     suspend fun list(): List<UmUser>
+    suspend fun rules(): UserRules
     suspend fun create(param: CreateUserParam): UmUser
     suspend fun update(param: UpdateUserParam): UmUser
     suspend fun delete(id: String)

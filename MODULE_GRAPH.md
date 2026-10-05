@@ -195,7 +195,7 @@ There is no `:features:shared` module. The app shell + navigation are owned by
 | Path | Contents |
 |---|---|
 | `presentation/navigation/AppNavHost.kt` | Outer `NavHost(startDestination = Login)` with two destinations: `authNav` (Login, no shell) and `composable<MainRoot> { MainShell(...) }`. `LaunchedEffect(isLoggedIn)` swaps Login↔MainRoot. |
-| `presentation/navigation/MainNav.kt` | `MainRoot` route, `MAIN_NAV_TABLE` (sidebar items), `DEST_INFO` map (`route qualified name → title + sectionKey`), and `MainShell` — renders `AppShell` ONCE around a nested `NavHost(startDestination = Sell)` that composes all 20 `<x>Nav` builders. Active item + title derive from `nestedNav.currentBackStackEntryAsState()`. |
+| `presentation/navigation/MainNav.kt` + `MainNavTable.kt` | `MainRoot` route, `mainDestinations` (title, section, sub-page classification, optional sidebar entry), and `MainShell` — renders `AppShell` ONCE around a nested `NavHost(startDestination = Sell)` that composes all 20 `<x>Nav` builders. Active item + title derive from `nestedNav.currentBackStackEntryAsState()`. |
 
 Each feature owns its routes + nav builder at
 `features/<x>/.../presentation/<x>/navigation/<X>Nav.kt` (`@Serializable` route
@@ -312,7 +312,7 @@ Run everything:
 | A new design primitive | `:core:ui/designsystem/` |
 | Anything theme / color / token | `:core:ui/theme/` |
 | A new feature route + nav builder | `:features:<feature>/presentation/<feature>/navigation/<Feature>Nav.kt` (routes + `fun NavGraphBuilder.<x>Nav(...)`, no shell) |
-| A new sidebar entry + topbar title for a route | `composeApp/.../navigation/MainNav.kt` (`MAIN_NAV_TABLE` + `DEST_INFO`) |
+| A new sidebar entry + topbar title for a route | `composeApp/.../navigation/MainNavTable.kt` (`mainDestinations`) |
 | A new feature screen + VM | `:features:<feature>/presentation/<feature>/` |
 | Its DI bindings | `:features:<feature>/di/<Feature>Module.kt` |
 | A new VM test | `:features:<feature>/commonTest/.../<feature>/` |
@@ -342,8 +342,8 @@ For a brand-new feature (also documented in CLAUDE.md):
    Callbacks,ViewModel,UiState}.kt` + `features/<feat>/.../di/<Feat>Module.kt`
 6. Wire from `:composeApp`: add `implementation(project(":features:<feat>"))`
    to `composeApp/build.gradle.kts`, call `<feat>Nav(nestedNav)` inside `MainShell`'s
-   nested `NavHost` + add `DEST_INFO` entries (and a `MAIN_NAV_TABLE` row if it gets a
-   sidebar item) in `composeApp/.../navigation/MainNav.kt`, and append `<feat>Module`
+   nested `NavHost` + add a `mainDestinations` entry (including sub-page and optional
+   sidebar metadata) in `composeApp/.../navigation/MainNavTable.kt`, and append `<feat>Module`
    to `AppModule.kt`'s `includes(...)`.
 
 ## Convention plugin (`build-logic/`)

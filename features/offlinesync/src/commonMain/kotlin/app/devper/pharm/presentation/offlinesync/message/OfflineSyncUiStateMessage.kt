@@ -3,5 +3,8 @@ package app.devper.pharm.presentation.offlinesync.message
 sealed class OfflineSyncUiStateMessage {
     data class SyncStarted(val count: Int) : OfflineSyncUiStateMessage()
     data class RetryStarted(val billId: String) : OfflineSyncUiStateMessage()
+    data object Recorded : OfflineSyncUiStateMessage()
+    data object Abandoned : OfflineSyncUiStateMessage()
+    data class Exported(val path: String) : OfflineSyncUiStateMessage()
     data object Discarded : OfflineSyncUiStateMessage()
 }

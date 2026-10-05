@@ -34,5 +34,5 @@ class ReportsRepositoryImpl(private val api: ReportsApi) : ReportsRepository {
         api.eod(param.date?.toIso().orEmpty()).toDomain()
 
     override suspend fun closeEod(param: CloseEodParam): EodCloseResult =
-        api.closeEod(param.date?.toIso().orEmpty()).toDomain()
+        api.closeEod(param.date?.toIso().orEmpty(), param.closedByName).toDomain()
 }

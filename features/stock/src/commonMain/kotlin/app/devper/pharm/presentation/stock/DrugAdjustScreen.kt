@@ -37,6 +37,9 @@ fun DrugAdjustScreen(
         onAbsDelta = viewModel::onAbsDelta,
         onReason = viewModel::onReason,
         onNote = viewModel::onNote,
+        onLotChoice = viewModel::onLotChoice,
+        onNewLotNumber = viewModel::onNewLotNumber,
+        onNewLotExpiry = viewModel::onNewLotExpiry,
         onSubmitAdd = viewModel::submitAdd,
         onDismissError = viewModel::dismissError,
     )

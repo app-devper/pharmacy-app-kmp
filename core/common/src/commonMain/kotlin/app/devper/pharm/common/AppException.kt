@@ -28,6 +28,16 @@ class NetworkException(
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
+/**
+ * The pharmacy API could not confirm the caller's session because the identity
+ * store is unreachable (HTTP 503 `identity service unavailable`, ADR-0016).
+ * Temporary: retry later, keep a sale pending, and do not sign the user out.
+ */
+class IdentityUnavailableException(
+    message: String = "Identity service unavailable",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
 class ServerException(
     message: String = "Server error",
     val statusCode: Int? = null,

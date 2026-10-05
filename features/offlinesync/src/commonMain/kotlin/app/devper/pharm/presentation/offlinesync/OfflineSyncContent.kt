@@ -20,6 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.domain.model.PendingSaleState
+import app.devper.pharm.ui.components.LocalRolePermissions
+import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.presentation.offlinesync.i18n.localize
 import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.components.ErrorBottomSheet
@@ -54,14 +57,13 @@ fun OfflineSyncContent(
         toolbar = {
             PharmListToolbar(
                 subtitle = s.offlineSyncSubtitle,
-                compactTopbarActions = true,
-                actions = {
+                primaryAction = {
                     PharmButton(
                         label = s.offlineSyncRetryAllCta,
                         onClick = callbacks.onSyncAll,
                         variant = PharmButtonVariant.Primary,
                         size = PharmButtonSize.Sm,
-                        enabled = state.totalCount > 0,
+                        enabled = state.retryableCount > 0 && !state.busy,
                         loading = state.syncingAll,
                         leadingIcon = {
                             Icon(
@@ -95,8 +97,10 @@ fun OfflineSyncContent(
                     OfflineSyncCard(
                         row = row,
                         tz = state.tz,
-                        syncing = row.id in state.syncingIds,
+                        syncing = row.id in state.syncingIds || (state.syncingAll && row.state == PendingSaleState.Pending),
                         actionsEnabled = !state.busy,
+                        canResolve = LocalRolePermissions.current.canResolvePendingSales,
+                        exported = row.id in state.exportedIds,
                         callbacks = callbacks,
                     )
                 }
@@ -104,36 +108,66 @@ fun OfflineSyncContent(
         }
     }
 
-    state.confirmDiscardId?.let {
-        PharmModal(
-            open = true,
-            onDismiss = callbacks.onDismissCancel,
-            title = s.offlineSyncDeleteConfirmTitle,
-            footer = {
-                PharmButton(
-                    label = s.commonCancel,
-                    onClick = callbacks.onDismissCancel,
-                    variant = PharmButtonVariant.Ghost,
-                    size = PharmButtonSize.Md,
-                    enabled = !state.discarding,
-                )
-                PharmButton(
-                    label = s.commonDelete,
-                    onClick = callbacks.onConfirmCancel,
-                    variant = PharmButtonVariant.Danger,
-                    size = PharmButtonSize.Md,
-                    loading = state.discarding,
-                )
-            },
-        ) {
-            Text(
-                text = s.offlineSyncDeleteConfirmMessage,
-                style = PharmText.body,
-            )
-        }
-    }
+    state.resolving?.let { resolving -> ResolvingDialog(resolving, state.working, callbacks) }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localize(pharmStrings), onDismiss = callbacks.onDismissError)
+}
+
+@Composable
+private fun ResolvingDialog(resolving: Resolving, working: Boolean, callbacks: OfflineSyncCallbacks) {
+    val s = pharmStrings
+    val abandon = resolving as? Resolving.Abandon
+    PharmModal(
+        open = true,
+        onDismiss = callbacks.onDismissResolving,
+        title = when {
+            abandon == null -> s.offlineSyncDeleteConfirmTitle
+            abandon.kyOnly -> s.offlineSyncCloseKyTitle
+            else -> s.offlineSyncAbandonTitle
+        },
+        footer = {
+            PharmButton(
+                label = s.commonCancel,
+                onClick = callbacks.onDismissResolving,
+                variant = PharmButtonVariant.Ghost,
+                size = PharmButtonSize.Md,
+                enabled = !working,
+            )
+            PharmButton(
+                label = when {
+                    abandon == null -> s.commonDelete
+                    abandon.kyOnly -> s.offlineSyncCloseKyCta
+                    else -> s.offlineSyncAbandonCta
+                },
+                onClick = callbacks.onConfirmResolving,
+                variant = PharmButtonVariant.Danger,
+                size = PharmButtonSize.Md,
+                enabled = abandon == null || abandon.reason.isNotBlank(),
+                loading = working,
+            )
+        },
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(
+                text = when {
+                    abandon == null -> s.offlineSyncDeleteConfirmMessage
+                    abandon.kyOnly -> s.offlineSyncCloseKyMessage
+                    else -> s.offlineSyncAbandonMessage
+                },
+                style = PharmText.body,
+            )
+            if (abandon != null) {
+                PharmTextField(
+                    value = abandon.reason,
+                    onValueChange = callbacks.onReasonChange,
+                    placeholder = s.offlineSyncReasonPlaceholder,
+                    enabled = !working,
+                    singleLine = false,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -168,8 +202,19 @@ private val samplePending = listOf(
         clientRequestId = "req-3a890003-cccc",
         payloadJson = "{}",
         enqueuedAt = 1716033000000L,
-        lastError = "lot_mismatch: PCM-25011 ถูกตัดหมด — backend retried with FEFO",
+        lastError = "received must be >= total",
         attempts = 3,
+        state = PendingSaleState.Conflict,
+    ),
+    PendingSale(
+        id = "3a870004",
+        clientRequestId = "req-3a870004-dddd",
+        payloadJson = "{}",
+        enqueuedAt = 1716031000000L,
+        lastError = "ky10:Tramadol:buyer_name is required",
+        attempts = 1,
+        state = PendingSaleState.KyPending,
+        billNo = "INV-260517-004",
     ),
 )
 
@@ -191,12 +236,12 @@ private fun OfflineSyncContent_Empty_Preview() {
 
 @Preview
 @Composable
-private fun OfflineSyncContent_ConfirmDiscard_Preview() {
+private fun OfflineSyncContent_Abandon_Preview() {
     PharmacyTheme {
         OfflineSyncContent(
             state = OfflineSyncUiState(
                 pending = samplePending,
-                confirmDiscardId = samplePending.first().id,
+                resolving = Resolving.Abandon(samplePending[2].id, kyOnly = false, reason = "ลูกค้ายกเลิก"),
             ),
         )
     }
@@ -209,7 +254,7 @@ private fun OfflineSyncContent_WithFailures_Preview() {
         OfflineSyncContent(
             state = OfflineSyncUiState(
                 pending = samplePending,
-                messageState = OfflineSyncUiStateMessage.Discarded,
+                messageState = OfflineSyncUiStateMessage.Abandoned,
             ),
         )
     }

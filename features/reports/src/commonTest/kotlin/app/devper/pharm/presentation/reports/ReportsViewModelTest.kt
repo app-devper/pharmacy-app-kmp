@@ -1,6 +1,9 @@
 package app.devper.pharm.presentation.reports
 
 import app.devper.pharm.domain.event.StockChangeBus
+import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.repository.FakeProfileRepository
+import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.domain.observer.testTimeZoneProvider
@@ -16,6 +19,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReportsViewModelTest {
@@ -23,6 +28,7 @@ class ReportsViewModelTest {
     private fun vm(
         d: app.devper.pharm.common.AppDispatchers,
         repo: FakeReportsRepository = FakeReportsRepository(),
+        role: Role = Role.ADMIN,
     ): ReportsViewModel =
         ReportsViewModel(
             GetDashboardUseCase(repo, d),
@@ -30,8 +36,29 @@ class ReportsViewModelTest {
             GetSlowDrugsUseCase(repo, d),
             GetProfitReportUseCase(repo, d),
             testTimeZoneProvider(),
+            GetProfileUseCase(FakeProfileRepository(FakeProfileRepository.sampleUser.copy(role = role)), d),
             StockChangeBus(),
         )
+
+    @Test
+    fun manager_loads_only_slow_drugs() = runVmTest { d ->
+        val repo = FakeReportsRepository()
+        val model = vm(d, repo, role = Role.MANAGER)
+        advanceUntilIdle()
+        assertTrue(model.state.value.slowDrugsOnly)
+        assertNull(model.state.value.dashboard)
+        assertEquals(0, repo.dashboardCalls)
+        assertEquals(1, repo.slowDrugsCalls)
+        assertFalse(model.state.value.loading)
+    }
+
+    @Test
+    fun admin_loads_the_full_dashboard() = runVmTest { d ->
+        val model = vm(d, role = Role.ADMIN)
+        advanceUntilIdle()
+        assertFalse(model.state.value.slowDrugsOnly)
+        assertNotNull(model.state.value.dashboard)
+    }
 
     @Test
     fun init_loads_dashboard() = runVmTest { d ->

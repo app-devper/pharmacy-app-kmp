@@ -90,8 +90,7 @@ private fun LowStockToolbar(
         searchValue = state.query,
         onSearchChange = callbacks.onQueryChange,
         searchPlaceholder = s.planningLowStockSearchPlaceholder,
-        compactTopbarActions = true,
-        actions = {
+        primaryAction = {
             PharmButton(
                 label = s.planningRefreshCta,
                 onClick = callbacks.onReload,

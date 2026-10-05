@@ -44,7 +44,6 @@ internal fun SalesHistoryListToolbar(
         onSearch = callbacks.onApplyFilter,
         searching = state.loading,
         searchPlaceholder = s.salesHistorySearchPlaceholder,
-        compactTopbarActions = true,
         compactControlsSharedRow = false,
         filters = {
             FlowRow(

@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.presentation.reports.exception.EodUiStateError
 
 import app.devper.pharm.common.AppDispatchers
@@ -7,10 +8,10 @@ import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.EodReport
-import app.devper.pharm.domain.observer.OfflineQueueProvider
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
@@ -73,9 +74,9 @@ class EodViewModelTest {
         offlineQueue: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
     ): EodViewModel = EodViewModel(
         settings = SettingsProvider(settings),
-        offlineQueue = OfflineQueueProvider(offlineQueue),
+        pendingSales = pendingSalesOf(offlineQueue),
         getEodReport = GetEodReportUseCase(reports, dispatchers),
-        closeEod = CloseEodUseCase(reports, dispatchers),
+        closeEod = CloseEodUseCase(reports, FakeProfileRepository(), dispatchers),
         printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
     )
 
@@ -284,5 +285,21 @@ class EodViewModelTest {
         assertTrue(vm.state.value.closed)
         assertNotNull(vm.state.value.closeResult)
         assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun a_day_closed_earlier_loads_as_closed_with_its_receipt() = runVmTest { dispatchers ->
+        val closedDay = sampleReport.copy(
+            close = app.devper.pharm.domain.model.EodCloseInfo(
+                closeId = "c1",
+                closedAt = kotlinx.datetime.LocalDateTime.parse("2026-05-19T21:00:00"),
+                closedBy = "สมชาย ใจดี",
+            ),
+        )
+        val vm = newVm(dispatchers, reports = FakeReportsRepository(eodResult = closedDay, closeResult = sampleCloseResult))
+        advanceUntilIdle()
+        assertTrue(vm.state.value.closed)
+        assertEquals("c1", vm.state.value.closeResult?.closeId)
+        assertEquals("สมชาย ใจดี", vm.state.value.closeResult?.closedBy)
     }
 }

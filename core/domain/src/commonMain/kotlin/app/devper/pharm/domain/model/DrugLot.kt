@@ -15,4 +15,6 @@ data class DrugLot(
     val sellPrice: Money? = null,
     val quantity: Quantity,
     val remaining: Quantity,
+    /** Written off: kept at zero, never sold from again. */
+    val writtenOff: Boolean = false,
 )

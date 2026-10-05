@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 
 import androidx.lifecycle.viewModelScope
@@ -31,6 +32,7 @@ class StockCountFormViewModel(
     private val loadDraft: LoadStockCountDraftUseCase,
     private val saveDraft: SaveStockCountDraftUseCase,
     private val clearDraft: ClearStockCountDraftUseCase,
+    private val listLots: ListLotsUseCase,
 ) : BaseFormViewModel<StockCountFormUiState>(StockCountFormUiState()) {
 
     init {
@@ -99,8 +101,58 @@ class StockCountFormViewModel(
     fun cancelSubmit() = setState { copy(showSubmitConfirm = false) }
 
     fun confirmSubmit() {
-        setState { copy(showSubmitConfirm = false) }
+        setState { copy(showSubmitConfirm = false, chosenLots = emptyMap()) }
+        val s = current
+        val byId = s.drugs.associateBy { it.id }
+        val increases = s.changedLines.mapNotNull { (id, counted) ->
+            val drug = byId[id] ?: return@mapNotNull null
+            (counted - drug.stock.value).takeIf { it > 0 }?.let { Triple(id, drug.name, it) }
+        }
+        if (increases.isEmpty()) {
+            submit()
+            return
+        }
+        // Counted increases of lot-tracked drugs must name their lot (ADR-0007).
+        setState { copy(saving = true) }
+        launchResult(
+            block = {
+                var failure: Throwable? = null
+                val lines = increases.mapNotNull { (id, name, delta) ->
+                    if (failure != null) return@mapNotNull null
+                    listLots(id).fold(
+                        onSuccess = { all ->
+                            val lots = all.filterNot { it.writtenOff }.sortedByDescending { it.expiryDate }
+                            if (lots.isEmpty()) null
+                            else CountLotLine(drugId = id, drugName = name, delta = delta, lots = lots, choice = lots.first().id)
+                        },
+                        onFailure = { e -> failure = e; null },
+                    )
+                }
+                failure?.let { Result.failure(it) } ?: Result.success(lines)
+            },
+            onSuccess = { lines ->
+                setState { copy(saving = false) }
+                if (lines.isEmpty()) submit() else setState { copy(lotStep = lines) }
+            },
+            onFailure = { e -> setState { copy(saving = false, errorState = StockCountUiStateError.LoadDrugsFailed(e)) } },
+        )
+    }
+
+    fun onLotChoice(drugId: String, choice: String) = patchLotLine(drugId) { copy(choice = choice) }
+    fun onNewLotNumber(drugId: String, value: String) = patchLotLine(drugId) { copy(newLotNumber = value) }
+    fun onNewLotExpiry(drugId: String, value: String) = patchLotLine(drugId) { copy(newLotExpiry = value) }
+    fun cancelLotStep() = setState { copy(lotStep = null) }
+
+    fun confirmLotStep() {
+        val lines = current.lotStep ?: return
+        val targets = lines.associate { it.drugId to it.target() }
+        if (targets.values.any { it == null }) return
+        setState { copy(lotStep = null, chosenLots = targets.mapValues { it.value!! }) }
         submit()
+    }
+
+    private fun patchLotLine(drugId: String, transform: CountLotLine.() -> CountLotLine) = setState {
+        copy(lotStep = lotStep?.map { if (it.drugId == drugId) it.transform() else it })
     }
 
     fun reload() {
@@ -120,11 +172,11 @@ class StockCountFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val s = current
-        val lines = buildStockCountInput(s.counts)
+        val lines = buildStockCountInput(s.counts).map { it.copy(lot = s.chosenLots[it.drugId]) }
         val result = createStockCount(CreateStockCountParam(note = s.note.trim(), items = lines)).map { Unit }
         if (result.isSuccess) {
             clearDraft(Unit)
-            setState { copy(counts = emptyMap(), note = "") }
+            setState { copy(counts = emptyMap(), note = "", chosenLots = emptyMap()) }
         }
         return result
     }

@@ -48,9 +48,9 @@ class ReportsApi(
             if (date.isNotBlank()) parameter("date", date)
         }.body()
 
-    suspend fun closeEod(date: String): EodCloseResultDto =
+    suspend fun closeEod(date: String, closedByName: String): EodCloseResultDto =
         client.post(config.pharmacy("/report/eod/close")) {
             contentType(ContentType.Application.Json)
-            setBody(CloseEodRequestDto(date = date))
+            setBody(CloseEodRequestDto(date = date, closedByName = closedByName))
         }.body()
 }

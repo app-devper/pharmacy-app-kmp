@@ -1,5 +1,6 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.IdentityUnavailableException
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -13,6 +14,18 @@ private class EOFException(message: String) : RuntimeException(message)
 private class IOException(message: String) : RuntimeException(message)
 
 class NetworkErrorExtTest {
+
+    @Test
+    fun identity_outage_is_a_temporary_outage_but_not_a_network_error() {
+        assertTrue(IdentityUnavailableException().looksLikeTemporaryOutage())
+        assertFalse(IdentityUnavailableException().looksLikeNetworkError())
+    }
+
+    @Test
+    fun network_error_is_a_temporary_outage() {
+        assertTrue(ConnectException("any").looksLikeTemporaryOutage())
+        assertFalse(IllegalStateException("validation error").looksLikeTemporaryOutage())
+    }
 
     @Test
     fun connect_exception_class_name_is_network() {

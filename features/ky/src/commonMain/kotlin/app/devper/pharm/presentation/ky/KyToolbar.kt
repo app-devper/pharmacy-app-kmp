@@ -51,21 +51,11 @@ internal fun KyToolbar(
         modifier = modifier,
         subtitle = pharmStrings.kyToolbarSubtitle,
         compactControlsSharedRow = false,
-        compactTopbarActions = true,
-        compactTopbarAction = { KyAddEntryButton(onAddEntry = onAddEntry) },
-        compactInlineActions = { KyExportMenu(onExport = onExport, onExportExcel = onExportExcel, exporting = exporting) },
+        primaryAction = { KyAddEntryButton(onAddEntry = onAddEntry) },
+        actions = { KyExportMenu(onExport = onExport, onExportExcel = onExportExcel, exporting = exporting) },
         filters = {
             KyFormTabs(currentForm = currentForm, onSwitchForm = onSwitchForm)
             KyMonthField(month = month, onMonthChange = onMonthChange, onApply = onApply)
-        },
-        actions = {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                KyExportMenu(onExport = onExport, onExportExcel = onExportExcel, exporting = exporting)
-                KyAddEntryButton(onAddEntry = onAddEntry)
-            }
         },
     )
 }

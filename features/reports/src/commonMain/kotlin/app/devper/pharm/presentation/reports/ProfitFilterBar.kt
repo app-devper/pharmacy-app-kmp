@@ -64,9 +64,8 @@ internal fun ProfitFilterBar(
     PharmListToolbar(
         modifier = modifier,
         subtitle = s.reportsProfitSubtitle,
-        compactTopbarActions = true,
         compactControlsSharedRow = false,
-        actions = {
+        primaryAction = {
             PharmButton(
                 label = "Excel",
                 onClick = {

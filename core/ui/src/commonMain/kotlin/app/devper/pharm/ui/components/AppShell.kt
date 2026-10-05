@@ -55,6 +55,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.extension.atLeast
+import app.devper.pharm.domain.model.RolePermissions
+import app.devper.pharm.domain.model.permissions
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.LocalReducedMotion
 import app.devper.pharm.ui.designsystem.LocalCompactTopbarActions
@@ -73,7 +76,8 @@ data class NavItem(
     val route: String,
     val label: String,
     val icon: ImageVector,
-    val admin: Boolean = false,
+    /** Lowest role that may open this screen; matches pharmacy-api's route permissions. */
+    val minRole: Role = Role.USER,
     val pinned: Boolean = false,
     val sectionLabel: String = "",
 )
@@ -88,7 +92,8 @@ data class SidebarState(
 val LocalSidebarState = staticCompositionLocalOf { SidebarState() }
 val LocalPageTitle = staticCompositionLocalOf { "" }
 
-private fun Role.canSeeAdminNav(): Boolean = this == Role.SUPER || this == Role.ADMIN || this == Role.MANAGER
+/** The signed-in role's permissions; screens hide actions the backend would refuse. */
+val LocalRolePermissions = staticCompositionLocalOf { RolePermissions.Full }
 
 @Composable
 fun AppShell(
@@ -109,18 +114,22 @@ fun AppShell(
     onUnsavedChangesChanged: (Boolean) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
+    val permissions = role.permissions()
+    val scopedContent: @Composable () -> Unit = {
+        CompositionLocalProvider(LocalRolePermissions provides permissions, content = content)
+    }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val size = remember(maxWidth) { WindowSize.fromWidth(maxWidth) }
         val useCompactShell = usesCompactAppShell(size)
 
         val sidebarItems = remember(items, role) {
             items
-                .filter { !it.admin || role.canSeeAdminNav() }
+                .filter { role.atLeast(it.minRole) }
                 .map {
                     SidebarNavItem(
                         id = it.route,
                         icon = it.icon,
-                        admin = it.admin,
+                        admin = it.minRole != Role.USER,
                         pinned = it.pinned,
                         label = it.label,
                         sectionLabel = it.sectionLabel,
@@ -128,9 +137,12 @@ fun AppShell(
                 }
         }
 
-        val compactPageActionsController = remember { CompactPageActionsController() }
-        val compactPageHeaderController = remember { CompactPageHeaderController() }
+        val compactPageChromeController = remember { CompactPageChromeController() }
         val unsavedChangesController = remember { UnsavedChangesController() }
+        val guardedNavigate = unsavedChangesController.guarded(onNavigate)
+        val guardedLogout = unsavedChangesController.guarded(onLogout)
+        val guardedProfileClick = onProfileClick?.let { unsavedChangesController.guarded(it) }
+        val guardedSubPageBack = onSubPageBack?.let { unsavedChangesController.guarded(it) }
         LaunchedEffect(unsavedChangesController.hasUnsavedChanges) {
             onUnsavedChangesChanged(unsavedChangesController.hasUnsavedChanges)
         }
@@ -140,11 +152,10 @@ fun AppShell(
         CompositionLocalProvider(
             LocalWindowSize provides size,
             LocalPageTitle provides title,
-            LocalCompactPageActionsController provides compactPageActionsController,
-            LocalCompactPageHeaderController provides compactPageHeaderController,
+            LocalCompactPageChromeController provides compactPageChromeController,
             LocalUnsavedChangesController provides unsavedChangesController,
         ) {
-            GuardedSystemBack(isSubPage, onSubPageBack)
+            GuardedSystemBack(isSubPage, guardedSubPageBack)
             if (useCompactShell) {
                 CompactShell(
                     title = title,
@@ -154,25 +165,25 @@ fun AppShell(
                     ),
                     sidebarItems = sidebarItems,
                     currentRoute = currentRoute,
-                    onNavigate = onNavigate,
-                    onLogout = onLogout,
+                    onNavigate = guardedNavigate,
+                    onLogout = guardedLogout,
                     pendingSyncCount = pendingSyncCount,
                     onSyncClick = onSyncClick,
                     user = user,
-                    onProfileClick = onProfileClick,
-                    content = content,
+                    onProfileClick = guardedProfileClick,
+                    content = scopedContent,
                 )
             } else {
                 ExpandedShell(
                     sidebarItems = sidebarItems,
                     currentRoute = currentRoute,
-                    onNavigate = onNavigate,
-                    onLogout = onLogout,
+                    onNavigate = guardedNavigate,
+                    onLogout = guardedLogout,
                     pendingSyncCount = pendingSyncCount,
                     onSyncClick = onSyncClick,
                     user = user,
-                    onProfileClick = onProfileClick,
-                    content = content,
+                    onProfileClick = guardedProfileClick,
+                    content = scopedContent,
                 )
             }
             UnsavedChangesDialog(unsavedChangesController)
@@ -186,7 +197,7 @@ fun AppShell(
 private fun GuardedSystemBack(isSubPage: Boolean, onSubPageBack: (() -> Unit)?) {
     val controller = LocalUnsavedChangesController.current ?: return
     BackHandler(enabled = isSubPage && controller.hasUnsavedChanges && onSubPageBack != null) {
-        controller.request { onSubPageBack?.invoke() }
+        onSubPageBack?.invoke()
     }
 }
 
@@ -210,16 +221,8 @@ private fun CompactShell(
     val reducedMotion = LocalReducedMotion.current
     var drawerOpen by remember { mutableStateOf(false) }
     var drawerMounted by remember { mutableStateOf(false) }
-    val pageActions = LocalCompactPageActionsController.current?.content
-    val pageHeader = LocalCompactPageHeaderController.current?.content
-    val unsavedChanges = LocalUnsavedChangesController.current
-    val guardedNavigate: (String) -> Unit = { id ->
-        unsavedChanges?.request { onNavigate(id) } ?: onNavigate(id)
-    }
-    val guardedLogout = { unsavedChanges?.request(onLogout) ?: onLogout() }
-    val guardedProfileClick = onProfileClick?.let { action ->
-        { unsavedChanges?.request(action) ?: action() }
-    }
+    val pageChrome = LocalCompactPageChromeController.current?.content
+    val pageHeader = pageChrome as? CompactPageChrome.Header
     val account = user?.let { SidebarAccount(initial = it.initial, name = it.name, role = it.role) }
     val settingsRoute = sidebarItems.firstOrNull { it.label == pharmStrings.navSettings }?.id
     val helpRoute = sidebarItems.firstOrNull { it.label == pharmStrings.navHelp }?.id
@@ -248,7 +251,7 @@ private fun CompactShell(
                 showDivider = false,
                 backgroundColor = t.colors.bgPage,
                 onBack = pageHeader?.onBack,
-                actions = (if (pageHeader != null) pageHeader.actions else pageActions?.actions)?.let { actions ->
+                actions = pageChrome?.actions?.let { actions ->
                     {
                         CompositionLocalProvider(LocalCompactTopbarActions provides true) {
                             actions()
@@ -313,14 +316,14 @@ private fun CompactShell(
                             activeId = currentRoute,
                             onSelect = { id ->
                                 drawerOpen = false
-                                guardedNavigate(id)
+                                onNavigate(id)
                             },
                             items = sidebarItems,
                             expandedWidth = drawerWidth,
                             applySystemInsets = true,
                             onToggleCollapse = { drawerOpen = false },
                             account = account,
-                            onProfileClick = guardedProfileClick?.let { action ->
+                            onProfileClick = onProfileClick?.let { action ->
                                 {
                                     drawerOpen = false
                                     action()
@@ -329,18 +332,18 @@ private fun CompactShell(
                             onSettingsClick = settingsRoute?.let { route ->
                                 {
                                     drawerOpen = false
-                                    guardedNavigate(route)
+                                    onNavigate(route)
                                 }
                             },
                             onHelpClick = helpRoute?.let { route ->
                                 {
                                     drawerOpen = false
-                                    guardedNavigate(route)
+                                    onNavigate(route)
                                 }
                             },
                             onLogout = {
                                 drawerOpen = false
-                                guardedLogout()
+                                onLogout()
                             },
                         )
                     }
@@ -370,14 +373,6 @@ private fun ExpandedShell(
     val t = pharmTokens
     val sidebar = LocalSidebarState.current
     val sidebarCollapsed = sidebar.collapsed
-    val unsavedChanges = LocalUnsavedChangesController.current
-    val guardedNavigate: (String) -> Unit = { id ->
-        unsavedChanges?.request { onNavigate(id) } ?: onNavigate(id)
-    }
-    val guardedLogout = { unsavedChanges?.request(onLogout) ?: onLogout() }
-    val guardedProfileClick = onProfileClick?.let { action ->
-        { unsavedChanges?.request(action) ?: action() }
-    }
     val account = user?.let { SidebarAccount(initial = it.initial, name = it.name, role = it.role) }
     val settingsRoute = sidebarItems.firstOrNull { it.label == pharmStrings.navSettings }?.id
     val helpRoute = sidebarItems.firstOrNull { it.label == pharmStrings.navHelp }?.id
@@ -390,7 +385,7 @@ private fun ExpandedShell(
 
         PharmSidebar(
             activeId = currentRoute,
-            onSelect = guardedNavigate,
+            onSelect = onNavigate,
             items = sidebarItems,
             collapsed = sidebarCollapsed,
             onToggleCollapse = if (sidebar.canCollapse) sidebar.toggle else null,
@@ -406,10 +401,10 @@ private fun ExpandedShell(
                 null
             },
             account = account,
-            onProfileClick = guardedProfileClick,
-            onSettingsClick = settingsRoute?.let { route -> { guardedNavigate(route) } },
-            onHelpClick = helpRoute?.let { route -> { guardedNavigate(route) } },
-            onLogout = guardedLogout,
+            onProfileClick = onProfileClick,
+            onSettingsClick = settingsRoute?.let { route -> { onNavigate(route) } },
+            onHelpClick = helpRoute?.let { route -> { onNavigate(route) } },
+            onLogout = onLogout,
         )
 
         Box(

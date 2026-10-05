@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.presentation.stockcount.components.StockCountLotStepModal
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
@@ -111,6 +112,11 @@ fun StockCountFormContent(
         topDiscrepancies = state.topDiscrepancies,
         onConfirm = callbacks.onConfirmSubmit,
         onCancel = callbacks.onCancelSubmit,
+    )
+
+    StockCountLotStepModal(
+        lines = state.lotStep,
+        callbacks = callbacks,
     )
 
     DraftActionConfirmModal(

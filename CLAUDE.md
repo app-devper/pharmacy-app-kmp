@@ -282,6 +282,7 @@ license headers required by upstream libraries.
   | `kmp-review` | audit a diff against the build-enforced rules |
   | `kotlin-coding-style` / `compose-multiplatform-patterns` | language + Compose reference |
   | `run` | build, serve and drive the app for real (screenshots over CDP) |
+  | `dev-flow` | the whole path from idea to release: which skill at each stage, release + tag + deploy check |
   | `git-flow` / `pr` | branching, and landing the open PR |
 
 - **Agents** (`.claude/agents/`) — `kmp-reviewer` reviews a diff against

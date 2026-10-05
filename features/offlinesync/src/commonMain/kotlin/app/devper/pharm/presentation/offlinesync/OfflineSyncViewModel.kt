@@ -1,10 +1,9 @@
 package app.devper.pharm.presentation.offlinesync
 
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.domain.observer.OfflineQueueProvider
+import app.devper.pharm.domain.model.PendingSaleState
 import app.devper.pharm.domain.observer.TimeZoneProvider
-import app.devper.pharm.domain.usecase.offlinesync.MarkOfflineSaleSyncedUseCase
-import app.devper.pharm.domain.usecase.offlinesync.RetryOfflineSaleUseCase
+import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.presentation.offlinesync.exception.OfflineSyncUiStateError
 import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
 import app.devper.pharm.ui.common.BaseViewModel
@@ -13,20 +12,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
+/** The pending sales screen; every decision is made by [PendingSales]. */
 class OfflineSyncViewModel(
-    offlineQueue: OfflineQueueProvider,
-    private val markSynced: MarkOfflineSaleSyncedUseCase,
-    private val retrySale: RetryOfflineSaleUseCase,
+    private val pendingSales: PendingSales,
     timeZoneProvider: TimeZoneProvider,
 ) : BaseViewModel<OfflineSyncUiState>(OfflineSyncUiState(tz = timeZoneProvider.current)) {
 
     init {
-        offlineQueue.pending
-            .onEach { pending ->
+        pendingSales.entries
+            .onEach { entries ->
                 setState {
                     copy(
-                        pending = pending.sortedBy { it.enqueuedAt },
-                        confirmDiscardId = confirmDiscardId?.takeIf { id -> pending.any { it.id == id } },
+                        pending = entries.sortedBy { it.enqueuedAt },
+                        resolving = resolving?.takeIf { r -> entries.any { it.id == r.id } },
                     )
                 }
             }
@@ -34,29 +32,21 @@ class OfflineSyncViewModel(
             .launchIn(viewModelScope)
     }
 
+    /** Send every entry that is waiting only for the server. */
     fun syncAll() {
         val s = current
-        val snapshot = s.pending
-        if (snapshot.isEmpty() || s.busy) return
-        val ids = snapshot.map { it.id }.toSet()
+        val count = s.retryableCount
+        if (count == 0 || s.busy) return
         setState {
-            copy(
-                syncingAll = true,
-                syncingIds = ids,
-                errorState = null,
-                messageState = OfflineSyncUiStateMessage.SyncStarted(snapshot.size),
-            )
+            copy(syncingAll = true, errorState = null, messageState = OfflineSyncUiStateMessage.SyncStarted(count))
         }
         viewModelScope.launch {
-            var failed = 0
-            snapshot.forEach { item ->
-                retrySale(item.id).onFailure { failed++ }
-            }
+            val summary = pendingSales.syncAll()
+            val failed = summary.refused + summary.stillPending
             setState {
                 copy(
                     syncingAll = false,
-                    syncingIds = emptySet(),
-                    errorState = if (failed > 0) OfflineSyncUiStateError.SyncPartialFailed(failed, snapshot.size) else null,
+                    errorState = if (failed > 0) OfflineSyncUiStateError.SyncPartialFailed(failed, count) else null,
                 )
             }
         }
@@ -64,7 +54,8 @@ class OfflineSyncViewModel(
 
     fun retry(id: String) {
         val s = current
-        if (s.pending.none { it.id == id } || s.busy) return
+        val entry = s.pending.firstOrNull { it.id == id } ?: return
+        if (s.busy || entry.state == PendingSaleState.Damaged) return
         setState {
             copy(
                 syncingIds = syncingIds + id,
@@ -72,48 +63,87 @@ class OfflineSyncViewModel(
                 messageState = OfflineSyncUiStateMessage.RetryStarted(id.take(8)),
             )
         }
-        retryOne(id)
-    }
-
-    private fun retryOne(id: String) {
         launchResult(
-            block = { retrySale(id) },
-            onSuccess = { setState { copy(syncingIds = syncingIds - id) } },
-            onFailure = { e ->
+            block = { pendingSales.retry(id) },
+            onSuccess = { state ->
                 setState {
                     copy(
                         syncingIds = syncingIds - id,
-                        errorState = OfflineSyncUiStateError.RetryFailed(id.take(8), e),
+                        messageState = if (state == null) OfflineSyncUiStateMessage.Recorded else messageState,
+                        errorState = if (state == null) null else OfflineSyncUiStateError.StillNotRecorded(id.take(8)),
                     )
                 }
+            },
+            onFailure = { e ->
+                setState { copy(syncingIds = syncingIds - id, errorState = OfflineSyncUiStateError.RetryFailed(id.take(8), e)) }
             },
         )
     }
 
-    fun askDiscard(id: String) = setState {
-        if (!busy && pending.any { it.id == id }) copy(confirmDiscardId = id) else this
+    /** Open the abandon dialog: a whole sale, or only the refused KY forms of a recorded one. */
+    fun askAbandon(id: String) = setState {
+        val entry = pending.firstOrNull { it.id == id }
+        if (busy || entry == null || entry.state == PendingSaleState.Damaged) this
+        else copy(resolving = Resolving.Abandon(id, kyOnly = entry.state == PendingSaleState.KyPending))
     }
-    fun cancelDiscard() = setState { copy(confirmDiscardId = null) }
 
-    fun discardConfirmed() {
+    fun reasonChanged(reason: String) = setState {
+        val r = resolving as? Resolving.Abandon ?: return@setState this
+        copy(resolving = r.copy(reason = reason))
+    }
+
+    fun askDiscard(id: String) = setState {
+        if (!busy && id in exportedIds && pending.any { it.id == id && it.state == PendingSaleState.Damaged }) {
+            copy(resolving = Resolving.DiscardDamaged(id))
+        } else this
+    }
+
+    fun cancelResolving() = setState { if (working) this else copy(resolving = null) }
+
+    fun confirmResolving() {
         val s = current
-        val id = s.confirmDiscardId ?: return
-        if (s.busy || s.pending.none { it.id == id }) return
-        setState { copy(discarding = true, errorState = null) }
+        val r = s.resolving ?: return
+        if (s.busy) return
+        when (r) {
+            is Resolving.Abandon -> {
+                if (r.reason.isBlank()) return
+                setState { copy(working = true, errorState = null) }
+                launchResult(
+                    block = { pendingSales.abandon(r.id, r.reason) },
+                    onSuccess = {
+                        setState { copy(working = false, resolving = null, messageState = OfflineSyncUiStateMessage.Abandoned) }
+                    },
+                    onFailure = { e ->
+                        setState { copy(working = false, errorState = OfflineSyncUiStateError.AbandonFailed(e)) }
+                    },
+                )
+            }
+            is Resolving.DiscardDamaged -> {
+                pendingSales.discardDamaged(r.id).fold(
+                    onSuccess = {
+                        setState { copy(resolving = null, messageState = OfflineSyncUiStateMessage.Discarded) }
+                    },
+                    onFailure = { e -> setState { copy(errorState = OfflineSyncUiStateError.DiscardFailed(e)) } },
+                )
+            }
+        }
+    }
+
+    fun export(id: String) {
+        if (current.busy) return
+        setState { copy(working = true, errorState = null) }
         launchResult(
-            block = { markSynced(id) },
-            onSuccess = {
+            block = { pendingSales.export(id) },
+            onSuccess = { path ->
                 setState {
                     copy(
-                        discarding = false,
-                        confirmDiscardId = null,
-                        messageState = OfflineSyncUiStateMessage.Discarded,
+                        working = false,
+                        exportedIds = exportedIds + id,
+                        messageState = OfflineSyncUiStateMessage.Exported(path),
                     )
                 }
             },
-            onFailure = { e ->
-                setState { copy(discarding = false, errorState = OfflineSyncUiStateError.DiscardFailed(e)) }
-            },
+            onFailure = { e -> setState { copy(working = false, errorState = OfflineSyncUiStateError.ExportFailed(e)) } },
         )
     }
 

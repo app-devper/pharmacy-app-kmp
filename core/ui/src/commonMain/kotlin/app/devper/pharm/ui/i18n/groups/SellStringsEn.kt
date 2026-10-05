@@ -143,7 +143,6 @@ object SellStringsEn : SellStrings {
     override val sellPriceOriginal = "Original price"
     override val sellPriceAfterDiscount = "After discount"
     override val sellPickUnit = "Pick the sales unit"
-    override val sellRemaining = "Remaining"
     override val sellShortfall = "Not enough stock"
     override val sellShortfallShort: (String) -> String = { amt -> "Short $amt" }
     override val sellOversold = "Oversell"
@@ -160,9 +159,8 @@ object SellStringsEn : SellStrings {
     override val sellBarcodeNotFound: (String) -> String = { code -> "No drug found for barcode $code" }
     override val sellLoadCustomersFailed = "Failed to load customers"
     override val sellPrintReceiptUnsupported = "Failed to print receipt — not supported on this platform"
-    override val sellKyIncomplete: (String, String) -> String = { billNo, failed -> "Bill $billNo saved, but KY records incomplete:\n$failed" }
-    override val sellKyError: (String, String) -> String = { billNo, cause -> "Bill $billNo saved, but KY recording error: $cause" }
     override val sellOfflineSaved = "Network unavailable — bill queued to sync later"
     override val sellCheckoutFailed = "Failed to issue receipt"
+    override val sellCheckoutCartChanged = "Cart changed. Review the sale and confirm payment again."
     override val sellCheckoutEmptyCart = "Cart is empty"
 }

@@ -68,8 +68,7 @@ fun SettingsContent(
         PharmListToolbar(
             title = strings.navSettings,
             subtitle = settingsSubtitle(state, strings),
-            compactTopbarActions = true,
-            actions = if (state.tabSaves) {
+            primaryAction = if (state.tabSaves) {
                 {
                     PharmSaveAction(
                         saving = state.saving,

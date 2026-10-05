@@ -48,6 +48,10 @@ class UnsavedChangesController {
         }
     }
 
+    fun guarded(action: () -> Unit): () -> Unit = { request(action) }
+
+    fun <T> guarded(action: (T) -> Unit): (T) -> Unit = { value -> request { action(value) } }
+
     fun keepEditing() {
         pendingAction = null
         dialogOpen = false

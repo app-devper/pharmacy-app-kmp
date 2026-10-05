@@ -90,10 +90,9 @@ interface SellStrings {
     val sellBarcodeNotFound: (String) -> String
     val sellLoadCustomersFailed: String
     val sellPrintReceiptUnsupported: String
-    val sellKyIncomplete: (String, String) -> String
-    val sellKyError: (String, String) -> String
     val sellOfflineSaved: String
     val sellCheckoutFailed: String
+    val sellCheckoutCartChanged: String
 
     val sellCart: String
     val sellSearchPlaceholder: String
@@ -157,7 +156,6 @@ interface SellStrings {
     val sellPriceOriginal: String
     val sellPriceAfterDiscount: String
     val sellPickUnit: String
-    val sellRemaining: String
     val sellShortfall: String
     val sellShortfallShort: (String) -> String
     val sellOversold: String

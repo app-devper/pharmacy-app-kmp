@@ -4,6 +4,9 @@ import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
+import app.devper.pharm.domain.extension.atLeast
+import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.DashboardRangeParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
@@ -32,13 +35,21 @@ class ReportsViewModel(
     private val getSlowDrugs: GetSlowDrugsUseCase,
     private val getProfitReport: GetProfitReportUseCase,
     private val timeZoneProvider: TimeZoneProvider,
+    private val getProfile: GetProfileUseCase,
     stockChangeBus: StockChangeBus,
 ) : BaseLoadableViewModel<ReportsUiState>(ReportsUiState()) {
 
     private var reloadJob: Job? = null
 
     init {
-        reload()
+        // Ask for the role first so a MANAGER never requests ADMIN-only
+        // reports. If the profile can't load, try the full page and let the
+        // backend decide.
+        viewModelScope.launch {
+            val role = getProfile(Unit).getOrNull()?.role
+            setState { copy(slowDrugsOnly = role != null && !role.atLeast(Role.ADMIN)) }
+            reload()
+        }
         stockChangeBus.events
             .debounce(2_000.milliseconds)
             .onEach { reload() }
@@ -51,6 +62,7 @@ class ReportsViewModel(
     }
 
     fun reload() {
+        if (current.slowDrugsOnly) return reloadSlowDrugs()
         val days = current.window.days
         reloadJob?.cancel()
         setState { copy(loading = true, errorState = null) }
@@ -78,6 +90,22 @@ class ReportsViewModel(
                         errorState = dashboardError?.let { ReportsUiStateError.LoadSummaryFailed(it) },
                     )
                 }
+            }
+        }
+    }
+
+    private fun reloadSlowDrugs() {
+        reloadJob?.cancel()
+        setState { copy(loading = true, errorState = null) }
+        reloadJob = viewModelScope.launch {
+            val slow = getSlowDrugs(90)
+            ensureActive()
+            setState {
+                copy(
+                    loading = false,
+                    slowDrugs = slow.getOrNull() ?: this.slowDrugs,
+                    errorState = slow.exceptionOrNull()?.let { ReportsUiStateError.LoadSummaryFailed(it) },
+                )
             }
         }
     }

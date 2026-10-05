@@ -23,8 +23,7 @@ internal fun StockCountsListToolbar(
         onSearchChange = callbacks.onSearchChange,
         searchPlaceholder = s.stockCountHistorySearchPlaceholder,
         modifier = modifier,
-        compactTopbarActions = true,
-        actions = {
+        primaryAction = {
             PharmButton(
                 label = s.stockCountHistoryNewCta,
                 onClick = callbacks.onNewCount,

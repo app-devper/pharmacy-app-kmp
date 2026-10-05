@@ -102,25 +102,22 @@ class PharmListToolbarLayoutTest {
     @Test
     fun onlyCompactShellMovesListActionsIntoShellTopbar() {
         assertTrue(
-            movesListToolbarActionsToTopbar(
+            toolbarActionPlacement(
                 windowSize = WindowSize.fromWidth(320.dp),
                 hasBack = false,
-                compactTopbarActions = true,
-            ),
+            ).primaryInTopbar,
         )
         assertTrue(
-            movesListToolbarActionsToTopbar(
+            toolbarActionPlacement(
                 windowSize = WindowSize.fromWidth(600.dp),
                 hasBack = false,
-                compactTopbarActions = true,
-            ),
+            ).primaryInTopbar,
         )
         assertFalse(
-            movesListToolbarActionsToTopbar(
+            toolbarActionPlacement(
                 windowSize = WindowSize.fromWidth(840.dp),
                 hasBack = false,
-                compactTopbarActions = true,
-            ),
+            ).primaryInTopbar,
         )
     }
 

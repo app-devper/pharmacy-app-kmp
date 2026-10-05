@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
-import app.devper.pharm.ui.components.CompactPageActions
-import app.devper.pharm.ui.components.CompactPageHeader
+import app.devper.pharm.ui.components.CompactPageChrome
 import app.devper.pharm.ui.components.LocalPageTitle
 import app.devper.pharm.ui.components.LocalUnsavedChangesController
+import app.devper.pharm.ui.components.RegisterCompactPageChrome
 import app.devper.pharm.ui.components.LocalWindowSize
 import app.devper.pharm.ui.components.PharmBreakpoint
 import app.devper.pharm.ui.components.WindowSize
@@ -94,12 +94,6 @@ internal fun hasCompactToolbarContent(
     hasInlineActions: Boolean,
 ): Boolean = showTitle || hasBack || hasSearch || hasFilters || hasBadge || hasInlineActions
 
-internal fun movesListToolbarActionsToTopbar(
-    windowSize: WindowSize,
-    hasBack: Boolean,
-    compactTopbarActions: Boolean,
-): Boolean = windowSize.isCompactShell && !hasBack && compactTopbarActions
-
 internal fun movesSubpageHeaderToTopbar(windowSize: WindowSize, hasBack: Boolean): Boolean =
     windowSize.isCompactShell && hasBack
 
@@ -119,9 +113,7 @@ fun PharmListToolbar(
     badge: (@Composable () -> Unit)? = null,
     filters: (@Composable FlowRowScope.() -> Unit)? = null,
     actions: (@Composable () -> Unit)? = null,
-    compactTopbarActions: Boolean = false,
-    compactTopbarAction: (@Composable () -> Unit)? = null,
-    compactInlineActions: (@Composable () -> Unit)? = null,
+    primaryAction: (@Composable () -> Unit)? = null,
     compactHeaderActions: Boolean = true,
     compactControlsSharedRow: Boolean = true,
 ) {
@@ -138,28 +130,36 @@ fun PharmListToolbar(
         expandedPadding = t.dimens.pageTopPaddingExpanded,
     )
     val unsavedChanges = LocalUnsavedChangesController.current
-    val guardedBack = onBack?.let { action ->
-        { unsavedChanges?.request(action) ?: action() }
-    }
+    val guardedBack = onBack?.let { action -> unsavedChanges?.guarded(action) ?: action }
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val compact = usesCompactListToolbar(windowSize, maxWidth)
         val showTitle = effectiveTitle.isNotEmpty()
-        val moveListActionsToTopbar = movesListToolbarActionsToTopbar(
-            windowSize = windowSize,
-            hasBack = guardedBack != null,
-            compactTopbarActions = compactTopbarActions,
-        )
-        val moveSubpageHeaderToTopbar = movesSubpageHeaderToTopbar(
-            windowSize = windowSize,
-            hasBack = guardedBack != null,
-        )
-        val moveSubpageActionsToTopbar = moveSubpageHeaderToTopbar && compactHeaderActions
-        val inlineActions = when {
-            moveListActionsToTopbar -> compactInlineActions
-            moveSubpageActionsToTopbar -> null
-            else -> actions
-        }
-        val topbarAction = compactTopbarAction ?: actions
+        val placement = toolbarActionPlacement(windowSize, guardedBack != null, compactHeaderActions)
+        val moveSubpageHeaderToTopbar = movesSubpageHeaderToTopbar(windowSize, guardedBack != null)
+        val inlineActions: (@Composable () -> Unit)? = if (
+            (actions != null && !placement.secondaryInTopbar) || (primaryAction != null && !placement.primaryInTopbar)
+        ) {
+            {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(t.spacing.s2),
+                    verticalArrangement = Arrangement.spacedBy(t.spacing.s2),
+                    itemVerticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (!placement.secondaryInTopbar) actions?.invoke()
+                    if (!placement.primaryInTopbar) primaryAction?.invoke()
+                }
+            }
+        } else null
+        val topbarAction: (@Composable () -> Unit)? = if (
+            (primaryAction != null && placement.primaryInTopbar) || (actions != null && placement.secondaryInTopbar)
+        ) {
+            {
+                Row(horizontalArrangement = Arrangement.spacedBy(t.spacing.s2), verticalAlignment = Alignment.CenterVertically) {
+                    if (placement.secondaryInTopbar) actions?.invoke()
+                    if (placement.primaryInTopbar) primaryAction?.invoke()
+                }
+            }
+        } else null
         val hasSearch = searchValue != null && onSearchChange != null
         val searchRowTakesActions = searchSharesRowWithActions(
             compact = compact,
@@ -179,13 +179,15 @@ fun PharmListToolbar(
             allowSharedRow = compactControlsSharedRow,
         )
         if (moveSubpageHeaderToTopbar && guardedBack != null) {
-            CompactPageHeader(
-                title = effectiveTitle,
-                onBack = guardedBack,
-                actions = topbarAction.takeIf { moveSubpageActionsToTopbar },
+            RegisterCompactPageChrome(
+                CompactPageChrome.Header(
+                    title = effectiveTitle,
+                    onBack = guardedBack,
+                    actions = topbarAction,
+                ),
             )
-        } else if (moveListActionsToTopbar && topbarAction != null) {
-            CompactPageActions(topbarAction)
+        } else if (topbarAction != null) {
+            RegisterCompactPageChrome(CompactPageChrome.Actions(topbarAction))
         }
         val localShowTitle = showTitle && !moveSubpageHeaderToTopbar
         val localBack = guardedBack.takeUnless { moveSubpageHeaderToTopbar }

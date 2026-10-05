@@ -115,6 +115,10 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.koin.core)
         }
+
+        jvmTest.dependencies {
+            implementation(compose.desktop.uiTestJUnit4)
+        }
     }
 }
 

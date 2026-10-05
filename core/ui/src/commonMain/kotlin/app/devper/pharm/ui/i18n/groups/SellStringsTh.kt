@@ -143,7 +143,6 @@ object SellStringsTh : SellStrings {
     override val sellPriceOriginal = "ราคาเดิม"
     override val sellPriceAfterDiscount = "ราคาหลังหัก"
     override val sellPickUnit = "เลือกหน่วยที่ต้องการขาย"
-    override val sellRemaining = "คงเหลือ"
     override val sellShortfall = "สต็อกไม่พอ"
     override val sellShortfallShort: (String) -> String = { amt -> "ขาด $amt" }
     override val sellOversold = "ขายล่วงหน้า"
@@ -160,9 +159,8 @@ object SellStringsTh : SellStrings {
     override val sellBarcodeNotFound: (String) -> String = { code -> "ไม่พบยาสำหรับบาร์โค้ด $code" }
     override val sellLoadCustomersFailed = "โหลดรายการลูกค้าไม่สำเร็จ"
     override val sellPrintReceiptUnsupported = "พิมพ์ใบเสร็จไม่สำเร็จ — แพลตฟอร์มนี้ยังไม่รองรับ"
-    override val sellKyIncomplete: (String, String) -> String = { billNo, failed -> "บิล $billNo บันทึกแล้ว แต่บันทึก ขย. ไม่ครบ:\n$failed" }
-    override val sellKyError: (String, String) -> String = { billNo, cause -> "บิล $billNo บันทึกแล้ว แต่บันทึก ขย. ผิดพลาด: $cause" }
     override val sellOfflineSaved = "เครือข่ายไม่ได้เชื่อมต่อ — บิลถูกเก็บไว้เพื่อซิงค์ภายหลัง"
     override val sellCheckoutFailed = "ออกใบเสร็จไม่สำเร็จ"
+    override val sellCheckoutCartChanged = "รายการในตะกร้าเปลี่ยนแล้ว กรุณาตรวจสอบและยืนยันการชำระเงินอีกครั้ง"
     override val sellCheckoutEmptyCart = "ตะกร้าว่างเปล่า"
 }

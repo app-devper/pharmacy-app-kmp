@@ -90,6 +90,9 @@ fun EodContent(
                     if (state.pendingSyncCount > 0) item("pendingSync") {
                         EodPendingSyncBanner(count = state.pendingSyncCount)
                     }
+                    report.adjustments?.takeIf { it.count > 0 }?.let { adj ->
+                        item("adjustments") { EodAdjustmentsBanner(adj) }
+                    }
                     item("summary") { EodSummaryCards(report) }
                     item("balance") { EodBalanceCard(report) }
                     if (state.closed) item("closed") {

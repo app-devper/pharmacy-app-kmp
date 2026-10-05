@@ -108,6 +108,7 @@ interface CommonStrings {
     val commonErrorNotFound: String
     val commonErrorConflict: String
     val commonErrorNetwork: String
+    val commonErrorIdentityUnavailable: String
     val commonErrorServer: String
     val commonErrorValidation: String
     val commonErrorStorage: String

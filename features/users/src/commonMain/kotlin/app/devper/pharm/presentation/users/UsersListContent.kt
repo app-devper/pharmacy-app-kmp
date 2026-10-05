@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.model.UmUser
@@ -54,7 +53,7 @@ fun UsersListContent(
                 icon = PharmIcons.Users,
                 title = s.usersListEmpty,
                 action = {
-                    if (state.currentUserRole.canManageUsers()) {
+                    if (state.canCreate) {
                         PharmButton(
                             label = s.usersAddFirstCta,
                             onClick = callbacks.onAddUser,
@@ -90,9 +89,8 @@ private fun UsersListToolbar(
         searchValue = state.searchQuery,
         onSearchChange = callbacks.onSearch,
         searchPlaceholder = s.usersSearchPlaceholder,
-        compactTopbarActions = true,
-        actions = {
-            if (state.currentUserRole.canManageUsers()) {
+        primaryAction = {
+            if (state.canCreate) {
                 PharmButton(
                     label = s.usersAddCta,
                     onClick = callbacks.onAddUser,

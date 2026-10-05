@@ -4,6 +4,7 @@ import app.devper.pharm.common.AppException
 import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.ConflictException
 import app.devper.pharm.common.ForbiddenException
+import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.NetworkException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.ServerException
@@ -26,6 +27,7 @@ fun AppException.localizeCommon(s: PharmStrings): String = when (this) {
     is NotFoundException -> s.commonErrorNotFound
     is ConflictException -> s.commonErrorConflict
     is NetworkException -> s.commonErrorNetwork
+    is IdentityUnavailableException -> s.commonErrorIdentityUnavailable
     is ServerException -> s.commonErrorServer
     is ValidationException -> message ?: s.commonErrorValidation
     is StorageException -> s.commonErrorStorage

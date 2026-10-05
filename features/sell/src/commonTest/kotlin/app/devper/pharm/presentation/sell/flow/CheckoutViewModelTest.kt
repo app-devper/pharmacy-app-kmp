@@ -20,20 +20,19 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.repository.FakeCartRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
+import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
-import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
-import app.devper.pharm.domain.usecase.offlinesync.EnqueueOfflineSaleUseCase
-import app.devper.pharm.domain.usecase.ky.SubmitKyFormsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertIs
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -96,11 +95,8 @@ class CheckoutViewModelTest {
             cartState = CartStateProvider(cart),
             settings = SettingsProvider(settings),
             timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
-            checkout = CheckoutUseCase(cart, sales, dispatchers),
-            clearCart = ClearCartUseCase(cart),
+            checkout = CheckoutUseCase(cart, sales, pendingSalesOf(offline, sales), dispatchers),
             dismissReceiptUseCase = DismissReceiptUseCase(cart),
-            submitKyForms = SubmitKyFormsUseCase(ky, dispatchers),
-            enqueueOfflineSale = EnqueueOfflineSaleUseCase(offline),
             setCashReceived = SetCashReceivedUseCase(cart),
             receiptPrinter = StubReceiptPrinter(),
         )
@@ -282,7 +278,7 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun confirmKyCapture_runs_checkout_and_fans_out_ky_forms() = runVmTest { dispatchers ->
+    fun confirmKyCapture_sends_the_capture_with_the_sale() = runVmTest { dispatchers ->
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10", "ky11"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
@@ -303,11 +299,11 @@ class CheckoutViewModelTest {
 
         assertNotNull(sales.lastCheckout)
 
-        assertEquals(1, ky.ky10Submissions.size)
-        assertEquals(1, ky.ky11Submissions.size)
-        assertEquals(0, ky.ky12Submissions.size)
-        assertEquals("Buyer", ky.ky10Submissions[0].buyerName)
-        assertEquals("Pharm", ky.ky11Submissions[0].pharmacist)
+        val capture = sales.lastCheckout!!.ky!!
+        assertEquals("Buyer", capture.ky10?.ky10BuyerName)
+        assertEquals("Pharm", capture.ky11?.ky11Pharmacist)
+        assertNull(capture.ky12)
+        assertTrue(ky.ky10Submissions.isEmpty() && ky.ky11Submissions.isEmpty())
 
         assertNull(vm.state.value.kyCapturePending)
     }
@@ -343,8 +339,7 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
         assertNull(vm.state.value.kyCapturePending)
         assertNotNull(sales.lastCheckout)
-        assertEquals(1, ky.ky10Submissions.size)
-        assertEquals("Buyer", ky.ky10Submissions[0].buyerName)
+        assertEquals("Buyer", sales.lastCheckout?.ky?.ky10?.ky10BuyerName)
     }
 
     @Test
@@ -412,7 +407,7 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun confirmSkipKy_runs_checkout_with_audit_flag_and_no_ky_fan_out() = runVmTest { dispatchers ->
+    fun confirmSkipKy_runs_checkout_with_audit_flag_and_no_capture() = runVmTest { dispatchers ->
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
@@ -428,7 +423,7 @@ class CheckoutViewModelTest {
 
         assertNotNull(sales.lastCheckout)
         assertEquals(true, sales.lastCheckout!!.kySkippedByCashier)
-        assertEquals(0, ky.ky10Submissions.size)
+        assertNull(sales.lastCheckout!!.ky)
         assertNull(vm.state.value.kyCapturePending)
         assertFalse(vm.state.value.showSkipKyConfirm)
     }
@@ -487,9 +482,9 @@ class CheckoutViewModelTest {
 
         assertNull(vm.state.value.kyCapturePending)
         assertNotNull(sales.lastCheckout)
-        assertEquals(true, sales.lastCheckout!!.kySkippedByCashier)
-
-        assertEquals(0, ky.ky10Submissions.size)
+        // The shop's skip is recorded by the server, not claimed as the cashier's.
+        assertEquals(false, sales.lastCheckout!!.kySkippedByCashier)
+        assertNull(sales.lastCheckout!!.ky)
     }
 
     @Test
@@ -531,6 +526,26 @@ class CheckoutViewModelTest {
     }
 
     @Test
+    fun changed_cart_before_oversell_confirmation_requires_review() = runVmTest { dispatchers ->
+        val lowStock = drug(stock = Quantity(1))
+        val cart = FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100")
+        val (vm, _, sales) = newVm(dispatchers, cart)
+        advanceUntilIdle()
+
+        vm.submit()
+        advanceUntilIdle()
+        assertNotNull(vm.state.value.oversellPending)
+
+        cart.setCashReceived("101")
+        vm.confirmOversell()
+        advanceUntilIdle()
+
+        assertNull(sales.lastCheckout)
+        assertIs<CheckoutUiStateError.CartChanged>(vm.state.value.errorState)
+        assertNull(vm.state.value.oversellPending)
+    }
+
+    @Test
     fun dismissOversell_clears_pending_without_rerun() = runVmTest { dispatchers ->
         val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
@@ -560,13 +575,76 @@ class CheckoutViewModelTest {
         vm.submit()
         advanceUntilIdle()
 
-        assertEquals(1, offline.pending.value.size)
-        assertNotNull(offline.lastEnqueue)
-        assertTrue(offline.lastEnqueue!!.payloadJson.contains("client_request_id"))
+        assertEquals(1, offline.entries.value.size)
+        assertTrue(offline.added.single().payloadJson.contains("client_request_id"))
         assertTrue(cart.clearCalled)
 
         assertIs<CheckoutUiStateError.OfflineSaved>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
+    }
+
+    @Test
+    fun offline_storage_failure_keeps_cart_and_payment_open() = runVmTest { dispatchers ->
+        val (vm, cart, _, _, offline) = newVm(
+            dispatchers,
+            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host")),
+            offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
+        )
+        advanceUntilIdle()
+        vm.openPayment()
+        vm.submit()
+        advanceUntilIdle()
+
+        assertTrue(offline.entries.value.isEmpty())
+        assertFalse(cart.clearCalled)
+        assertFalse(vm.state.value.cartIsEmpty)
+        assertTrue(vm.state.value.paymentOpen)
+        assertFalse(vm.state.value.checkingOut)
+        assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
+    }
+
+    @Test
+    fun offline_storage_failure_retry_reuses_client_request_id() = runVmTest { dispatchers ->
+        val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
+        val (vm) = newVm(
+            dispatchers,
+            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            sales = sales,
+            offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
+        )
+        advanceUntilIdle()
+
+        vm.submit()
+        advanceUntilIdle()
+        val firstRequestId = assertNotNull(sales.lastCheckout?.clientRequestId)
+
+        vm.submit()
+        advanceUntilIdle()
+        assertEquals(firstRequestId, sales.lastCheckout?.clientRequestId)
+    }
+
+    @Test
+    fun changed_checkout_after_offline_storage_failure_uses_new_client_request_id() = runVmTest { dispatchers ->
+        val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
+        val cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100")
+        val (vm) = newVm(
+            dispatchers,
+            cart = cart,
+            sales = sales,
+            offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
+        )
+        advanceUntilIdle()
+
+        vm.submit()
+        advanceUntilIdle()
+        val firstRequestId = assertNotNull(sales.lastCheckout?.clientRequestId)
+
+        cart.setCashReceived("101")
+        advanceUntilIdle()
+        vm.submit()
+        advanceUntilIdle()
+        assertNotEquals(firstRequestId, sales.lastCheckout?.clientRequestId)
     }
 
     @Test
@@ -581,7 +659,7 @@ class CheckoutViewModelTest {
         vm.submit()
         advanceUntilIdle()
 
-        assertEquals(0, offline.pending.value.size)
+        assertEquals(0, offline.entries.value.size)
         assertFalse(cart.clearCalled)
         assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
@@ -649,29 +727,6 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
         assertTrue(cart.dismissReceiptCalled)
         assertNull(cart.state.value.lastReceipt)
-    }
-
-    @Test
-    fun ky_row_failure_after_success_surfaces_warning_but_sale_stands() = runVmTest { dispatchers ->
-        val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
-        val ky = FakeKyRepository(ky10Throws = true)
-        val (vm, _, sales, _, _) = newVm(
-            dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
-            ky = ky,
-        )
-        advanceUntilIdle()
-        vm.submit()
-        advanceUntilIdle()
-        vm.confirmKyCapture(
-            KyCaptureFields(ky10BuyerName = "B", ky10BuyerAddress = "A"),
-        )
-        advanceUntilIdle()
-
-        assertNotNull(sales.lastCheckout)
-
-        val kyErr = vm.state.value.errorState
-        assertTrue(kyErr is CheckoutUiStateError.KyIncomplete || kyErr is CheckoutUiStateError.KyError)
     }
 
 }

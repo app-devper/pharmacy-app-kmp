@@ -63,6 +63,7 @@ interface ReportsStrings {
     val reportsEodConfirmTitle: String
     val reportsEodConfirmMessage: String
     val reportsEodPendingSyncBanner: (Int) -> String
+    val reportsEodAdjustmentsBanner: (count: Int, bills: Int, total: String) -> String
     val reportsEodPendingSyncWarning: (Int) -> String
     val reportsEodCloseCta: String
     val reportsEodClosedBadge: String

@@ -6,17 +6,17 @@ import app.devper.pharm.common.error.CommonUiStateError
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.repository.FakeUsersRepository
 import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.usecase.users.GetUserRulesUseCase
 import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
 import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
-import app.devper.pharm.domain.extension.canManage
-import app.devper.pharm.domain.extension.canManageUsers
 import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.runVmTest
@@ -38,6 +38,7 @@ class UsersListViewModelTest {
     ): UsersListViewModel = UsersListViewModel(
         getProfile = GetProfileUseCase(profile, dispatchers),
         getUsers = GetUsersUseCase(users, dispatchers),
+        getUserRules = GetUserRulesUseCase(users, dispatchers),
         deleteUser = DeleteUserUseCase(users, dispatchers),
         setUserRole = SetUserRoleUseCase(users, dispatchers),
         setUserStatus = SetUserStatusUseCase(users, dispatchers),
@@ -131,20 +132,15 @@ class UsersListViewModelTest {
     }
 
     @Test
-    fun cannot_manage_self_per_validator() = runVmTest { dispatchers ->
-        val users = FakeUsersRepository()
-        val profile = FakeProfileRepository()
-        val vm = bundle(users, profile, dispatchers)
+    fun what_can_be_created_comes_from_um() = runVmTest { dispatchers ->
+        val vm = bundle(FakeUsersRepository(), FakeProfileRepository(), dispatchers)
         advanceUntilIdle()
-        val state = vm.state.value
-        val me = state.users.firstOrNull { it.id == state.currentUserId }
-        assertNotNull(me)
-        assertFalse(
-            state.currentUserRole.canManage(
-                target = me.role,
-                isSelf = me.id == state.currentUserId,
-            ),
-        )
+        assertEquals(listOf(Role.MANAGER, Role.USER), vm.state.value.creatableRoles)
+        assertTrue(vm.state.value.canCreate)
+
+        val none = bundle(FakeUsersRepository(rules = UserRules()), FakeProfileRepository(), dispatchers)
+        advanceUntilIdle()
+        assertFalse(none.state.value.canCreate)
     }
 
     @Test

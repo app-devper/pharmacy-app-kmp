@@ -3,6 +3,7 @@ package app.devper.pharm.data.network
 import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.ConflictException
 import app.devper.pharm.common.ForbiddenException
+import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.ServerException
 import app.devper.pharm.domain.observer.SessionExpiryProvider
@@ -39,6 +40,26 @@ private fun mockClientReturning(
 }
 
 class HttpResponseValidatorTest {
+
+    @Test
+    fun identity_503_throws_IdentityUnavailableException_and_keeps_the_session() = runTest {
+        val sessionExpiry = SessionExpiryProvider()
+        val (client, tokenStorage) = mockClientReturning(
+            HttpStatusCode.ServiceUnavailable,
+            body = "{\"error\":\"identity service unavailable\"}\n",
+            sessionExpiry = sessionExpiry,
+        )
+        assertFailsWith<IdentityUnavailableException> { client.get("https://example.test/x") }
+        assertEquals("preset-token", tokenStorage.token)
+        assertFalse(sessionExpiry.state.value)
+    }
+
+    @Test
+    fun other_503_stays_a_ServerException() = runTest {
+        val (client, _) = mockClientReturning(HttpStatusCode.ServiceUnavailable, body = "upstream down")
+        val e = assertFailsWith<ServerException> { client.get("https://example.test/x") }
+        assertEquals(503, e.statusCode)
+    }
 
     @Test
     fun status_401_throws_AuthException_and_clears_token() = runTest {

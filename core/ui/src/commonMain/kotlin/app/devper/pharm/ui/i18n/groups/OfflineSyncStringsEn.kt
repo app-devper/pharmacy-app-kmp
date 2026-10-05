@@ -14,11 +14,11 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
     override val offlineSyncStatusRetry = "Awaiting retry"
     override val offlineSyncAttemptsLabel: (Int) -> String = { attempts -> "$attempts attempt(s)" }
     override val offlineSyncRetryRowCta = "Retry"
-    override val offlineSyncDeleteConfirmTitle = "Delete pending sync item?"
+    override val offlineSyncDeleteConfirmTitle = "Delete damaged data?"
     override val offlineSyncDeleteConfirmMessage =
 
-        "This bill will be removed from the device queue — only do this if " +
-        "the backend has already received it or you don't want to retry."
+        "This unreadable entry will be removed from the device — " +
+        "export it to a file first."
     override val offlineSyncLoadFailed = "Failed to load pending sync items"
     override val offlineSyncSyncPartialFailed: (Int, Int) -> String = { failed, total -> "$failed of $total bills failed to send" }
     override val offlineSyncRetryFailed: (String) -> String = { billId -> "Failed to send bill $billId" }
@@ -26,4 +26,28 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
     override val offlineSyncSyncStarted: (Int) -> String = { count -> "Syncing $count item(s)" }
     override val offlineSyncRetryStarted: (String) -> String = { billId -> "Retrying bill $billId" }
     override val offlineSyncDiscarded = "Pending sync item removed"
+    override val offlineSyncStatusConflict = "Refused"
+    override val offlineSyncStatusKyPending = "KY pending"
+    override val offlineSyncStatusDamaged = "Damaged"
+    override val offlineSyncMetricsNeedsAction = "Needs action"
+    override val offlineSyncNeedsActionSub = "Not retried automatically"
+    override val offlineSyncKyPendingBill: (String) -> String = { billNo -> "Bill $billNo recorded, but its KY forms were refused" }
+    override val offlineSyncDamagedHint = "This entry cannot be read. Export it to a file first."
+    override val offlineSyncAbandonCta = "Abandon bill"
+    override val offlineSyncCloseKyCta = "Close KY"
+    override val offlineSyncExportCta = "Export"
+    override val offlineSyncAbandonTitle = "Abandon pending bill?"
+    override val offlineSyncAbandonMessage =
+        "This bill will not be recorded as a sale. The bill and your reason are kept for audit."
+    override val offlineSyncCloseKyTitle = "Close pending KY forms?"
+    override val offlineSyncCloseKyMessage =
+        "The refused KY forms will not be recorded. The forms and your reason are kept for audit."
+    override val offlineSyncReasonPlaceholder = "Reason (required)"
+    override val offlineSyncDiscardDamagedMessage = "Damaged data removed"
+    override val offlineSyncAbandonFailed = "Could not abandon"
+    override val offlineSyncExportFailed = "Could not export"
+    override val offlineSyncAbandoned = "Abandonment recorded"
+    override val offlineSyncExported: (String) -> String = { path -> "Saved: $path" }
+    override val offlineSyncRecorded = "Bill recorded"
+    override val offlineSyncStillNotRecorded: (String) -> String = { billId -> "Bill $billId is still not recorded; see the reason on the item" }
 }

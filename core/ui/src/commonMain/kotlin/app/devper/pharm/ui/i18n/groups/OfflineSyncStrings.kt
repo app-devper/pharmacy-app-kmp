@@ -23,4 +23,26 @@ interface OfflineSyncStrings {
     val offlineSyncSyncStarted: (Int) -> String
     val offlineSyncRetryStarted: (String) -> String
     val offlineSyncDiscarded: String
+    val offlineSyncStatusConflict: String
+    val offlineSyncStatusKyPending: String
+    val offlineSyncStatusDamaged: String
+    val offlineSyncMetricsNeedsAction: String
+    val offlineSyncNeedsActionSub: String
+    val offlineSyncKyPendingBill: (String) -> String
+    val offlineSyncDamagedHint: String
+    val offlineSyncAbandonCta: String
+    val offlineSyncCloseKyCta: String
+    val offlineSyncExportCta: String
+    val offlineSyncAbandonTitle: String
+    val offlineSyncAbandonMessage: String
+    val offlineSyncCloseKyTitle: String
+    val offlineSyncCloseKyMessage: String
+    val offlineSyncReasonPlaceholder: String
+    val offlineSyncDiscardDamagedMessage: String
+    val offlineSyncAbandonFailed: String
+    val offlineSyncExportFailed: String
+    val offlineSyncAbandoned: String
+    val offlineSyncExported: (String) -> String
+    val offlineSyncRecorded: String
+    val offlineSyncStillNotRecorded: (String) -> String
 }

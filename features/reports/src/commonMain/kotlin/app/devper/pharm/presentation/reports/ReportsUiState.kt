@@ -25,6 +25,11 @@ data class ReportsUiState(
     val monthProfit: Double? = null,
     val topDrugs: List<TopDrug> = emptyList(),
     val slowDrugs: List<SlowDrug> = emptyList(),
+    /**
+     * Below ADMIN only the operational slow-drugs view is allowed (ADR-0004);
+     * the dashboard, top-drugs, and profit reports are ADMIN+.
+     */
+    val slowDrugsOnly: Boolean = false,
     val errorState: AppException? = null,
 ) : LoadableUiState<ReportsUiState> {
 

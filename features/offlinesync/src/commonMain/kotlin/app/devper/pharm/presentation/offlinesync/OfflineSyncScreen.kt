@@ -20,7 +20,10 @@ fun OfflineSyncScreen(viewModel: OfflineSyncViewModel = koinViewModel()) {
     LaunchedEffect(state.messageState) {
         state.messageState?.let {
             val toast = when (it) {
-                OfflineSyncUiStateMessage.Discarded -> PharmToast.Success(it.localize(s))
+                OfflineSyncUiStateMessage.Recorded,
+                OfflineSyncUiStateMessage.Abandoned,
+                OfflineSyncUiStateMessage.Discarded,
+                is OfflineSyncUiStateMessage.Exported -> PharmToast.Success(it.localize(s))
                 else -> PharmToast.Info(it.localize(s))
             }
             snackbar.showToast(toast)
@@ -33,9 +36,12 @@ fun OfflineSyncScreen(viewModel: OfflineSyncViewModel = koinViewModel()) {
         callbacks = OfflineSyncCallbacks(
             onSyncAll = viewModel::syncAll,
             onRetry = { viewModel.retry(it.id) },
-            onCancel = { viewModel.askDiscard(it.id) },
-            onConfirmCancel = viewModel::discardConfirmed,
-            onDismissCancel = viewModel::cancelDiscard,
+            onAbandon = { viewModel.askAbandon(it.id) },
+            onExport = { viewModel.export(it.id) },
+            onDiscard = { viewModel.askDiscard(it.id) },
+            onReasonChange = viewModel::reasonChanged,
+            onConfirmResolving = viewModel::confirmResolving,
+            onDismissResolving = viewModel::cancelResolving,
             onDismissError = viewModel::dismissError,
         ),
     )

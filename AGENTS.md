@@ -44,8 +44,9 @@ swaps between them.
 there is no per-feature `ShelledScreen`.
 
 - Active sidebar item + topbar title come from `nestedNav.currentBackStackEntryAsState()`
-  via the `DEST_INFO` map (`route qualified name → (title, sectionKey)`).
-  Sub-pages map to their parent section so the sidebar stays highlighted.
+  via `mainDestinations` in `MainNavTable.kt`, which owns each destination’s
+  title, section, sub-page classification, and optional sidebar entry. Sub-pages
+  map to their parent section so the sidebar stays highlighted.
 - Each feature exposes `fun NavGraphBuilder.<x>Nav(...)` in
   `presentation/<x>/navigation/<X>Nav.kt`. Leaf features take no params;
   features with sub-pages take `navController`; cross-feature jumps take

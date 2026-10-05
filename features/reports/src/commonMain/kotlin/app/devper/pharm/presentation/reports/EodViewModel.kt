@@ -3,8 +3,9 @@ package app.devper.pharm.presentation.reports
 import app.devper.pharm.presentation.reports.exception.EodUiStateError
 
 import androidx.lifecycle.viewModelScope
+import app.devper.pharm.domain.model.EodCloseResult
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.observer.OfflineQueueProvider
+import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.reports.CloseEodParam
 import app.devper.pharm.domain.param.reports.EodReportParam
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.onEach
 
 class EodViewModel(
     settings: SettingsProvider,
-    offlineQueue: OfflineQueueProvider,
+    pendingSales: PendingSales,
     private val getEodReport: GetEodReportUseCase,
     private val closeEod: CloseEodUseCase,
     private val printReceiptUseCase: PrintReceiptUseCase,
@@ -31,7 +32,7 @@ class EodViewModel(
         settings.state
             .onEach { lastSettings = it }
             .launchIn(viewModelScope)
-        offlineQueue.pending
+        pendingSales.entries
             .onEach { queue -> setState { copy(pendingSyncCount = queue.size) } }
             .launchIn(viewModelScope)
         reload()
@@ -118,12 +119,21 @@ class EodViewModel(
         launchResult(
             block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
             onSuccess = { rep ->
+                // A day closed earlier (on this device or another) stays closed
+                // after a reload, with its receipt available to reprint. An API
+                // that does not report the close yet keeps this device's close.
+                val closedResult = rep.close?.let {
+                    EodCloseResult(closeId = it.closeId, date = rep.date, closedAt = it.closedAt, closedBy = it.closedBy, report = rep)
+                } ?: current.closeResult?.takeIf { it.date == rep.date }
                 setState {
                     copy(
                         date = rep.date.toString(),
                         validationRequested = false,
                         loading = false,
                         report = rep,
+                        closed = closedResult != null,
+                        closeResult = closedResult,
+                        closedTemplate = closedResult?.let { buildEodReceiptTemplate(closed = it, settings = lastSettings) },
                     )
                 }
             },

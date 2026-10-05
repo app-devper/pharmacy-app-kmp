@@ -14,11 +14,11 @@ object OfflineSyncStringsTh : OfflineSyncStrings {
     override val offlineSyncStatusRetry = "รอ retry"
     override val offlineSyncAttemptsLabel: (Int) -> String = { attempts -> "ลอง $attempts ครั้ง" }
     override val offlineSyncRetryRowCta = "ลองส่งใหม่"
-    override val offlineSyncDeleteConfirmTitle = "ลบรายการค้างซิงก์?"
+    override val offlineSyncDeleteConfirmTitle = "ลบข้อมูลที่เสียหาย?"
     override val offlineSyncDeleteConfirmMessage =
 
-        "บิลนี้จะถูกลบออกจากคิวภายในเครื่อง — ใช้เมื่อแน่ใจว่า " +
-        "backend รับบิลนี้ไปแล้วหรือไม่ต้องการให้ส่งซ้ำอีก"
+        "ข้อมูลที่อ่านไม่ได้นี้จะถูกลบออกจากเครื่อง — " +
+        "ส่งออกไฟล์เก็บไว้ก่อนแล้ว จึงลบได้"
     override val offlineSyncLoadFailed = "โหลดรายการค้างซิงก์ไม่สำเร็จ"
     override val offlineSyncSyncPartialFailed: (Int, Int) -> String = { failed, total -> "ส่งบิลไม่สำเร็จ $failed จาก $total รายการ" }
     override val offlineSyncRetryFailed: (String) -> String = { billId -> "ส่งบิล $billId ไม่สำเร็จ" }
@@ -26,4 +26,28 @@ object OfflineSyncStringsTh : OfflineSyncStrings {
     override val offlineSyncSyncStarted: (Int) -> String = { count -> "เริ่มซิงก์ $count รายการ" }
     override val offlineSyncRetryStarted: (String) -> String = { billId -> "เริ่มลองส่งบิล $billId ใหม่แล้ว" }
     override val offlineSyncDiscarded = "ลบรายการค้างซิงก์แล้ว"
+    override val offlineSyncStatusConflict = "ถูกปฏิเสธ"
+    override val offlineSyncStatusKyPending = "ขย. ค้าง"
+    override val offlineSyncStatusDamaged = "ข้อมูลเสียหาย"
+    override val offlineSyncMetricsNeedsAction = "ต้องจัดการ"
+    override val offlineSyncNeedsActionSub = "ไม่ส่งซ้ำอัตโนมัติ"
+    override val offlineSyncKyPendingBill: (String) -> String = { billNo -> "บันทึกบิล $billNo แล้ว แต่ ขย. ถูกปฏิเสธ" }
+    override val offlineSyncDamagedHint = "อ่านข้อมูลบิลนี้ไม่ได้ ให้ส่งออกไฟล์เก็บไว้ก่อน"
+    override val offlineSyncAbandonCta = "ยกเลิกบิล"
+    override val offlineSyncCloseKyCta = "ปิดเรื่อง ขย."
+    override val offlineSyncExportCta = "ส่งออกไฟล์"
+    override val offlineSyncAbandonTitle = "ยกเลิกบิลที่ค้าง?"
+    override val offlineSyncAbandonMessage =
+        "บิลนี้จะไม่ถูกบันทึกเป็นยอดขาย และระบบจะเก็บข้อมูลบิลกับเหตุผลไว้ตรวจสอบย้อนหลัง"
+    override val offlineSyncCloseKyTitle = "ปิดเรื่อง ขย. ที่ค้าง?"
+    override val offlineSyncCloseKyMessage =
+        "ขย. ที่ถูกปฏิเสธจะไม่ถูกบันทึก และระบบจะเก็บแบบฟอร์มกับเหตุผลไว้ตรวจสอบย้อนหลัง"
+    override val offlineSyncReasonPlaceholder = "เหตุผล (จำเป็น)"
+    override val offlineSyncDiscardDamagedMessage = "ลบข้อมูลที่เสียหายแล้ว"
+    override val offlineSyncAbandonFailed = "ยกเลิกไม่สำเร็จ"
+    override val offlineSyncExportFailed = "ส่งออกไฟล์ไม่สำเร็จ"
+    override val offlineSyncAbandoned = "บันทึกการยกเลิกแล้ว"
+    override val offlineSyncExported: (String) -> String = { path -> "บันทึกไฟล์แล้ว: $path" }
+    override val offlineSyncRecorded = "ส่งบิลเข้าระบบแล้ว"
+    override val offlineSyncStillNotRecorded: (String) -> String = { billId -> "บิล $billId ยังส่งไม่ผ่าน ดูเหตุผลที่รายการ" }
 }

@@ -7,7 +7,7 @@ import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.ThemePreference
 import app.devper.pharm.domain.observer.AuthStateProvider
 import app.devper.pharm.domain.observer.OfflineAutoSync
-import app.devper.pharm.domain.observer.OfflineQueueProvider
+import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.usecase.auth.LogoutUseCase
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.onEach
 
 class AppViewModel(
     authState: AuthStateProvider,
-    offlineQueue: OfflineQueueProvider,
+    pendingSales: PendingSales,
     uiPreferences: UiPreferencesProvider,
     private val offlineAutoSync: OfflineAutoSync,
     private val logout: LogoutUseCase,
@@ -40,7 +40,7 @@ class AppViewModel(
             }
             .launchIn(viewModelScope)
 
-        offlineQueue.pending
+        pendingSales.entries
             .onEach { queue -> setState { copy(pendingSyncCount = queue.size) } }
             .launchIn(viewModelScope)
 
