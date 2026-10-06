@@ -22,14 +22,15 @@ Branches: `main` (production), `develop` (default, integration),
 (then back-merge). Both `main` and `develop` require the
 "Linux (JVM + Android + WasmJs + audit)" check.
 
-Deploy is automatic: merging to `main` fires the Cloud Build trigger
-`deploy-pharm-app` (project `devperpos`, config [cloudbuild.yaml](./cloudbuild.yaml))
-which builds `:composeApp:wasmJsBrowserDistribution`, deploys to Firebase
-Hosting site `pharm-app` (https://pharm-app.web.app), and pushes tag
-`v<app-version>` (from `gradle/libs.versions.toml` key `app-version`) if
-that tag doesn't exist yet. **Bump `app-version` in the release/hotfix PR**
-— an unchanged version deploys but skips tagging. Manual deploy:
-`./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app`.
+Deploy is **manual**. The Cloud Build trigger `deploy-pharm-app` (project
+`devperpos`, config [cloudbuild.yaml](./cloudbuild.yaml)) is **disabled** —
+its last run was 2026-08-10 — so merging to `main` deploys and tags nothing.
+After a release/hotfix lands, from a clean `main` checkout: tag
+`v<app-version>` by hand, then
+`./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app`
+(Firebase Hosting site `pharm-app`, https://pharm-app.web.app).
+**Bump `app-version`** (+ `app-versionCode`) in `gradle/libs.versions.toml`
+in every release/hotfix PR so the version, the tag and the shipped app agree.
 
 ## Navigation (two-level NavHost + single shell)
 

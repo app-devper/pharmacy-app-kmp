@@ -91,8 +91,8 @@ directly.
 4. **PR:** `gh pr create --base main --title "release: vX.Y.Z" --body "<changelog: PR list since last tag>"`.
    CI `Linux (JVM + Android + WasmJs + audit)` must be green.
 5. **Land:** `pr` skill (squash into `main`).
-6. **Deploy:** Merging into `main` fires Cloud Build trigger `deploy-pharm-app` (project `devperpos`, [cloudbuild.yaml](../../../cloudbuild.yaml)): build → `firebase deploy --only hosting:pharm-app`. It then tags `v<app-version>` itself — skipped if that tag already exists.
-7. **Tag:** Cloud Build tags `v<app-version>` automatically. If `app-version` was not bumped the tag step is skipped — then tag the squash commit by hand (below).
+6. **Deploy:** **Manual** — Cloud Build trigger `deploy-pharm-app` is disabled (last run 2026-08-10), so merging `main` deploys nothing. Deploy from a clean `main` checkout in step 9.
+7. **Tag:** Tag by hand — nothing tags automatically.
    ```bash
    git checkout main && git pull --ff-only
    git tag -a vX.Y.Z -m "vX.Y.Z" HEAD   # HEAD = the "release: vX.Y.Z (#n)" squash commit
@@ -100,14 +100,15 @@ directly.
    ```
 8. **Back-merge** `main` → `develop` (`git-flow`; the `pr` skill does it
    after a PR into `main`).
-9. **Check the deploy:**
+9. **Deploy and check:**
    ```bash
-   gcloud builds list --project=devperpos --region=global --limit=1 \
-     --filter="substitutions.TRIGGER_NAME=deploy-pharm-app" --format="value(status,createTime,substitutions.SHORT_SHA)"
-   # then open https://pharm-app.web.app and check the release
+   git checkout main && git pull --ff-only
+   ./gradlew :composeApp:wasmJsBrowserDistribution
+   firebase deploy --only hosting:pharm-app --project devperpos
+   firebase hosting:channel:list --site pharm-app --project devperpos   # live release time
    ```
 
-**Exit:** tag `vX.Y.Z` on `main`, the build for that commit SUCCESS, `develop` contains `main`.
+**Exit:** tag `vX.Y.Z` on `main`, pharm-app.web.app released from that commit, `develop` contains `main`.
 
 ## 9. Hotfix — production is broken
 
@@ -120,6 +121,6 @@ steps 3 and 5–9 with a **patch** bump.
 - No direct pushes to `main` or `develop` except the stage-8 back-merge
   (admin only, see `git-flow`); every other change goes through a PR
   with `Linux (JVM + Android + WasmJs + audit)` green.
-- A merge into `main` is a release and a production deploy —
+- A merge into `main` is a release, deployed by hand right after —
   only `release/*` and `hotfix/*` PRs target `main`.
 - Never tag a commit that is not on `main`; never move or delete a pushed tag.
