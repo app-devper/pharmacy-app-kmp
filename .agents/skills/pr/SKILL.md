@@ -53,6 +53,9 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
    git checkout develop && git pull --ff-only origin develop
    git merge main && git push origin develop
    ```
+   Pushed directly on purpose (admin only; GitHub reports
+   "Bypassed rule violations" — expected). Then check
+   `gh run list --branch develop -L 1` is green.
    Also remind: the merge fired the `deploy-pharm-app` Cloud Build —
    report its outcome (`gcloud builds list --limit=1`).
 
