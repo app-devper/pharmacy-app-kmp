@@ -21,5 +21,5 @@ data class StockUiState(
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
-    val filtered: List<Drug> = drugs.searchByQuery(query).filter { typeFilter.matches(it.type) }
+    val filtered: List<Drug> by lazy { drugs.searchByQuery(query).filter { typeFilter.matches(it.type) } }
 }

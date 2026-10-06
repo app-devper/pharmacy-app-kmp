@@ -32,14 +32,14 @@ data class ExpiryUiState(
     val canWriteoff: Boolean get() = !writingOff && selected.isNotEmpty()
     val totalSelected: Int get() = selected.size
     val totalRemaining: Int get() = lots.sumOf { it.remaining }
-    val filteredLots: List<ExpiringLot>
-        get() {
-            val needle = query.trim().lowercase()
-            if (needle.isEmpty()) return lots
-            return lots.filter { lot ->
-                lot.drugName.lowercase().contains(needle) || lot.lotNumber.lowercase().contains(needle)
-            }
+    val filteredLots: List<ExpiringLot> by lazy {
+        val needle = query.trim()
+        if (needle.isEmpty()) lots
+        else lots.filter { lot ->
+            lot.drugName.contains(needle, ignoreCase = true) ||
+                lot.lotNumber.contains(needle, ignoreCase = true)
         }
+    }
     val filteredRemaining: Int get() = filteredLots.sumOf { it.remaining }
     val allVisibleSelected: Boolean
         get() = filteredLots.isNotEmpty() && filteredLots.all { it.id in selected }

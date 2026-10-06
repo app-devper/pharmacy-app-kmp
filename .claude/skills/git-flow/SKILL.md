@@ -9,6 +9,9 @@ Project override of the user-level `git-flow` skill (`~/.claude/skills/git-flow/
 — generic recipes live there; everything below is what's specific to
 `app-devper/pharmacy-app-kmp`.
 
+The stage-by-stage flow (shape → build → review → release → deploy check)
+lives in `dev-flow`; this skill owns the branch rules.
+
 ## Branch map
 
 | Branch | Role | PR target | After merge |
@@ -69,6 +72,14 @@ gh pr create --base main --title "fix(...): ..." --body "..."
 
 ### Back-merge (required after every merge into main)
 
+The back-merge is the only direct push to `develop`, in every app-devper repo.
+It needs an account with admin rights: `develop` requires the CI status check
+and a pushed merge commit has none, so GitHub answers
+`Bypassed rule violations for refs/heads/develop` — expected here. The `check`
+workflow still runs on the push; confirm it is green:
+`gh run list --branch develop -L 1`. Never squash a back-merge (it would drop
+`main` from `develop`'s history), and don't open a PR for it.
+
 ```bash
 git checkout main && git pull --ff-only
 git checkout develop && git pull --ff-only
@@ -78,7 +89,9 @@ git push origin develop
 
 ## Guard rails
 
-- Never push directly to `main` or `develop` — always via PR.
+- Never push directly to `main` or `develop` — always via PR. The one
+  exception is the back-merge `main` → `develop`, which is pushed directly
+  (see Back-merge).
 - Never open a feature PR against `main`; only `release/*` and `hotfix/*`
   target `main`.
 - A merge into `main` is a production deploy — treat release/hotfix PRs
