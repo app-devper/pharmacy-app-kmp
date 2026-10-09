@@ -42,8 +42,6 @@ class PendingSalesTest {
         unit = "tab", buyerName = "A", purpose = "cough", pharmacist = "P",
     )
 
-    // ── delivery ──────────────────────────────────────────────
-
     @Test
     fun enqueued_sale_is_pending_until_the_server_records_it() = runTest {
         val queue = FakeOfflineSaleQueue()
@@ -155,7 +153,14 @@ class PendingSalesTest {
         assertTrue(ky.ky11Submissions.isEmpty())
     }
 
-    // ── retry ─────────────────────────────────────────────────
+    @Test
+    fun a_5xx_while_sending_ky_keeps_the_bill_pending_instead_of_needing_a_person() = runTest {
+        val queue = FakeOfflineSaleQueue(listOf(entry("p1", ky = listOf(ky10(), ky11()))))
+        val ky = FakeKyRepository(ky10Error = ServerException("Server error (500)", statusCode = 500))
+        pendingSalesOf(queue, FakeSaleRepository(successResult = recorded), ky).syncAll()
+
+        assertEquals(PendingSaleState.Pending, queue.entry("p1")!!.state)
+    }
 
     @Test
     fun retrying_a_conflict_records_it_or_keeps_it_in_conflict() = runTest {
@@ -179,8 +184,6 @@ class PendingSalesTest {
         assertTrue(pending.retry("x").isFailure)
         assertEquals(0, sales.replayCount)
     }
-
-    // ── abandon ───────────────────────────────────────────────
 
     @Test
     fun abandoning_a_conflict_records_the_reason_then_removes_it() = runTest {
@@ -233,8 +236,6 @@ class PendingSalesTest {
         assertEquals(listOf(Triple("crid-p1", "ky_forms", "recorded on paper")), sales.abandoned)
         assertTrue(queue.entries.value.isEmpty())
     }
-
-    // ── damaged ───────────────────────────────────────────────
 
     @Test
     fun a_damaged_entry_is_exported_raw_and_only_it_can_be_discarded() = runTest {

@@ -15,6 +15,8 @@ import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
 import app.devper.pharm.domain.validation.SaleValidationError
 
 import app.devper.pharm.common.IdentityUnavailableException
+import app.devper.pharm.common.NetworkException
+import app.devper.pharm.common.ServerException
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -182,6 +184,39 @@ class CheckoutUseCaseTest {
         assertEquals(CheckoutOutcome.OfflineSaved, result)
         assertEquals(capture, sales.lastParam?.ky)
         assertTrue(queue.added.single().kyForms.isEmpty())
+    }
+
+    @Test
+    fun a_5xx_at_checkout_keeps_the_sale_pending_as_replay_would() = runTest {
+        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val queue = FakeOfflineSaleQueue()
+        val sales = FakeSales(failWith = ServerException("Server error (502)", statusCode = 502))
+        val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
+            .invoke(Money(100.0)).getOrThrow()
+        assertEquals(CheckoutOutcome.OfflineSaved, result)
+        assertEquals(sales.lastParam?.clientRequestId, queue.added.single().clientRequestId)
+    }
+
+    @Test
+    fun the_transports_network_error_keeps_the_sale_pending_whatever_its_cause() = runTest {
+        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val queue = FakeOfflineSaleQueue()
+        val sales = FakeSales(failWith = NetworkException(cause = IllegalStateException("engine closed")))
+        val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
+            .invoke(Money(100.0)).getOrThrow()
+        assertEquals(CheckoutOutcome.OfflineSaved, result)
+    }
+
+    @Test
+    fun a_4xx_at_checkout_is_the_server_refusing_the_sale() = runTest {
+        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val queue = FakeOfflineSaleQueue()
+        val refusal = ServerException("HTTP error (400)", statusCode = 400)
+        val result = CheckoutUseCase(cart, FakeSales(failWith = refusal), pendingSalesOf(queue), testDispatchers())
+            .invoke(Money(100.0))
+        assertEquals(refusal, (result.exceptionOrNull() as CheckoutFailure).cause)
+        assertTrue(queue.added.isEmpty())
+        assertTrue(cart.state.value.active.items.isNotEmpty())
     }
 
     @Test

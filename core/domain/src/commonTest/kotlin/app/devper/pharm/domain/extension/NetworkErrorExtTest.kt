@@ -1,6 +1,13 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.AuthException
+import app.devper.pharm.common.ConflictException
+import app.devper.pharm.common.ForbiddenException
 import app.devper.pharm.common.IdentityUnavailableException
+import app.devper.pharm.common.NetworkException
+import app.devper.pharm.common.NotFoundException
+import app.devper.pharm.common.ServerException
+import app.devper.pharm.common.ValidationException
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -107,5 +114,32 @@ class NetworkErrorExtTest {
     @Test
     fun null_message_does_not_blow_up() {
         assertFalse(RuntimeException(null as String?).looksLikeNetworkError())
+    }
+
+    @Test
+    fun delivery_failure_rule_reads_the_transport_types() {
+        val temporary = listOf(
+            NetworkException(cause = RuntimeException("opaque")),
+            NetworkException(),
+            IdentityUnavailableException(),
+            AuthException(),
+            ForbiddenException(),
+            ServerException(statusCode = 500),
+            ServerException(statusCode = 502),
+            ServerException(statusCode = 503),
+            ServerException(),
+            ConnectException("any"),
+        )
+        val refused = listOf(
+            ServerException(statusCode = 400),
+            ServerException(statusCode = 422),
+            ConflictException(),
+            NotFoundException(),
+            ValidationException(),
+            IllegalStateException("validation error"),
+            RuntimeException("Failed to connect to host").let { ConflictException(cause = it) },
+        )
+        temporary.forEach { assertTrue(it.isTemporaryDeliveryFailure(), "$it should be kept and retried") }
+        refused.forEach { assertFalse(it.isTemporaryDeliveryFailure(), "$it is the server's answer") }
     }
 }
