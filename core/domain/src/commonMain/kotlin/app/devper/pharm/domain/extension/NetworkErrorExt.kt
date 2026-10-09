@@ -1,6 +1,11 @@
 package app.devper.pharm.domain.extension
 
+import app.devper.pharm.common.AppException
+import app.devper.pharm.common.AuthException
+import app.devper.pharm.common.ForbiddenException
 import app.devper.pharm.common.IdentityUnavailableException
+import app.devper.pharm.common.NetworkException
+import app.devper.pharm.common.ServerException
 
 private val NETWORK_CLASS_HINTS = listOf(
     "ConnectException",
@@ -38,10 +43,12 @@ fun Throwable.looksLikeNetworkError(): Boolean {
     return false
 }
 
-/**
- * True when the request never reached a decision on the server and is worth
- * retrying later: a network failure, or the pharmacy API being unable to
- * confirm the session (ADR-0016). A sale that fails this way stays pending.
- */
 fun Throwable.looksLikeTemporaryOutage(): Boolean =
     this is IdentityUnavailableException || looksLikeNetworkError()
+
+fun Throwable.isTemporaryDeliveryFailure(): Boolean = when (this) {
+    is NetworkException, is IdentityUnavailableException, is AuthException, is ForbiddenException -> true
+    is ServerException -> (statusCode ?: 500) >= 500
+    is AppException -> false
+    else -> looksLikeNetworkError()
+}

@@ -18,7 +18,6 @@ class FakeKyRepository(
     private val ky12Throws: Boolean = false,
     private val ky9Throws: Boolean = false,
     private val listThrows: Boolean = false,
-    /** Thrown by submitKy10 instead of ky10Throws' ServerException, e.g. a network failure. */
     private val ky10Error: Throwable? = null,
 ) : KyRepository {
 
@@ -29,17 +28,17 @@ class FakeKyRepository(
 
     override suspend fun submitKy10(form: KyForm.Ky10) {
         ky10Error?.let { throw it }
-        if (ky10Throws) throw ServerException("ky10 failed")
+        if (ky10Throws) throw ServerException("ky10 failed", statusCode = 422)
         ky10Submissions += form
     }
 
     override suspend fun submitKy11(form: KyForm.Ky11) {
-        if (ky11Throws) throw ServerException("ky11 failed")
+        if (ky11Throws) throw ServerException("ky11 failed", statusCode = 422)
         ky11Submissions += form
     }
 
     override suspend fun submitKy12(form: KyForm.Ky12) {
-        if (ky12Throws) throw ServerException("ky12 failed")
+        if (ky12Throws) throw ServerException("ky12 failed", statusCode = 422)
         ky12Submissions += form
     }
 
