@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.ky
 import app.devper.pharm.domain.model.KyFormType
 
 data class Ky9Callbacks(
+    val onReload: () -> Unit = {},
     val onSwitchForm: (KyFormType) -> Unit = {},
     val onMonthChange: (String) -> Unit = {},
     val onApply: () -> Unit = {},

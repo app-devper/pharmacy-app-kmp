@@ -33,6 +33,7 @@ fun ProfitScreen(viewModel: ProfitViewModel = koinViewModel()) {
             onSortChange = viewModel::onSort,
             onExportExcel = viewModel::onExportExcel,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }

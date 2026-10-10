@@ -25,6 +25,7 @@ fun CustomersScreen(
             onOpenEdit = { onEditCustomer(it.id) },
             onOpenAdd = onAddCustomer,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }

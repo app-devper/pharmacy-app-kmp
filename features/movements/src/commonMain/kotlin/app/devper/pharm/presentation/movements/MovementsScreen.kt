@@ -38,6 +38,7 @@ fun MovementsScreen(viewModel: MovementsViewModel = koinViewModel()) {
             onNextPage = viewModel::onNextPage,
             onExportExcel = viewModel::onExportExcel,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::applyFilter,
         ),
     )
 }

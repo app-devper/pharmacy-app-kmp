@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.model.PendingSaleState
 import app.devper.pharm.ui.components.LocalRolePermissions
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.presentation.offlinesync.i18n.localize
 import app.devper.pharm.presentation.offlinesync.message.OfflineSyncUiStateMessage
@@ -31,11 +32,9 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -84,28 +83,31 @@ fun OfflineSyncContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> EmptyOfflineSync()
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(state.pending, key = { it.id }) { row ->
-                    OfflineSyncCard(
-                        row = row,
-                        tz = state.tz,
-                        syncing = row.id in state.syncingIds || (state.syncingAll && row.state == PendingSaleState.Pending),
-                        actionsEnabled = !state.busy,
-                        canResolve = LocalRolePermissions.current.canResolvePendingSales,
-                        exported = row.id in state.exportedIds,
-                        callbacks = callbacks,
-                    )
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = null,
+            empty = { EmptyOfflineSync() },
+            content = {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(state.pending, key = { it.id }) { row ->
+                        OfflineSyncCard(
+                            row = row,
+                            tz = state.tz,
+                            syncing = row.id in state.syncingIds || (state.syncingAll && row.state == PendingSaleState.Pending),
+                            actionsEnabled = !state.busy,
+                            canResolve = LocalRolePermissions.current.canResolvePendingSales,
+                            exported = row.id in state.exportedIds,
+                            callbacks = callbacks,
+                        )
+                    }
                 }
-            }
-        }
+            },
+        )
     }
 
     state.resolving?.let { resolving -> ResolvingDialog(resolving, state.working, callbacks) }

@@ -23,11 +23,10 @@ import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -53,28 +52,32 @@ fun StockCountsListContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty ->
-                PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.StockCount,
-                title = pharmStrings.stockCountHistoryEmpty,
-                action = {
-                    PharmButton(
-                        label = pharmStrings.stockCountHistoryNewCta,
-                        onClick = callbacks.onNewCount,
-                        size = PharmButtonSize.Sm,
-                    )
-                },
-            )
-            else -> StockCountsListTable(
-                counts = visible,
-                callbacks = callbacks,
-                emptySearching = searching,
-            )
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.StockCount,
+                    title = pharmStrings.stockCountHistoryEmpty,
+                    action = {
+                        PharmButton(
+                            label = pharmStrings.stockCountHistoryNewCta,
+                            onClick = callbacks.onNewCount,
+                            size = PharmButtonSize.Sm,
+                        )
+                    },
+                )
+            },
+            content = {
+                StockCountsListTable(
+                    counts = visible,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
+            },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeStockCount(pharmStrings), onDismiss = callbacks.onDismissError)

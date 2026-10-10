@@ -14,7 +14,6 @@ private data class DummyLoadableState(
     val value: Int = 0,
 ) : LoadableUiState<DummyLoadableState> {
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 }
 
