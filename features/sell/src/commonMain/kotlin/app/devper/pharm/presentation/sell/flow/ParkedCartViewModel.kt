@@ -1,29 +1,21 @@
 package app.devper.pharm.presentation.sell.flow
 
+import app.devper.pharm.domain.cart.Cart
 import androidx.lifecycle.viewModelScope
-import app.devper.pharm.domain.observer.CartStateProvider
-import app.devper.pharm.domain.observer.ParkedCartsProvider
-import app.devper.pharm.domain.usecase.sales.DiscardParkedCartUseCase
-import app.devper.pharm.domain.usecase.sales.ParkCartUseCase
-import app.devper.pharm.domain.usecase.sales.RestoreCartUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class ParkedCartViewModel(
-    parkedCarts: ParkedCartsProvider,
-    cartState: CartStateProvider,
-    private val parkCart: ParkCartUseCase,
-    private val restoreCart: RestoreCartUseCase,
-    private val discardParked: DiscardParkedCartUseCase,
+    private val cart: Cart,
 ) : BaseViewModel<ParkedCartUiState>(ParkedCartUiState()) {
 
     init {
-        parkedCarts.slots
+        cart.parkedSlots
             .onEach { slots -> setState { copy(parkedSlots = slots) } }
             .launchIn(viewModelScope)
 
-        cartState.state
+        cart.snapshots
             .onEach { snap -> setState { copy(activeCartIsEmpty = snap.items.isEmpty()) } }
             .launchIn(viewModelScope)
     }
@@ -37,8 +29,8 @@ class ParkedCartViewModel(
             setState { copy(sheetOpen = false) }
             return
         }
-        parkCart(s.activeSlot)
-        restoreCart(slot)
+        cart.park(s.activeSlot)
+        cart.restore(slot)
         setState { copy(activeSlot = slot, sheetOpen = false) }
     }
 
@@ -61,9 +53,9 @@ class ParkedCartViewModel(
 
     fun confirmOverwrite() {
         val slot = current.overwriteSlot ?: return
-        parkCart(slot)
+        cart.park(slot)
         setState { copy(overwriteSlot = null, sheetOpen = false) }
     }
 
-    fun discard(slot: Int) = discardParked(slot)
+    fun discard(slot: Int) = cart.discard(slot)
 }

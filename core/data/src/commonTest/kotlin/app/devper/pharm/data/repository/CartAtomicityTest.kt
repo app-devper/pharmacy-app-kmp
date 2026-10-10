@@ -7,12 +7,11 @@ import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.data.storage.MemorySettings
 import app.devper.pharm.data.storage.ParkedCartStorage
+import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartState
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.observer.CartStateProvider
-import app.devper.pharm.domain.param.sales.AddCartItemParam
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -23,10 +22,10 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class CartRepositoryImplAtomicityTest {
+class CartAtomicityTest {
 
-    private fun buildRepo(): CartRepositoryImpl =
-        CartRepositoryImpl(ParkedCartStorage(MemorySettings()))
+    private fun buildRepo(): Cart =
+        Cart(ParkedCartStorage(MemorySettings()))
 
     private fun sampleDrug(id: String = "d1", name: String = "Paracetamol"): Drug =
         Drug(
@@ -57,8 +56,8 @@ class CartRepositoryImplAtomicityTest {
     @Test
     fun restoreCart_emits_exactly_one_tick_after_initial() = runTest(UnconfinedTestDispatcher()) {
         val repo = buildRepo()
-        repo.add(AddCartItemParam(drug = sampleDrug(), altUnit = null))
-        repo.parkCart(slot = 0)
+        repo.add(sampleDrug())
+        repo.park(slot = 0)
         repo.commitReceipt(sampleSale())
 
         val captured = mutableListOf<CartState>()
@@ -67,7 +66,7 @@ class CartRepositoryImplAtomicityTest {
         }
 
         val countBefore = captured.size
-        repo.restoreCart(slot = 0)
+        repo.restore(slot = 0)
         val countAfter = captured.size
 
         collectorJob.cancel()
@@ -88,7 +87,7 @@ class CartRepositoryImplAtomicityTest {
     @Test
     fun commitReceipt_emits_exactly_one_tick_after_initial() = runTest(UnconfinedTestDispatcher()) {
         val repo = buildRepo()
-        repo.add(AddCartItemParam(drug = sampleDrug(), altUnit = null))
+        repo.add(sampleDrug())
 
         val captured = mutableListOf<CartState>()
         val collectorJob = launch { repo.state.toList(captured) }
@@ -108,7 +107,7 @@ class CartRepositoryImplAtomicityTest {
     @Test
     fun clear_emits_exactly_one_tick_after_initial() = runTest(UnconfinedTestDispatcher()) {
         val repo = buildRepo()
-        repo.add(AddCartItemParam(drug = sampleDrug(), altUnit = null))
+        repo.add(sampleDrug())
         repo.commitReceipt(sampleSale())
 
         val captured = mutableListOf<CartState>()
@@ -125,21 +124,21 @@ class CartRepositoryImplAtomicityTest {
     }
 
     @Test
-    fun CartStateProvider_never_observes_lastReceipt_null_with_old_active_during_restoreCart() = runTest(UnconfinedTestDispatcher()) {
+    fun snapshots_never_observe_lastReceipt_null_with_old_active_during_restore() = runTest(UnconfinedTestDispatcher()) {
         val repo = buildRepo()
         val oldDrug = sampleDrug(id = "old", name = "OldDrug")
         val newDrug = sampleDrug(id = "new", name = "NewDrug")
 
-        repo.add(AddCartItemParam(drug = newDrug, altUnit = null))
-        repo.parkCart(slot = 0)
-        repo.add(AddCartItemParam(drug = oldDrug, altUnit = null))
+        repo.add(newDrug)
+        repo.park(slot = 0)
+        repo.add(oldDrug)
         repo.commitReceipt(sampleSale())
 
-        val provider = CartStateProvider(repo)
+        val provider = repo
         val snapshots = mutableListOf<List<CartLine>>()
         val receiptStates = mutableListOf<Boolean>()
         val collectorJob = launch {
-            provider.state.collect { snap ->
+            provider.snapshots.collect { snap ->
                 snapshots.add(snap.items)
                 receiptStates.add(snap.lastReceipt != null)
             }
@@ -148,7 +147,7 @@ class CartRepositoryImplAtomicityTest {
         snapshots.clear()
         receiptStates.clear()
 
-        repo.restoreCart(slot = 0)
+        repo.restore(slot = 0)
 
         collectorJob.cancel()
 

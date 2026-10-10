@@ -7,9 +7,9 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.repository.FakeCartRepository
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeSaleRepository
-import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
 import app.devper.pharm.domain.usecase.sales.VoidSaleUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,23 +28,22 @@ class VoidSaleViewModelTest {
 
     private data class Bundle(
         val vm: VoidSaleViewModel,
-        val cart: FakeCartRepository,
+        val cart: Cart,
         val sales: FakeSaleRepository,
         val bus: StockChangeBus,
     )
 
     private fun newVm(
         dispatchers: AppDispatchers,
-        cart: FakeCartRepository = FakeCartRepository(
-
-            initialReceipt = Sale("s1", "INV-001", Money(10.0), Money(0.0), Money(0.0), emptyList()),
+        cart: Cart = testCart(
+            receipt = Sale("s1", "INV-001", Money(10.0), Money(0.0), Money(0.0), emptyList()),
         ),
         sales: FakeSaleRepository = FakeSaleRepository(),
         bus: StockChangeBus = StockChangeBus(),
     ): Bundle {
         val vm = VoidSaleViewModel(
             voidSale = VoidSaleUseCase(sales, dispatchers),
-            dismissReceiptUseCase = DismissReceiptUseCase(cart),
+            cart = cart,
         )
         return Bundle(vm, cart, sales, bus)
     }
@@ -72,7 +71,6 @@ class VoidSaleViewModelTest {
         assertEquals("s1", sales.lastVoid?.saleId)
         assertEquals("ลูกค้าคืน", sales.lastVoid?.reason)
 
-        assertTrue(cart.dismissReceiptCalled)
         assertNull(cart.state.value.lastReceipt)
 
         assertFalse(vm.state.value.sheetOpen)
@@ -106,7 +104,7 @@ class VoidSaleViewModelTest {
 
         assertNull(sales.lastVoid)
 
-        assertFalse(cart.dismissReceiptCalled)
+        assertNotNull(cart.state.value.lastReceipt)
 
         assertFalse(vm.state.value.sheetOpen)
         assertIs<VoidSaleUiStateError.ReasonRequired>(vm.state.value.errorState)
@@ -123,7 +121,6 @@ class VoidSaleViewModelTest {
         advanceUntilIdle()
 
         assertNotNull(cart.state.value.lastReceipt)
-        assertFalse(cart.dismissReceiptCalled)
         val voidErr = vm.state.value.errorState
         assertIs<VoidSaleUiStateError.VoidFailed>(voidErr)
         assertEquals("backend 500", voidErr.cause?.message)
