@@ -26,11 +26,10 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -59,27 +58,32 @@ fun ImportsListContent(
             PharmListResultLine(total = state.orders.size, noun = pharmStrings.importsCountNoun, visible = visible.size, searching = searching)
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.Imports,
-                title = pharmStrings.importsListEmpty,
-                action = {
-                    PharmButton(
-                        label = pharmStrings.importsAddCta,
-                        onClick = callbacks.onCreateImport,
-                        size = PharmButtonSize.Sm,
-                    )
-                },
-            )
-            else -> ImportsListTable(
-                orders = visible,
-                callbacks = callbacks,
-                emptySearching = searching,
-            )
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.Imports,
+                    title = pharmStrings.importsListEmpty,
+                    action = {
+                        PharmButton(
+                            label = pharmStrings.importsAddCta,
+                            onClick = callbacks.onCreateImport,
+                            size = PharmButtonSize.Sm,
+                        )
+                    },
+                )
+            },
+            content = {
+                ImportsListTable(
+                    orders = visible,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
+            },
+        )
     }
 
     state.pendingConfirm?.let { pending ->

@@ -22,11 +22,10 @@ import app.devper.pharm.presentation.ky.i18n.localizeKy
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -63,16 +62,19 @@ fun Ky9Content(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.KyForms,
-                title = pharmStrings.kyEmptyMonth,
-            )
-            else -> KyTable(rows = rows, formType = KyFormType.Ky9)
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.KyForms,
+                    title = pharmStrings.kyEmptyMonth,
+                )
+            },
+            content = { KyTable(rows = rows, formType = KyFormType.Ky9) },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeKy(pharmStrings), onDismiss = callbacks.onDismissError)

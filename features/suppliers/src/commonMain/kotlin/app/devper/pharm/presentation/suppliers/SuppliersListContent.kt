@@ -11,11 +11,10 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -38,27 +37,32 @@ fun SuppliersListContent(
             PharmListResultLine(total = state.suppliers.size, noun = s.customersCountNoun, visible = visible.size, searching = searching)
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.Suppliers,
-                title = s.suppliersListEmpty,
-                action = {
-                    PharmButton(
-                        label = s.suppliersAddCta,
-                        onClick = callbacks.onOpenAdd,
-                        size = PharmButtonSize.Sm,
-                    )
-                },
-            )
-            else -> SuppliersListTable(
-                suppliers = visible,
-                callbacks = callbacks,
-                emptySearching = searching,
-            )
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.Suppliers,
+                    title = s.suppliersListEmpty,
+                    action = {
+                        PharmButton(
+                            label = s.suppliersAddCta,
+                            onClick = callbacks.onOpenAdd,
+                            size = PharmButtonSize.Sm,
+                        )
+                    },
+                )
+            },
+            content = {
+                SuppliersListTable(
+                    suppliers = visible,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
+            },
+        )
     }
 
     state.pendingDelete?.let { pending ->

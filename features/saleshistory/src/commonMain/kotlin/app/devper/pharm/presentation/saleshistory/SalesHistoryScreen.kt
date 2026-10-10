@@ -25,6 +25,7 @@ fun SalesHistoryScreen(
             onOpenReceipt = viewModel::onViewBill,
             onStartReturn = viewModel::onStartReturn,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::loadList,
         ),
     )
 

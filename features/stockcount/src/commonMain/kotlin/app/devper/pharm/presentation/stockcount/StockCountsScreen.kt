@@ -27,6 +27,7 @@ fun StockCountsScreen(
             onEdit = { onEditCount(it.id) },
             onDelete = { onDeleteCount(it.id) },
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }

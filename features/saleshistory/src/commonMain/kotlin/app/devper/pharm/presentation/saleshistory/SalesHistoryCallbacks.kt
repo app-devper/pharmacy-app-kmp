@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.saleshistory
 import app.devper.pharm.domain.model.SaleSummary
 
 data class SalesHistoryCallbacks(
+    val onReload: () -> Unit = {},
     val onQueryChange: (String) -> Unit = {},
     val onFromMillisChange: (Long?) -> Unit = {},
     val onToMillisChange: (Long?) -> Unit = {},

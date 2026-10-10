@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.movements
 
 data class MovementsCallbacks(
+    val onReload: () -> Unit = {},
     val onSearchChange: (String) -> Unit = {},
     val onFromMillisChange: (Long?) -> Unit = {},
     val onToMillisChange: (Long?) -> Unit = {},

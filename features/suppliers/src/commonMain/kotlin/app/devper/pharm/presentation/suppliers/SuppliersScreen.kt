@@ -27,6 +27,7 @@ fun SuppliersScreen(
             onCancelDelete = viewModel::cancelDelete,
             onConfirmDelete = viewModel::deleteConfirmed,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         )
     }
 

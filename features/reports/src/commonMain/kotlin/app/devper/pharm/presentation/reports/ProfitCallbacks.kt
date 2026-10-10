@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.reports
 
 data class ProfitCallbacks(
+    val onReload: () -> Unit = {},
     val onDateRangeChange: (Long?, Long?) -> Unit = { _, _ -> },
     val onSortChange: (ProfitSort) -> Unit = {},
     val onExportExcel: (List<String>) -> Unit = {},

@@ -14,7 +14,6 @@ data class SuppliersListUiState(
 ) : LoadableUiState<SuppliersListUiState> {
 
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val filtered: List<Supplier> = if (query.isBlank()) {

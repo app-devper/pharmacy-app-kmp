@@ -33,9 +33,8 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -75,12 +74,12 @@ fun ReportsContent(
                 },
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                when {
-                    state.loading && pageIsEmpty ->
-                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                    state.errorState != null && pageIsEmpty ->
-                        PharmErrorState(onRetry = callbacks.onReload)
-                    pageIsEmpty ->
+                PharmListBody(
+                    loading = state.loading,
+                    error = state.errorState,
+                    isEmpty = pageIsEmpty,
+                    onRetry = callbacks.onReload,
+                    empty = {
                         PharmEmptyState(
                             icon = PharmIcons.Reports,
                             title = s.reportsEmptyNoData,
@@ -93,7 +92,9 @@ fun ReportsContent(
                                 )
                             },
                         )
-                    else -> {
+                    },
+                    content = {
+                        val board = dashboard ?: return@PharmListBody
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
@@ -101,12 +102,12 @@ fun ReportsContent(
                         ) {
                             item("metrics") {
                                 ReportsMetricsRow(
-                                    summary = dashboard.summary,
+                                    summary = board.summary,
                                     monthProfit = state.monthProfit,
                                 )
                             }
-                            item("daily") { ReportsDailyBarChart(daily = dashboard.daily) }
-                            item("monthly") { ReportsMonthlyGroupedBars(monthly = dashboard.monthly) }
+                            item("daily") { ReportsDailyBarChart(daily = board.daily) }
+                            item("monthly") { ReportsMonthlyGroupedBars(monthly = board.monthly) }
                             item("top-and-slow") {
                                 if (stackTopAndSlow) {
                                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -123,10 +124,10 @@ fun ReportsContent(
                                     }
                                 }
                             }
-                            item("recent") { ReportsRecentSalesSection(recent = dashboard.recentSales) }
+                            item("recent") { ReportsRecentSalesSection(recent = board.recentSales) }
                         }
-                    }
-                }
+                    },
+                )
             }
         }
     }
@@ -134,7 +135,6 @@ fun ReportsContent(
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)
 }
 
-/** MANAGER view (ADR-0004): only the operational slow-drugs report. */
 @Composable
 private fun ReportsSlowDrugsOnlyContent(state: ReportsUiState, callbacks: ReportsCallbacks) {
     val t = pharmTokens
@@ -154,12 +154,7 @@ private fun ReportsSlowDrugsOnlyContent(state: ReportsUiState, callbacks: Report
                 actions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
             )
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                when {
-                    state.loading && pageIsEmpty ->
-                        PharmListSkeleton(modifier = Modifier.fillMaxSize())
-                    state.errorState != null && pageIsEmpty ->
-                        PharmErrorState(onRetry = callbacks.onReload)
-                    else ->
+                val slowDrugs: @Composable () -> Unit = {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
@@ -169,6 +164,14 @@ private fun ReportsSlowDrugsOnlyContent(state: ReportsUiState, callbacks: Report
                             }
                         }
                 }
+                PharmListBody(
+                    loading = state.loading,
+                    error = state.errorState,
+                    isEmpty = pageIsEmpty,
+                    onRetry = callbacks.onReload,
+                    empty = slowDrugs,
+                    content = slowDrugs,
+                )
             }
         }
     }

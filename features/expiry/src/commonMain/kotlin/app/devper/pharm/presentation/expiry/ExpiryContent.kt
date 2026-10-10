@@ -28,11 +28,10 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmModal
 import app.devper.pharm.ui.designsystem.PharmModalSize
 import app.devper.pharm.ui.i18n.pharmStrings
@@ -68,26 +67,32 @@ fun ExpiryContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty ->
-                PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.Expiry,
-                title = pharmStrings.expiryEmpty,
-            )
-            visible.isEmpty() -> PharmEmptyState(
-                icon = PharmIcons.Search,
-                title = pharmStrings.expirySearchNotFound,
-            )
-            else -> ExpiryTable(
-                lots = visible,
-                selected = state.selected,
-                allSelected = state.allVisibleSelected,
-                callbacks = callbacks,
-            )
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.Expiry,
+                    title = pharmStrings.expiryEmpty,
+                )
+            },
+            content = {
+                when {
+                    visible.isEmpty() -> PharmEmptyState(
+                    icon = PharmIcons.Search,
+                    title = pharmStrings.expirySearchNotFound,
+                )
+                    else -> ExpiryTable(
+                    lots = visible,
+                    selected = state.selected,
+                    allSelected = state.allVisibleSelected,
+                    callbacks = callbacks,
+                )
+                }
+            },
+        )
     }
 
     WriteoffConfirmDialog(
