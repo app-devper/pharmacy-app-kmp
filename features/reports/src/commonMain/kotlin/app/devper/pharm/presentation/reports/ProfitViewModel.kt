@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.presentation.reports.exception.ProfitUiStateError
@@ -31,8 +32,8 @@ class ProfitViewModel(
 
     init { reload() }
 
-    fun onDateRangeChange(fromMillis: Long?, toMillis: Long?) {
-        val next = current.dateRange.withFromMillis(fromMillis).withToMillis(toMillis)
+    fun onRangeChange(range: PharmDateRange) {
+        val next = current.dateRange.withRange(range)
         if (next == current.dateRange) return
         setState { copy(dateRange = next) }
         reload()

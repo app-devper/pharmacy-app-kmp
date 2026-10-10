@@ -13,7 +13,6 @@ import app.devper.pharm.ui.format.millisToBuddhistDisplay
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -27,11 +26,6 @@ internal fun MovementsListToolbar(
     modifier: Modifier = Modifier,
 ) {
     val s = pharmStrings
-    val range = PharmDateRange(
-        fromMillis = state.dateRange.fromMillis,
-        toMillis = state.dateRange.toMillis,
-    )
-
     PharmListToolbar(
         modifier = modifier,
         subtitle = s.movementsSubtitle,
@@ -43,11 +37,8 @@ internal fun MovementsListToolbar(
         compactControlsSharedRow = false,
         filters = {
             PharmDateRangeField(
-                range = range,
-                onRangeChange = { next ->
-                    if (next.fromMillis != range.fromMillis) callbacks.onFromMillisChange(next.fromMillis)
-                    if (next.toMillis != range.toMillis) callbacks.onToMillisChange(next.toMillis)
-                },
+                range = state.dateRange.range,
+                onRangeChange = callbacks.onRangeChange,
                 formatDate = { millis -> millisToBuddhistDisplay(millis, state.dateRange.tz) },
                 modifier = Modifier.widthIn(min = 220.dp),
             )

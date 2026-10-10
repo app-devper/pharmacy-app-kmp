@@ -18,10 +18,9 @@ fun SalesHistoryScreen(
         state = state,
         callbacks = SalesHistoryCallbacks(
             onQueryChange = viewModel::onQueryChange,
-            onFromMillisChange = viewModel::onFromMillisChange,
-            onToMillisChange = viewModel::onToMillisChange,
+            onRangeChange = viewModel::onRangeChange,
             onApplyFilter = viewModel::applyFilter,
-            onSelectRange = viewModel::onSelectRange,
+            onSelectPeriod = viewModel::onSelectPeriod,
             onOpenReceipt = viewModel::onViewBill,
             onStartReturn = viewModel::onStartReturn,
             onDismissError = viewModel::dismissError,

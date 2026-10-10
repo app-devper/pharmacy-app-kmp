@@ -35,7 +35,5 @@ interface SalesHistoryStrings {
     val salesHistoryLoadBillsFailed: String
     val salesHistoryLoadItemsFailed: String
     val salesHistorySubmitReturnFailed: String
-    val salesHistoryRangeToday: String
     val salesHistoryRange7d: String
-    val salesHistoryRangeMonth: String
 }

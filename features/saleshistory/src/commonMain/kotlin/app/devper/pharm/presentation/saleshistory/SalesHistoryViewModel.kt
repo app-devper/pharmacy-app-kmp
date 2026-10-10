@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.ui.format.QuickPeriod
+import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.param.sales.ReturnLineParam
 import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
@@ -25,17 +27,14 @@ class SalesHistoryViewModel(
 
     init { loadList() }
 
-    fun onFromChange(value: String) = setState { copy(dateRange = dateRange.withFrom(value)) }
-    fun onToChange(value: String) = setState { copy(dateRange = dateRange.withTo(value)) }
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
-    fun onFromMillisChange(millis: Long?) = setState { copy(dateRange = dateRange.withFromMillis(millis)) }
-    fun onToMillisChange(millis: Long?) = setState { copy(dateRange = dateRange.withToMillis(millis)) }
+    fun onRangeChange(range: PharmDateRange) = setState { copy(dateRange = dateRange.withRange(range)) }
 
     fun applyFilter() = loadList()
 
-    fun onSelectRange(from: String, to: String) {
-        setState { copy(dateRange = dateRange.withFrom(from).withTo(to)) }
+    fun onSelectPeriod(period: QuickPeriod) {
+        setState { copy(dateRange = dateRange.withPeriod(period)) }
         loadList()
     }
 

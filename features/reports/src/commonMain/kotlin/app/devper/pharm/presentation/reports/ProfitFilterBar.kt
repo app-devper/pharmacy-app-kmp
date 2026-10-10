@@ -14,16 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.devper.pharm.presentation.reports.internal.ProfitQuickPeriod
 import app.devper.pharm.ui.format.millisToBuddhistDisplay
-import app.devper.pharm.presentation.reports.internal.localized
-import app.devper.pharm.presentation.reports.internal.resolve
+import app.devper.pharm.ui.format.QuickPeriod
 import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
-import app.devper.pharm.ui.designsystem.PharmDateQuickPeriod
-import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.ui.designsystem.PharmDateRangeField
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
@@ -33,6 +29,8 @@ import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.pharmTokens
 
+private val PROFIT_PERIODS = listOf(QuickPeriod.Today, QuickPeriod.ThisWeek, QuickPeriod.ThisMonth, QuickPeriod.LastMonth)
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ProfitFilterBar(
@@ -41,22 +39,10 @@ internal fun ProfitFilterBar(
     modifier: Modifier = Modifier,
 ) {
     val t = pharmTokens
-    val range = PharmDateRange(
-        fromMillis = state.dateRange.fromMillis,
-        toMillis = state.dateRange.toMillis,
-    )
-    val s0 = pharmStrings
-    val quickPeriods = remember(todayLocalDate(state.dateRange.tz), s0) {
-        ProfitQuickPeriod.entries.map { period ->
-            val resolved = period.resolve(state.dateRange.tz)
-            PharmDateQuickPeriod(
-                label = period.localized(s0),
-                fromMillis = resolved.fromMillis,
-                toMillis = resolved.toMillis,
-            )
-        }
-    }
     val s = pharmStrings
+    val quickPeriods = remember(todayLocalDate(state.dateRange.tz), s) {
+        state.dateRange.quickPeriods(PROFIT_PERIODS, s)
+    }
     val sortChips = remember(s) {
         ProfitSort.entries.map { PharmFilterChip(id = it.name, label = it.label(s)) }
     }
@@ -101,10 +87,8 @@ internal fun ProfitFilterBar(
                 itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 PharmDateRangeField(
-                    range = range,
-                    onRangeChange = { next ->
-                        callbacks.onDateRangeChange(next.fromMillis, next.toMillis)
-                    },
+                    range = state.dateRange.range,
+                    onRangeChange = callbacks.onRangeChange,
                     formatDate = { millis -> millisToBuddhistDisplay(millis, state.dateRange.tz) },
                     quickPeriods = quickPeriods,
                     modifier = Modifier.widthIn(min = 220.dp),
