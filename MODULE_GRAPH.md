@@ -408,6 +408,15 @@ details in git log.
   aborts on network errors (was inflating `attempts++` on every queued
   sale); deleted unused `GetSaleSummaryUseCase` +
   `MarkOfflineSaleFailedUseCase`.
+- **Active cart module**: the cart's Sales rules (repricing on customer
+  change, line-discount cap, alternative-unit factor, park slots) move
+  from `:core:data`'s `CartRepositoryImpl` into `Cart` in
+  `:core:domain/cart/`. Its storage is the `CartStore` seam with two
+  adapters: `ParkedCartStorage` (settings) and `InMemoryCartStore`
+  (`:features:test-fixtures`). The 13 one-line cart use cases,
+  `CartStateProvider`, `ParkedCartsProvider` and `FakeCartRepository`
+  are deleted; sell view models take `Cart`, and their tests assert on
+  its state.
 
 ## Out of scope (deferred)
 

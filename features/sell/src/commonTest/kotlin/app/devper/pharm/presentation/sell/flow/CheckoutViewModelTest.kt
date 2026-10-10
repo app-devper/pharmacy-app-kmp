@@ -15,17 +15,15 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.KyCaptureFields
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
-import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
-import app.devper.pharm.domain.repository.FakeCartRepository
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeKyRepository
 import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeSaleRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
-import app.devper.pharm.domain.usecase.sales.DismissReceiptUseCase
-import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -75,7 +73,7 @@ class CheckoutViewModelTest {
 
     private data class Bundle(
         val vm: CheckoutViewModel,
-        val cart: FakeCartRepository,
+        val cart: Cart,
         val sales: FakeSaleRepository,
         val ky: FakeKyRepository,
         val offline: FakeOfflineSaleQueue,
@@ -84,7 +82,7 @@ class CheckoutViewModelTest {
 
     private fun newVm(
         dispatchers: AppDispatchers,
-        cart: FakeCartRepository = FakeCartRepository(),
+        cart: Cart = testCart(),
         sales: FakeSaleRepository = FakeSaleRepository(),
         ky: FakeKyRepository = FakeKyRepository(),
         offline: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
@@ -92,12 +90,10 @@ class CheckoutViewModelTest {
         bus: StockChangeBus = StockChangeBus(),
     ): Bundle {
         val vm = CheckoutViewModel(
-            cartState = CartStateProvider(cart),
+            cart = cart,
             settings = SettingsProvider(settings),
             timeZoneProvider = app.devper.pharm.domain.observer.testTimeZoneProvider(),
             checkout = CheckoutUseCase(cart, sales, pendingSalesOf(offline, sales), dispatchers),
-            dismissReceiptUseCase = DismissReceiptUseCase(cart),
-            setCashReceived = SetCashReceivedUseCase(cart),
             receiptPrinter = StubReceiptPrinter(),
         )
         return Bundle(vm, cart, sales, ky, offline, bus)
@@ -115,7 +111,7 @@ class CheckoutViewModelTest {
     fun canCheckout_true_even_when_tender_insufficient() = runVmTest { dispatchers ->
         val (vm) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(qty = 2)), initialReceived = "5"),
+            testCart(items = listOf(line(qty = 2)), received = "5"),
         )
         advanceUntilIdle()
         assertFalse(vm.state.value.cartIsEmpty)
@@ -126,7 +122,7 @@ class CheckoutViewModelTest {
     fun canCheckout_true_when_cart_non_empty() = runVmTest { dispatchers ->
         val (vm) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            testCart(items = listOf(line()), received = "100"),
         )
         advanceUntilIdle()
         assertFalse(vm.state.value.cartIsEmpty)
@@ -137,7 +133,7 @@ class CheckoutViewModelTest {
     fun submit_no_op_when_received_below_total() = runVmTest { dispatchers ->
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(qty = 2)), initialReceived = "5"),
+            testCart(items = listOf(line(qty = 2)), received = "5"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -148,7 +144,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun openPayment_sets_flag_when_cart_has_items() = runVmTest { dispatchers ->
-        val (vm) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.openPayment()
         assertTrue(vm.state.value.paymentOpen)
@@ -164,7 +160,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun closePayment_resets_flag() = runVmTest { dispatchers ->
-        val (vm) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.openPayment()
         vm.closePayment()
@@ -173,7 +169,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun submitExact_sets_received_to_total_and_commits() = runVmTest { dispatchers ->
-        val cart = FakeCartRepository(initialItems = listOf(line(qty = 2)))
+        val cart = testCart(items = listOf(line(qty = 2)))
         val (vm, _, sales) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
         vm.openPayment()
@@ -188,7 +184,7 @@ class CheckoutViewModelTest {
 
     @Test
     fun submit_reads_fresh_received_from_cart_state() = runVmTest { dispatchers ->
-        val cart = FakeCartRepository(initialItems = listOf(line(qty = 2)))
+        val cart = testCart(items = listOf(line(qty = 2)))
         val (vm, _, sales) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
         cart.setCashReceived("500")
@@ -203,7 +199,7 @@ class CheckoutViewModelTest {
     fun checkout_success_closes_payment_dialog() = runVmTest { dispatchers ->
         val (vm) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            testCart(items = listOf(line()), received = "100"),
         )
         advanceUntilIdle()
         vm.openPayment()
@@ -225,10 +221,10 @@ class CheckoutViewModelTest {
 
     @Test
     fun submit_happy_path_no_ky_commits_sale() = runVmTest { dispatchers ->
-        val cart = FakeCartRepository(
-            initialItems = listOf(line(qty = 2)),
-            initialCustomer = customer(),
-            initialReceived = "100",
+        val cart = testCart(
+            items = listOf(line(qty = 2)),
+            customer = customer(),
+            received = "100",
         )
         val (vm, _, sales, _, _) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
@@ -239,7 +235,7 @@ class CheckoutViewModelTest {
         assertEquals(1, sales.lastCheckout!!.items.size)
         assertEquals(2, sales.lastCheckout!!.items[0].qty)
 
-        assertNotNull(cart.lastCommitReceipt)
+        assertNotNull(cart.state.value.lastReceipt)
         assertTrue(cart.state.value.active.items.isEmpty())
 
         assertFalse(vm.state.value.checkingOut)
@@ -250,7 +246,7 @@ class CheckoutViewModelTest {
     fun submit_serializes_before_post_so_offline_replay_has_payload() = runVmTest { dispatchers ->
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            testCart(items = listOf(line()), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -264,7 +260,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -282,7 +278,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10", "ky11"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -312,7 +308,7 @@ class CheckoutViewModelTest {
     fun openKyPrecapture_is_noop_without_ky_lines() = runVmTest { dispatchers ->
         val (vm) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            testCart(items = listOf(line()), received = "100"),
         )
         advanceUntilIdle()
         vm.openKyPrecapture()
@@ -326,7 +322,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.openKyPrecapture()
@@ -346,9 +342,9 @@ class CheckoutViewModelTest {
     fun cart_change_invalidates_precaptured_ky_but_keeps_the_fields_for_review() = runVmTest { dispatchers ->
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val otherLine = line(drug = drug(id = "d2", name = "Other"))
-        val cart = FakeCartRepository(
-            initialItems = listOf(line(drug = kyDrug), otherLine),
-            initialReceived = "100",
+        val cart = testCart(
+            items = listOf(line(drug = kyDrug), otherLine),
+            received = "100",
         )
         val (vm) = newVm(dispatchers, cart)
         advanceUntilIdle()
@@ -372,7 +368,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -391,7 +387,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -411,7 +407,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales, ky) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -433,7 +429,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -452,7 +448,7 @@ class CheckoutViewModelTest {
         val kyDrug = drug(id = "kd", reportTypes = listOf("ky10"))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = kyDrug)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -473,7 +469,7 @@ class CheckoutViewModelTest {
         )
         val (vm, _, sales, ky) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line(drug = kyDrug)), initialReceived = "100"),
+            cart = testCart(items = listOf(line(drug = kyDrug)), received = "100"),
             settings = settings,
         )
         advanceUntilIdle()
@@ -482,7 +478,6 @@ class CheckoutViewModelTest {
 
         assertNull(vm.state.value.kyCapturePending)
         assertNotNull(sales.lastCheckout)
-        // The shop's skip is recorded by the server, not claimed as the cashier's.
         assertEquals(false, sales.lastCheckout!!.kySkippedByCashier)
         assertNull(sales.lastCheckout!!.ky)
     }
@@ -492,7 +487,7 @@ class CheckoutViewModelTest {
         val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = lowStock, qty = 3)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -512,7 +507,7 @@ class CheckoutViewModelTest {
         val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = lowStock, qty = 3)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -528,7 +523,7 @@ class CheckoutViewModelTest {
     @Test
     fun changed_cart_before_oversell_confirmation_requires_review() = runVmTest { dispatchers ->
         val lowStock = drug(stock = Quantity(1))
-        val cart = FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100")
+        val cart = testCart(items = listOf(line(drug = lowStock, qty = 3)), received = "100")
         val (vm, _, sales) = newVm(dispatchers, cart)
         advanceUntilIdle()
 
@@ -550,7 +545,7 @@ class CheckoutViewModelTest {
         val lowStock = drug(stock = Quantity(1))
         val (vm, _, sales) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(drug = lowStock, qty = 3)), initialReceived = "100"),
+            testCart(items = listOf(line(drug = lowStock, qty = 3)), received = "100"),
         )
         advanceUntilIdle()
         vm.submit()
@@ -568,7 +563,7 @@ class CheckoutViewModelTest {
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
         val (vm, cart, _, _, offline) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = sales,
         )
         advanceUntilIdle()
@@ -577,7 +572,7 @@ class CheckoutViewModelTest {
 
         assertEquals(1, offline.entries.value.size)
         assertTrue(offline.added.single().payloadJson.contains("client_request_id"))
-        assertTrue(cart.clearCalled)
+        assertTrue(cart.current.isEmpty)
 
         assertIs<CheckoutUiStateError.OfflineSaved>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
@@ -587,7 +582,7 @@ class CheckoutViewModelTest {
     fun offline_storage_failure_keeps_cart_and_payment_open() = runVmTest { dispatchers ->
         val (vm, cart, _, _, offline) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host")),
             offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
         )
@@ -597,7 +592,7 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
 
         assertTrue(offline.entries.value.isEmpty())
-        assertFalse(cart.clearCalled)
+        assertFalse(cart.current.isEmpty)
         assertFalse(vm.state.value.cartIsEmpty)
         assertTrue(vm.state.value.paymentOpen)
         assertFalse(vm.state.value.checkingOut)
@@ -609,7 +604,7 @@ class CheckoutViewModelTest {
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
         val (vm) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = sales,
             offline = FakeOfflineSaleQueue(putThrows = RuntimeException("disk full")),
         )
@@ -627,7 +622,7 @@ class CheckoutViewModelTest {
     @Test
     fun changed_checkout_after_offline_storage_failure_uses_new_client_request_id() = runVmTest { dispatchers ->
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
-        val cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100")
+        val cart = testCart(items = listOf(line()), received = "100")
         val (vm) = newVm(
             dispatchers,
             cart = cart,
@@ -652,7 +647,7 @@ class CheckoutViewModelTest {
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("validation: missing field"))
         val (vm, cart, _, _, offline) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = sales,
         )
         advanceUntilIdle()
@@ -660,7 +655,7 @@ class CheckoutViewModelTest {
         advanceUntilIdle()
 
         assertEquals(0, offline.entries.value.size)
-        assertFalse(cart.clearCalled)
+        assertFalse(cart.current.isEmpty)
         assertIs<CheckoutUiStateError.CheckoutFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.checkingOut)
     }
@@ -670,7 +665,7 @@ class CheckoutViewModelTest {
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("validation: missing field"))
         val (vm) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = sales,
         )
         advanceUntilIdle()
@@ -687,7 +682,7 @@ class CheckoutViewModelTest {
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("Failed to connect to host"))
         val (vm) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = sales,
         )
         advanceUntilIdle()
@@ -704,7 +699,7 @@ class CheckoutViewModelTest {
         val sales = FakeSaleRepository(checkoutThrows = RuntimeException("boom"))
         val (vm) = newVm(
             dispatchers,
-            cart = FakeCartRepository(initialItems = listOf(line()), initialReceived = "100"),
+            cart = testCart(items = listOf(line()), received = "100"),
             sales = sales,
         )
         advanceUntilIdle()
@@ -716,16 +711,15 @@ class CheckoutViewModelTest {
     }
 
     @Test
-    fun dismissReceipt_invokes_dismissReceiptUseCase() = runVmTest { dispatchers ->
+    fun dismissReceipt_dismisses_the_receipt() = runVmTest { dispatchers ->
 
-        val cart = FakeCartRepository(initialReceipt = Sale("s1", "INV-001", Money(10.0), Money(0.0), Money(0.0), emptyList()))
+        val cart = testCart(receipt = Sale("s1", "INV-001", Money(10.0), Money(0.0), Money(0.0), emptyList()))
         val (vm) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
 
         assertNotNull(cart.state.value.lastReceipt)
         vm.dismissReceipt()
         advanceUntilIdle()
-        assertTrue(cart.dismissReceiptCalled)
         assertNull(cart.state.value.lastReceipt)
     }
 
