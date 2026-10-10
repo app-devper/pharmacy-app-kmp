@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.domain.model.LotChoice
 import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 
@@ -112,7 +113,6 @@ class StockCountFormViewModel(
             submit()
             return
         }
-        // Counted increases of lot-tracked drugs must name their lot (ADR-0007).
         setState { copy(saving = true) }
         launchResult(
             block = {
@@ -121,9 +121,7 @@ class StockCountFormViewModel(
                     if (failure != null) return@mapNotNull null
                     listLots(id).fold(
                         onSuccess = { all ->
-                            val lots = all.filterNot { it.writtenOff }.sortedByDescending { it.expiryDate }
-                            if (lots.isEmpty()) null
-                            else CountLotLine(drugId = id, drugName = name, delta = delta, lots = lots, choice = lots.first().id)
+                            LotChoice.forIncrease(all)?.let { CountLotLine(drugId = id, drugName = name, delta = delta, lot = it) }
                         },
                         onFailure = { e -> failure = e; null },
                     )
@@ -138,9 +136,9 @@ class StockCountFormViewModel(
         )
     }
 
-    fun onLotChoice(drugId: String, choice: String) = patchLotLine(drugId) { copy(choice = choice) }
-    fun onNewLotNumber(drugId: String, value: String) = patchLotLine(drugId) { copy(newLotNumber = value) }
-    fun onNewLotExpiry(drugId: String, value: String) = patchLotLine(drugId) { copy(newLotExpiry = value) }
+    fun onLotChoice(drugId: String, choice: String) = patchLotLine(drugId) { copy(lot = lot.choose(choice)) }
+    fun onNewLotNumber(drugId: String, value: String) = patchLotLine(drugId) { copy(lot = lot.withNewLotNumber(value)) }
+    fun onNewLotExpiry(drugId: String, value: String) = patchLotLine(drugId) { copy(lot = lot.withNewLotExpiry(value)) }
     fun cancelLotStep() = setState { copy(lotStep = null) }
 
     fun confirmLotStep() {

@@ -1,6 +1,6 @@
 package app.devper.pharm.presentation.stock
 
-import kotlinx.datetime.LocalDate
+import app.devper.pharm.domain.model.LotChoice
 import app.devper.pharm.domain.model.LotTarget
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.model.AdjustmentReason
@@ -13,17 +13,8 @@ data class AdjustmentDraft(
     val absDelta: String = "",
     val reason: AdjustmentReason = AdjustmentReason.Recount,
     val note: String = "",
-    /** Lot id for an increase, or [NEW_LOT]. */
-    val lotChoice: String = "",
-    val newLotNumber: String = "",
-    /** YYYY-MM-DD */
-    val newLotExpiry: String = "",
 ) {
     val absDeltaValid: Boolean get() = (absDelta.toIntOrNull() ?: 0) > 0
-
-    companion object {
-        const val NEW_LOT = "new"
-    }
 }
 
 enum class AdjustmentSign { Increase, Decrease }
@@ -32,8 +23,8 @@ data class StockAdjustmentsUiState(
     val drugId: String = "",
     val drugName: String = "",
     val history: List<StockAdjustment> = emptyList(),
-    /** Lots an increase can go into (not written off), latest expiry first. */
-    val lots: List<DrugLot> = emptyList(),
+    val lot: LotChoice? = null,
+    val lotsUnknown: Boolean = false,
     override val loading: Boolean = false,
     val addFormOpen: Boolean = false,
     val draft: AdjustmentDraft = AdjustmentDraft(),
@@ -45,23 +36,16 @@ data class StockAdjustmentsUiState(
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
+    val lots: List<DrugLot> get() = lot?.lots.orEmpty()
+
     val canSubmitDraft: Boolean
-        get() = !saving && draft.absDeltaValid && lotTarget().let { lotNeeded == false || it != null }
+        get() = !saving && draft.absDeltaValid &&
+            !(draft.sign == AdjustmentSign.Increase && lotsUnknown) &&
+            (!lotNeeded || lotTarget() != null)
 
-    /** An increase of a lot-tracked drug must name its lot (ADR-0007). */
-    val lotNeeded: Boolean get() = draft.sign == AdjustmentSign.Increase && lots.isNotEmpty()
+    val lotNeeded: Boolean get() = draft.sign == AdjustmentSign.Increase && lot != null
 
-    fun lotTarget(): LotTarget? {
-        if (!lotNeeded) return null
-        return when (draft.lotChoice) {
-            "" -> null
-            AdjustmentDraft.NEW_LOT -> {
-                val expiry = runCatching { LocalDate.parse(draft.newLotExpiry.trim()) }.getOrNull()
-                if (draft.newLotNumber.isBlank() || expiry == null) null else LotTarget.New(draft.newLotNumber.trim(), expiry)
-            }
-            else -> LotTarget.Existing(draft.lotChoice)
-        }
-    }
+    fun lotTarget(): LotTarget? = if (lotNeeded) lot?.target else null
 
     val canAttemptSubmit: Boolean get() = !saving
 
