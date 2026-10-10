@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.ui.designsystem.PharmLotChoiceField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -368,38 +369,18 @@ private fun AdjustmentQuantityField(
     }
 }
 
-/** Where an increase of a lot-tracked drug goes (pharmacy-api ADR-0007). */
 @Composable
 private fun AdjustmentLotChoice(
     state: StockAdjustmentsUiState,
     callbacks: StockAdjustmentsCallbacks,
 ) {
-    val strings = pharmStrings
-    FormField(label = strings.stockIncreaseLot) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            PharmSingleSelectChips(
-                chips = state.lots.map { lot ->
-                    PharmFilterChip(id = lot.id, label = listOfNotNull(lot.lotNumber, lot.expiryDate?.toString()).joinToString(" · "))
-                } + PharmFilterChip(id = AdjustmentDraft.NEW_LOT, label = strings.stockNewLot),
-                activeId = state.draft.lotChoice,
-                onSelect = callbacks.onLotChoice,
-            )
-            if (state.draft.lotChoice == AdjustmentDraft.NEW_LOT) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    PharmTextField(
-                        value = state.draft.newLotNumber,
-                        onValueChange = callbacks.onNewLotNumber,
-                        placeholder = strings.importsFormHeaderLotNumber,
-                        modifier = Modifier.weight(1f),
-                    )
-                    PharmTextField(
-                        value = state.draft.newLotExpiry,
-                        onValueChange = callbacks.onNewLotExpiry,
-                        placeholder = "YYYY-MM-DD",
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-        }
+    val lot = state.lot ?: return
+    FormField(label = pharmStrings.stockIncreaseLot) {
+        PharmLotChoiceField(
+            lot = lot,
+            onChoose = callbacks.onLotChoice,
+            onNewLotNumber = callbacks.onNewLotNumber,
+            onNewLotExpiry = callbacks.onNewLotExpiry,
+        )
     }
 }

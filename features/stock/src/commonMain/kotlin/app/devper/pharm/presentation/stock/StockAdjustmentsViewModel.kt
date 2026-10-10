@@ -1,5 +1,7 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.domain.model.LotChoice
+import app.devper.pharm.presentation.stock.exception.DrugLotsUiStateError
 import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.presentation.stock.exception.StockUiStateError
@@ -44,24 +46,18 @@ class StockAdjustmentsViewModel(
         )
         launchResult(
             block = { listLots(id) },
-            onSuccess = { lots ->
-                val usable = lots.filterNot { it.writtenOff }.sortedByDescending { it.expiryDate }
-                setState { copy(lots = usable, draft = draft.withDefaultLot(usable)) }
-            },
-            onFailure = { /* the form falls back to requiring nothing; the backend assumes a lot */ },
+            onSuccess = { lots -> setState { copy(lot = LotChoice.forIncrease(lots), lotsUnknown = false) } },
+            onFailure = { e -> setState { copy(lotsUnknown = true, errorState = DrugLotsUiStateError.LoadLotsFailed(e)) } },
         )
     }
 
-    private fun AdjustmentDraft.withDefaultLot(lots: List<app.devper.pharm.domain.model.DrugLot>) =
-        if (lotChoice.isNotEmpty()) this else copy(lotChoice = lots.firstOrNull()?.id ?: AdjustmentDraft.NEW_LOT)
-
     fun toggleAddForm() = setState {
-        copy(addFormOpen = !addFormOpen, draft = AdjustmentDraft().withDefaultLot(lots))
+        copy(addFormOpen = !addFormOpen, draft = AdjustmentDraft(), lot = lot?.let { LotChoice.forIncrease(it.lots) })
     }
 
-    fun onLotChoice(v: String) = patch { copy(lotChoice = v) }
-    fun onNewLotNumber(v: String) = patch { copy(newLotNumber = v) }
-    fun onNewLotExpiry(v: String) = patch { copy(newLotExpiry = v) }
+    fun onLotChoice(v: String) = setState { copy(lot = lot?.choose(v)) }
+    fun onNewLotNumber(v: String) = setState { copy(lot = lot?.withNewLotNumber(v)) }
+    fun onNewLotExpiry(v: String) = setState { copy(lot = lot?.withNewLotExpiry(v)) }
 
     fun onSign(v: AdjustmentSign) = patch { copy(sign = v) }
     fun onAbsDelta(v: String) = patch { copy(absDelta = v.filter { c -> c.isDigit() }) }
@@ -87,7 +83,7 @@ class StockAdjustmentsViewModel(
                 )
             },
             onSuccess = {
-                setState { copy(saving = false, addFormOpen = false, draft = AdjustmentDraft().withDefaultLot(lots)) }
+                setState { copy(saving = false, addFormOpen = false, draft = AdjustmentDraft()) }
                 reload()
             },
             onFailure = { e -> setState { copy(saving = false, errorState = CommonUiStateError.SaveFailed(e)) } },
