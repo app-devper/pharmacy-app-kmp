@@ -33,7 +33,6 @@ data class ProfitUiState(
     val errorState: AppException? = null,
 ) : LoadableUiState<ProfitUiState> {
 
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 

@@ -4,6 +4,7 @@ import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
 
 data class UsersListCallbacks(
+    val onReload: () -> Unit = {},
     val onSearch: (String) -> Unit,
     val onAddUser: () -> Unit,
     val onEditUser: (UmUser) -> Unit,

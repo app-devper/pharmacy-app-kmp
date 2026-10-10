@@ -25,10 +25,9 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -94,22 +93,26 @@ fun ReorderSuggestionsContent(
         ) {
             PharmListResultLine(total = state.suggestions.size, noun = s.planningCountNoun)
             PharmDivider()
-            when {
-                state.loading && pageIsEmpty -> PharmListSkeleton()
-                state.errorState != null && pageIsEmpty ->
-                    PharmErrorState(onRetry = callbacks.onReload)
-                pageIsEmpty ->
+            PharmListBody(
+                loading = state.loading,
+                error = state.errorState,
+                isEmpty = pageIsEmpty,
+                onRetry = callbacks.onReload,
+                empty = {
                     PharmEmptyState(
                         icon = PharmIcons.Reports,
                         title = s.planningReorderEmptyTitle,
                         subtitle = s.planningReorderEmpty,
                     )
-                else -> ReorderSuggestionsTable(
-                    suggestions = state.suggestions,
-                    draftDrugIds = state.draftDrugIds,
-                    callbacks = callbacks,
-                )
-            }
+                },
+                content = {
+                    ReorderSuggestionsTable(
+                        suggestions = state.suggestions,
+                        draftDrugIds = state.draftDrugIds,
+                        callbacks = callbacks,
+                    )
+                },
+            )
         }
     }
 

@@ -408,6 +408,12 @@ details in git log.
   aborts on network errors (was inflating `attempts++` on every queued
   sale); deleted unused `GetSaleSummaryUseCase` +
   `MarkOfflineSaleFailedUseCase`.
+- **List load states**: `PharmListBody` (`:core:ui/designsystem/`) owns
+  the loading / failed / empty / content decision for every list page
+  (`listBodyOf`, unit-tested once) and always offers retry on a failed
+  empty page; the 17 hand-written `when` ladders in feature `*Content`
+  files are gone, and each list's callbacks carry `onReload`. The unused
+  `LoadableUiState.withLoading` (23 overrides, no callers) is removed.
 
 ## Out of scope (deferred)
 

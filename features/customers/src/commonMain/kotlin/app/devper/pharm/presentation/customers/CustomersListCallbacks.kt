@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.customers
 import app.devper.pharm.domain.model.Customer
 
 data class CustomersListCallbacks(
+    val onReload: () -> Unit = {},
     val onSearchChange: (String) -> Unit = {},
     val onOpenDetail: (Customer) -> Unit = {},
     val onOpenEdit: (Customer) -> Unit = {},

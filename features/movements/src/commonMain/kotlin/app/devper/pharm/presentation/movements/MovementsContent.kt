@@ -10,11 +10,10 @@ import app.devper.pharm.presentation.movements.i18n.localizeMovements
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 
@@ -35,21 +34,23 @@ fun MovementsContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty ->
-                PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.Movements,
-                title = if (state.hasActiveFilters) {
-                    pharmStrings.movementsEmptySearching
-                } else {
-                    pharmStrings.movementsEmpty
-                },
-            )
-            else -> MovementsTable(state = state, callbacks = callbacks)
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.Movements,
+                    title = if (state.hasActiveFilters) {
+                        pharmStrings.movementsEmptySearching
+                    } else {
+                        pharmStrings.movementsEmpty
+                    },
+                )
+            },
+            content = { MovementsTable(state = state, callbacks = callbacks) },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeMovements(pharmStrings), onDismiss = callbacks.onDismissError)

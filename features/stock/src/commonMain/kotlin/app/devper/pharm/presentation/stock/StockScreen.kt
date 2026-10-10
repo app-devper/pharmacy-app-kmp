@@ -53,6 +53,7 @@ fun StockScreen(
             onOpenReorderSuggestions = onOpenReorderSuggestions,
             onOpenExpiry = onOpenExpiry,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }

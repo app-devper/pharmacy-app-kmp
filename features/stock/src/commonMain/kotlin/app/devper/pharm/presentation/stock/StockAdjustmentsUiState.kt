@@ -13,10 +13,8 @@ data class AdjustmentDraft(
     val absDelta: String = "",
     val reason: AdjustmentReason = AdjustmentReason.Recount,
     val note: String = "",
-    /** Lot id for an increase, or [NEW_LOT]. */
     val lotChoice: String = "",
     val newLotNumber: String = "",
-    /** YYYY-MM-DD */
     val newLotExpiry: String = "",
 ) {
     val absDeltaValid: Boolean get() = (absDelta.toIntOrNull() ?: 0) > 0
@@ -32,7 +30,6 @@ data class StockAdjustmentsUiState(
     val drugId: String = "",
     val drugName: String = "",
     val history: List<StockAdjustment> = emptyList(),
-    /** Lots an increase can go into (not written off), latest expiry first. */
     val lots: List<DrugLot> = emptyList(),
     override val loading: Boolean = false,
     val addFormOpen: Boolean = false,
@@ -41,14 +38,12 @@ data class StockAdjustmentsUiState(
     val errorState: AppException? = null,
 ) : LoadableUiState<StockAdjustmentsUiState> {
 
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val canSubmitDraft: Boolean
         get() = !saving && draft.absDeltaValid && lotTarget().let { lotNeeded == false || it != null }
 
-    /** An increase of a lot-tracked drug must name its lot (ADR-0007). */
     val lotNeeded: Boolean get() = draft.sign == AdjustmentSign.Increase && lots.isNotEmpty()
 
     fun lotTarget(): LotTarget? {

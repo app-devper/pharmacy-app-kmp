@@ -29,6 +29,7 @@ fun ExpiryScreen(
             onDismissResult = viewModel::dismissResult,
             onExportExcel = onExportExcel,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }
