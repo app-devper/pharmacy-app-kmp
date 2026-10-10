@@ -21,6 +21,8 @@ import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.testDispatchers
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.InMemoryCartStore
 import app.devper.pharm.domain.model.ActiveCart
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
@@ -32,12 +34,8 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ParkedCart
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.sales.AddCartItemParam
 import app.devper.pharm.domain.param.sales.CheckoutParam
-import app.devper.pharm.domain.param.sales.SetCartQtyParam
-import app.devper.pharm.domain.param.sales.SetLineDiscountParam
 import app.devper.pharm.domain.param.sales.VoidSaleParam
-import app.devper.pharm.domain.repository.sales.CartRepository
 import app.devper.pharm.domain.repository.sales.SaleRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,7 +57,7 @@ class CheckoutUseCaseTest {
     )
 
     private fun useCase(active: ActiveCart, sales: FakeSales) =
-        CheckoutUseCase(FakeCart(active), sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers())
+        CheckoutUseCase(cartOf(active), sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers())
 
     private fun cart(vararg lines: CartLine, received: String = "100") =
         ActiveCart(items = lines.toList(), cashReceived = received)
@@ -137,7 +135,7 @@ class CheckoutUseCaseTest {
     @Test
     fun success_commits_receipt_to_cart() = runTest {
         val sales = FakeSales()
-        val fakeCart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
+        val fakeCart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 2)))
         val outcome = CheckoutUseCase(fakeCart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers()).invoke(received = Money(100.0)).getOrThrow()
         assertTrue(outcome is CheckoutOutcome.Success)
         assertEquals(sales.sale.id, fakeCart.committed?.id)
@@ -148,7 +146,7 @@ class CheckoutUseCaseTest {
         val boom = RuntimeException("server rejected checkout")
         val sales = FakeSales(failWith = boom)
         val result = CheckoutUseCase(
-            FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1))),
+            cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1))),
             sales,
             pendingSalesOf(FakeOfflineSaleQueue()),
             testDispatchers(),
@@ -161,7 +159,7 @@ class CheckoutUseCaseTest {
     @Test
     fun network_failure_clears_cart_only_after_queue_accepts_payload() = runTest {
         val active = cart(CartLine(drug = drug("a", stock = 10), qty = 1))
-        val cart = FakeCart(active)
+        val cart = cartOf(active)
         val queue = FakeOfflineSaleQueue()
         val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
         val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
@@ -175,7 +173,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun ky_capture_travels_with_the_sale_even_when_it_is_queued() = runTest {
-        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
         val capture = SaleKyCapture(ky11 = KyCaptureFields(ky11BuyerName = "A", ky11Purpose = "cough", ky11Pharmacist = "P"))
         val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
@@ -188,7 +186,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun a_5xx_at_checkout_keeps_the_sale_pending_as_replay_would() = runTest {
-        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
         val sales = FakeSales(failWith = ServerException("Server error (502)", statusCode = 502))
         val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
@@ -199,7 +197,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun the_transports_network_error_keeps_the_sale_pending_whatever_its_cause() = runTest {
-        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
         val sales = FakeSales(failWith = NetworkException(cause = IllegalStateException("engine closed")))
         val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
@@ -209,7 +207,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun a_4xx_at_checkout_is_the_server_refusing_the_sale() = runTest {
-        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
         val refusal = ServerException("HTTP error (400)", statusCode = 400)
         val result = CheckoutUseCase(cart, FakeSales(failWith = refusal), pendingSalesOf(queue), testDispatchers())
@@ -221,7 +219,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun identity_outage_keeps_the_sale_pending_like_a_network_failure() = runTest {
-        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val queue = FakeOfflineSaleQueue()
         val sales = FakeSales(failWith = IdentityUnavailableException())
         val result = CheckoutUseCase(cart, sales, pendingSalesOf(queue), testDispatchers())
@@ -235,7 +233,7 @@ class CheckoutUseCaseTest {
     @Test
     fun queue_failure_preserves_cart_and_surfaces_failure() = runTest {
         val active = cart(CartLine(drug = drug("a", stock = 10), qty = 1))
-        val cart = FakeCart(active)
+        val cart = cartOf(active)
         val error = RuntimeException("storage full")
         val result = CheckoutUseCase(cart, FakeSales(failWith = RuntimeException("Failed to connect to host")), pendingSalesOf(FakeOfflineSaleQueue(putThrows = error)), testDispatchers())
             .invoke(Money(100.0))
@@ -246,7 +244,7 @@ class CheckoutUseCaseTest {
 
     @Test
     fun network_and_queue_failure_retry_reuses_request_id() = runTest {
-        val cart = FakeCart(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
         val sales = FakeSales(failWith = RuntimeException("Failed to connect to host"))
         val queueFailure = RuntimeException("storage full")
         val checkout = CheckoutUseCase(cart, sales, pendingSalesOf(FakeOfflineSaleQueue(putThrows = queueFailure)), testDispatchers())
@@ -262,12 +260,12 @@ class CheckoutUseCaseTest {
     @Test
     fun changed_cart_after_oversell_prompt_is_not_sold_on_confirmation() = runTest {
         val initial = cart(CartLine(drug = drug("a", stock = 1), qty = 3))
-        val fakeCart = FakeCart(initial)
+        val fakeCart = cartOf(initial)
         val sales = FakeSales()
         val checkout = CheckoutUseCase(fakeCart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers())
 
         assertTrue(checkout.invoke(Money(100.0)).getOrThrow() is CheckoutOutcome.NeedsOversellConfirm)
-        fakeCart.replaceActive(cart(CartLine(drug = drug("a", stock = 1), qty = 4)))
+        fakeCart.setQty(CartLineKey("a", null), 4)
         val outcome = checkout.invoke(Money(100.0), allowOversell = true).getOrThrow()
 
         assertEquals(CheckoutOutcome.CartChanged, outcome)
@@ -302,10 +300,12 @@ class CheckoutUseCaseTest {
     @Test
     fun successful_sale_clears_request_identity_for_next_sale() = runTest {
         val sales = FakeSales()
-        val checkout = useCase(cart(CartLine(drug = drug("a", stock = 10), qty = 1)), sales)
+        val shopCart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val checkout = CheckoutUseCase(shopCart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers())
 
         checkout.invoke(Money(100.0))
         val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
+        shopCart.add(drug("a", stock = 10))
         checkout.invoke(Money(100.0))
 
         assertNotEquals(firstRequestId, sales.lastParam?.clientRequestId)
@@ -313,32 +313,9 @@ class CheckoutUseCaseTest {
 
 }
 
-private class FakeCart(active: ActiveCart) : CartRepository {
-    private val _state = MutableStateFlow(CartState(active = active))
-    override val state: StateFlow<CartState> = _state.asStateFlow()
-    override val parkedSlots: StateFlow<List<ParkedCart?>> = MutableStateFlow<List<ParkedCart?>>(emptyList()).asStateFlow()
+private fun cartOf(active: ActiveCart): Cart = Cart(InMemoryCartStore(active))
 
-    var committed: Sale? = null
-        private set
-
-    fun replaceActive(active: ActiveCart) { _state.value = CartState(active = active) }
-
-    override fun commitReceipt(sale: Sale) { committed = sale }
-
-    override fun add(param: AddCartItemParam) {}
-    override fun setQty(param: SetCartQtyParam) {}
-    override fun setLineDiscount(param: SetLineDiscountParam) {}
-    override fun remove(key: CartLineKey) {}
-    override fun selectCustomer(customer: Customer) {}
-    override fun clearCustomer() {}
-    override fun setCartDiscount(discount: CartDiscount) {}
-    override fun setCashReceived(value: String) {}
-    override fun dismissReceipt() {}
-    override fun clear() { _state.value = CartState() }
-    override fun parkCart(slot: Int) {}
-    override fun restoreCart(slot: Int) {}
-    override fun discardSlot(slot: Int) {}
-}
+private val Cart.committed: Sale? get() = state.value.lastReceipt
 
 private class FakeSales(
     val sale: Sale = Sale(

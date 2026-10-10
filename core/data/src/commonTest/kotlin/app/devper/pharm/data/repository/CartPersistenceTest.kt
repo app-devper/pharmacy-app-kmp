@@ -5,15 +5,15 @@ import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.data.storage.MemorySettings
 import app.devper.pharm.data.storage.ParkedCartStorage
+import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Sale
-import app.devper.pharm.domain.param.sales.AddCartItemParam
 import com.russhwolf.settings.Settings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class CartRepositoryActivePersistenceTest {
+class CartPersistenceTest {
 
     private fun drug(id: String = "d1") = Drug(
         id = id, name = "Paracetamol", genericName = null, type = null, strength = null,
@@ -21,12 +21,12 @@ class CartRepositoryActivePersistenceTest {
         unit = "เม็ด", regNo = null,
     )
 
-    private fun repo(settings: Settings) = CartRepositoryImpl(ParkedCartStorage(settings))
+    private fun repo(settings: Settings) = Cart(ParkedCartStorage(settings))
 
     @Test
     fun active_cart_survives_a_fresh_instance() {
         val settings = MemorySettings()
-        repo(settings).add(AddCartItemParam(drug = drug(), altUnit = null))
+        repo(settings).add(drug())
 
         val reborn = repo(settings)
         val items = reborn.state.value.active.items
@@ -38,7 +38,7 @@ class CartRepositoryActivePersistenceTest {
     fun clear_removes_the_persisted_active_cart() {
         val settings = MemorySettings()
         val first = repo(settings)
-        first.add(AddCartItemParam(drug = drug(), altUnit = null))
+        first.add(drug())
         first.clear()
 
         assertTrue(repo(settings).state.value.active.items.isEmpty())
@@ -48,7 +48,7 @@ class CartRepositoryActivePersistenceTest {
     fun commit_receipt_removes_the_persisted_active_cart() {
         val settings = MemorySettings()
         val first = repo(settings)
-        first.add(AddCartItemParam(drug = drug(), altUnit = null))
+        first.add(drug())
         first.commitReceipt(Sale("s1", "B1", Money(10.0), Money.Zero, Money.Zero, emptyList()))
 
         assertTrue(repo(settings).state.value.active.items.isEmpty())

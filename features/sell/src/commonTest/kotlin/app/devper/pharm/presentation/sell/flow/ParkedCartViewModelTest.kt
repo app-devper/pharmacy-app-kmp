@@ -7,13 +7,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ParkedCart
-import app.devper.pharm.domain.observer.CartStateProvider
-import app.devper.pharm.domain.observer.ParkedCartsProvider
-import app.devper.pharm.domain.repository.FakeCartRepository
-import app.devper.pharm.domain.repository.sales.PARK_SLOT_COUNT
-import app.devper.pharm.domain.usecase.sales.DiscardParkedCartUseCase
-import app.devper.pharm.domain.usecase.sales.ParkCartUseCase
-import app.devper.pharm.domain.usecase.sales.RestoreCartUseCase
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.testCart
+import app.devper.pharm.domain.cart.PARK_SLOT_COUNT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -45,19 +41,15 @@ class ParkedCartViewModelTest {
 
     private data class Bundle(
         val vm: ParkedCartViewModel,
-        val cart: FakeCartRepository,
+        val cart: Cart,
     )
 
     private fun newVm(
         @Suppress("UNUSED_PARAMETER") dispatchers: AppDispatchers,
-        cart: FakeCartRepository = FakeCartRepository(),
+        cart: Cart = testCart(),
     ): Bundle {
         val vm = ParkedCartViewModel(
-            parkedCarts = ParkedCartsProvider(cart),
-            cartState = CartStateProvider(cart),
-            parkCart = ParkCartUseCase(cart),
-            restoreCart = RestoreCartUseCase(cart),
-            discardParked = DiscardParkedCartUseCase(cart),
+            cart = cart,
         )
         return Bundle(vm, cart)
     }
@@ -69,7 +61,7 @@ class ParkedCartViewModelTest {
         }
         val (vm) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line()), initialParkedSlots = seed),
+            testCart(items = listOf(line()), parked = seed),
         )
         advanceUntilIdle()
         assertEquals(PARK_SLOT_COUNT, vm.state.value.parkedSlots.size)
@@ -81,11 +73,11 @@ class ParkedCartViewModelTest {
 
     @Test
     fun parkedSlots_mutations_propagate_to_state() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         assertEquals(0, vm.state.value.filledCount)
 
-        cart.parkCart(slot = 0)
+        cart.park(0)
         advanceUntilIdle()
         assertEquals(1, vm.state.value.filledCount)
         assertNotNull(vm.state.value.parkedSlots[0])
@@ -93,13 +85,13 @@ class ParkedCartViewModelTest {
 
     @Test
     fun tapSlot_saves_working_cart_to_current_tab_then_switches() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line(qty = 4))))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line(qty = 4))))
         advanceUntilIdle()
         vm.openSheet()
         vm.tapSlot(slot = 1)
         advanceUntilIdle()
 
-        assertEquals(0, cart.lastParkSlot)
+        assertNotNull(cart.parkedSlots.value[0])
         assertNotNull(cart.parkedSlots.value[0])
         assertEquals(4, cart.parkedSlots.value[0]!!.items[0].qty)
         assertNull(cart.parkedSlots.value[1])
@@ -110,13 +102,13 @@ class ParkedCartViewModelTest {
 
     @Test
     fun tapSlot_on_the_active_tab_is_a_no_op_and_closes_sheet() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.openSheet()
         vm.tapSlot(slot = 0)
         advanceUntilIdle()
 
-        assertNull(cart.lastParkSlot)
+        assertFalse(cart.current.isEmpty)
         assertEquals(0, vm.state.value.activeSlot)
         assertFalse(vm.state.value.sheetOpen)
     }
@@ -126,13 +118,11 @@ class ParkedCartViewModelTest {
         val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i ->
             if (i == 3) parked(itemQty = 7) else null
         }
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialParkedSlots = seed))
+        val (vm, cart) = newVm(dispatchers, testCart(parked = seed))
         advanceUntilIdle()
         vm.openSheet()
         vm.tapSlot(slot = 3)
         advanceUntilIdle()
-
-        assertEquals(3, cart.lastRestoreSlot)
         assertNull(cart.parkedSlots.value[3])
         assertEquals(7, cart.state.value.active.items[0].qty)
         assertEquals(3, vm.state.value.activeSlot)
@@ -150,24 +140,24 @@ class ParkedCartViewModelTest {
 
     @Test
     fun requestOverwrite_then_cancel_does_not_park() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.requestOverwrite(slot = 2)
         assertEquals(2, vm.state.value.overwriteSlot)
         vm.cancelOverwrite()
         assertNull(vm.state.value.overwriteSlot)
-        assertNull(cart.lastParkSlot)
+        assertFalse(cart.current.isEmpty)
     }
 
     @Test
     fun confirmOverwrite_parks_into_pending_slot_and_clears_state() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line(qty = 9))))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line(qty = 9))))
         advanceUntilIdle()
         vm.openSheet()
         vm.requestOverwrite(slot = 4)
         vm.confirmOverwrite()
         advanceUntilIdle()
-        assertEquals(4, cart.lastParkSlot)
+        assertNotNull(cart.parkedSlots.value[4])
         assertNotNull(cart.parkedSlots.value[4])
         assertNull(vm.state.value.overwriteSlot)
         assertFalse(vm.state.value.sheetOpen)
@@ -175,12 +165,12 @@ class ParkedCartViewModelTest {
 
     @Test
     fun confirmOverwrite_no_op_when_pending_slot_null() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
 
         vm.confirmOverwrite()
         advanceUntilIdle()
-        assertNull(cart.lastParkSlot)
+        assertFalse(cart.current.isEmpty)
     }
 
     @Test
@@ -190,16 +180,15 @@ class ParkedCartViewModelTest {
         }
         val (vm, cart) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line(qty = 3)), initialParkedSlots = seed),
+            testCart(items = listOf(line(qty = 3)), parked = seed),
         )
         advanceUntilIdle()
         vm.openSheet()
         vm.tapSlot(slot = 2)
         advanceUntilIdle()
 
-        assertEquals(0, cart.lastParkSlot)
+        assertNotNull(cart.parkedSlots.value[0])
         assertEquals(3, cart.parkedSlots.value[0]!!.items[0].qty)
-        assertEquals(2, cart.lastRestoreSlot)
         assertEquals(6, cart.state.value.active.items[0].qty)
         assertNull(cart.parkedSlots.value[2])
         assertEquals(2, vm.state.value.activeSlot)
@@ -211,11 +200,10 @@ class ParkedCartViewModelTest {
         val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i ->
             if (i == 1) parked() else null
         }
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialParkedSlots = seed))
+        val (vm, cart) = newVm(dispatchers, testCart(parked = seed))
         advanceUntilIdle()
         vm.discard(slot = 1)
         advanceUntilIdle()
-        assertEquals(1, cart.lastDiscardSlot)
         assertNull(cart.parkedSlots.value[1])
         assertEquals(0, vm.state.value.filledCount)
     }
@@ -229,12 +217,12 @@ class ParkedCartViewModelTest {
 
     @Test
     fun newBillOnNextTab_saves_working_cart_and_switches_to_first_empty_other_tab() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line(qty = 8))))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line(qty = 8))))
         advanceUntilIdle()
         vm.newBillOnNextTab()
         advanceUntilIdle()
 
-        assertEquals(0, cart.lastParkSlot)
+        assertNotNull(cart.parkedSlots.value[0])
         assertEquals(8, cart.parkedSlots.value[0]!!.items[0].qty)
         assertEquals(1, vm.state.value.activeSlot)
         assertTrue(cart.state.value.active.items.isEmpty())
@@ -245,14 +233,14 @@ class ParkedCartViewModelTest {
         val seed = List<ParkedCart?>(PARK_SLOT_COUNT) { i -> if (i == 0) null else parked() }
         val (vm, cart) = newVm(
             dispatchers,
-            FakeCartRepository(initialItems = listOf(line()), initialParkedSlots = seed),
+            testCart(items = listOf(line()), parked = seed),
         )
         advanceUntilIdle()
         vm.newBillOnNextTab()
         advanceUntilIdle()
 
         assertTrue(vm.state.value.sheetOpen)
-        assertNull(cart.lastParkSlot)
+        assertFalse(cart.current.isEmpty)
         assertEquals(0, vm.state.value.activeSlot)
     }
 }

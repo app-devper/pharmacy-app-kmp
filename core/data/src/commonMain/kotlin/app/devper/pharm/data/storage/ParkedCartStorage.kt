@@ -9,20 +9,21 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ParkedCart
-import app.devper.pharm.domain.repository.sales.PARK_SLOT_COUNT
+import app.devper.pharm.domain.cart.CartStore
+import app.devper.pharm.domain.cart.PARK_SLOT_COUNT
 import com.russhwolf.settings.Settings
 import app.devper.pharm.common.StorageException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-class ParkedCartStorage(private val settings: Settings) {
+class ParkedCartStorage(private val settings: Settings) : CartStore {
 
     private val json = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
 
-    fun loadAll(): List<ParkedCart?> = (0 until PARK_SLOT_COUNT).map { load(it) }
+    override fun loadParked(): List<ParkedCart?> = (0 until PARK_SLOT_COUNT).map { load(it) }
 
     fun load(slot: Int): ParkedCart? {
         val raw = settings.getStringOrNull(keyFor(slot)) ?: return null
@@ -36,16 +37,16 @@ class ParkedCartStorage(private val settings: Settings) {
         }
     }
 
-    fun save(slot: Int, parked: ParkedCart) {
+    override fun saveParked(slot: Int, parked: ParkedCart) {
         val raw = json.encodeToString(ParkedCartDto.serializer(), parked.toDto())
         settings.putString(keyFor(slot), raw)
     }
 
-    fun clear(slot: Int) {
+    override fun clearParked(slot: Int) {
         settings.remove(keyFor(slot))
     }
 
-    fun loadActive(): ActiveCart? {
+    override fun loadActive(): ActiveCart? {
         val raw = settings.getStringOrNull(KEY_ACTIVE) ?: return null
         return try {
             json.decodeFromString(ParkedCartDto.serializer(), raw)
@@ -58,7 +59,7 @@ class ParkedCartStorage(private val settings: Settings) {
         }
     }
 
-    fun saveActive(active: ActiveCart) {
+    override fun saveActive(active: ActiveCart) {
         val parked = ParkedCart(
             items = active.items,
             customer = active.customer,
@@ -70,7 +71,7 @@ class ParkedCartStorage(private val settings: Settings) {
         settings.putString(KEY_ACTIVE, json.encodeToString(ParkedCartDto.serializer(), parked.toDto()))
     }
 
-    fun clearActive() {
+    override fun clearActive() {
         settings.remove(KEY_ACTIVE)
     }
 

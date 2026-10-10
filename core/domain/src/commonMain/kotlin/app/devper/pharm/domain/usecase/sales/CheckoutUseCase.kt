@@ -20,11 +20,11 @@ import app.devper.pharm.domain.model.OversellShortfall
 import app.devper.pharm.domain.param.sales.CheckoutLineParam
 import app.devper.pharm.domain.param.sales.CheckoutParam
 import app.devper.pharm.domain.param.sales.RunCheckoutParam
-import app.devper.pharm.domain.repository.sales.CartRepository
+import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.repository.sales.SaleRepository
 
 class CheckoutUseCase(
-    private val cart: CartRepository,
+    private val cart: Cart,
     private val sales: SaleRepository,
     private val pendingSales: PendingSales,
     dispatchers: AppDispatchers,
