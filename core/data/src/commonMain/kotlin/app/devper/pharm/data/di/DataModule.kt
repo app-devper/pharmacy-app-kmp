@@ -22,7 +22,6 @@ import app.devper.pharm.data.remote.api.StockCountsApi
 import app.devper.pharm.data.remote.api.SupplierApi
 import app.devper.pharm.data.remote.api.UsersApi
 import app.devper.pharm.data.repository.AuthRepositoryImpl
-import app.devper.pharm.data.repository.CartRepositoryImpl
 import app.devper.pharm.data.repository.CustomerRepositoryImpl
 import app.devper.pharm.data.repository.DrugRepositoryImpl
 import app.devper.pharm.data.repository.ExpiringLotsRepositoryImpl
@@ -43,10 +42,10 @@ import app.devper.pharm.data.repository.SupplierRepositoryImpl
 import app.devper.pharm.data.repository.UsersRepositoryImpl
 import app.devper.pharm.data.storage.OfflineSaleQueueImpl
 import app.devper.pharm.data.storage.ParkedCartStorage
+import app.devper.pharm.domain.cart.CartStore
 import app.devper.pharm.data.storage.StockCountDraftStorage
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.domain.repository.auth.AuthRepository
-import app.devper.pharm.domain.repository.sales.CartRepository
 import app.devper.pharm.domain.repository.customers.CustomerRepository
 import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
@@ -78,7 +77,7 @@ fun dataModule(apiConfig: ApiConfig = ApiConfig()) = module {
     single { AppJson }
 
     single { TokenStorage(get()) }
-    single { ParkedCartStorage(get()) }
+    single { ParkedCartStorage(get()) } bind CartStore::class
     singleOf(::StockCountDraftStorage) bind StockCountDraftRepository::class
     singleOf(::OfflineSaleQueueImpl) bind OfflineSaleQueue::class
 
@@ -136,7 +135,6 @@ fun dataModule(apiConfig: ApiConfig = ApiConfig()) = module {
     singleOf(::SaleHistoryApi)
     singleOf(::SaleHistoryRepositoryImpl) bind SaleHistoryRepository::class
 
-    singleOf(::CartRepositoryImpl) bind CartRepository::class
 
     singleOf(::SettingsApi)
     singleOf(::SettingsRepositoryImpl) bind SettingsRepository::class

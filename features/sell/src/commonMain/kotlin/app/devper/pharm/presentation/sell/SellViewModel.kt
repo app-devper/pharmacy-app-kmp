@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.sell
 
+import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.CustomerPickerViewModel
 import app.devper.pharm.presentation.sell.flow.DrugPickerViewModel
@@ -10,33 +11,20 @@ import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
-import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
-import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.sales.RemoveCartItemUseCase
-import app.devper.pharm.domain.usecase.sales.SetCartDiscountUseCase
-import app.devper.pharm.domain.usecase.sales.SetCartQtyUseCase
-import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
-import app.devper.pharm.domain.usecase.sales.SetLineDiscountUseCase
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class SellViewModel(
-    cartState: CartStateProvider,
+    private val cart: Cart,
     settings: SettingsProvider,
-    private val setCartQty: SetCartQtyUseCase,
-    private val removeItem: RemoveCartItemUseCase,
-    private val clearCart: ClearCartUseCase,
-    private val setLineDiscount: SetLineDiscountUseCase,
-    private val setCartDiscount: SetCartDiscountUseCase,
-    private val setCashReceived: SetCashReceivedUseCase,
     private val refreshSettings: RefreshSettingsUseCase,
 ) : BaseViewModel<SellUiState>(SellUiState()) {
 
     init {
-        cartState.state
+        cart.snapshots
             .onEach { snap ->
                 setState {
                     copy(
@@ -64,10 +52,10 @@ class SellViewModel(
         )
     }
 
-    fun onReceivedChange(value: String) = setCashReceived(value)
+    fun onReceivedChange(value: String) = cart.setCashReceived(value)
 
-    fun onSetQty(key: CartLineKey, displayQty: Int) = setCartQty(key, displayQty)
-    fun onRemove(key: CartLineKey) = removeItem(key)
+    fun onSetQty(key: CartLineKey, displayQty: Int) = cart.setQty(key, displayQty)
+    fun onRemove(key: CartLineKey) = cart.remove(key)
 
     fun requestClearCart() {
         if (current.cart.isEmpty()) return
@@ -77,21 +65,21 @@ class SellViewModel(
     fun cancelClearCart() = setState { copy(showClearConfirm = false) }
 
     fun confirmClearCart() {
-        clearCart()
+        cart.clear()
         setState { copy(showClearConfirm = false) }
     }
 
     fun onOpenLineDiscount(line: CartLine) = setState { copy(lineDiscountFor = line) }
     fun onCloseLineDiscount() = setState { copy(lineDiscountFor = null) }
     fun onApplyLineDiscount(key: CartLineKey, discount: Double) {
-        setLineDiscount(key, discount)
+        cart.setLineDiscount(key, discount)
         setState { copy(lineDiscountFor = null) }
     }
 
     fun onOpenCartDiscount() = setState { copy(cartDiscountSheetOpen = true) }
     fun onCloseCartDiscount() = setState { copy(cartDiscountSheetOpen = false) }
     fun onApplyCartDiscount(discount: CartDiscount) {
-        setCartDiscount(discount)
+        cart.setCartDiscount(discount)
         setState { copy(cartDiscountSheetOpen = false) }
     }
 

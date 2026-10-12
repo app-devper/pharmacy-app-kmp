@@ -11,17 +11,11 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.model.StoreInfo
-import app.devper.pharm.domain.observer.CartStateProvider
 import app.devper.pharm.domain.observer.SettingsProvider
-import app.devper.pharm.domain.repository.FakeCartRepository
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.sales.ClearCartUseCase
 import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.sales.RemoveCartItemUseCase
-import app.devper.pharm.domain.usecase.sales.SetCartDiscountUseCase
-import app.devper.pharm.domain.usecase.sales.SetCartQtyUseCase
-import app.devper.pharm.domain.usecase.sales.SetCashReceivedUseCase
-import app.devper.pharm.domain.usecase.sales.SetLineDiscountUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -63,23 +57,17 @@ class SellViewModelTest {
 
     private data class Bundle(
         val vm: SellViewModel,
-        val cart: FakeCartRepository,
+        val cart: Cart,
         val settings: FakeSettingsRepository,
     )
 
     private fun newVm(
         dispatchers: AppDispatchers,
-        cart: FakeCartRepository = FakeCartRepository(),
+        cart: Cart = testCart(),
         settings: FakeSettingsRepository = FakeSettingsRepository(),
     ): Bundle {
         val vm = SellViewModel(
-            cartState = CartStateProvider(cart),
-            setCartQty = SetCartQtyUseCase(cart),
-            removeItem = RemoveCartItemUseCase(cart),
-            clearCart = ClearCartUseCase(cart),
-            setLineDiscount = SetLineDiscountUseCase(cart),
-            setCartDiscount = SetCartDiscountUseCase(cart),
-            setCashReceived = SetCashReceivedUseCase(cart),
+            cart = cart,
             settings = SettingsProvider(settings),
             refreshSettings = RefreshSettingsUseCase(settings, dispatchers),
         )
@@ -90,11 +78,11 @@ class SellViewModelTest {
     fun init_subscribes_to_cart_state() = runVmTest { dispatchers ->
         val (vm, cart) = newVm(
             dispatchers,
-            FakeCartRepository(
-                initialItems = listOf(line(qty = 2)),
-                initialCustomer = customer(),
-                initialDiscount = CartDiscount.Flat(Money(10.0)),
-                initialReceived = "100",
+            testCart(
+                items = listOf(line(qty = 2)),
+                customer = customer(),
+                discount = CartDiscount.Flat(Money(10.0)),
+                received = "100",
             ),
         )
         advanceUntilIdle()
@@ -113,8 +101,8 @@ class SellViewModelTest {
         val (vm, cart) = newVm(dispatchers)
         advanceUntilIdle()
         assertEquals(0, vm.state.value.cart.size)
-        cart.pushItems(listOf(line(qty = 3)))
-        cart.pushCustomer(customer(name = "Jane"))
+        repeat(3) { cart.add(line().drug) }
+        cart.selectCustomer(customer(name = "Jane"))
         advanceUntilIdle()
         assertEquals(3, vm.state.value.cart[0].qty)
         assertEquals("Jane", vm.state.value.customer?.name)
@@ -140,29 +128,29 @@ class SellViewModelTest {
     }
 
     @Test
-    fun onSetQty_delegates_to_setCartQty_usecase() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers)
+    fun onSetQty_sets_the_line_quantity() = runVmTest { dispatchers ->
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.onSetQty(CartLineKey("d1", null), displayQty = 4)
         advanceUntilIdle()
-        assertEquals(CartLineKey("d1", null), cart.lastSetQty?.key)
-        assertEquals(4, cart.lastSetQty?.displayQty)
+        assertEquals(4, cart.current.items.single().qty)
+        assertEquals(4, vm.state.value.cart.single().qty)
     }
 
     @Test
-    fun onRemove_delegates_to_removeItem_usecase() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+    fun onRemove_removes_the_line() = runVmTest { dispatchers ->
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.onRemove(CartLineKey("d1", null))
         advanceUntilIdle()
-        assertEquals(CartLineKey("d1", null), cart.lastRemove)
+        assertTrue(cart.current.isEmpty)
 
         assertTrue(vm.state.value.cart.isEmpty())
     }
 
     @Test
     fun requestClearCart_flips_showClearConfirm_when_cart_non_empty() = runVmTest { dispatchers ->
-        val (vm, _) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, _) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         assertFalse(vm.state.value.showClearConfirm)
         vm.requestClearCart()
@@ -179,47 +167,47 @@ class SellViewModelTest {
 
     @Test
     fun confirmClearCart_clears_cart_and_resets_flag() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.requestClearCart()
         assertTrue(vm.state.value.showClearConfirm)
         vm.confirmClearCart()
         advanceUntilIdle()
-        assertTrue(cart.clearCalled)
+        assertTrue(cart.current.isEmpty)
         assertTrue(vm.state.value.cart.isEmpty())
         assertFalse(vm.state.value.showClearConfirm)
     }
 
     @Test
     fun cancelClearCart_resets_flag_without_clearing() = runVmTest { dispatchers ->
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(line())))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(line())))
         advanceUntilIdle()
         vm.requestClearCart()
         assertTrue(vm.state.value.showClearConfirm)
         vm.cancelClearCart()
         advanceUntilIdle()
-        assertFalse(cart.clearCalled)
+        assertFalse(cart.current.isEmpty)
         assertFalse(vm.state.value.showClearConfirm)
         assertTrue(vm.state.value.cart.isNotEmpty())
     }
 
     @Test
-    fun onReceivedChange_delegates_to_setCashReceived_usecase() = runVmTest { dispatchers ->
+    fun onReceivedChange_sets_the_cash_received() = runVmTest { dispatchers ->
         val (vm, cart) = newVm(dispatchers)
         vm.onReceivedChange("250.50")
         advanceUntilIdle()
-        assertEquals("250.50", cart.lastSetCashReceived)
+        assertEquals("250.50", cart.current.cashReceived)
         assertEquals("250.50", vm.state.value.received)
     }
 
     @Test
-    fun onApplyCartDiscount_delegates_and_closes_sheet() = runVmTest { dispatchers ->
+    fun onApplyCartDiscount_applies_and_closes_sheet() = runVmTest { dispatchers ->
         val (vm, cart) = newVm(dispatchers)
         vm.onOpenCartDiscount()
         assertTrue(vm.state.value.cartDiscountSheetOpen)
         vm.onApplyCartDiscount(CartDiscount.Percent(15.0))
         advanceUntilIdle()
-        assertEquals(CartDiscount.Percent(15.0), cart.lastSetCartDiscount)
+        assertEquals(CartDiscount.Percent(15.0), cart.current.cartDiscount)
 
         assertEquals(false, vm.state.value.cartDiscountSheetOpen)
 
@@ -227,23 +215,22 @@ class SellViewModelTest {
     }
 
     @Test
-    fun onApplyLineDiscount_delegates_and_closes_sheet() = runVmTest { dispatchers ->
+    fun onApplyLineDiscount_applies_and_closes_sheet() = runVmTest { dispatchers ->
         val theLine = line()
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(theLine)))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(theLine)))
         advanceUntilIdle()
         vm.onOpenLineDiscount(theLine)
         assertNotNull(vm.state.value.lineDiscountFor)
         vm.onApplyLineDiscount(theLine.key, discount = 1.50)
         advanceUntilIdle()
-        assertEquals(theLine.key, cart.lastSetLineDiscount?.key)
-        assertEquals(1.50, cart.lastSetLineDiscount?.discount)
+        assertEquals(Money(1.50), cart.current.items.single().discount)
         assertNull(vm.state.value.lineDiscountFor)
     }
 
     @Test
     fun line_discount_sheet_open_close_is_local_state() = runVmTest { dispatchers ->
         val theLine = line()
-        val (vm, _) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(theLine)))
+        val (vm, _) = newVm(dispatchers, testCart(items = listOf(theLine)))
         advanceUntilIdle()
         vm.onOpenLineDiscount(theLine)
         assertEquals(theLine, vm.state.value.lineDiscountFor)
@@ -264,13 +251,12 @@ class SellViewModelTest {
     @Test
     fun cart_subscription_keeps_lineDiscountFor_when_line_persists() = runVmTest { dispatchers ->
         val initial = line(qty = 1)
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(initial)))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(initial)))
         advanceUntilIdle()
         vm.onOpenLineDiscount(initial)
         assertNotNull(vm.state.value.lineDiscountFor)
 
-        val updated = line(qty = 3)
-        cart.pushItems(listOf(updated))
+        cart.setQty(initial.key, 3)
         advanceUntilIdle()
         assertEquals(3, vm.state.value.lineDiscountFor?.qty)
     }
@@ -278,12 +264,12 @@ class SellViewModelTest {
     @Test
     fun cart_subscription_drops_lineDiscountFor_when_line_removed() = runVmTest { dispatchers ->
         val initial = line(qty = 1)
-        val (vm, cart) = newVm(dispatchers, FakeCartRepository(initialItems = listOf(initial)))
+        val (vm, cart) = newVm(dispatchers, testCart(items = listOf(initial)))
         advanceUntilIdle()
         vm.onOpenLineDiscount(initial)
         assertNotNull(vm.state.value.lineDiscountFor)
 
-        cart.pushItems(emptyList())
+        cart.remove(initial.key)
         advanceUntilIdle()
         assertNull(vm.state.value.lineDiscountFor)
     }
