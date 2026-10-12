@@ -1,15 +1,12 @@
 package app.devper.pharm.domain.pendingsales
 
-import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.ConflictException
-import app.devper.pharm.common.ForbiddenException
-import app.devper.pharm.common.NetworkException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.ServerException
 import app.devper.pharm.common.ValidationException
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.MimeType
-import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
+import app.devper.pharm.domain.extension.isTemporaryDeliveryFailure
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.domain.model.AbandonOutcome
 import app.devper.pharm.domain.model.KyForm
@@ -30,23 +27,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-/**
- * Sales kept on this device until the server records them (KMP ADR-0006,
- * ADR-0010; pharmacy-api ADR-0009). Owns every state a pending sale can be
- * in and every way out of it:
- *
- * - a temporary failure (network, identity outage, 5xx, 401, 403) leaves the
- *   sale [PendingSaleState.Pending] and [syncAll] retries it;
- * - a refusal (any other 4xx) makes it a [PendingSaleState.Conflict] with the
- *   server's reason; only [retry] or [abandon] moves it on;
- * - a recorded bill whose KY forms were refused is [PendingSaleState.KyPending]
- *   with the refused forms, until [retry] records them or [abandon] closes them;
- * - an entry the device cannot read is [PendingSaleState.Damaged]: [export]
- *   saves its raw data and [discardDamaged] removes it.
- *
- * Nothing is removed without the server recording the sale, recording its
- * abandonment, or a person discarding a damaged entry.
- */
 @OptIn(ExperimentalTime::class)
 class PendingSales(
     private val queue: OfflineSaleQueue,
@@ -58,7 +38,6 @@ class PendingSales(
 
     private val delivering = Mutex()
 
-    /** Keep a sale the server could not be reached for; returns its entry id. */
     fun enqueue(clientRequestId: String, payloadJson: String, kyForms: List<KyForm> = emptyList()): String {
         val id = "off-${newClientRequestId()}"
         queue.put(
@@ -73,10 +52,6 @@ class PendingSales(
         return id
     }
 
-    /**
-     * Deliver every [PendingSaleState.Pending] entry, oldest first, stopping
-     * at the first temporary failure since the rest would fail the same way.
-     */
     suspend fun syncAll(): SyncSummary = delivering.withLock {
         var summary = SyncSummary()
         for (entry in entries.value.filter { it.state == PendingSaleState.Pending }) {
@@ -87,7 +62,6 @@ class PendingSales(
         summary
     }
 
-    /** Deliver one entry now, whatever its state; the entry's new state, or null once recorded. */
     suspend fun retry(id: String): Result<PendingSaleState?> = attempt {
         delivering.withLock {
             val entry = find(id)
@@ -97,11 +71,6 @@ class PendingSales(
         }
     }
 
-    /**
-     * Record on the server that the entry will not be recorded, with
-     * [reason] (ADMIN+), then remove it. A sale the server recorded meanwhile
-     * stays pending only for its KY forms.
-     */
     suspend fun abandon(id: String, reason: String): Result<Unit> = attempt {
         if (reason.isBlank()) throw ValidationException("reason is required")
         delivering.withLock {
@@ -133,13 +102,11 @@ class PendingSales(
         }
     }
 
-    /** Save an entry's stored data as a file; returns where it was saved. */
     suspend fun export(id: String): Result<String> = attempt {
         val entry = find(id)
         files.save("pending-sale-${entry.id}.json", MimeType.Json, entry.payloadJson.encodeToByteArray()).getOrThrow()
     }
 
-    /** Remove a damaged entry, after [export] kept its data. */
     fun discardDamaged(id: String): Result<Unit> {
         val entry = entries.value.firstOrNull { it.id == id }
             ?: return Result.failure(NotFoundException("Pending sale not found"))
@@ -204,7 +171,6 @@ class PendingSales(
     }
 }
 
-/** What one [PendingSales.syncAll] did. */
 data class SyncSummary(val recorded: Int = 0, val refused: Int = 0, val stillPending: Int = 0) {
     internal fun plus(d: Delivery) = when (d) {
         Delivery.Recorded -> copy(recorded = recorded + 1)
@@ -215,18 +181,6 @@ data class SyncSummary(val recorded: Int = 0, val refused: Int = 0, val stillPen
 
 internal enum class Delivery { Recorded, Refused, StillPending }
 
-/**
- * A failure that says nothing about the sale itself: the server was not
- * reached, could not decide, or did not accept the session. Retrying later
- * can succeed.
- */
-internal fun Throwable.isTemporaryDeliveryFailure(): Boolean = when (this) {
-    is AuthException, is ForbiddenException, is NetworkException -> true
-    is ServerException -> (statusCode ?: 500) >= 500
-    else -> looksLikeTemporaryOutage()
-}
-
-/** The server's `{"error": ...}` message when there is one. */
 internal fun Throwable.serverReason(): String {
     val body = when (this) {
         is ConflictException -> payload

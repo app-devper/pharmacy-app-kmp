@@ -5,7 +5,7 @@ import kotlinx.coroutines.CancellationException
 
 import app.devper.pharm.domain.usecase.BaseUseCase
 
-import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
+import app.devper.pharm.domain.extension.isTemporaryDeliveryFailure
 import app.devper.pharm.domain.extension.newClientRequestId
 import app.devper.pharm.domain.validation.SaleValidationError
 
@@ -71,7 +71,7 @@ class CheckoutUseCase(
             sales.checkout(request)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            if (e.looksLikeTemporaryOutage() && serialized != null) {
+            if (e.isTemporaryDeliveryFailure() && serialized != null) {
                 pendingSales.enqueue(requestId, serialized)
                 cart.clear()
                 pendingAttempt = null
