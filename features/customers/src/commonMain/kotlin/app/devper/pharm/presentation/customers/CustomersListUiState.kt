@@ -12,7 +12,6 @@ data class CustomersListUiState(
 ) : LoadableUiState<CustomersListUiState> {
 
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val filtered: List<Customer> = if (query.isBlank()) {

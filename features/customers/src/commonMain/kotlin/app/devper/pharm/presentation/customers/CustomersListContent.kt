@@ -12,11 +12,10 @@ import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 
@@ -41,27 +40,32 @@ fun CustomersListContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = PharmIcons.Customers,
-                title = s.customersListEmpty,
-                action = {
-                    PharmButton(
-                        label = s.customersAddCta,
-                        onClick = callbacks.onOpenAdd,
-                        size = PharmButtonSize.Sm,
-                    )
-                },
-            )
-            else -> CustomersListTable(
-                customers = visible,
-                callbacks = callbacks,
-                emptySearching = searching,
-            )
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = PharmIcons.Customers,
+                    title = s.customersListEmpty,
+                    action = {
+                        PharmButton(
+                            label = s.customersAddCta,
+                            onClick = callbacks.onOpenAdd,
+                            size = PharmButtonSize.Sm,
+                        )
+                    },
+                )
+            },
+            content = {
+                CustomersListTable(
+                    customers = visible,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
+            },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeCustomersList(s), onDismiss = callbacks.onDismissError)

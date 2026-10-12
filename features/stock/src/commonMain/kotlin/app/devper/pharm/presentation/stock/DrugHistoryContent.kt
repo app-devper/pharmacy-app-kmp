@@ -29,10 +29,9 @@ import app.devper.pharm.ui.designsystem.PharmBadgeTone
 import app.devper.pharm.ui.designsystem.PharmColumnAlign
 import app.devper.pharm.ui.designsystem.PharmDivider
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.designsystem.PharmTable
 import app.devper.pharm.ui.designsystem.PharmTableColumn
@@ -48,6 +47,7 @@ fun DrugHistoryContent(
     state: DrugHistoryUiState,
     onBack: () -> Unit,
     onDismissError: () -> Unit,
+    onReload: () -> Unit = {},
 ) {
     val pageIsEmpty = state.items.isEmpty()
     val t = pharmTokens
@@ -70,11 +70,14 @@ fun DrugHistoryContent(
             PharmListResultLine(total = state.items.size, noun = pharmStrings.stockHistoryCountNoun)
             PharmDivider()
 
-            when {
-                state.loading && pageIsEmpty -> PharmListSkeleton()
-                state.errorState != null && pageIsEmpty -> PharmErrorState()
-                else -> DrugHistoryTable(items = state.items)
-            }
+            PharmListBody(
+                loading = state.loading,
+                error = state.errorState,
+                isEmpty = pageIsEmpty,
+                onRetry = onReload,
+                empty = { DrugHistoryTable(items = state.items) },
+                content = { DrugHistoryTable(items = state.items) },
+            )
         }
     }
 

@@ -33,7 +33,6 @@ data class DrugLotsUiState(
     val errorState: AppException? = null,
 ) : LoadableUiState<DrugLotsUiState> {
 
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 

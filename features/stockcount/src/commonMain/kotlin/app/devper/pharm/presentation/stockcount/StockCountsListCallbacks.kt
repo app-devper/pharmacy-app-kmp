@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.stockcount
 import app.devper.pharm.domain.model.StockCount
 
 data class StockCountsListCallbacks(
+    val onReload: () -> Unit = {},
     val onSearchChange: (String) -> Unit = {},
     val onNewCount: () -> Unit = {},
     val onOpenDetail: (StockCount) -> Unit = {},

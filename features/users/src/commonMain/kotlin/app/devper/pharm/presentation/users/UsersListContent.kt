@@ -15,11 +15,10 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
@@ -46,25 +45,8 @@ fun UsersListContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty -> PharmErrorState()
-            pageIsEmpty && state.searchQuery.isBlank() -> PharmEmptyState(
-                icon = PharmIcons.Users,
-                title = s.usersListEmpty,
-                action = {
-                    if (state.canCreate) {
-                        PharmButton(
-                            label = s.usersAddFirstCta,
-                            onClick = callbacks.onAddUser,
-                            variant = PharmButtonVariant.Primary,
-                            size = PharmButtonSize.Sm,
-                            leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
-                        )
-                    }
-                },
-            )
-            else -> UsersListTable(
+        val table: @Composable () -> Unit = {
+            UsersListTable(
                 users = visible,
                 actorRole = state.currentUserRole,
                 currentUserId = state.currentUserId,
@@ -72,6 +54,34 @@ fun UsersListContent(
                 emptySearching = searching,
             )
         }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                if (state.searchQuery.isBlank()) {
+                    PharmEmptyState(
+                        icon = PharmIcons.Users,
+                        title = s.usersListEmpty,
+                        action = {
+                            if (state.canCreate) {
+                                PharmButton(
+                                    label = s.usersAddFirstCta,
+                                    onClick = callbacks.onAddUser,
+                                    variant = PharmButtonVariant.Primary,
+                                    size = PharmButtonSize.Sm,
+                                    leadingIcon = { Icon(PharmIcons.Plus, contentDescription = null) },
+                                )
+                            }
+                        },
+                    )
+                } else {
+                    table()
+                }
+            },
+            content = table,
+        )
     }
 
     ActionDialog(state = state, callbacks = callbacks)

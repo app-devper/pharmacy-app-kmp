@@ -20,5 +20,6 @@ fun DrugHistoryScreen(
         state = state,
         onBack = onBack,
         onDismissError = viewModel::dismissError,
+        onReload = { viewModel.load(drugName) },
     )
 }

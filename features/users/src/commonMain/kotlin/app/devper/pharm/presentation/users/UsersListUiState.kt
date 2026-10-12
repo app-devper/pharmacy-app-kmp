@@ -13,7 +13,6 @@ data class UsersListUiState(
     val searchQuery: String = "",
     val currentUserId: String? = null,
     val currentUserRole: Role = Role.UNKNOWN,
-    /** Roles UM lets the signed-in user create (um-api ADR-0006). */
     val creatableRoles: List<Role> = emptyList(),
     val actionTarget: UmUser? = null,
     val actionMode: UsersAction? = null,
@@ -24,7 +23,6 @@ data class UsersListUiState(
 
     val canCreate: Boolean get() = creatableRoles.isNotEmpty()
 
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 

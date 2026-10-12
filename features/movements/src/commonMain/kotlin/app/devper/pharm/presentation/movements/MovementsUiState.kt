@@ -21,7 +21,6 @@ data class MovementsUiState(
 ) : LoadableUiState<MovementsUiState> {
 
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
     val pageCount: Int = run {

@@ -11,11 +11,10 @@ import app.devper.pharm.presentation.saleshistory.i18n.localizeSalesHistory
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
 import kotlinx.datetime.LocalDateTime
@@ -40,20 +39,25 @@ fun SalesHistoryContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton(modifier = Modifier.fillMaxSize())
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState()
-            pageIsEmpty -> PharmEmptyState(
-                icon = if (searching) PharmIcons.Search else PharmIcons.SalesHistory,
-                title = if (searching) s.salesHistoryEmptySearching else s.salesHistoryEmptyDateRange,
-            )
-            else -> SalesHistoryTable(
-                sales = state.sales,
-                callbacks = callbacks,
-                emptySearching = searching,
-            )
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
+                PharmEmptyState(
+                    icon = if (searching) PharmIcons.Search else PharmIcons.SalesHistory,
+                    title = if (searching) s.salesHistoryEmptySearching else s.salesHistoryEmptyDateRange,
+                )
+            },
+            content = {
+                SalesHistoryTable(
+                    sales = state.sales,
+                    callbacks = callbacks,
+                    emptySearching = searching,
+                )
+            },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeSalesHistory(pharmStrings), onDismiss = callbacks.onDismissError)

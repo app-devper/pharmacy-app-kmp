@@ -42,6 +42,7 @@ fun KyListScreen(
             onExport = viewModel::exportPdf,
             onAddEntry = onAddEntry,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }
