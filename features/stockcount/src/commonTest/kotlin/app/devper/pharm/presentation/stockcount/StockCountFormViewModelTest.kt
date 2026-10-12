@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.domain.model.LotChoice
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.model.LotTarget
 import app.devper.pharm.domain.param.inventory.AddLotParam
@@ -439,10 +440,10 @@ class StockCountFormViewModelTest {
 
         val step = vm.state.value.lotStep
         assertEquals(listOf("up"), step?.map { it.drugId }, "only increases of lot-tracked drugs need a lot")
-        assertEquals("b", step?.single()?.choice, "defaults to the latest-expiring lot")
+        assertEquals("b", step?.single()?.lot?.choice, "defaults to the latest-expiring lot")
         assertNull(counts.lastAdd, "nothing is saved before the lots are chosen")
 
-        vm.onLotChoice("up", CountLotLine.NEW_LOT)
+        vm.onLotChoice("up", LotChoice.NEW_LOT)
         vm.confirmLotStep()
         assertNotNull(vm.state.value.lotStep, "a new lot needs its number and expiry")
         vm.onNewLotNumber("up", "N1")
