@@ -1,5 +1,8 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.ui.designsystem.PharmDateRange
+import app.devper.pharm.ui.format.QuickPeriod
+import app.devper.pharm.ui.format.ymdToMillis
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -83,8 +86,7 @@ class SalesHistoryViewModelTest {
     fun applyFilter_routes_filter_param_to_repo() = runVmTest { dispatchers ->
         val (vm, repo) = newVm(dispatchers)
         advanceUntilIdle()
-        vm.onFromChange("2026-05-01")
-        vm.onToChange("2026-05-31")
+        vm.onRangeChange(PharmDateRange(ymdToMillis("2026-05-01"), ymdToMillis("2026-05-31")))
         vm.onQueryChange("INV-X")
         vm.applyFilter()
         advanceUntilIdle()
@@ -97,12 +99,23 @@ class SalesHistoryViewModelTest {
     fun applyFilter_strips_blank_strings_to_null() = runVmTest { dispatchers ->
         val (vm, repo) = newVm(dispatchers)
         advanceUntilIdle()
-        vm.onFromChange("  ")
+        vm.onRangeChange(PharmDateRange(null, null))
         vm.applyFilter()
         advanceUntilIdle()
         assertNull(repo.lastListFilter?.from)
         assertNull(repo.lastListFilter?.to)
         assertNull(repo.lastListFilter?.query)
+    }
+
+    @Test
+    fun choosing_a_quick_period_sets_the_range_and_reloads() = runVmTest { dispatchers ->
+        val (vm, repo) = newVm(dispatchers)
+        advanceUntilIdle()
+        vm.onSelectPeriod(QuickPeriod.Today)
+        advanceUntilIdle()
+        val today = repo.lastListFilter?.to
+        assertEquals(today, repo.lastListFilter?.from)
+        assertEquals(QuickPeriod.Today, vm.state.value.dateRange.activePeriod(listOf(QuickPeriod.Today)))
     }
 
     @Test

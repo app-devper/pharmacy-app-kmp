@@ -33,26 +33,46 @@ class DateRangeFilterTest {
     }
 
     @Test
-    fun withFromMillis_round_trip() {
-        val r = DateRangeFilter(tz = TZ)
-        val midnightMillis = r.withFrom("2026-06-07").fromMillis
-        val rebuilt = r.withFromMillis(midnightMillis)
+    fun a_picked_range_round_trips_through_the_field() {
+        val r = DateRangeFilter(from = "2026-06-07", to = "2026-06-30", tz = TZ)
+        val rebuilt = DateRangeFilter(tz = TZ).withRange(r.range)
         assertEquals("2026-06-07", rebuilt.from)
-    }
-
-    @Test
-    fun withToMillis_round_trip() {
-        val r = DateRangeFilter(tz = TZ)
-        val midnightMillis = r.withTo("2026-06-30").toMillis
-        val rebuilt = r.withToMillis(midnightMillis)
         assertEquals("2026-06-30", rebuilt.to)
     }
 
     @Test
-    fun withFromMillis_with_null_clears() {
-        val r = DateRangeFilter(from = "2026-06-07", tz = TZ)
-        val cleared = r.withFromMillis(null)
+    fun clearing_one_side_of_the_range_clears_only_that_side() {
+        val r = DateRangeFilter(from = "2026-06-07", to = "2026-06-30", tz = TZ)
+        val cleared = r.withRange(r.range.copy(fromMillis = null))
         assertEquals("", cleared.from)
+        assertEquals("2026-06-30", cleared.to)
+    }
+
+    @Test
+    fun quick_periods_resolve_from_today() {
+        val today = LocalDate(2026, 10, 8)
+        val r = DateRangeFilter(tz = TZ)
+        assertEquals("2026-10-08" to "2026-10-08", r.withPeriod(QuickPeriod.Today, today).let { it.from to it.to })
+        assertEquals("2026-10-02" to "2026-10-08", r.withPeriod(QuickPeriod.Last7Days, today).let { it.from to it.to })
+        assertEquals("2026-10-05" to "2026-10-08", r.withPeriod(QuickPeriod.ThisWeek, today).let { it.from to it.to })
+        assertEquals("2026-10-01" to "2026-10-08", r.withPeriod(QuickPeriod.ThisMonth, today).let { it.from to it.to })
+        assertEquals("2026-09-01" to "2026-09-30", r.withPeriod(QuickPeriod.LastMonth, today).let { it.from to it.to })
+    }
+
+    @Test
+    fun last_month_in_january_is_december_of_the_previous_year() {
+        val r = DateRangeFilter(tz = TZ).withPeriod(QuickPeriod.LastMonth, LocalDate(2027, 1, 15))
+        assertEquals("2026-12-01" to "2026-12-31", r.from to r.to)
+    }
+
+    @Test
+    fun the_active_period_is_the_offered_one_the_range_matches() {
+        val today = LocalDate(2026, 10, 8)
+        val offered = listOf(QuickPeriod.Today, QuickPeriod.Last7Days, QuickPeriod.ThisMonth)
+        val r = DateRangeFilter(tz = TZ).withPeriod(QuickPeriod.Last7Days, today)
+        assertEquals(QuickPeriod.Last7Days, r.activePeriod(offered, today))
+        assertNull(r.withFrom("2026-10-03").activePeriod(offered, today))
+        assertNull(r.withPeriod(QuickPeriod.LastMonth, today).activePeriod(offered, today))
     }
 
     @Test

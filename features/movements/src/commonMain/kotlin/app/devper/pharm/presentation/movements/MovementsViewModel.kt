@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.movements
 
+import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.observer.TimeZoneProvider
@@ -21,13 +22,8 @@ class MovementsViewModel(
 
     init { reload() }
 
-    fun onFromChange(value: String) = setState { copy(dateRange = dateRange.withFrom(value), page = 1) }
-    fun onToChange(value: String) = setState { copy(dateRange = dateRange.withTo(value), page = 1) }
-    fun onFromMillisChange(millis: Long?) = setState {
-        copy(dateRange = dateRange.withFromMillis(millis), page = 1)
-    }
-    fun onToMillisChange(millis: Long?) = setState {
-        copy(dateRange = dateRange.withToMillis(millis), page = 1)
+    fun onRangeChange(range: PharmDateRange) = setState {
+        copy(dateRange = dateRange.withRange(range), page = 1)
     }
 
     fun onSearchChange(value: String) = setState { copy(drugName = value, page = 1) }
