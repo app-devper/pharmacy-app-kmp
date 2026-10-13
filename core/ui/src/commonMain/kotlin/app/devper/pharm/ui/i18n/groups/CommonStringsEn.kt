@@ -115,4 +115,6 @@ object CommonStringsEn : CommonStrings {
     override val commonErrorUnsupported = "This feature isn't supported on this platform yet"
     override val commonErrorGeneric = "Something went wrong"
     override val commonLoadFailedHint = "Check the connection and try again"
+    override val commonLastUpdated: (String) -> String = { at -> "Updated $at" }
+    override val commonRefreshFailedShowing: (String) -> String = { at -> "Refresh failed · showing data from $at" }
 }

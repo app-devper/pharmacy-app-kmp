@@ -115,4 +115,6 @@ interface CommonStrings {
     val commonErrorUnsupported: String
     val commonErrorGeneric: String
     val commonLoadFailedHint: String
+    val commonLastUpdated: (String) -> String
+    val commonRefreshFailedShowing: (String) -> String
 }

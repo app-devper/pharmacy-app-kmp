@@ -51,9 +51,11 @@ class FakeReportsRepository(
         private set
     var slowDrugsCalls: Int = 0
         private set
+    var dashboardThrows: Throwable? = null
 
     override suspend fun dashboard(param: DashboardRangeParam): Dashboard {
         dashboardCalls++
+        dashboardThrows?.let { throw it }
         return Dashboard(
             summary = ReportSummary(0.0, 0, 0.0, 0.0, 0, 0),
             daily = emptyList(),

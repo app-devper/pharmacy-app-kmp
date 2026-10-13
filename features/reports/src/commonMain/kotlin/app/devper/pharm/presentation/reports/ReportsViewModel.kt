@@ -17,6 +17,7 @@ import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
 import app.devper.pharm.ui.format.startOfMonth
 import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.common.BaseLoadableViewModel
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -37,14 +38,12 @@ class ReportsViewModel(
     private val timeZoneProvider: TimeZoneProvider,
     private val getProfile: GetProfileUseCase,
     stockChangeBus: StockChangeBus,
+    private val now: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : BaseLoadableViewModel<ReportsUiState>(ReportsUiState()) {
 
     private var reloadJob: Job? = null
 
     init {
-        // Ask for the role first so a MANAGER never requests ADMIN-only
-        // reports. If the profile can't load, try the full page and let the
-        // backend decide.
         viewModelScope.launch {
             val role = getProfile(Unit).getOrNull()?.role
             setState { copy(slowDrugsOnly = role != null && !role.atLeast(Role.ADMIN)) }
@@ -80,6 +79,7 @@ class ReportsViewModel(
                 val profit = p.await()
                 ensureActive()
                 val dashboardError = dashboard.exceptionOrNull()
+                val loadedAt = if (dashboard.isSuccess) now() else null
                 setState {
                     copy(
                         loading = false,
@@ -87,6 +87,7 @@ class ReportsViewModel(
                         monthProfit = profit.getOrNull()?.summary?.profit ?: this.monthProfit,
                         topDrugs = top.getOrNull() ?: this.topDrugs,
                         slowDrugs = slow.getOrNull() ?: this.slowDrugs,
+                        lastLoadedAtMillis = loadedAt ?: lastLoadedAtMillis,
                         errorState = dashboardError?.let { ReportsUiStateError.LoadSummaryFailed(it) },
                     )
                 }
@@ -100,10 +101,12 @@ class ReportsViewModel(
         reloadJob = viewModelScope.launch {
             val slow = getSlowDrugs(90)
             ensureActive()
+            val loadedAt = if (slow.isSuccess) now() else null
             setState {
                 copy(
                     loading = false,
                     slowDrugs = slow.getOrNull() ?: this.slowDrugs,
+                    lastLoadedAtMillis = loadedAt ?: lastLoadedAtMillis,
                     errorState = slow.exceptionOrNull()?.let { ReportsUiStateError.LoadSummaryFailed(it) },
                 )
             }
