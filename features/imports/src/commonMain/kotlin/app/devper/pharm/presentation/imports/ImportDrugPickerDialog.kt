@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
@@ -43,17 +44,7 @@ fun ImportDrugPickerDialog(
 ) {
     val t = pharmTokens
     var query by remember { mutableStateOf("") }
-    val visible = remember(query, drugs) {
-        if (query.isBlank()) drugs
-        else {
-            val q = query.trim().lowercase()
-            drugs.filter { d ->
-                d.name.lowercase().contains(q) ||
-                    d.barcode?.lowercase()?.contains(q) == true ||
-                    d.genericName?.lowercase()?.contains(q) == true
-            }
-        }
-    }
+    val visible = remember(query, drugs) { drugs.searchByQuery(query) }
     val s = pharmStrings
     PharmModal(
         open = true,
