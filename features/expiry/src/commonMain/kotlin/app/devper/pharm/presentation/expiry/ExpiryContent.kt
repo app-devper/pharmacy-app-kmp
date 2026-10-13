@@ -54,6 +54,7 @@ fun ExpiryContent(
                 query = state.query,
                 selectedCount = state.totalSelected,
                 writingOff = state.writingOff,
+                exporting = state.exporting,
                 callbacks = callbacks,
             )
         },
