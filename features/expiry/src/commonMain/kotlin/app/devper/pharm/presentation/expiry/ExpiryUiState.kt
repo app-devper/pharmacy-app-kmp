@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.expiry
 
 import app.devper.pharm.common.AppException
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.ui.common.LoadableUiState
@@ -23,6 +24,8 @@ data class ExpiryUiState(
     val writingOff: Boolean = false,
     val writeoffResult: WriteoffResult? = null,
     val errorState: AppException? = null,
+    val exporting: Boolean = false,
+    val messageState: CommonUiStateMessage? = null,
 ) : LoadableUiState<ExpiryUiState> {
 
     override val domainError: AppException? get() = errorState

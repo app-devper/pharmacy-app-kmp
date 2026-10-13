@@ -1,6 +1,9 @@
 package app.devper.pharm.presentation.expiry
 
+import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.ExpiringLot
+import app.devper.pharm.domain.repository.FakeExportRepository
+import app.devper.pharm.domain.usecase.reports.ExportExpiringLotsCsvUseCase
 import app.devper.pharm.domain.model.WriteoffResult
 import app.devper.pharm.domain.repository.FakeExpiringLotsRepository
 import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
@@ -28,7 +31,7 @@ class ExpiryViewModelTest {
     @Test
     fun init_loads_lots_for_default_window() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a"), lot("b")))
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         assertEquals(2, vm.state.value.lots.size)
         assertFalse(vm.state.value.loading)
@@ -37,7 +40,7 @@ class ExpiryViewModelTest {
     @Test
     fun select_window_reloads_with_new_filter() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         vm.selectWindow(ExpiryWindow.ExpiredOnly)
         advanceUntilIdle()
@@ -51,7 +54,7 @@ class ExpiryViewModelTest {
             seed = listOf(lot("a"), lot("b")),
             writeoffResult = WriteoffResult(writtenOff = 1, failures = emptyList()),
         )
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         vm.toggleSelected("a")
         vm.confirmWriteoff()
@@ -64,7 +67,7 @@ class ExpiryViewModelTest {
     @Test
     fun toggle_selected_adds_then_removes_lot() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("x")))
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         vm.toggleSelected("x")
         assertTrue("x" in vm.state.value.selected)
@@ -75,7 +78,7 @@ class ExpiryViewModelTest {
     @Test
     fun ask_confirm_and_cancel_toggles_dialog() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         vm.toggleSelected("a")
         vm.askConfirm()
@@ -87,7 +90,7 @@ class ExpiryViewModelTest {
     @Test
     fun list_failure_sets_error_state() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(listThrows = true)
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         assertIs<ExpiryUiStateError.LoadLotsFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
@@ -99,7 +102,7 @@ class ExpiryViewModelTest {
             seed = listOf(lot("a")),
             writeoffThrows = true,
         )
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         vm.toggleSelected("a")
         vm.confirmWriteoff()
@@ -114,7 +117,7 @@ class ExpiryViewModelTest {
             seed = listOf(lot("a")),
             writeoffResult = WriteoffResult(writtenOff = 1, failures = emptyList()),
         )
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
         vm.toggleSelected("a")
         vm.confirmWriteoff()
@@ -127,7 +130,7 @@ class ExpiryViewModelTest {
     @Test
     fun query_filters_by_drug_or_lot_and_select_all_affects_visible_rows_only() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a"), lot("b"), lot("c")))
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
 
         vm.onQueryChange("Lb")
@@ -141,11 +144,39 @@ class ExpiryViewModelTest {
     @Test
     fun confirm_cannot_open_without_a_selection() = runVmTest { d ->
         val repo = FakeExpiringLotsRepository(seed = listOf(lot("a")))
-        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d))
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(FakeExportRepository(), d))
         advanceUntilIdle()
 
         vm.askConfirm()
 
         assertFalse(vm.state.value.confirmDialog)
+    }
+
+    @Test
+    fun export_saves_the_lots_shown_and_says_where() = runVmTest { d ->
+        val repo = FakeExpiringLotsRepository(seed = listOf(lot("a"), lot("b")))
+        val export = FakeExportRepository(result = "/tmp/expiry_within60.csv")
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(repo, d), WriteoffLotsUseCase(repo, d), ExportExpiringLotsCsvUseCase(export, d))
+        advanceUntilIdle()
+        vm.onQueryChange("Drug a")
+        vm.onExportExcel(listOf("h1", "h2", "h3", "h4", "h5"))
+        advanceUntilIdle()
+
+        assertEquals("expiry_within60.csv", export.lastFilename)
+        assertEquals(2, export.lastBytes!!.decodeToString().trim().lines().size)
+        assertEquals(CommonUiStateMessage.ExportDone("/tmp/expiry_within60.csv"), vm.state.value.messageState)
+        assertFalse(vm.state.value.exporting)
+    }
+
+    @Test
+    fun exporting_nothing_says_so_instead_of_saving_an_empty_file() = runVmTest { d ->
+        val export = FakeExportRepository()
+        val vm = ExpiryViewModel(GetExpiringLotsUseCase(FakeExpiringLotsRepository(seed = emptyList()), d), WriteoffLotsUseCase(FakeExpiringLotsRepository(), d), ExportExpiringLotsCsvUseCase(export, d))
+        advanceUntilIdle()
+        vm.onExportExcel(emptyList())
+        advanceUntilIdle()
+
+        assertNull(export.lastFilename)
+        assertEquals(CommonUiStateMessage.ExportEmpty, vm.state.value.messageState)
     }
 }
