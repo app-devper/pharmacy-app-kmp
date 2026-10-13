@@ -11,6 +11,6 @@ data class ExpiryCallbacks(
     val onConfirmWriteoff: () -> Unit = {},
     val onCancelWriteoff: () -> Unit = {},
     val onDismissResult: () -> Unit = {},
-    val onExportExcel: () -> Unit = {},
+    val onExportExcel: (List<String>) -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

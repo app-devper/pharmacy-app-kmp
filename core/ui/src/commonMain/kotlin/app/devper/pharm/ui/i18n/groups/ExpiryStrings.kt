@@ -24,6 +24,7 @@ interface ExpiryStrings {
     val expiryHeaderLotNumber: String
     val expiryHeaderExpiry: String
     val expiryHeaderRemaining: String
+    val expiryHeaderDaysLeft: String
     val expiryStatusExpired: String
     val expiryStatusDaysLeft: (Int) -> String
     val expiryEmpty: String

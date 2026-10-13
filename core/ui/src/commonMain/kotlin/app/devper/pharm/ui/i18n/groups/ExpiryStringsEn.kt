@@ -24,6 +24,7 @@ object ExpiryStringsEn : ExpiryStrings {
     override val expiryHeaderLotNumber = "Lot number"
     override val expiryHeaderExpiry = "Expiry date"
     override val expiryHeaderRemaining = "Remaining"
+    override val expiryHeaderDaysLeft = "Days left"
     override val expiryStatusExpired = "Expired"
     override val expiryStatusDaysLeft: (Int) -> String = { days -> "$days day(s) left" }
     override val expiryEmpty = "No lots in this window"

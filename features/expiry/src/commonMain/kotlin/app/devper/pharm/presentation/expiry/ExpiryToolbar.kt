@@ -32,6 +32,7 @@ internal fun ExpiryToolbar(
     query: String,
     selectedCount: Int,
     writingOff: Boolean,
+    exporting: Boolean,
     callbacks: ExpiryCallbacks,
     modifier: Modifier = Modifier,
 ) {
@@ -57,9 +58,20 @@ internal fun ExpiryToolbar(
             ) {
                 PharmButton(
                     label = "Excel",
-                    onClick = callbacks.onExportExcel,
+                    onClick = {
+                        callbacks.onExportExcel(
+                            listOf(
+                                s.expiryHeaderDrugName,
+                                s.expiryHeaderLotNumber,
+                                s.expiryHeaderExpiry,
+                                s.expiryHeaderRemaining,
+                                s.expiryHeaderDaysLeft,
+                            ),
+                        )
+                    },
                     variant = PharmButtonVariant.Outline,
                     size = PharmButtonSize.Sm,
+                    loading = exporting,
                     leadingIcon = { Icon(PharmIcons.Excel, contentDescription = null) },
                 )
                 if (selectedCount > 0) {
