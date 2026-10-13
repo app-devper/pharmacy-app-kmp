@@ -26,9 +26,12 @@ data class ReportsUiState(
     val topDrugs: List<TopDrug> = emptyList(),
     val slowDrugs: List<SlowDrug> = emptyList(),
     val slowDrugsOnly: Boolean = false,
+    val lastLoadedAtMillis: Long? = null,
     val errorState: AppException? = null,
 ) : LoadableUiState<ReportsUiState> {
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+
+    val refreshFailed: Boolean get() = errorState != null && lastLoadedAtMillis != null
 }

@@ -33,6 +33,7 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
+import app.devper.pharm.ui.designsystem.PharmFreshnessLine
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListToolbar
@@ -73,6 +74,7 @@ fun ReportsContent(
                     ReportsWindowChips(state = state, onSelectWindow = callbacks.onSelectWindow)
                 },
             )
+            PharmFreshnessLine(lastLoadedAtMillis = state.lastLoadedAtMillis, refreshFailed = state.refreshFailed)
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 PharmListBody(
                     loading = state.loading,
@@ -153,6 +155,7 @@ private fun ReportsSlowDrugsOnlyContent(state: ReportsUiState, callbacks: Report
                 subtitle = s.reportsSubtitle,
                 actions = { ReportsRefreshButton(state = state, callbacks = callbacks) },
             )
+            PharmFreshnessLine(lastLoadedAtMillis = state.lastLoadedAtMillis, refreshFailed = state.refreshFailed)
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 val slowDrugs: @Composable () -> Unit = {
                         LazyColumn(
