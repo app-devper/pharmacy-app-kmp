@@ -145,6 +145,10 @@ license headers required by upstream libraries.
     onLoaded)` starts loading, clears the error, cancels a load still in
     flight (a slow older answer never overwrites a newer one), then applies
     the value or the typed failure; plus `dismissError()`.
+    `BaseExportableViewModel` (states implement `ExportableUiState`) adds
+    `export(rows, save)` — nothing to export → `ExportEmpty`; otherwise
+    `exporting` → `ExportDone(path)` or `CommonUiStateError.ExportFailed` —
+    plus `dismissMessage()`.
   - **Domain validation is structured, not stringly**:
     `:core:domain/validation/` — `FieldValidationError(field: FieldLabel,
     rule)` thrown by `Field.*` validators, plus `SaleValidationError`

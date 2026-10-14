@@ -1,7 +1,5 @@
 package app.devper.pharm.presentation.expiry
 
-import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.reports.ExportExpiringLotsCsvParam
 import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
@@ -9,13 +7,13 @@ import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
 import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
 import app.devper.pharm.domain.usecase.reports.ExportExpiringLotsCsvUseCase
 import app.devper.pharm.presentation.expiry.exception.ExpiryUiStateError
-import app.devper.pharm.ui.common.BaseLoadableViewModel
+import app.devper.pharm.ui.common.BaseExportableViewModel
 
 class ExpiryViewModel(
     private val getExpiringLots: GetExpiringLotsUseCase,
     private val writeoffLots: WriteoffLotsUseCase,
     private val exportExpiringLotsCsv: ExportExpiringLotsCsvUseCase,
-) : BaseLoadableViewModel<ExpiryUiState>(ExpiryUiState()) {
+) : BaseExportableViewModel<ExpiryUiState>(ExpiryUiState()) {
 
     init { reload() }
 
@@ -28,20 +26,10 @@ class ExpiryViewModel(
 
     fun onExportExcel(headers: List<String>) {
         val s = current
-        val rows = s.filteredLots
-        if (rows.isEmpty()) {
-            setState { copy(messageState = CommonUiStateMessage.ExportEmpty) }
-            return
+        export(s.filteredLots) { rows ->
+            exportExpiringLotsCsv(ExportExpiringLotsCsvParam(windowTag = s.window.name, rows = rows, headers = headers))
         }
-        setState { copy(exporting = true) }
-        launchResult(
-            block = { exportExpiringLotsCsv(ExportExpiringLotsCsvParam(windowTag = s.window.name, rows = rows, headers = headers)) },
-            onSuccess = { path -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(path)) } },
-            onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
-        )
     }
-
-    fun dismissMessage() = setState { copy(messageState = null) }
 
     fun toggleSelected(lotId: String) = setState {
         copy(selected = if (lotId in selected) selected - lotId else selected + lotId)
