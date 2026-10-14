@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.domain.repository.suppliers.SupplierRepository
 import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 
 import app.devper.pharm.common.value.Money
@@ -15,7 +16,6 @@ import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
 import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.ui.common.BaseFormViewModel
@@ -26,7 +26,7 @@ class ImportFormViewModel(
     private val addPurchaseOrder: AddPurchaseOrderUseCase,
     private val updatePurchaseOrder: UpdatePurchaseOrderUseCase,
     private val getDrugs: GetDrugsUseCase,
-    private val getSuppliers: GetSuppliersUseCase,
+    private val suppliers: SupplierRepository,
     private val purchaseDraft: PurchaseDraftProvider,
 ) : BaseFormViewModel<ImportFormUiState>(ImportFormUiState()) {
 
@@ -131,7 +131,7 @@ class ImportFormViewModel(
 
     private fun loadSuppliers() {
         launchResult(
-            block = { getSuppliers() },
+            block = { Result.success(suppliers.list()) },
             onSuccess = { list -> setState { copy(suppliers = list) } },
             onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadSuppliersFailed(e)) } },
         )
