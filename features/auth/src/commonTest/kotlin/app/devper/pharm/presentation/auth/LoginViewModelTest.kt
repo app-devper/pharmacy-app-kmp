@@ -9,8 +9,6 @@ import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
 import app.devper.pharm.domain.model.UiPreferences
 import app.devper.pharm.domain.observer.SessionExpiryProvider
-import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
-import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -34,8 +32,7 @@ class LoginViewModelTest {
         val vm = LoginViewModel(
             login = LoginUseCase(repo, dispatchers),
             uiPreferences = UiPreferencesProvider(uiPrefs),
-            setLocale = SetLocalePreferenceUseCase(uiPrefs),
-            setLastUsername = SetLastUsernameUseCase(uiPrefs),
+            preferences = uiPrefs,
             sessionExpiry = sessionExpiry,
         )
         return Triple(vm, repo, uiPrefs)

@@ -11,7 +11,7 @@ import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.usecase.auth.LogoutUseCase
-import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
+import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ class AppViewModel(
     private val offlineAutoSync: OfflineAutoSync,
     private val logout: LogoutUseCase,
     private val getProfile: GetProfileUseCase,
-    private val setTheme: SetThemePreferenceUseCase,
+    private val preferences: UiPreferencesRepository,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
 
     init {
@@ -80,7 +80,7 @@ class AppViewModel(
     }
 
     fun toggleTheme(currentlyDark: Boolean) {
-        setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark)
+        runCatching { preferences.setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark) }
             .onFailure { e -> setState { copy(errorState = AppUiStateError.ThemeChangeFailed(e)) } }
     }
 

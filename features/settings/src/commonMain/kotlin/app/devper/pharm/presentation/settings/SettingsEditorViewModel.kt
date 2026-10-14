@@ -19,12 +19,8 @@ import app.devper.pharm.domain.param.settings.StockSettingsInput
 import app.devper.pharm.domain.param.settings.UpdateSettingsParam
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
-import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
-import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
+import app.devper.pharm.domain.repository.settings.SettingsRepository
+import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,14 +28,10 @@ import kotlinx.coroutines.flow.onEach
 
 class SettingsEditorViewModel(
     settings: SettingsProvider,
-    private val refreshSettings: RefreshSettingsUseCase,
-    private val updateSettings: UpdateSettingsUseCase,
+    private val storeSettings: SettingsRepository,
     private val printReceipt: PrintReceiptUseCase,
     uiPreferences: UiPreferencesProvider,
-    private val setTheme: SetThemePreferenceUseCase,
-    private val setFontSize: SetFontSizePreferenceUseCase,
-    private val setDensity: SetDensityPreferenceUseCase,
-    private val setLocale: SetLocalePreferenceUseCase,
+    private val preferences: UiPreferencesRepository,
 ) : BaseLoadableViewModel<SettingsEditorUiState>(SettingsEditorUiState()) {
 
     private var hydrated = false
@@ -70,7 +62,7 @@ class SettingsEditorViewModel(
 
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { refreshSettings() },
+            block = { Result.success(storeSettings.refresh()) },
             onSuccess = { fresh ->
                 hydrated = true
                 val fields = fresh.toForm()
@@ -83,7 +75,7 @@ class SettingsEditorViewModel(
     fun reload() {
         if (current.saving) return
         launchResult(
-            block = { refreshSettings() },
+            block = { Result.success(storeSettings.refresh()) },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
                 setState { copy(baseline = fields, form = if (dirty) form else fields) }
@@ -94,16 +86,16 @@ class SettingsEditorViewModel(
 
     fun selectTab(tab: SettingsTab) = setState { copy(tab = tab) }
 
-    fun onThemeChange(value: String) = setTheme(ThemePreference.parse(value))
+    fun onThemeChange(value: String) = preferences.setTheme(ThemePreference.parse(value))
 
-    fun onFontSizeChange(value: String) = setFontSize(FontSizePreference.parse(value))
+    fun onFontSizeChange(value: String) = preferences.setFontSize(FontSizePreference.parse(value))
 
-    fun onDensityChange(value: String) = setDensity(DensityPreference.parse(value))
+    fun onDensityChange(value: String) = preferences.setDensity(DensityPreference.parse(value))
 
     fun onLocaleChange(value: String) {
         val parsed = LocalePreference.parse(value)
         if (parsed.wire == current.locale) return
-        setLocale(parsed)
+        preferences.setLocale(parsed)
         setState { copy(localeChangeApplied = true) }
     }
 
@@ -150,7 +142,7 @@ class SettingsEditorViewModel(
         val f = current.form
         setState { copy(saving = true, errorState = null, messageState = null) }
         launchResult(
-            block = { updateSettings(f.toParam()) },
+            block = { Result.success(storeSettings.update(f.toParam())) },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
                 setState { copy(saving = false, baseline = fields, form = fields, messageState = CommonUiStateMessage.Saved) }

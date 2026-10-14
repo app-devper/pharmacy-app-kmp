@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.settings
 
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -55,14 +53,10 @@ class SettingsEditorViewModelTest {
             app.devper.pharm.domain.repository.FakeUiPreferencesRepository(),
     ) = SettingsEditorViewModel(
         SettingsProvider(repo),
-        RefreshSettingsUseCase(repo, d),
-        UpdateSettingsUseCase(repo, d),
+        repo,
         app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase(printer, d),
         app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase(uiPrefs),
+        uiPrefs,
     )
 
     @Test
