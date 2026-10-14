@@ -4,8 +4,7 @@ import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
-import app.devper.pharm.domain.extension.atLeast
-import app.devper.pharm.domain.model.Role
+import app.devper.pharm.domain.model.permissions
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.DashboardRangeParam
@@ -46,7 +45,7 @@ class ReportsViewModel(
     init {
         viewModelScope.launch {
             val role = getProfile(Unit).getOrNull()?.role
-            setState { copy(slowDrugsOnly = role != null && !role.atLeast(Role.ADMIN)) }
+            setState { copy(slowDrugsOnly = role != null && !role.permissions().canSeeFinancialReports) }
             reload()
         }
         stockChangeBus.events
