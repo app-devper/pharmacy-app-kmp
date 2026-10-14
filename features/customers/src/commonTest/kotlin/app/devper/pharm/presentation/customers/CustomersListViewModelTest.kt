@@ -2,7 +2,6 @@ package app.devper.pharm.presentation.customers
 
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.repository.FakeCustomerRepository
-import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.ui.common.runVmTest
 import app.devper.pharm.presentation.customers.exception.CustomersListUiStateError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +22,7 @@ class CustomersListViewModelTest {
     @Test
     fun init_loads_customers() = runVmTest { d ->
         val repo = FakeCustomerRepository(seed = listOf(customer("a"), customer("b")))
-        val vm = CustomersListViewModel(GetCustomersUseCase(repo, d))
+        val vm = CustomersListViewModel(repo)
         advanceUntilIdle()
         assertEquals(2, vm.state.value.customers.size)
         assertFalse(vm.state.value.loading)
@@ -32,7 +31,7 @@ class CustomersListViewModelTest {
 
     @Test
     fun query_change_updates_state() = runVmTest { d ->
-        val vm = CustomersListViewModel(GetCustomersUseCase(FakeCustomerRepository(), d))
+        val vm = CustomersListViewModel(FakeCustomerRepository())
         advanceUntilIdle()
         vm.onQueryChange("สมศรี")
         assertEquals("สมศรี", vm.state.value.query)
@@ -40,7 +39,7 @@ class CustomersListViewModelTest {
 
     @Test
     fun load_failure_uses_customer_specific_error() = runVmTest { d ->
-        val vm = CustomersListViewModel(GetCustomersUseCase(FakeCustomerRepository(listThrows = true), d))
+        val vm = CustomersListViewModel(FakeCustomerRepository(listThrows = true))
         advanceUntilIdle()
         assertIs<CustomersListUiStateError.LoadCustomersFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)

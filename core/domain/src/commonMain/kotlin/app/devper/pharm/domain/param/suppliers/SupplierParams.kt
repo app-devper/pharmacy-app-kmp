@@ -8,8 +8,3 @@ data class SupplierInput(
     val taxId: String = "",
     val notes: String = "",
 )
-
-data class UpdateSupplierParam(
-    val id: String,
-    val input: SupplierInput,
-)

@@ -1,17 +1,12 @@
 package app.devper.pharm.presentation.suppliers
 
+import app.devper.pharm.domain.repository.suppliers.SupplierRepository
 import app.devper.pharm.domain.param.suppliers.SupplierInput
-import app.devper.pharm.domain.param.suppliers.UpdateSupplierParam
-import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
-import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.suppliers.UpdateSupplierUseCase
 import app.devper.pharm.presentation.suppliers.exception.SupplierFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class SupplierFormViewModel(
-    private val getSuppliers: GetSuppliersUseCase,
-    private val addSupplier: AddSupplierUseCase,
-    private val updateSupplier: UpdateSupplierUseCase,
+    private val suppliers: SupplierRepository,
 ) : BaseFormViewModel<SupplierFormUiState>(SupplierFormUiState()) {
 
     fun init(mode: SupplierFormMode) {
@@ -28,16 +23,17 @@ class SupplierFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val input = current.form.toInput()
-        return when (val mode = current.mode) {
-            is SupplierFormMode.Add  -> addSupplier(input).map { Unit }
-            is SupplierFormMode.Edit -> updateSupplier(UpdateSupplierParam(id = mode.supplierId, input = input))
+        when (val mode = current.mode) {
+            is SupplierFormMode.Add  -> suppliers.add(input)
+            is SupplierFormMode.Edit -> suppliers.update(mode.supplierId, input)
         }
+        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(id: String) {
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { getSuppliers() },
+            block = { Result.success(suppliers.list()) },
             onSuccess = { list ->
                 val s = list.firstOrNull { it.id == id }
                 if (s == null) {

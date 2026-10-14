@@ -8,8 +8,6 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.repository.FakeCustomerRepository
-import app.devper.pharm.domain.usecase.customers.GetCustomerSalesUseCase
-import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -52,8 +50,7 @@ class CustomerDetailViewModelTest {
         repo: FakeCustomerRepository = FakeCustomerRepository(),
     ): Bundle {
         val vm = CustomerDetailViewModel(
-            getCustomers = GetCustomersUseCase(repo, dispatchers),
-            getCustomerSales = GetCustomerSalesUseCase(repo, dispatchers),
+            customers = repo,
         )
         return Bundle(vm, repo)
     }
