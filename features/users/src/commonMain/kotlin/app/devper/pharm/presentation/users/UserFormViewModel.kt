@@ -1,18 +1,14 @@
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.domain.repository.users.UsersRepository
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.UpdateUserParam
-import app.devper.pharm.domain.usecase.users.CreateUserUseCase
-import app.devper.pharm.domain.usecase.users.GetUsersUseCase
-import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
 import app.devper.pharm.presentation.users.exception.UserFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class UserFormViewModel(
-    private val getUsers: GetUsersUseCase,
-    private val createUser: CreateUserUseCase,
-    private val updateUser: UpdateUserUseCase,
+    private val users: UsersRepository,
 ) : BaseFormViewModel<UserFormUiState>(UserFormUiState()) {
 
     fun init(mode: UserFormMode) {
@@ -29,8 +25,8 @@ class UserFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val f = current.form
-        return when (val mode = current.mode) {
-            is UserFormMode.Add -> createUser(
+        when (val mode = current.mode) {
+            is UserFormMode.Add -> users.create(
                 CreateUserParam(
                     firstName = f.firstName.trim(),
                     lastName = f.lastName.trim(),
@@ -39,8 +35,8 @@ class UserFormViewModel(
                     phone = f.phone.trim(),
                     email = f.email.trim(),
                 ),
-            ).map { Unit }
-            is UserFormMode.Edit -> updateUser(
+            )
+            is UserFormMode.Edit -> users.update(
                 UpdateUserParam(
                     id = mode.id,
                     firstName = f.firstName.trim(),
@@ -48,14 +44,15 @@ class UserFormViewModel(
                     phone = f.phone.trim(),
                     email = f.email.trim(),
                 ),
-            ).map { Unit }
+            )
         }
+        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(id: String) {
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { getUsers() },
+            block = { Result.success(users.list()) },
             onSuccess = { list ->
                 val user = list.firstOrNull { it.id == id }
                 if (user == null) {
