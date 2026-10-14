@@ -10,13 +10,7 @@ import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.repository.FakeUsersRepository
-import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
-import app.devper.pharm.domain.usecase.users.GetUserRulesUseCase
-import app.devper.pharm.domain.usecase.users.GetUsersUseCase
-import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
-import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
-import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -36,12 +30,7 @@ class UsersListViewModelTest {
         dispatchers: AppDispatchers,
     ): UsersListViewModel = UsersListViewModel(
         getProfile = GetProfileUseCase(profile, dispatchers),
-        getUsers = GetUsersUseCase(users, dispatchers),
-        getUserRules = GetUserRulesUseCase(users, dispatchers),
-        deleteUser = DeleteUserUseCase(users, dispatchers),
-        setUserRole = SetUserRoleUseCase(users, dispatchers),
-        setUserStatus = SetUserStatusUseCase(users, dispatchers),
-        setUserPassword = SetUserPasswordUseCase(users, dispatchers),
+        users = users,
     )
 
     @Test

@@ -13,6 +13,5 @@ val domainModule = module {
         reportsDomainModule,
         salesDomainModule,
         settingsDomainModule,
-        usersDomainModule,
     )
 }

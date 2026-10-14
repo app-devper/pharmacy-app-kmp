@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.domain.repository.users.UsersRepository
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmStatus
@@ -7,24 +8,13 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.users.SetUserPasswordParam
 import app.devper.pharm.domain.param.users.SetUserRoleParam
 import app.devper.pharm.domain.param.users.SetUserStatusParam
-import app.devper.pharm.domain.usecase.users.DeleteUserUseCase
 import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
-import app.devper.pharm.domain.usecase.users.GetUserRulesUseCase
-import app.devper.pharm.domain.usecase.users.GetUsersUseCase
-import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
-import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
-import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class UsersListViewModel(
     private val getProfile: GetProfileUseCase,
-    private val getUsers: GetUsersUseCase,
-    private val getUserRules: GetUserRulesUseCase,
-    private val deleteUser: DeleteUserUseCase,
-    private val setUserRole: SetUserRoleUseCase,
-    private val setUserStatus: SetUserStatusUseCase,
-    private val setUserPassword: SetUserPasswordUseCase,
+    private val users: UsersRepository,
 ) : BaseLoadableViewModel<UsersListUiState>(UsersListUiState()) {
 
     init {
@@ -34,12 +24,12 @@ class UsersListViewModel(
 
     fun reload() {
         load(
-            fetch = { getUsers() },
+            fetch = { Result.success(users.list()) },
             failure = { e -> UsersUiStateError.LoadUsersFailed(e) },
             onLoaded = { list -> copy(users = list) },
         )
         launchResult(
-            block = { getUserRules() },
+            block = { Result.success(users.rules()) },
             onSuccess = { rules -> setState { copy(creatableRoles = rules.creatableRoles) } },
             onFailure = { setState { copy(creatableRoles = emptyList()) } },
         )
@@ -57,7 +47,7 @@ class UsersListViewModel(
         val target = current.actionTarget ?: return
         setState { copy(actionBusy = true) }
         launchResult(
-            block = { deleteUser(target.id) },
+            block = { Result.success(users.delete(target.id)) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -73,7 +63,7 @@ class UsersListViewModel(
         if (role == Role.UNKNOWN) return
         setState { copy(actionBusy = true) }
         launchResult(
-            block = { setUserRole(SetUserRoleParam(target.id, role)) },
+            block = { Result.success(users.setRole(SetUserRoleParam(target.id, role))) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -89,7 +79,7 @@ class UsersListViewModel(
         val next = if (target.status.isActive) UmStatus.INACTIVE else UmStatus.ACTIVE
         setState { copy(actionBusy = true) }
         launchResult(
-            block = { setUserStatus(SetUserStatusParam(target.id, next)) },
+            block = { Result.success(users.setStatus(SetUserStatusParam(target.id, next))) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -105,7 +95,7 @@ class UsersListViewModel(
         if (newPassword.isBlank()) return
         setState { copy(actionBusy = true) }
         launchResult(
-            block = { setUserPassword(SetUserPasswordParam(target.id, newPassword)) },
+            block = { Result.success(users.setPassword(SetUserPasswordParam(target.id, newPassword))) },
             onSuccess = {
                 dismissAction()
                 reload()
