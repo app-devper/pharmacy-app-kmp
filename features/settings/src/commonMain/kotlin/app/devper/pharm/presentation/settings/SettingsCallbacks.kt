@@ -10,6 +10,7 @@ data class SettingsEditorCallbacks(
     val onStoreAddress: (String) -> Unit = {},
     val onStorePhone: (String) -> Unit = {},
     val onStoreTaxId: (String) -> Unit = {},
+    val onStoreLicenseNo: (String) -> Unit = {},
     val onReceiptHeader: (String) -> Unit = {},
     val onReceiptFooter: (String) -> Unit = {},
     val onReceiptPaperWidth: (String) -> Unit = {},

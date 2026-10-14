@@ -13,6 +13,7 @@ interface SettingsStrings {
     val settingsStoreNamePlaceholder: String
     val settingsStoreAddress: String
     val settingsStoreTaxId: String
+    val settingsStoreLicenseNo: String
     val settingsStoreTimezone: String
     val settingsStoreTimezoneInvalid: String
     val settingsReceiptHeader: String
