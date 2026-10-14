@@ -2,26 +2,23 @@ package app.devper.pharm.domain.model
 
 import app.devper.pharm.domain.extension.atLeast
 
-/**
- * What the signed-in role may do inside screens, matching pharmacy-api's route
- * permissions (ADR-0004). Screens hide actions the backend would refuse; the
- * backend still enforces every rule.
- */
 data class RolePermissions(
-    /** Create, edit, and bulk-import drugs, including selling prices (ADMIN+). */
     val canEditDrugs: Boolean,
-    /** Adjust stock, add or delete lots, and open reorder suggestions (MANAGER+). */
     val canManageStock: Boolean,
-    /** Void a whole bill (ADMIN+). */
     val canVoidSales: Boolean,
-    /** Edit or delete customer profiles (MANAGER+). */
     val canEditCustomers: Boolean,
-    /** Abandon a pending sale or close its refused KY forms, with a reason (ADMIN+). */
     val canResolvePendingSales: Boolean,
+    val canSeeFinancialReports: Boolean,
 ) {
     companion object {
-        /** Everything allowed; the default outside the signed-in shell (previews, tests). */
-        val Full = RolePermissions(canEditDrugs = true, canManageStock = true, canVoidSales = true, canEditCustomers = true, canResolvePendingSales = true)
+        val Full = RolePermissions(
+            canEditDrugs = true,
+            canManageStock = true,
+            canVoidSales = true,
+            canEditCustomers = true,
+            canResolvePendingSales = true,
+            canSeeFinancialReports = true,
+        )
     }
 }
 
@@ -31,4 +28,5 @@ fun Role.permissions(): RolePermissions = RolePermissions(
     canVoidSales = atLeast(Role.ADMIN),
     canEditCustomers = atLeast(Role.MANAGER),
     canResolvePendingSales = atLeast(Role.ADMIN),
+    canSeeFinancialReports = atLeast(Role.ADMIN),
 )

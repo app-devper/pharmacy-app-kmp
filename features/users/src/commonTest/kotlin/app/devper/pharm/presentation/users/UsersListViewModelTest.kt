@@ -17,7 +17,6 @@ import app.devper.pharm.domain.usecase.users.GetUsersUseCase
 import app.devper.pharm.domain.usecase.users.SetUserPasswordUseCase
 import app.devper.pharm.domain.usecase.users.SetUserRoleUseCase
 import app.devper.pharm.domain.usecase.users.SetUserStatusUseCase
-import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
