@@ -8,7 +8,7 @@ import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.param.ky.ExportKyFormParam
 import app.devper.pharm.domain.param.reports.ExportProfitCsvParam
-import app.devper.pharm.domain.repository.ky.ExportRepository
+import app.devper.pharm.domain.repository.export.ExportRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
