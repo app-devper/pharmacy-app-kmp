@@ -417,6 +417,10 @@ details in git log.
   `CartStateProvider`, `ParkedCartsProvider` and `FakeCartRepository`
   are deleted; sell view models take `Cart`, and their tests assert on
   its state.
+- **KY capture session**: `KyCaptureSession` (`:core:domain/cart/`, next
+  to `Cart`) owns when a sale must stop for ขย. capture, a pre-capture
+  and when a cart change invalidates it, the cashier's skip, and what the
+  checkout request carries. `CheckoutViewModel` keeps only dialog flags.
 - **List load states**: `PharmListBody` (`:core:ui/designsystem/`) owns
   the loading / failed / empty / content decision for every list page
   (`listBodyOf`, unit-tested once) and always offers retry on a failed
