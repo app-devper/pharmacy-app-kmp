@@ -1,14 +1,14 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.domain.repository.ky.KyRepository
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
 import app.devper.pharm.domain.validation.buildKy9Draft
-import app.devper.pharm.domain.usecase.ky.AddKy9UseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class Ky9AddViewModel(
-    private val addKy9: AddKy9UseCase,
+    private val ky: KyRepository,
 ) : BaseFormViewModel<Ky9AddUiState>(Ky9AddUiState()) {
 
     fun onDate(v: String) = patch { copy(date = v) }
@@ -32,7 +32,8 @@ class Ky9AddViewModel(
             seller = d.seller,
             invoiceNo = d.invoiceNo,
         ).getOrElse { return Result.failure(it) }
-        return addKy9(param)
+        ky.addKy9(param)
+        return Result.success(Unit)
     }
 
     private fun patch(transform: Ky9Draft.() -> Ky9Draft) {

@@ -1,11 +1,11 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.domain.repository.ky.KyRepository
 import app.devper.pharm.domain.validation.buildKy12Draft
-import app.devper.pharm.domain.usecase.ky.AddKy12UseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class Ky12AddViewModel(
-    private val addKy12: AddKy12UseCase,
+    private val ky: KyRepository,
 ) : BaseFormViewModel<Ky12AddUiState>(Ky12AddUiState()) {
 
     fun onDate(v: String) = patch { copy(date = v) }
@@ -35,7 +35,8 @@ class Ky12AddViewModel(
             totalValue = d.totalValue,
             status = d.status,
         ).getOrElse { return Result.failure(it) }
-        return addKy12(form)
+        ky.submitKy12(form)
+        return Result.success(Unit)
     }
 
     private fun patch(transform: Ky12Draft.() -> Ky12Draft) {

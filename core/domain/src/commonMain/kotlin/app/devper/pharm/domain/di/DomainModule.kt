@@ -6,7 +6,6 @@ val domainModule = module {
     includes(
         authDomainModule,
         inventoryDomainModule,
-        kyDomainModule,
         offlineSyncDomainModule,
         profileDomainModule,
         reportsDomainModule,

@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.repository.FakeKyRepository
-import app.devper.pharm.domain.usecase.ky.AddKy12UseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -22,7 +21,7 @@ class Ky12AddViewModelTest {
 
     @Test
     fun total_value_setter_strips_letters_and_extra_dots() = runVmTest { d ->
-        val vm = Ky12AddViewModel(AddKy12UseCase(FakeKyRepository(), d))
+        val vm = Ky12AddViewModel(FakeKyRepository())
         vm.onTotalValue("1a2.5b6.7")
         assertEquals("12.567", vm.state.value.draft.totalValue)
     }
@@ -30,7 +29,7 @@ class Ky12AddViewModelTest {
     @Test
     fun submit_valid_draft_saves_and_records_form() = runVmTest { d ->
         val repo = FakeKyRepository()
-        val vm = Ky12AddViewModel(AddKy12UseCase(repo, d))
+        val vm = Ky12AddViewModel(repo)
         fill(vm)
         vm.submit()
         advanceUntilIdle()
@@ -42,7 +41,7 @@ class Ky12AddViewModelTest {
     @Test
     fun submit_blank_draft_is_noop() = runVmTest { d ->
         val repo = FakeKyRepository()
-        val vm = Ky12AddViewModel(AddKy12UseCase(repo, d))
+        val vm = Ky12AddViewModel(repo)
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)

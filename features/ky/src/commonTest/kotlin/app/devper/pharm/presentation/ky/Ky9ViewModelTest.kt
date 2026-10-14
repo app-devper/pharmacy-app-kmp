@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
-import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy9EntriesUseCase
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +19,7 @@ class Ky9ViewModelTest {
     @Test
     fun init_loads_without_error() = runVmTest { d ->
         val repo = FakeKyRepository()
-        val vm = Ky9ViewModel(GetKy9EntriesUseCase(repo, d), ExportKyFormUseCase(FakeExportRepository(), d))
+        val vm = Ky9ViewModel(repo, FakeExportRepository())
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertNull(vm.state.value.errorState)
@@ -30,8 +28,8 @@ class Ky9ViewModelTest {
     @Test
     fun init_failure_surfaces_entries_specific_error() = runVmTest { d ->
         val vm = Ky9ViewModel(
-            GetKy9EntriesUseCase(FakeKyRepository(listThrows = true), d),
-            ExportKyFormUseCase(FakeExportRepository(), d),
+            FakeKyRepository(listThrows = true),
+            FakeExportRepository(),
         )
         advanceUntilIdle()
         assertIs<KyUiStateError.LoadEntriesFailed>(vm.state.value.errorState)
@@ -41,7 +39,7 @@ class Ky9ViewModelTest {
     @Test
     fun month_change_updates_state() = runVmTest { d ->
         val repo = FakeKyRepository()
-        val vm = Ky9ViewModel(GetKy9EntriesUseCase(repo, d), ExportKyFormUseCase(FakeExportRepository(), d))
+        val vm = Ky9ViewModel(repo, FakeExportRepository())
         advanceUntilIdle()
         vm.onMonthChange("2026-05")
         assertEquals("2026-05", vm.state.value.month)
@@ -50,7 +48,7 @@ class Ky9ViewModelTest {
     @Test
     fun export_pdf_uses_ky9_form() = runVmTest { d ->
         val export = FakeExportRepository(result = "saved.pdf")
-        val vm = Ky9ViewModel(GetKy9EntriesUseCase(FakeKyRepository(), d), ExportKyFormUseCase(export, d))
+        val vm = Ky9ViewModel(FakeKyRepository(), export)
         advanceUntilIdle()
         vm.exportPdf()
         advanceUntilIdle()

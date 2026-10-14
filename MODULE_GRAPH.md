@@ -92,7 +92,7 @@ direction is correct (features → domain → common), just declared once
 at the layer that needs to re-export.
 
 **Note on DI module layout**:
-- `:core:domain` → `domainModule` (76 bindings: 5 providers + 1 parser + 68 use cases + 2 settings use cases)
+- `:core:domain` → `domainModule` (providers, parsers, and the use cases that hold a rule; pass-through use cases are not bound — view models inject repositories)
 - `:core:data` → `dataModule` (33 bindings: Apis + RepositoryImpls)
 - `:features:<x>/di/<Feature>Module.kt` → ONLY VM `factoryOf` bindings (one DI module per feature module)
 - `:composeApp/di/AppModule.kt` → composition root: `includes(commonModule, domainModule, dataModule, authModule, customersModule, …, sellModule, settingsModule, …)` — 20 per-feature includes.
@@ -152,7 +152,7 @@ bound via Koin in each Main*.kt's platform module.
 | `model/` | Drug, Customer, Supplier, Sale, Cart*, Lot, Adjustment, StockCount, PurchaseOrder, KyEntry*, KyForms, Settings, User, Role, LabelPrint, UiPreferences, … |
 | `param/<feature>/` | All `*Param` inputs grouped per feature |
 | `repository/<feature>/` | Repo interfaces grouped per feature (impls live in `:core:data`) |
-| `usecase/<feature>/` | 70+ use cases grouped per feature: auth, customers, suppliers, inventory, ky, offlinesync, purchasing, reports, sales, settings, labels. Each extends `BaseUseCase` / `BaseSyncUseCase`. |
+| `usecase/<feature>/` | Use cases that hold a rule (checkout, close EOD, void, KY form submission, the CSV exports, …), grouped per feature. Each extends `BaseUseCase` / `BaseSyncUseCase`. A use case that would only forward one call to a repository is not written: view models inject the `<X>Repository` port directly (settings, customers, suppliers, users, purchasing and KY were migrated this way). |
 | `extension/`, `event/`, `observer/` | Cross-cutting domain helpers (extension fns + builders + parsers in `extension/XxxExt.kt`) + 5 Provider classes |
 | `di/<Feature>DomainModule.kt` × 10 | Per-feature Koin modules. Composer `DomainModule.kt` includes all. |
 
