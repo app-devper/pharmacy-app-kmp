@@ -1,14 +1,14 @@
 package app.devper.pharm.presentation.bulkimport
 
+import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.validation.parseBulkImportJson
-import app.devper.pharm.domain.usecase.purchasing.BulkImportDrugsUseCase
 import app.devper.pharm.presentation.bulkimport.exception.BulkImportUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class BulkImportViewModel(
-    private val bulkImportDrugs: BulkImportDrugsUseCase,
+    private val drugs: DrugRepository,
     private val filePicker: FilePicker,
 ) : BaseLoadableViewModel<BulkImportUiState>(BulkImportUiState()) {
 
@@ -62,7 +62,7 @@ class BulkImportViewModel(
         setState { copy(parsed = parsed, previewCount = parsed.size, result = null) }
         setState { copy(submitting = true, errorState = null) }
         launchResult(
-            block = { bulkImportDrugs(parsed) },
+            block = { Result.success(drugs.bulkImport(parsed)) },
             onSuccess = { res -> setState { copy(submitting = false, result = res) } },
             onFailure = { e -> setState { copy(submitting = false, errorState = BulkImportUiStateError.ImportFailed(e)) } },
         )
