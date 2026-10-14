@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.imports
 
 import app.devper.pharm.domain.repository.suppliers.SupplierRepository
+import app.devper.pharm.domain.repository.purchasing.PurchaseOrderRepository
 import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 
 import app.devper.pharm.common.value.Money
@@ -13,18 +14,13 @@ import app.devper.pharm.domain.param.purchasing.AddPurchaseOrderParam
 import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
 import app.devper.pharm.domain.validation.buildPurchaseOrderItemInput
 import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
-import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.ui.common.BaseFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class ImportFormViewModel(
-    private val getPurchaseOrder: GetPurchaseOrderUseCase,
-    private val addPurchaseOrder: AddPurchaseOrderUseCase,
-    private val updatePurchaseOrder: UpdatePurchaseOrderUseCase,
+    private val purchaseOrders: PurchaseOrderRepository,
     private val getDrugs: GetDrugsUseCase,
     private val suppliers: SupplierRepository,
     private val purchaseDraft: PurchaseDraftProvider,
@@ -97,8 +93,8 @@ class ImportFormViewModel(
                 return Result.failure(ValidationException(message = "ตรวจสอบข้อมูลไม่ผ่าน: ${e.message}", cause = e))
             }
         }
-        return when (val mode = current.mode) {
-            is ImportFormMode.Add -> addPurchaseOrder(
+        when (val mode = current.mode) {
+            is ImportFormMode.Add -> purchaseOrders.add(
                 AddPurchaseOrderParam(
                     supplier = f.supplier.trim(),
                     invoiceNo = f.invoiceNo.trim(),
@@ -106,9 +102,9 @@ class ImportFormViewModel(
                     notes = f.notes.trim(),
                     items = itemInputs,
                 ),
-            ).map { Unit }
+            )
 
-            is ImportFormMode.Edit -> updatePurchaseOrder(
+            is ImportFormMode.Edit -> purchaseOrders.update(
                 UpdatePurchaseOrderParam(
                     id = mode.importId,
                     supplier = f.supplier.trim(),
@@ -117,8 +113,9 @@ class ImportFormViewModel(
                     notes = f.notes.trim(),
                     items = itemInputs,
                 ),
-            ).map { Unit }
+            )
         }
+        return Result.success(Unit)
     }
 
     private fun loadDrugs() {
@@ -140,7 +137,7 @@ class ImportFormViewModel(
     private fun hydrateForEdit(id: String) {
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { getPurchaseOrder(id) },
+            block = { Result.success(purchaseOrders.get(id)) },
             onSuccess = { po ->
                 val readOnly = po.status == PurchaseOrderStatus.Confirmed
                 val hydratedForm = ImportFormFields(

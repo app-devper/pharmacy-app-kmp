@@ -9,7 +9,6 @@ val domainModule = module {
         kyDomainModule,
         offlineSyncDomainModule,
         profileDomainModule,
-        purchasingDomainModule,
         reportsDomainModule,
         salesDomainModule,
         settingsDomainModule,

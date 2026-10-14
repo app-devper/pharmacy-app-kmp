@@ -7,7 +7,6 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.FilePicker
 import app.devper.pharm.domain.model.BulkImportResult
 import app.devper.pharm.domain.repository.FakeDrugRepositoryForBulk
-import app.devper.pharm.domain.usecase.purchasing.BulkImportDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,7 +46,7 @@ class BulkImportViewModelTest {
         filePicker: FilePicker = NoopFilePicker,
     ): Pair<BulkImportViewModel, FakeDrugRepositoryForBulk> {
         val vm = BulkImportViewModel(
-            bulkImportDrugs = BulkImportDrugsUseCase(repo, dispatchers),
+            drugs = repo,
             filePicker = filePicker,
         )
         return vm to repo
