@@ -103,6 +103,7 @@ class SettingsEditorViewModel(
     fun onStoreAddress(v: String) = patch { copy(storeAddress = v) }
     fun onStorePhone(v: String) = patch { copy(storePhone = v) }
     fun onStoreTaxId(v: String) = patch { copy(storeTaxId = v) }
+    fun onStoreLicenseNo(v: String) = patch { copy(storeLicenseNo = v) }
     fun onReceiptHeader(v: String) = patch { copy(receiptHeader = v) }
     fun onReceiptFooter(v: String) = patch { copy(receiptFooter = v) }
     fun onReceiptPaperWidth(v: String) = patch { copy(receiptPaperWidth = v) }
@@ -162,6 +163,7 @@ class SettingsEditorViewModel(
         storeAddress = store.address,
         storePhone = store.phone,
         storeTaxId = store.taxId,
+        storeLicenseNo = store.licenseNo,
 
         receiptHeader = receipt.header,
         receiptFooter = receipt.footer,
@@ -186,6 +188,7 @@ class SettingsEditorViewModel(
             address = storeAddress.trim(),
             phone = storePhone.trim(),
             taxId = storeTaxId.trim(),
+            licenseNo = storeLicenseNo.trim(),
         ),
         receipt = ReceiptSettingsInput(
             header = receiptHeader,

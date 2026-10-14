@@ -28,6 +28,7 @@ data class StoreInfo(
     val address: String = "",
     val phone: String = "",
     val taxId: String = "",
+    val licenseNo: String = "",
 )
 
 data class PharmacistInfo(

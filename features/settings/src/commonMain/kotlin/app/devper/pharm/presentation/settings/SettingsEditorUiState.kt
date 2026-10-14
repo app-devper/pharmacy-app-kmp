@@ -11,6 +11,7 @@ data class SettingsFormFields(
     val storeAddress: String = "",
     val storePhone: String = "",
     val storeTaxId: String = "",
+    val storeLicenseNo: String = "",
 
     val receiptHeader: String = "",
     val receiptFooter: String = "",
