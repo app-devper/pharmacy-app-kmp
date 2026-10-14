@@ -41,11 +41,10 @@ class DrugLotsViewModel(
     fun reload() {
         if (current.drugId.isBlank()) return
         val id = current.drugId
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { listLots(id) },
-            onSuccess = { lots -> setState { copy(loading = false, lots = lots) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = DrugLotsUiStateError.LoadLotsFailed(e)) } },
+        load(
+            fetch = { listLots(id) },
+            failure = { e -> DrugLotsUiStateError.LoadLotsFailed(e) },
+            onLoaded = { lots -> copy(lots = lots) },
         )
     }
 

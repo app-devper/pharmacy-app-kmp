@@ -38,11 +38,10 @@ class StockAdjustmentsViewModel(
     fun reload() {
         if (current.drugId.isBlank()) return
         val id = current.drugId
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getAdjustments(id) },
-            onSuccess = { list -> setState { copy(loading = false, history = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = StockUiStateError.LoadHistoryFailed(e)) } },
+        load(
+            fetch = { getAdjustments(id) },
+            failure = { e -> StockUiStateError.LoadHistoryFailed(e) },
+            onLoaded = { list -> copy(history = list) },
         )
         launchResult(
             block = { listLots(id) },

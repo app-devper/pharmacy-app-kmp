@@ -68,11 +68,10 @@ class ProfitViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getProfitReport(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
-            onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = ProfitUiStateError.LoadReportFailed(e)) } },
+        load(
+            fetch = { getProfitReport(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
+            failure = { e -> ProfitUiStateError.LoadReportFailed(e) },
+            onLoaded = { rep -> copy(report = rep) },
         )
     }
 }

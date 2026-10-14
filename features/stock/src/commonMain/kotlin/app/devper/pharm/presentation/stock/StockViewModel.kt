@@ -40,13 +40,10 @@ class StockViewModel(
     fun dismissMessage() = setState { copy(messageState = null) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getDrugs() },
-            onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = StockUiStateError.LoadStockFailed(e)) }
-            },
+        load(
+            fetch = { getDrugs() },
+            failure = { e -> StockUiStateError.LoadStockFailed(e) },
+            onLoaded = { list -> copy(drugs = list) },
         )
         launchResult(
             block = { getExpiringLots(ExpiringLotsFilterParam(daysAhead = EXPIRING_SOON_DAYS)) },

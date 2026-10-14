@@ -5,8 +5,7 @@ import app.devper.pharm.domain.model.LocalePreference
 import app.devper.pharm.domain.observer.SessionExpiryProvider
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
-import app.devper.pharm.domain.usecase.settings.SetLastUsernameUseCase
-import app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase
+import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import app.devper.pharm.presentation.auth.exception.LoginUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -15,8 +14,7 @@ import kotlinx.coroutines.flow.onEach
 class LoginViewModel(
     private val login: LoginUseCase,
     uiPreferences: UiPreferencesProvider,
-    private val setLocale: SetLocalePreferenceUseCase,
-    private val setLastUsername: SetLastUsernameUseCase,
+    private val preferences: UiPreferencesRepository,
     private val sessionExpiry: SessionExpiryProvider,
 ) : BaseLoadableViewModel<LoginUiState>(LoginUiState()) {
 
@@ -40,7 +38,7 @@ class LoginViewModel(
     fun onLocaleChange(value: String) {
         val parsed = LocalePreference.parse(value)
         if (parsed.wire == current.locale) return
-        setLocale(parsed)
+        preferences.setLocale(parsed)
     }
 
     fun submit() {
@@ -54,7 +52,7 @@ class LoginViewModel(
         launchResult(
             block = { login(s.username, s.password) },
             onSuccess = { user ->
-                setLastUsername(s.username)
+                preferences.setLastUsername(s.username)
                 sessionExpiry.acknowledge()
                 setState { copy(loading = false, loggedInUser = user, password = "") }
             },

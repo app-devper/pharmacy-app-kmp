@@ -13,13 +13,10 @@ class CustomersListViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getCustomers() },
-            onSuccess = { list -> setState { copy(loading = false, customers = list) } },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = CustomersListUiStateError.LoadCustomersFailed(e)) }
-            },
+        load(
+            fetch = { getCustomers() },
+            failure = { e -> CustomersListUiStateError.LoadCustomersFailed(e) },
+            onLoaded = { list -> copy(customers = list) },
         )
     }
 }

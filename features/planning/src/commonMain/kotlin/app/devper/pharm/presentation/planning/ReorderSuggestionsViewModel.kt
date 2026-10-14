@@ -54,13 +54,10 @@ class ReorderSuggestionsViewModel(
     }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getReorderSuggestions() },
-            onSuccess = { list -> setState { copy(loading = false, suggestions = list) } },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = ReorderSuggestionsUiStateError.LoadFailed(e)) }
-            },
+        load(
+            fetch = { getReorderSuggestions() },
+            failure = { e -> ReorderSuggestionsUiStateError.LoadFailed(e) },
+            onLoaded = { list -> copy(suggestions = list) },
         )
     }
 }

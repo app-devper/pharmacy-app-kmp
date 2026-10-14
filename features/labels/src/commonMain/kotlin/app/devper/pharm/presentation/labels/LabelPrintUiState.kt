@@ -22,6 +22,7 @@ data class LabelPrintUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val filteredDrugs: List<Drug> by lazy { drugs.searchByQuery(query) }
 

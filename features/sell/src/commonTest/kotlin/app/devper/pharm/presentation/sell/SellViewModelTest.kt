@@ -15,7 +15,6 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -69,7 +68,7 @@ class SellViewModelTest {
         val vm = SellViewModel(
             cart = cart,
             settings = SettingsProvider(settings),
-            refreshSettings = RefreshSettingsUseCase(settings, dispatchers),
+            storeSettings = settings,
         )
         return Bundle(vm, cart, settings)
     }
