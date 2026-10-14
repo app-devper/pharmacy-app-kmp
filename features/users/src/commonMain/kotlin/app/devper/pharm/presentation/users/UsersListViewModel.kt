@@ -33,15 +33,11 @@ class UsersListViewModel(
     }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getUsers() },
-            onSuccess = { list -> setState { copy(loading = false, users = list) } },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = UsersUiStateError.LoadUsersFailed(e)) }
-            },
+        load(
+            fetch = { getUsers() },
+            failure = { e -> UsersUiStateError.LoadUsersFailed(e) },
+            onLoaded = { list -> copy(users = list) },
         )
-        // Without the rules nothing can be created; the list still shows.
         launchResult(
             block = { getUserRules() },
             onSuccess = { rules -> setState { copy(creatableRoles = rules.creatableRoles) } },

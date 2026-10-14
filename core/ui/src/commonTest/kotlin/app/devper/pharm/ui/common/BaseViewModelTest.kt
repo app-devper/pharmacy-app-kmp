@@ -22,20 +22,20 @@ private class CounterViewModel : BaseViewModel<CounterState>(CounterState()) {
     fun setError(value: String) = setState { copy(message = value) }
 
     fun load(value: Int, fail: Boolean = false) {
+        setState { copy(loading = true) }
         launchResult(
             block = { if (fail) Result.failure(IllegalStateException("nope")) else Result.success(value) },
-            onSuccess = { setState { copy(count = it) } },
-            onFailure = { e -> setState { copy(message = e.message) } },
-            withLoading = { l -> setState { copy(loading = l) } },
+            onSuccess = { setState { copy(loading = false, count = it) } },
+            onFailure = { e -> setState { copy(loading = false, message = e.message) } },
         )
     }
 
     fun loadThrowingBlock() {
+        setState { copy(loading = true) }
         launchResult<Int>(
             block = { throw IllegalStateException("kaboom") },
-            onSuccess = { setState { copy(count = it) } },
-            onFailure = { e -> setState { copy(message = e.message) } },
-            withLoading = { l -> setState { copy(loading = l) } },
+            onSuccess = { setState { copy(loading = false, count = it) } },
+            onFailure = { e -> setState { copy(loading = false, message = e.message) } },
         )
     }
 }

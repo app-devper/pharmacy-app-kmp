@@ -17,13 +17,10 @@ class SuppliersListViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getSuppliers() },
-            onSuccess = { list -> setState { copy(loading = false, suppliers = list) } },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = SuppliersListUiStateError.LoadSuppliersFailed(e)) }
-            },
+        load(
+            fetch = { getSuppliers() },
+            failure = { e -> SuppliersListUiStateError.LoadSuppliersFailed(e) },
+            onLoaded = { list -> copy(suppliers = list) },
         )
     }
 
