@@ -49,7 +49,7 @@ import app.devper.pharm.domain.repository.auth.AuthRepository
 import app.devper.pharm.domain.repository.customers.CustomerRepository
 import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
-import app.devper.pharm.domain.repository.ky.ExportRepository
+import app.devper.pharm.domain.repository.export.ExportRepository
 import app.devper.pharm.domain.repository.ky.KyRepository
 import app.devper.pharm.domain.repository.inventory.LabelRepository
 import app.devper.pharm.domain.repository.inventory.LotsRepository

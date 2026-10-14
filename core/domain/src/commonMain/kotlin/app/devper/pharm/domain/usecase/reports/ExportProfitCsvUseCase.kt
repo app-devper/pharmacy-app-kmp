@@ -1,60 +1,26 @@
 package app.devper.pharm.domain.usecase.reports
 
-import app.devper.pharm.domain.usecase.BaseUseCase
-
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.domain.export.CsvSheet
+import app.devper.pharm.domain.export.csvMoney
+import app.devper.pharm.domain.export.csvPercent
+import app.devper.pharm.domain.export.periodTag
+import app.devper.pharm.domain.export.saveSheet
 import app.devper.pharm.domain.model.DrugProfit
 import app.devper.pharm.domain.param.reports.ExportProfitCsvParam
-import app.devper.pharm.domain.repository.ky.ExportRepository
-import app.devper.pharm.domain.export.buildCsv
-import app.devper.pharm.domain.export.buildCsvBytes
-import kotlinx.datetime.LocalDate
+import app.devper.pharm.domain.repository.export.ExportRepository
+import app.devper.pharm.domain.usecase.BaseUseCase
+
+private val ProfitSheet = CsvSheet<DrugProfit>(
+    name = "profit",
+    defaultHeaders = listOf("drug", "qty", "revenue", "cost", "profit", "margin"),
+) { listOf(it.drugName, it.qtySold, csvMoney(it.revenue), csvMoney(it.cost), csvMoney(it.profit), csvPercent(it.margin)) }
 
 class ExportProfitCsvUseCase(
     private val export: ExportRepository,
     dispatchers: AppDispatchers,
 ) : BaseUseCase<ExportProfitCsvParam, String>(dispatchers) {
 
-    override suspend fun execute(param: ExportProfitCsvParam): String {
-        val filename = buildFilename(param.from, param.to)
-        val bytes = buildCsvBytes(
-            headers = param.headers.ifEmpty { listOf("drug", "qty", "revenue", "cost", "profit", "margin") },
-            rows = param.rows.map { it.toCsvRow() },
-        )
-        return export.saveCsv(filename, bytes)
-    }
-
-    private fun DrugProfit.toCsvRow(): List<Any?> = listOf(
-        drugName,
-        qtySold,
-        formatMoney(revenue),
-        formatMoney(cost),
-        formatMoney(profit),
-        formatPercent(margin),
-    )
-
-    private fun formatMoney(v: Double): String {
-        val cents = (v * 100.0 + if (v >= 0) 0.5 else -0.5).toLong()
-        val whole = cents / 100
-        val frac = (cents % 100).let { if (it < 0) -it else it }.toString().padStart(2, '0')
-        return "$whole.$frac"
-    }
-
-    private fun formatPercent(v: Double): String {
-        val cents = (v * 100.0 + if (v >= 0) 0.5 else -0.5).toLong()
-        val whole = cents / 100
-        val frac = (cents % 100).let { if (it < 0) -it else it }.toString().padStart(2, '0')
-        return "$whole.$frac%"
-    }
-
-    private fun buildFilename(from: LocalDate?, to: LocalDate?): String {
-        val fromTag = from?.toString().orEmpty()
-        val toTag = to?.toString().orEmpty()
-        val tag = when {
-            from == null && to == null -> "all"
-            from == to                 -> fromTag.ifBlank { "all" }
-            else                       -> "${fromTag.ifBlank { "any" }}_${toTag.ifBlank { "any" }}"
-        }
-        return "profit_$tag.csv"
-    }
+    override suspend fun execute(param: ExportProfitCsvParam): String =
+        export.saveSheet(ProfitSheet, param.rows, param.headers, periodTag(param.from, param.to))
 }

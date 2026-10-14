@@ -7,7 +7,7 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.param.ky.ExportKyFormParam
 import app.devper.pharm.domain.param.reports.ExportDrugsCsvParam
-import app.devper.pharm.domain.repository.ky.ExportRepository
+import app.devper.pharm.domain.repository.export.ExportRepository
 import app.devper.pharm.domain.testDispatchers
 import app.devper.pharm.domain.usecase.reports.ExportDrugsCsvUseCase
 import kotlinx.coroutines.test.runTest
