@@ -7,7 +7,6 @@ import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeCustomerRepository
-import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -36,7 +35,7 @@ class CustomerPickerViewModelTest {
         repo: FakeCustomerRepository = FakeCustomerRepository(),
     ): Bundle {
         val vm = CustomerPickerViewModel(
-            getCustomers = GetCustomersUseCase(repo, dispatchers),
+            customers = repo,
             cart = cart,
         )
         return Bundle(vm, cart, repo)
@@ -74,7 +73,7 @@ class CustomerPickerViewModelTest {
                 throw NotImplementedError("not under test")
         }
         val vm = CustomerPickerViewModel(
-            getCustomers = GetCustomersUseCase(countingRepo, dispatchers),
+            customers = countingRepo,
             cart = testCart(),
         )
         advanceUntilIdle()
@@ -124,7 +123,7 @@ class CustomerPickerViewModelTest {
                 throw NotImplementedError()
         }
         val vm = CustomerPickerViewModel(
-            getCustomers = GetCustomersUseCase(throwingRepo, dispatchers),
+            customers = throwingRepo,
             cart = testCart(),
         )
         advanceUntilIdle()

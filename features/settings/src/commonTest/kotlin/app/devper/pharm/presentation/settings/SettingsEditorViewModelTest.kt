@@ -147,6 +147,18 @@ class SettingsEditorViewModelTest {
     }
 
     @Test
+    fun the_shop_licence_is_trimmed_and_saved_with_the_store() = runVmTest { d ->
+        val repo = FakeSettingsRepository()
+        val model = vm(repo, d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาทดสอบ")
+        model.onStoreLicenseNo("  ขย. 12345/2567 ")
+        model.submit()
+        advanceUntilIdle()
+        assertEquals("ขย. 12345/2567", repo.lastUpdate?.store?.licenseNo)
+    }
+
+    @Test
     fun submit_calls_update_and_sets_message() = runVmTest { d ->
         val repo = FakeSettingsRepository()
         val model = vm(repo, d)
