@@ -8,7 +8,6 @@ val domainModule = module {
         customersDomainModule,
         suppliersDomainModule,
         inventoryDomainModule,
-        kyDomainModule,
         offlineSyncDomainModule,
         profileDomainModule,
         purchasingDomainModule,
