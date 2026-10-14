@@ -12,7 +12,7 @@ import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.CartLineKey
 import app.devper.pharm.domain.observer.SettingsProvider
-import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
+import app.devper.pharm.domain.repository.settings.SettingsRepository
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.onEach
 class SellViewModel(
     private val cart: Cart,
     settings: SettingsProvider,
-    private val refreshSettings: RefreshSettingsUseCase,
+    private val storeSettings: SettingsRepository,
 ) : BaseViewModel<SellUiState>(SellUiState()) {
 
     init {
@@ -46,7 +46,7 @@ class SellViewModel(
             .launchIn(viewModelScope)
 
         launchResult(
-            block = { refreshSettings() },
+            block = { Result.success(storeSettings.refresh()) },
             onSuccess = { },
             onFailure = { },
         )

@@ -312,7 +312,7 @@ license headers required by upstream libraries.
     that read `Locale.current`.)
   - **Locale storage**: `UiPreferences.locale: LocalePreference = System`
     (System/Th/En), persisted via `UiPreferencesRepository.setLocale(...)`
-    → `SetLocalePreferenceUseCase`. Picker UI: `ProfileScreen` → 'ภาษา'
+    (view models inject the repository directly). Picker UI: `ProfileScreen` → 'ภาษา'
     chip group.
   - **Adding copy** (the only supported path): add the key to the right
     group interface + `Th` + `En` objects (feature keys in
