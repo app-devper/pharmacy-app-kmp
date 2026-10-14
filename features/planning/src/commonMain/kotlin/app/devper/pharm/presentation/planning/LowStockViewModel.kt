@@ -25,11 +25,10 @@ class LowStockViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getLowStockDrugs() },
-            onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = LowStockUiStateError.LoadFailed(e)) } },
+        load(
+            fetch = { getLowStockDrugs() },
+            failure = { e -> LowStockUiStateError.LoadFailed(e) },
+            onLoaded = { list -> copy(drugs = list) },
         )
     }
 }

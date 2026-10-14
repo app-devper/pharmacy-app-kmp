@@ -77,25 +77,14 @@ class ExpiryViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
+        load(
+            fetch = {
                 getExpiringLots(
                     ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
                 )
             },
-            onSuccess = { lots ->
-                setState {
-                    copy(
-                        loading = false,
-                        lots = lots,
-                        selected = selected intersect lots.map { it.id }.toSet(),
-                    )
-                }
-            },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = ExpiryUiStateError.LoadLotsFailed(e)) }
-            },
+            failure = { e -> ExpiryUiStateError.LoadLotsFailed(e) },
+            onLoaded = { lots -> copy(lots = lots, selected = selected intersect lots.map { it.id }.toSet()) },
         )
     }
 }

@@ -32,11 +32,10 @@ class Ky9ViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getKy9Entries(KyMonthFilterParam(month = s.month)) },
-            onSuccess = { list -> setState { copy(loading = false, entries = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = KyUiStateError.LoadEntriesFailed(e)) } },
+        load(
+            fetch = { getKy9Entries(KyMonthFilterParam(month = s.month)) },
+            failure = { e -> KyUiStateError.LoadEntriesFailed(e) },
+            onLoaded = { list -> copy(entries = list) },
         )
     }
 }

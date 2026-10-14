@@ -20,11 +20,10 @@ class ImportsListViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getPurchaseOrders() },
-            onSuccess = { list -> setState { copy(loading = false, orders = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = ImportsUiStateError.LoadOrdersFailed(e)) } },
+        load(
+            fetch = { getPurchaseOrders() },
+            failure = { e -> ImportsUiStateError.LoadOrdersFailed(e) },
+            onLoaded = { list -> copy(orders = list) },
         )
     }
 
