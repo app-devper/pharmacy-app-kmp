@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.suppliers
 
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.repository.FakeSupplierRepository
-import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
-import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -25,7 +23,7 @@ class SuppliersListViewModelTest {
     )
 
     private fun vm(repo: FakeSupplierRepository, d: app.devper.pharm.common.AppDispatchers) =
-        SuppliersListViewModel(GetSuppliersUseCase(repo, d), DeleteSupplierUseCase(repo, d))
+        SuppliersListViewModel(repo)
 
     @Test
     fun init_loads_suppliers() = runVmTest { d ->

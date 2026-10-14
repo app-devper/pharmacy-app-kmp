@@ -1,17 +1,12 @@
 package app.devper.pharm.presentation.customers
 
+import app.devper.pharm.domain.repository.customers.CustomerRepository
 import app.devper.pharm.domain.param.customers.CustomerInput
-import app.devper.pharm.domain.param.customers.UpdateCustomerParam
-import app.devper.pharm.domain.usecase.customers.AddCustomerUseCase
-import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
-import app.devper.pharm.domain.usecase.customers.UpdateCustomerUseCase
 import app.devper.pharm.presentation.customers.exception.CustomerFormUiStateError
 import app.devper.pharm.ui.common.BaseFormViewModel
 
 class CustomerFormViewModel(
-    private val getCustomers: GetCustomersUseCase,
-    private val addCustomer: AddCustomerUseCase,
-    private val updateCustomer: UpdateCustomerUseCase,
+    private val customers: CustomerRepository,
 ) : BaseFormViewModel<CustomerFormUiState>(CustomerFormUiState()) {
 
     fun init(mode: CustomerFormMode) {
@@ -26,16 +21,17 @@ class CustomerFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val input = current.form.toInput()
-        return when (val mode = current.mode) {
-            is CustomerFormMode.Add  -> addCustomer(input).map { Unit }
-            is CustomerFormMode.Edit -> updateCustomer(UpdateCustomerParam(id = mode.customerId, input = input))
+        when (val mode = current.mode) {
+            is CustomerFormMode.Add  -> customers.add(input)
+            is CustomerFormMode.Edit -> customers.update(mode.customerId, input)
         }
+        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(id: String) {
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { getCustomers() },
+            block = { Result.success(customers.list()) },
             onSuccess = { list ->
                 val c = list.firstOrNull { it.id == id }
                 if (c == null) {

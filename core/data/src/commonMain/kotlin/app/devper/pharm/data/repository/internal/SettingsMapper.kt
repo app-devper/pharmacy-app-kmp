@@ -25,7 +25,7 @@ internal fun SettingsDto.toDomain(): Settings = Settings(
 )
 
 internal fun StoreInfoDto.toDomain(): StoreInfo = StoreInfo(
-    name = name, address = address, phone = phone, taxId = taxId,
+    name = name, address = address, phone = phone, taxId = taxId, licenseNo = licenseNo,
 )
 
 internal fun ReceiptSettingsDto.toDomain(): ReceiptSettings = ReceiptSettings(
@@ -53,6 +53,7 @@ internal fun UpdateSettingsParam.toDto(): SettingsInputDto = SettingsInputDto(
         address = store.address,
         phone = store.phone,
         taxId = store.taxId,
+        licenseNo = store.licenseNo,
     ),
     receipt = ReceiptSettingsDto(
         header = receipt.header,

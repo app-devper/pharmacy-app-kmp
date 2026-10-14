@@ -1,15 +1,13 @@
 package app.devper.pharm.presentation.suppliers
 
+import app.devper.pharm.domain.repository.suppliers.SupplierRepository
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.Supplier
-import app.devper.pharm.domain.usecase.suppliers.DeleteSupplierUseCase
-import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
 import app.devper.pharm.presentation.suppliers.exception.SuppliersListUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class SuppliersListViewModel(
-    private val getSuppliers: GetSuppliersUseCase,
-    private val deleteSupplier: DeleteSupplierUseCase,
+    private val suppliers: SupplierRepository,
 ) : BaseLoadableViewModel<SuppliersListUiState>(SuppliersListUiState()) {
 
     init { reload() }
@@ -18,7 +16,7 @@ class SuppliersListViewModel(
 
     fun reload() {
         load(
-            fetch = { getSuppliers() },
+            fetch = { Result.success(suppliers.list()) },
             failure = { e -> SuppliersListUiStateError.LoadSuppliersFailed(e) },
             onLoaded = { list -> copy(suppliers = list) },
         )
@@ -31,7 +29,7 @@ class SuppliersListViewModel(
         val target = current.pendingDelete ?: return
         setState { copy(deleting = true, errorState = null) }
         launchResult(
-            block = { deleteSupplier(target.id) },
+            block = { Result.success(suppliers.delete(target.id)) },
             onSuccess = {
                 setState {
                     copy(

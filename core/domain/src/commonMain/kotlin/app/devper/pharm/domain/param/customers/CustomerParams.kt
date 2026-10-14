@@ -6,8 +6,3 @@ data class CustomerInput(
     val allergyNote: String = "",
     val priceTier: String = "",
 )
-
-data class UpdateCustomerParam(
-    val id: String,
-    val input: CustomerInput,
-)

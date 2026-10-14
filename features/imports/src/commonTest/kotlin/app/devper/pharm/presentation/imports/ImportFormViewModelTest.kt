@@ -11,13 +11,9 @@ import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
 import app.devper.pharm.domain.repository.FakeSupplierRepository
-import app.devper.pharm.domain.usecase.purchasing.AddPurchaseOrderUseCase
 import app.devper.pharm.domain.model.PurchaseDraftLine
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.purchasing.UpdatePurchaseOrderUseCase
 import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -96,11 +92,9 @@ class ImportFormViewModelTest {
         draft: PurchaseDraftProvider = PurchaseDraftProvider(),
     ): Bundle {
         val vm = ImportFormViewModel(
-            getPurchaseOrder = GetPurchaseOrderUseCase(poRepo, dispatchers),
-            addPurchaseOrder = AddPurchaseOrderUseCase(poRepo, dispatchers),
-            updatePurchaseOrder = UpdatePurchaseOrderUseCase(poRepo, dispatchers),
+            purchaseOrders = poRepo,
             getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
-            getSuppliers = GetSuppliersUseCase(supplierRepo, dispatchers),
+            suppliers = supplierRepo,
             purchaseDraft = draft,
         )
         return Bundle(vm, poRepo, draft)

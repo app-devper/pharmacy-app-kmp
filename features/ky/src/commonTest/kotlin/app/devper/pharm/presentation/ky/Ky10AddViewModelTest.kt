@@ -1,7 +1,6 @@
 package app.devper.pharm.presentation.ky
 
 import app.devper.pharm.domain.repository.FakeKyRepository
-import app.devper.pharm.domain.usecase.ky.AddKy10UseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -22,7 +21,7 @@ class Ky10AddViewModelTest {
 
     @Test
     fun field_setters_update_draft_with_digit_only_qty() = runVmTest { d ->
-        val vm = Ky10AddViewModel(AddKy10UseCase(FakeKyRepository(), d))
+        val vm = Ky10AddViewModel(FakeKyRepository())
         vm.onDrugName("Morphine")
         vm.onQty("12a3")
         vm.onBalance("10x")
@@ -34,7 +33,7 @@ class Ky10AddViewModelTest {
     @Test
     fun submit_valid_draft_saves_and_records_form() = runVmTest { d ->
         val repo = FakeKyRepository()
-        val vm = Ky10AddViewModel(AddKy10UseCase(repo, d))
+        val vm = Ky10AddViewModel(repo)
         fill(vm)
         vm.submit()
         advanceUntilIdle()
@@ -46,7 +45,7 @@ class Ky10AddViewModelTest {
     @Test
     fun submit_blank_draft_is_noop() = runVmTest { d ->
         val repo = FakeKyRepository()
-        val vm = Ky10AddViewModel(AddKy10UseCase(repo, d))
+        val vm = Ky10AddViewModel(repo)
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)

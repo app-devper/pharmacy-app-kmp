@@ -53,6 +53,7 @@ class PharmStringsTablesTest {
         check("settingsStoreNameLabel", PharmStringsTh.settingsStoreNameLabel, PharmStringsEn.settingsStoreNameLabel, mismatches)
         check("settingsStoreAddress", PharmStringsTh.settingsStoreAddress, PharmStringsEn.settingsStoreAddress, mismatches)
         check("settingsStoreTaxId", PharmStringsTh.settingsStoreTaxId, PharmStringsEn.settingsStoreTaxId, mismatches)
+        check("settingsStoreLicenseNo", PharmStringsTh.settingsStoreLicenseNo, PharmStringsEn.settingsStoreLicenseNo, mismatches)
         check("settingsReceiptHeader", PharmStringsTh.settingsReceiptHeader, PharmStringsEn.settingsReceiptHeader, mismatches)
         check("settingsReceiptPaperWidth", PharmStringsTh.settingsReceiptPaperWidth, PharmStringsEn.settingsReceiptPaperWidth, mismatches)
         check("settingsStockLowThresholdLabel", PharmStringsTh.settingsStockLowThresholdLabel, PharmStringsEn.settingsStockLowThresholdLabel, mismatches)
