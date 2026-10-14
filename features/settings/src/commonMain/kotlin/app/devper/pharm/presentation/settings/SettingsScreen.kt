@@ -29,6 +29,7 @@ internal fun SettingsEditorViewModel.settingsEditorCallbacks() = SettingsEditorC
     onStoreAddress = ::onStoreAddress,
     onStorePhone = ::onStorePhone,
     onStoreTaxId = ::onStoreTaxId,
+    onStoreLicenseNo = ::onStoreLicenseNo,
     onReceiptHeader = ::onReceiptHeader,
     onReceiptFooter = ::onReceiptFooter,
     onReceiptPaperWidth = ::onReceiptPaperWidth,

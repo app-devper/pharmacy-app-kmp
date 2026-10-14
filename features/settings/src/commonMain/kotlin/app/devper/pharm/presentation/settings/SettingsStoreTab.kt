@@ -62,6 +62,9 @@ internal fun SettingsStoreTab(
             }
         }
     }
+    SettingsLabeledField(label = s.settingsStoreLicenseNo) {
+        SettingsFormField(value = f.storeLicenseNo, onValueChange = editor.onStoreLicenseNo)
+    }
     val timezoneError = if (showValidation && !f.timezoneValid) s.settingsStoreTimezoneInvalid else null
     SettingsLabeledField(
         label = s.settingsStoreTimezone,

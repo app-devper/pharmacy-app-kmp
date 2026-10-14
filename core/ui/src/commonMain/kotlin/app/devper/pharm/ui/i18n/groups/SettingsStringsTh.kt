@@ -12,6 +12,7 @@ object SettingsStringsTh : SettingsStrings {
     override val settingsStoreNamePlaceholder = "เช่น ร้านยาดี…"
     override val settingsStoreAddress = "ที่อยู่"
     override val settingsStoreTaxId = "เลขผู้เสียภาษี"
+    override val settingsStoreLicenseNo = "เลขที่ใบอนุญาตขายยา (พิมพ์ที่หัวทะเบียน ขย.)"
     override val settingsStoreTimezone = "เขตเวลา (IANA)"
     override val settingsStoreTimezoneInvalid = "เขตเวลาไม่ถูกต้อง — ใช้รูปแบบ IANA เช่น Asia/Bangkok"
     override val settingsReceiptHeader = "ข้อความบนหัวบิล"

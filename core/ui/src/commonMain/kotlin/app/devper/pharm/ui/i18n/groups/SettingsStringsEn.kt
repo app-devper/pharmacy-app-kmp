@@ -12,6 +12,7 @@ object SettingsStringsEn : SettingsStrings {
     override val settingsStoreNamePlaceholder = "e.g. Good Pharmacy…"
     override val settingsStoreAddress = "Address"
     override val settingsStoreTaxId = "Tax ID"
+    override val settingsStoreLicenseNo = "Drug-selling licence no. (printed on the KY registers)"
     override val settingsStoreTimezone = "Time zone (IANA)"
     override val settingsStoreTimezoneInvalid = "Invalid time zone — use an IANA name such as Asia/Bangkok"
     override val settingsReceiptHeader = "Receipt header"

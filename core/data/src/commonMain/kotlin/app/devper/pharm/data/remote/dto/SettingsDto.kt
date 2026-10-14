@@ -19,6 +19,7 @@ data class StoreInfoDto(
     @SerialName("address") val address: String = "",
     @SerialName("phone") val phone: String = "",
     @SerialName("tax_id") val taxId: String = "",
+    @SerialName("license_no") val licenseNo: String = "",
 )
 
 @Serializable
