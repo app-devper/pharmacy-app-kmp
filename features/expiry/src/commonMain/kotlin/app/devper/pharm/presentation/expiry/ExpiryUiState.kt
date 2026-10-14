@@ -4,7 +4,7 @@ import app.devper.pharm.common.AppException
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.model.WriteoffResult
-import app.devper.pharm.ui.common.LoadableUiState
+import app.devper.pharm.ui.common.ExportableUiState
 
 enum class ExpiryWindow(val daysAhead: Int?, val expiredOnly: Boolean) {
     Within30(30, false),
@@ -26,11 +26,13 @@ data class ExpiryUiState(
     val errorState: AppException? = null,
     val exporting: Boolean = false,
     val messageState: CommonUiStateMessage? = null,
-) : LoadableUiState<ExpiryUiState> {
+) : ExportableUiState<ExpiryUiState> {
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
     override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withExporting(exporting: Boolean) = copy(exporting = exporting)
+    override fun withMessage(message: CommonUiStateMessage?) = copy(messageState = message)
 
     val canWriteoff: Boolean get() = !writingOff && selected.isNotEmpty()
     val totalSelected: Int get() = selected.size

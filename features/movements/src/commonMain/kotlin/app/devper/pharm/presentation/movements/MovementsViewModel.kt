@@ -1,22 +1,20 @@
 package app.devper.pharm.presentation.movements
 
 import app.devper.pharm.ui.designsystem.PharmDateRange
-import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.reports.MovementsFilterParam
 import app.devper.pharm.domain.usecase.reports.ExportMovementsCsvUseCase
 import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.presentation.movements.exception.MovementsUiStateError
-import app.devper.pharm.ui.common.BaseLoadableViewModel
+import app.devper.pharm.ui.common.BaseExportableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
 class MovementsViewModel(
     private val getMovements: GetMovementsUseCase,
     private val exportMovementsCsv: ExportMovementsCsvUseCase,
     timeZoneProvider: TimeZoneProvider,
-) : BaseLoadableViewModel<MovementsUiState>(
+) : BaseExportableViewModel<MovementsUiState>(
     MovementsUiState(dateRange = DateRangeFilter(tz = timeZoneProvider.current)),
 ) {
 
@@ -44,29 +42,18 @@ class MovementsViewModel(
 
     fun onExportExcel(headers: List<String>) {
         val s = current
-        if (s.items.isEmpty()) {
-            setState { copy(messageState = CommonUiStateMessage.ExportEmpty) }
-            return
+        export(s.items) { rows ->
+            exportMovementsCsv(
+                ExportMovementsCsvParam(
+                    from = s.dateRange.fromDate,
+                    to = s.dateRange.toDate,
+                    drugName = s.drugName,
+                    rows = rows,
+                    headers = headers,
+                ),
+            )
         }
-        setState { copy(exporting = true) }
-        launchResult(
-            block = {
-                exportMovementsCsv(
-                    ExportMovementsCsvParam(
-                        from = s.dateRange.fromDate,
-                        to = s.dateRange.toDate,
-                        drugName = s.drugName,
-                        rows = s.items,
-                        headers = headers,
-                    ),
-                )
-            },
-            onSuccess = { feedback -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(feedback)) } },
-            onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
-        )
     }
-
-    fun dismissMessage() = setState { copy(messageState = null) }
 
     fun applyFilter() = reload()
 

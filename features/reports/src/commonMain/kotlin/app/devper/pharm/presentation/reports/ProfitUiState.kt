@@ -5,7 +5,7 @@ import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.error.CommonUiStateMessage
-import app.devper.pharm.ui.common.LoadableUiState
+import app.devper.pharm.ui.common.ExportableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 import app.devper.pharm.ui.i18n.PharmStrings
 
@@ -31,11 +31,13 @@ data class ProfitUiState(
     val exporting: Boolean = false,
     val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
-) : LoadableUiState<ProfitUiState> {
+) : ExportableUiState<ProfitUiState> {
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
     override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withExporting(exporting: Boolean) = copy(exporting = exporting)
+    override fun withMessage(message: CommonUiStateMessage?) = copy(messageState = message)
 
     val sortedRows: List<DrugProfit>
         get() {

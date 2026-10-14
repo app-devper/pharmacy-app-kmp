@@ -4,7 +4,7 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.extension.searchByQuery
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.error.CommonUiStateMessage
-import app.devper.pharm.ui.common.LoadableUiState
+import app.devper.pharm.ui.common.ExportableUiState
 
 data class StockUiState(
     override val loading: Boolean = false,
@@ -15,11 +15,13 @@ data class StockUiState(
     val exporting: Boolean = false,
     val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
-) : LoadableUiState<StockUiState> {
+) : ExportableUiState<StockUiState> {
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
     override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withExporting(exporting: Boolean) = copy(exporting = exporting)
+    override fun withMessage(message: CommonUiStateMessage?) = copy(messageState = message)
 
     val filtered: List<Drug> by lazy { drugs.searchByQuery(query).filter { typeFilter.matches(it.type) } }
 }
