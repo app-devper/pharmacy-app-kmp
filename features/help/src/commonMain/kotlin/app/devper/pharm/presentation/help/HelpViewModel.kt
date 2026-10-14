@@ -12,11 +12,11 @@ class HelpViewModel(
     fun dismissError() = setState { copy(errorState = null) }
 
     fun reload() {
+        setState { copy(loading = true, errorState = null) }
         launchResult(
             block = { runCatching { loader.loadUserGuide() } },
             onSuccess = { md -> setState { copy(loading = false, markdown = md) } },
             onFailure = { e -> setState { copy(loading = false, errorState = HelpUiStateError.LoadFailed(e)) } },
-            withLoading = { l -> setState { copy(loading = l) } },
         )
     }
 }

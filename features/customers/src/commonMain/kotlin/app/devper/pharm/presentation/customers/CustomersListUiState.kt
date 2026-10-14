@@ -13,6 +13,7 @@ data class CustomersListUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val filtered: List<Customer> = if (query.isBlank()) {
         customers

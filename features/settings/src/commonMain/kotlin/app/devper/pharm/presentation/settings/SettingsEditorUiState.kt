@@ -77,6 +77,7 @@ data class SettingsEditorUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val dirty: Boolean get() = form != baseline
     val canSave: Boolean

@@ -23,6 +23,7 @@ data class EodUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val dateValid: Boolean = date.isBlank() || date.toLocalDateOrNull() != null
     val dateErrorVisible: Boolean = validationRequested && !dateValid

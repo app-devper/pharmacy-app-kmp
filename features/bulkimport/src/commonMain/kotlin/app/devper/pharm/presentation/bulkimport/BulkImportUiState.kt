@@ -21,6 +21,8 @@ data class BulkImportUiState(
 
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
+    override fun withLoading(loading: Boolean) = copy(submitting = loading)
+
     val actionsEnabled: Boolean get() = !submitting
 
     val rows: List<BulkImportRow> = run {
