@@ -40,9 +40,8 @@ class SalesHistoryViewModel(
 
     fun loadList() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
+        load(
+            fetch = {
                 getHistory(
                     SaleHistoryFilterParam(
                         from = s.dateRange.fromDate,
@@ -51,8 +50,8 @@ class SalesHistoryViewModel(
                     ),
                 )
             },
-            onSuccess = { list -> setState { copy(loading = false, sales = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = SalesHistoryUiStateError.LoadBillsFailed(e)) } },
+            failure = { e -> SalesHistoryUiStateError.LoadBillsFailed(e) },
+            onLoaded = { list -> copy(sales = list) },
         )
     }
 

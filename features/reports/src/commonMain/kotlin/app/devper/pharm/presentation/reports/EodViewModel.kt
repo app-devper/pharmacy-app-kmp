@@ -115,29 +115,22 @@ class EodViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
-            onSuccess = { rep ->
-                // A day closed earlier (on this device or another) stays closed
-                // after a reload, with its receipt available to reprint. An API
-                // that does not report the close yet keeps this device's close.
+        load(
+            fetch = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
+            failure = { e -> EodUiStateError.LoadReportFailed(e) },
+            onLoaded = { rep ->
                 val closedResult = rep.close?.let {
                     EodCloseResult(closeId = it.closeId, date = rep.date, closedAt = it.closedAt, closedBy = it.closedBy, report = rep)
-                } ?: current.closeResult?.takeIf { it.date == rep.date }
-                setState {
-                    copy(
-                        date = rep.date.toString(),
-                        validationRequested = false,
-                        loading = false,
-                        report = rep,
-                        closed = closedResult != null,
-                        closeResult = closedResult,
-                        closedTemplate = closedResult?.let { buildEodReceiptTemplate(closed = it, settings = lastSettings) },
-                    )
-                }
+                } ?: closeResult?.takeIf { it.date == rep.date }
+                copy(
+                    date = rep.date.toString(),
+                    validationRequested = false,
+                    report = rep,
+                    closed = closedResult != null,
+                    closeResult = closedResult,
+                    closedTemplate = closedResult?.let { buildEodReceiptTemplate(closed = it, settings = lastSettings) },
+                )
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = EodUiStateError.LoadReportFailed(e)) } },
         )
     }
 }

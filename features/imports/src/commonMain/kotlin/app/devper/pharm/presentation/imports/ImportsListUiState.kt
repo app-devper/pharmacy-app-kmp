@@ -19,6 +19,8 @@ data class ImportsListUiState(
 
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
+
     val filtered: List<PurchaseOrderSummary> = if (query.isBlank()) {
         orders
     } else {

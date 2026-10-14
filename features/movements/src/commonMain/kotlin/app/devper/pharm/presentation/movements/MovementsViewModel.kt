@@ -72,9 +72,8 @@ class MovementsViewModel(
 
     private fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
+        load(
+            fetch = {
                 getMovements(
                     MovementsFilterParam(
                         from = s.dateRange.fromDate,
@@ -86,8 +85,8 @@ class MovementsViewModel(
                     ),
                 )
             },
-            onSuccess = { page -> setState { copy(loading = false, items = page.items, total = page.total, page = 1) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = MovementsUiStateError.LoadHistoryFailed(e)) } },
+            failure = { e -> MovementsUiStateError.LoadHistoryFailed(e) },
+            onLoaded = { page -> copy(items = page.items, total = page.total, page = 1) },
         )
     }
 }

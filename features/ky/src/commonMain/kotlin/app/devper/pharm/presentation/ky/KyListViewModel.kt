@@ -40,9 +40,8 @@ class KyListViewModel(
     fun reload() {
         val s = current
         val filter = KyMonthFilterParam(month = s.month)
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
+        load(
+            fetch = {
                 when (s.formType) {
                     KyFormType.Ky10 -> getKy10(filter).map { list -> list.map(KyRow::Ky10) }
                     KyFormType.Ky11 -> getKy11(filter).map { list -> list.map(KyRow::Ky11) }
@@ -50,8 +49,8 @@ class KyListViewModel(
                     KyFormType.Ky9  -> Result.success(emptyList())
                 }
             },
-            onSuccess = { rows -> setState { copy(loading = false, rows = rows) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = KyUiStateError.LoadEntriesFailed(e)) } },
+            failure = { e -> KyUiStateError.LoadEntriesFailed(e) },
+            onLoaded = { rows -> copy(rows = rows) },
         )
     }
 }

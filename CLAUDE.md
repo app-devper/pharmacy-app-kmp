@@ -141,7 +141,10 @@ license headers required by upstream libraries.
     through `mapSaveError(cause)` — passes `AppException`s through,
     wraps unknowns in `CommonUiStateError.SaveFailed`; state mutates via
     `withDomainError(AppException?)` on `BaseFormUiState`. Loadable base
-    (`BaseLoadableViewModel`) only provides `dismissError()`.
+    (`BaseLoadableViewModel`) owns the load cycle: `load(fetch, failure,
+    onLoaded)` starts loading, clears the error, cancels a load still in
+    flight (a slow older answer never overwrites a newer one), then applies
+    the value or the typed failure; plus `dismissError()`.
   - **Domain validation is structured, not stringly**:
     `:core:domain/validation/` — `FieldValidationError(field: FieldLabel,
     rule)` thrown by `Field.*` validators, plus `SaleValidationError`
