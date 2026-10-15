@@ -34,7 +34,7 @@ private class RecordingPrinter(private val result: Boolean = true) : ReceiptPrin
     var calls: Int = 0
         private set
 
-    override fun print(template: ReceiptTemplate): Boolean {
+    override suspend fun print(template: ReceiptTemplate): Boolean {
         calls++
         lastTemplate = template
         return result
