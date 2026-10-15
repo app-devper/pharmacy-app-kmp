@@ -12,6 +12,8 @@ import app.devper.pharm.domain.model.AbandonOutcome
 import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.model.PendingSaleState
+import app.devper.pharm.domain.model.PendingSaleRefusal
+import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.repository.FakeFileDownloader
 import app.devper.pharm.domain.repository.FakeKyRepository
@@ -82,7 +84,7 @@ class PendingSalesTest {
             val queue = FakeOfflineSaleQueue(listOf(entry("p1")))
             pendingSalesOf(queue, FakeSaleRepository(replayThrows = failure)).syncAll()
             assertEquals(PendingSaleState.Conflict, queue.entry("p1")?.state)
-            assertEquals(reason, queue.entry("p1")?.lastError)
+            assertEquals(PendingSaleRefusal.Server(reason), queue.entry("p1")?.refusal)
         }
     }
 
@@ -137,6 +139,8 @@ class PendingSalesTest {
         assertEquals("B1", e.billNo)
         assertEquals(listOf("Tramadol"), e.kyForms.map { it.drugName })
         assertEquals("s1", (e.kyForms.single() as KyForm.Ky10).saleId)
+        val refusal = e.refusal as PendingSaleRefusal.KyRefused
+        assertEquals(listOf(KyFormType.Ky10 to "Tramadol"), refusal.forms.map { it.form to it.drugName })
         assertEquals(1, ky.ky11Submissions.size)
         assertEquals(SyncSummary(refused = 1), summary)
     }
@@ -169,7 +173,7 @@ class PendingSalesTest {
         val pending = pendingSalesOf(queue, sales)
 
         assertEquals(PendingSaleState.Conflict, pending.retry("p1").getOrThrow())
-        assertEquals("still refused", queue.entry("p1")?.lastError)
+        assertEquals(PendingSaleRefusal.Server("still refused"), queue.entry("p1")?.refusal)
 
         sales.replayThrows = null
         assertNull(pending.retry("p1").getOrThrow())

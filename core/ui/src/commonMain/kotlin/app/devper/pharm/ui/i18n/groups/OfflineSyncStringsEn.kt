@@ -33,6 +33,8 @@ object OfflineSyncStringsEn : OfflineSyncStrings {
     override val offlineSyncNeedsActionSub = "Not retried automatically"
     override val offlineSyncKyPendingBill: (String) -> String = { billNo -> "Bill $billNo recorded, but its KY forms were refused" }
     override val offlineSyncDamagedHint = "This entry cannot be read. Export it to a file first."
+    override val offlineSyncRefusalOutage: (String) -> String = { detail -> "Not sent yet: $detail" }
+    override val offlineSyncRefusalKy: (String, String, String) -> String = { form, drug, reason -> "$form · $drug: $reason" }
     override val offlineSyncAbandonCta = "Abandon bill"
     override val offlineSyncCloseKyCta = "Close KY"
     override val offlineSyncExportCta = "Export"
