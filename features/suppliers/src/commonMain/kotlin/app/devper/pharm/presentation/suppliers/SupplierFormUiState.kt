@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.suppliers
 
 import app.devper.pharm.common.AppException
-import app.devper.pharm.ui.common.BaseFormUiState
+import app.devper.pharm.ui.common.EditFormUiState
 
 sealed interface SupplierFormMode {
     data object Add : SupplierFormMode
@@ -25,7 +25,7 @@ data class SupplierFormUiState(
     override val saving: Boolean = false,
     override val saved: Boolean = false,
     val errorState: AppException? = null,
-) : BaseFormUiState<SupplierFormUiState> {
+) : EditFormUiState<SupplierFormUiState, SupplierFormFields> {
     override val canSubmit: Boolean
         get() = !saving && !loading && form.name.isNotBlank()
 
@@ -37,6 +37,8 @@ data class SupplierFormUiState(
 
     override val domainError: AppException? get() = errorState
     override fun withSaving(saving: Boolean) = copy(saving = saving)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withHydrated(form: SupplierFormFields) = copy(form = form, baselineForm = form)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
 }

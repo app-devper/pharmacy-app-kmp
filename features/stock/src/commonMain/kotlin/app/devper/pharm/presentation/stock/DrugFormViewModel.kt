@@ -13,14 +13,14 @@ import app.devper.pharm.domain.param.inventory.UpdateDrugParam
 import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase
-import app.devper.pharm.ui.common.BaseFormViewModel
+import app.devper.pharm.ui.common.BaseEditFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class DrugFormViewModel(
     private val getDrugs: GetDrugsUseCase,
     private val addDrug: AddDrugUseCase,
     private val updateDrug: UpdateDrugUseCase,
-) : BaseFormViewModel<DrugFormUiState>(DrugFormUiState()) {
+) : BaseEditFormViewModel<DrugFormUiState, DrugFormFields>(DrugFormUiState()) {
 
     fun init(mode: DrugFormMode) {
         setState { copy(mode = mode) }
@@ -70,24 +70,12 @@ class DrugFormViewModel(
         }
     }
 
-    private fun hydrateForEdit(drugId: String) {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getDrugs() },
-            onSuccess = { list ->
-                val drug = list.firstOrNull { it.id == drugId }
-                if (drug == null) {
-                    setState { copy(loading = false, errorState = DrugFormUiStateError.NotFound()) }
-                } else {
-                    val hydratedForm = drug.toForm()
-                    setState { copy(loading = false, form = hydratedForm, baselineForm = hydratedForm) }
-                }
-            },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = DrugFormUiStateError.LoadDrugFailed(e)) }
-            },
-        )
-    }
+    private fun hydrateForEdit(drugId: String) = hydrate(
+        fetch = { getDrugs().getOrThrow().firstOrNull { it.id == drugId } },
+        notFound = { DrugFormUiStateError.NotFound() },
+        failure = { e -> DrugFormUiStateError.LoadDrugFailed(e) },
+        toForm = { it.toForm() },
+    )
 
     private fun Drug.toForm(): DrugFormFields = DrugFormFields(
         name = name,

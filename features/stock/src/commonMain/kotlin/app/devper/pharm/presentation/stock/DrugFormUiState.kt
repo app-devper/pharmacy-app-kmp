@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.common.AppException
-import app.devper.pharm.ui.common.BaseFormUiState
+import app.devper.pharm.ui.common.EditFormUiState
 import kotlinx.datetime.LocalDate
 
 sealed interface DrugFormMode {
@@ -77,7 +77,7 @@ data class DrugFormUiState(
     override val saving: Boolean = false,
     override val saved: Boolean = false,
     val errorState: AppException? = null,
-) : BaseFormUiState<DrugFormUiState> {
+) : EditFormUiState<DrugFormUiState, DrugFormFields> {
 
     override val canSubmit: Boolean
         get() = !saving && !loading &&
@@ -97,6 +97,8 @@ data class DrugFormUiState(
         get() = form != baselineForm
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withHydrated(form: DrugFormFields) = copy(form = form, baselineForm = form)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)

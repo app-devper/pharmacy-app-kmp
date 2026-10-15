@@ -5,11 +5,11 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.UpdateUserParam
 import app.devper.pharm.presentation.users.exception.UserFormUiStateError
-import app.devper.pharm.ui.common.BaseFormViewModel
+import app.devper.pharm.ui.common.BaseEditFormViewModel
 
 class UserFormViewModel(
     private val users: UsersRepository,
-) : BaseFormViewModel<UserFormUiState>(UserFormUiState()) {
+) : BaseEditFormViewModel<UserFormUiState, UserFormFields>(UserFormUiState()) {
 
     fun init(mode: UserFormMode) {
         setState { copy(mode = mode) }
@@ -49,41 +49,21 @@ class UserFormViewModel(
         return Result.success(Unit)
     }
 
-    private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(users.list()) },
-            onSuccess = { list ->
-                val user = list.firstOrNull { it.id == id }
-                if (user == null) {
-                    setState { copy(loading = false, errorState = UserFormUiStateError.NotFound()) }
-                } else {
-                    hydrate(user)
-                }
-            },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = UserFormUiStateError.LoadUserFailed(e)) }
-            },
-        )
-    }
+    private fun hydrateForEdit(id: String) = hydrate(
+        fetch = { users.list().firstOrNull { it.id == id } },
+        notFound = { UserFormUiStateError.NotFound() },
+        failure = { e -> UserFormUiStateError.LoadUserFailed(e) },
+        toForm = ::formOf,
+    )
 
-    private fun hydrate(user: UmUser) {
-        val hydratedForm = UserFormFields(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            username = user.username,
-            password = "",
-            phone = user.phone,
-            email = user.email,
-        )
-        setState {
-            copy(
-                loading = false,
-                form = hydratedForm,
-                baselineForm = hydratedForm,
-            )
-        }
-    }
+    private fun formOf(user: UmUser) = UserFormFields(
+        firstName = user.firstName,
+        lastName = user.lastName,
+        username = user.username,
+        password = "",
+        phone = user.phone,
+        email = user.email,
+    )
 
     private fun patch(transform: UserFormFields.() -> UserFormFields) {
         setState { copy(form = form.transform()) }
