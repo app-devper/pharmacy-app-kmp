@@ -9,7 +9,7 @@ import kotlinx.browser.window
 import org.w3c.dom.HTMLIFrameElement
 
 class ReceiptPrinterImpl : ReceiptPrinter {
-    override fun print(template: ReceiptTemplate): Boolean {
+    override suspend fun print(template: ReceiptTemplate): Boolean {
         val iframe = document.createElement("iframe") as HTMLIFrameElement
         iframe.style.position = "fixed"
         iframe.style.right = "0"

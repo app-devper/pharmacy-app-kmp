@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.reports
 
 import app.devper.pharm.domain.repository.FakeProfileRepository
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.presentation.reports.exception.EodUiStateError
 
 import app.devper.pharm.common.AppDispatchers
@@ -33,7 +34,7 @@ private class RecordingPrinter(private val result: Boolean = true) : ReceiptPrin
     var calls: Int = 0
         private set
 
-    override fun print(template: ReceiptTemplate): Boolean {
+    override suspend fun print(template: ReceiptTemplate): Boolean {
         calls++
         lastTemplate = template
         return result
@@ -75,7 +76,7 @@ class EodViewModelTest {
         settings = SettingsProvider(settings),
         pendingSales = pendingSalesOf(offlineQueue),
         reports = reports,
-        closeEod = CloseEodUseCase(reports, FakeProfileRepository(), dispatchers),
+        closeEod = CloseEodUseCase(reports, SignedInUser(FakeProfileRepository()), dispatchers),
         printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
     )
 

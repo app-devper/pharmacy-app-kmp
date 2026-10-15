@@ -8,14 +8,14 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.profile.ChangePasswordParam
 import app.devper.pharm.domain.param.profile.UpdateProfileParam
 import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
 import app.devper.pharm.ui.common.BaseFormViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class ProfileViewModel(
-    private val getProfile: GetProfileUseCase,
+    private val signedInUser: SignedInUser,
     private val updateProfile: UpdateProfileUseCase,
     private val changePassword: ChangePasswordUseCase,
 ) : BaseFormViewModel<ProfileUiState>(ProfileUiState()) {
@@ -80,7 +80,7 @@ class ProfileViewModel(
     private fun load() {
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { getProfile(Unit) },
+            block = { Result.success(signedInUser.load()) },
             onSuccess = { user ->
                 hydrate(user)
                 setState { copy(loading = false) }

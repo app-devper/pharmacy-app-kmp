@@ -4,7 +4,7 @@ import app.devper.pharm.common.NetworkException
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.repository.FakeProfileRepository
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.domain.observer.testTimeZoneProvider
@@ -26,15 +26,23 @@ class ReportsViewModelTest {
         d: app.devper.pharm.common.AppDispatchers,
         repo: FakeReportsRepository = FakeReportsRepository(),
         role: Role = Role.ADMIN,
+        profile: FakeProfileRepository = FakeProfileRepository(FakeProfileRepository.sampleUser.copy(role = role)),
         now: () -> Long = { 1_000L },
     ): ReportsViewModel =
         ReportsViewModel(
             repo,
             testTimeZoneProvider(),
-            GetProfileUseCase(FakeProfileRepository(FakeProfileRepository.sampleUser.copy(role = role)), d),
+            SignedInUser(profile),
             StockChangeBus(),
             now,
         )
+
+    @Test
+    fun an_unknown_role_sees_only_slow_drugs_not_financial_reports() = runVmTest { d ->
+        val model = vm(d, profile = FakeProfileRepository(getFailsWith = NetworkException("offline")))
+        advanceUntilIdle()
+        assertTrue(model.state.value.slowDrugsOnly)
+    }
 
     @Test
     fun manager_loads_only_slow_drugs() = runVmTest { d ->
