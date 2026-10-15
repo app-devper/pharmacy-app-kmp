@@ -14,14 +14,14 @@ import app.devper.pharm.domain.param.purchasing.AddPurchaseOrderParam
 import app.devper.pharm.domain.param.purchasing.UpdatePurchaseOrderParam
 import app.devper.pharm.domain.validation.buildPurchaseOrderItemInput
 import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
 import app.devper.pharm.ui.common.BaseEditFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class ImportFormViewModel(
     private val purchaseOrders: PurchaseOrderRepository,
-    private val getDrugs: GetDrugsUseCase,
+    private val drugs: DrugRepository,
     private val suppliers: SupplierRepository,
     private val purchaseDraft: PurchaseDraftProvider,
 ) : BaseEditFormViewModel<ImportFormUiState, ImportFormFields>(ImportFormUiState()) {
@@ -120,7 +120,7 @@ class ImportFormViewModel(
 
     private fun loadDrugs() {
         launchResult(
-            block = { getDrugs() },
+            block = { Result.success(drugs.list()) },
             onSuccess = { list -> setState { copy(drugs = list) } },
             onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadDrugsFailed(e)) } },
         )

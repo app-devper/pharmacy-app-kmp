@@ -6,7 +6,6 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.repository.FakeDrugRepository
-import app.devper.pharm.domain.usecase.inventory.GetLowStockDrugsUseCase
 import app.devper.pharm.presentation.planning.exception.LowStockUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +28,7 @@ class LowStockViewModelTest {
     @Test
     fun init_loads_low_stock_drugs() = runVmTest { d ->
         val repo = FakeDrugRepository(lowStockSeed = listOf(drug("a"), drug("b"), drug("c")))
-        val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
+        val vm = LowStockViewModel(repo, StockChangeBus())
         advanceUntilIdle()
         assertEquals(3, vm.state.value.drugs.size)
         assertFalse(vm.state.value.loading)
@@ -39,7 +38,7 @@ class LowStockViewModelTest {
     fun stock_change_event_triggers_reload() = runVmTest { d ->
         val repo = FakeDrugRepository(lowStockSeed = listOf(drug("a")))
         val bus = StockChangeBus()
-        val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), bus)
+        val vm = LowStockViewModel(repo, bus)
         advanceUntilIdle()
         bus.emit()
         advanceUntilIdle()
@@ -50,7 +49,7 @@ class LowStockViewModelTest {
     @Test
     fun load_failure_sets_error_state_and_clears_loading() = runVmTest { d ->
         val repo = FakeDrugRepository(lowStockThrows = true)
-        val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
+        val vm = LowStockViewModel(repo, StockChangeBus())
         advanceUntilIdle()
         assertIs<LowStockUiStateError.LoadFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)
@@ -65,7 +64,7 @@ class LowStockViewModelTest {
         )
         val amoxicillin = drug("amoxicillin").copy(name = "Amoxicillin 250 mg")
         val repo = FakeDrugRepository(lowStockSeed = listOf(paracetamol, amoxicillin))
-        val vm = LowStockViewModel(GetLowStockDrugsUseCase(repo, d), StockChangeBus())
+        val vm = LowStockViewModel(repo, StockChangeBus())
         advanceUntilIdle()
 
         vm.onQueryChange("885000")

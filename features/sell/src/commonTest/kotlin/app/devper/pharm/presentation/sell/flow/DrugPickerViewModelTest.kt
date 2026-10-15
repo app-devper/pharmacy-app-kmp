@@ -12,7 +12,6 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeDrugRepository
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -55,7 +54,7 @@ class DrugPickerViewModelTest {
         bus: StockChangeBus = StockChangeBus(),
     ): Bundle {
         val vm = DrugPickerViewModel(
-            getDrugs = GetDrugsUseCase(repo, dispatchers),
+            drugs = repo,
             cart = cart,
             stockChangeBus = bus,
         )

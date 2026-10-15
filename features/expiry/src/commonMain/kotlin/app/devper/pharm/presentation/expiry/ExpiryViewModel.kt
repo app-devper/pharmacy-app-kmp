@@ -3,15 +3,13 @@ package app.devper.pharm.presentation.expiry
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
 import app.devper.pharm.domain.param.reports.ExportExpiringLotsCsvParam
 import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
-import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
-import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
 import app.devper.pharm.domain.usecase.reports.ExportExpiringLotsCsvUseCase
 import app.devper.pharm.presentation.expiry.exception.ExpiryUiStateError
 import app.devper.pharm.ui.common.BaseExportableViewModel
 
 class ExpiryViewModel(
-    private val getExpiringLots: GetExpiringLotsUseCase,
-    private val writeoffLots: WriteoffLotsUseCase,
+    private val expiringLots: ExpiringLotsRepository,
     private val exportExpiringLotsCsv: ExportExpiringLotsCsvUseCase,
 ) : BaseExportableViewModel<ExpiryUiState>(ExpiryUiState()) {
 
@@ -50,7 +48,7 @@ class ExpiryViewModel(
         if (s.selected.isEmpty()) return
         setState { copy(confirmDialog = false, writingOff = true, errorState = null, writeoffResult = null) }
         launchResult(
-            block = { writeoffLots(WriteoffLotsParam(lotIds = s.selected.toList())) },
+            block = { Result.success(expiringLots.writeoff(WriteoffLotsParam(lotIds = s.selected.toList()))) },
             onSuccess = { result ->
                 setState {
                     copy(writingOff = false, writeoffResult = result, selected = emptySet())
@@ -67,8 +65,10 @@ class ExpiryViewModel(
         val s = current
         load(
             fetch = {
-                getExpiringLots(
-                    ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
+                Result.success(
+                    expiringLots.list(
+                        ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
+                    ),
                 )
             },
             failure = { e -> ExpiryUiStateError.LoadLotsFailed(e) },
