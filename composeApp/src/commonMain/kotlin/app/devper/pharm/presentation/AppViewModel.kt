@@ -9,7 +9,7 @@ import app.devper.pharm.domain.observer.AuthStateProvider
 import app.devper.pharm.domain.observer.OfflineAutoSync
 import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.UiPreferencesProvider
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.usecase.auth.LogoutUseCase
 import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import app.devper.pharm.ui.common.BaseViewModel
@@ -23,7 +23,7 @@ class AppViewModel(
     uiPreferences: UiPreferencesProvider,
     private val offlineAutoSync: OfflineAutoSync,
     private val logout: LogoutUseCase,
-    private val getProfile: GetProfileUseCase,
+    private val signedInUser: SignedInUser,
     private val preferences: UiPreferencesRepository,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
 
@@ -34,8 +34,18 @@ class AppViewModel(
         authState.isLoggedIn
             .onEach { loggedIn ->
                 setState { copy(isLoggedIn = loggedIn) }
-                if (loggedIn) loadRole() else setState {
-                    copy(role = Role.UNKNOWN, userDisplayName = "", userInitial = "")
+                if (loggedIn) loadUser() else signedInUser.clear()
+            }
+            .launchIn(viewModelScope)
+
+        signedInUser.user
+            .onEach { user ->
+                setState {
+                    copy(
+                        role = user?.role ?: Role.UNKNOWN,
+                        userDisplayName = user?.displayName.orEmpty(),
+                        userInitial = user?.initials.orEmpty(),
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -49,21 +59,11 @@ class AppViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun loadRole() {
+    private fun loadUser() {
         launchResult(
-            block = { getProfile(Unit) },
-            onSuccess = { user ->
-                setState {
-                    copy(
-                        role = user.role,
-                        userDisplayName = user.displayName,
-                        userInitial = user.initials,
-                    )
-                }
-            },
-            onFailure = {
-                setState { copy(role = Role.UNKNOWN, userDisplayName = "", userInitial = "") }
-            },
+            block = { Result.success(signedInUser.load()) },
+            onSuccess = { },
+            onFailure = { signedInUser.clear() },
         )
     }
 

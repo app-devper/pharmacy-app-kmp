@@ -23,6 +23,7 @@ import app.devper.pharm.ui.format.todayBuddhistDisplay
 import app.devper.pharm.ui.print.buildReceiptTemplate
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 
 class CheckoutViewModel(
@@ -33,14 +34,7 @@ class CheckoutViewModel(
     private val receiptPrinter: ReceiptPrinter,
 ) : BaseLoadableViewModel<CheckoutUiState>(CheckoutUiState()) {
 
-    private data class ReceiptSnapshot(
-        val cart: List<CartLine>,
-        val customer: Customer?,
-        val received: Double,
-    )
-
     private val ky = KyCaptureSession()
-    private var receiptSnapshot: ReceiptSnapshot? = null
 
     private var lastSettings: Settings = Settings()
 
@@ -141,14 +135,15 @@ class CheckoutViewModel(
 
     fun dismissReceipt() {
         cart.dismissReceipt()
-        receiptSnapshot = null
         setState { copy(lastReceiptTemplate = null) }
     }
 
     fun printLastReceipt(sale: Sale) {
         val template = current.lastReceiptTemplate ?: return
-        if (!receiptPrinter.print(template)) {
-            setState { copy(errorState = CheckoutUiStateError.PrintReceiptUnsupported()) }
+        viewModelScope.launch {
+            if (!receiptPrinter.print(template)) {
+                setState { copy(errorState = CheckoutUiStateError.PrintReceiptUnsupported()) }
+            }
         }
     }
 
@@ -207,7 +202,6 @@ class CheckoutViewModel(
         received: Double,
     ) {
         ky.settle()
-        receiptSnapshot = ReceiptSnapshot(cart = cart, customer = customer, received = received)
         val template = buildReceiptTemplate(
             sale = sale,
             cartSnapshot = cart,

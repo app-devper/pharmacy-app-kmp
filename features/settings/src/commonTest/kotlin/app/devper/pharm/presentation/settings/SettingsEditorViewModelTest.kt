@@ -32,7 +32,7 @@ class SettingsEditorViewModelTest {
 
     private class StubPrinter(private val result: Boolean = true) : app.devper.pharm.common.print.ReceiptPrinter {
         var printed: app.devper.pharm.common.print.ReceiptTemplate? = null
-        override fun print(template: app.devper.pharm.common.print.ReceiptTemplate): Boolean {
+        override suspend fun print(template: app.devper.pharm.common.print.ReceiptTemplate): Boolean {
             printed = template
             return result
         }

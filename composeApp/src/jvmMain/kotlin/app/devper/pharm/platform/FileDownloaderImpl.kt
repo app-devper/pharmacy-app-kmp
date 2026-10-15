@@ -4,11 +4,15 @@ import app.devper.pharm.common.AppException
 import app.devper.pharm.common.Logger
 import app.devper.pharm.common.StorageException
 import app.devper.pharm.common.platform.FileDownloader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.awt.Desktop
 import java.io.File
 
 class FileDownloaderImpl(private val logger: Logger) : FileDownloader {
-    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> = runCatching {
+    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> = withContext(Dispatchers.IO) { write(filename, bytes) }
+
+    private fun write(filename: String, bytes: ByteArray): Result<String> = runCatching {
         val target = resolveTarget(filename)
         target.writeBytes(bytes)
         tryAutoOpen(target)
