@@ -1,7 +1,7 @@
 package app.devper.pharm.presentation.users
 
 import app.devper.pharm.common.AppException
-import app.devper.pharm.ui.common.BaseFormUiState
+import app.devper.pharm.ui.common.EditFormUiState
 
 sealed interface UserFormMode {
     data object Add : UserFormMode
@@ -25,7 +25,7 @@ data class UserFormUiState(
     override val saving: Boolean = false,
     override val saved: Boolean = false,
     val errorState: AppException? = null,
-) : BaseFormUiState<UserFormUiState> {
+) : EditFormUiState<UserFormUiState, UserFormFields> {
 
     val isEdit: Boolean get() = mode is UserFormMode.Edit
 
@@ -42,6 +42,8 @@ data class UserFormUiState(
         get() = form != baselineForm
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withHydrated(form: UserFormFields) = copy(form = form, baselineForm = form)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)

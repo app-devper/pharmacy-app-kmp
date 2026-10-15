@@ -16,7 +16,7 @@ import app.devper.pharm.domain.validation.buildPurchaseOrderItemInput
 import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
 import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
-import app.devper.pharm.ui.common.BaseFormViewModel
+import app.devper.pharm.ui.common.BaseEditFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class ImportFormViewModel(
@@ -24,7 +24,7 @@ class ImportFormViewModel(
     private val getDrugs: GetDrugsUseCase,
     private val suppliers: SupplierRepository,
     private val purchaseDraft: PurchaseDraftProvider,
-) : BaseFormViewModel<ImportFormUiState>(ImportFormUiState()) {
+) : BaseEditFormViewModel<ImportFormUiState, ImportFormFields>(ImportFormUiState()) {
 
     fun init(mode: ImportFormMode) {
         setState { copy(mode = mode) }
@@ -134,41 +134,31 @@ class ImportFormViewModel(
         )
     }
 
-    private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(purchaseOrders.get(id)) },
-            onSuccess = { po ->
-                val readOnly = po.status == PurchaseOrderStatus.Confirmed
-                val hydratedForm = ImportFormFields(
-                    supplier = po.supplier,
-                    invoiceNo = po.invoiceNo,
-                    receiveDate = po.receiveDate?.toString() ?: "",
-                    notes = po.notes,
-                    items = po.items.map { item ->
-                        ImportLineFields(
-                            drugId = item.drugId,
-                            drugName = item.drugName,
-                            lotNumber = item.lotNumber,
-                            expiryDate = item.expiryDate?.toString() ?: "",
-                            qty = item.qty.value.toString(),
-                            costPrice = item.costPrice.amount.cleanPrice(),
-                            sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
-                        )
-                    },
-                )
-                setState {
-                    copy(
-                        loading = false,
-                        readOnly = readOnly,
-                        form = hydratedForm,
-                        baselineForm = hydratedForm,
+    private fun hydrateForEdit(id: String) = hydrate(
+        fetch = { purchaseOrders.get(id) },
+        notFound = { ImportFormUiStateError.LoadOrderFailed() },
+        failure = { e -> ImportFormUiStateError.LoadOrderFailed(e) },
+        toForm = { po ->
+            ImportFormFields(
+                supplier = po.supplier,
+                invoiceNo = po.invoiceNo,
+                receiveDate = po.receiveDate?.toString() ?: "",
+                notes = po.notes,
+                items = po.items.map { item ->
+                    ImportLineFields(
+                        drugId = item.drugId,
+                        drugName = item.drugName,
+                        lotNumber = item.lotNumber,
+                        expiryDate = item.expiryDate?.toString() ?: "",
+                        qty = item.qty.value.toString(),
+                        costPrice = item.costPrice.amount.cleanPrice(),
+                        sellPrice = item.sellPrice?.amount?.cleanPrice() ?: "",
                     )
-                }
-            },
-            onFailure = { e -> setState { copy(loading = false, errorState = ImportFormUiStateError.LoadOrderFailed(e)) } },
-        )
-    }
+                },
+            )
+        },
+        extra = { po -> copy(readOnly = po.status == PurchaseOrderStatus.Confirmed) },
+    )
 
     private fun patchHeader(transform: ImportFormFields.() -> ImportFormFields) {
         setState { copy(form = form.transform()) }
