@@ -8,12 +8,12 @@ import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.users.SetUserPasswordParam
 import app.devper.pharm.domain.param.users.SetUserRoleParam
 import app.devper.pharm.domain.param.users.SetUserStatusParam
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class UsersListViewModel(
-    private val getProfile: GetProfileUseCase,
+    private val signedInUser: SignedInUser,
     private val users: UsersRepository,
 ) : BaseLoadableViewModel<UsersListUiState>(UsersListUiState()) {
 
@@ -108,7 +108,7 @@ class UsersListViewModel(
 
     private fun loadProfile() {
         launchResult(
-            block = { getProfile(Unit) },
+            block = { Result.success(signedInUser.get()) },
             onSuccess = { me -> setState { copy(currentUserId = me.id, currentUserRole = me.role) } },
             onFailure = {  },
         )
