@@ -38,7 +38,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 private class StubReceiptPrinter(private val result: Boolean = true) : ReceiptPrinter {
-    override fun print(template: ReceiptTemplate): Boolean = result
+    override suspend fun print(template: ReceiptTemplate): Boolean = result
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
