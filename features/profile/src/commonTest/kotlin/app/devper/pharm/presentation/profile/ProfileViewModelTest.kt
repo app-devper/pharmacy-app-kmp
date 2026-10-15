@@ -8,7 +8,7 @@ import app.devper.pharm.common.AuthException
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -22,10 +22,14 @@ import kotlin.test.assertTrue
 
 class ProfileViewModelTest {
 
-    private fun bundle(fake: FakeProfileRepository, dispatchers: app.devper.pharm.common.AppDispatchers): ProfileViewModel =
+    private fun bundle(
+        fake: FakeProfileRepository,
+        dispatchers: app.devper.pharm.common.AppDispatchers,
+        signedInUser: SignedInUser = SignedInUser(fake),
+    ): ProfileViewModel =
         ProfileViewModel(
-            getProfile = GetProfileUseCase(fake, dispatchers),
-            updateProfile = UpdateProfileUseCase(fake, dispatchers),
+            signedInUser = signedInUser,
+            updateProfile = UpdateProfileUseCase(fake, signedInUser, dispatchers),
             changePassword = ChangePasswordUseCase(fake, dispatchers),
         )
 

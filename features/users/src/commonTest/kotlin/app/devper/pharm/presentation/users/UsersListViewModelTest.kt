@@ -10,7 +10,7 @@ import app.devper.pharm.domain.model.UserRules
 import app.devper.pharm.domain.model.UmStatus
 import app.devper.pharm.domain.repository.FakeProfileRepository
 import app.devper.pharm.domain.repository.FakeUsersRepository
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.presentation.users.exception.UsersUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -29,7 +29,7 @@ class UsersListViewModelTest {
         profile: FakeProfileRepository,
         dispatchers: AppDispatchers,
     ): UsersListViewModel = UsersListViewModel(
-        getProfile = GetProfileUseCase(profile, dispatchers),
+        signedInUser = SignedInUser(profile),
         users = users,
     )
 
