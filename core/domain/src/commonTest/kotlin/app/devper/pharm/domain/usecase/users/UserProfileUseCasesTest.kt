@@ -3,7 +3,7 @@
 package app.devper.pharm.domain.usecase
 
 import app.devper.pharm.domain.usecase.profile.ChangePasswordUseCase
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.usecase.profile.UpdateProfileUseCase
 
 import app.devper.pharm.common.AuthException
@@ -18,27 +18,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class GetProfileUseCaseTest {
-
-    @Test
-    fun returns_repository_profile() = runTest {
-        val repo = FakeProfileRepository()
-
-        val result = GetProfileUseCase(repo, testDispatchers()).invoke()
-
-        assertEquals(repo.snapshot, result.getOrThrow())
-    }
-
-    @Test
-    fun repository_failure_wraps_in_result() = runTest {
-        val repo = FakeProfileRepository(getFailsWith = RuntimeException("unauthorized"))
-
-        val result = GetProfileUseCase(repo, testDispatchers()).invoke()
-
-        assertTrue(result.isFailure)
-    }
-}
-
 class UpdateProfileUseCaseTest {
 
     @Test
@@ -48,7 +27,7 @@ class UpdateProfileUseCaseTest {
             firstName = "Updated", lastName = "Name", phone = "0900000000", email = "u@a.com",
         )
 
-        val user = UpdateProfileUseCase(repo, testDispatchers()).invoke(param).getOrThrow()
+        val user = UpdateProfileUseCase(repo, SignedInUser(repo), testDispatchers()).invoke(param).getOrThrow()
 
         assertEquals(param, repo.lastUpdate)
         assertEquals("Updated", user.firstName)
@@ -60,7 +39,7 @@ class UpdateProfileUseCaseTest {
         val repo = FakeProfileRepository(updateFailsWith = RuntimeException("denied"))
         val param = UpdateProfileParam("a", "b", "0", "x@y.z")
 
-        val result = UpdateProfileUseCase(repo, testDispatchers()).invoke(param)
+        val result = UpdateProfileUseCase(repo, SignedInUser(repo), testDispatchers()).invoke(param)
 
         assertTrue(result.isFailure)
     }

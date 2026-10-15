@@ -2,6 +2,8 @@ package app.devper.pharm.platform
 
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.awt.Font
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -11,11 +13,11 @@ import java.awt.print.PrinterException
 import java.awt.print.PrinterJob
 
 class ReceiptPrinterImpl : ReceiptPrinter {
-    override fun print(template: ReceiptTemplate): Boolean {
+    override suspend fun print(template: ReceiptTemplate): Boolean = withContext(Dispatchers.IO) {
         val job = PrinterJob.getPrinterJob()
         job.setPrintable(ReceiptPrintable(template))
-        if (!job.printDialog()) return false
-        return try {
+        if (!job.printDialog()) return@withContext false
+        try {
             job.print()
             true
         } catch (e: PrinterException) {
