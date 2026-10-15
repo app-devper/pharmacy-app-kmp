@@ -10,7 +10,7 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.reports.CloseEodParam
 import app.devper.pharm.domain.param.reports.EodReportParam
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
-import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.onEach
 class EodViewModel(
     settings: SettingsProvider,
     pendingSales: PendingSales,
-    private val getEodReport: GetEodReportUseCase,
+    private val reports: ReportsRepository,
     private val closeEod: CloseEodUseCase,
     private val printReceiptUseCase: PrintReceiptUseCase,
 ) : BaseLoadableViewModel<EodUiState>(EodUiState()) {
@@ -116,7 +116,7 @@ class EodViewModel(
     fun reload() {
         val s = current
         load(
-            fetch = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
+            fetch = { Result.success(reports.eod(EodReportParam(date = s.date.toLocalDateOrNull()))) },
             failure = { e -> EodUiStateError.LoadReportFailed(e) },
             onLoaded = { rep ->
                 val closedResult = rep.close?.let {

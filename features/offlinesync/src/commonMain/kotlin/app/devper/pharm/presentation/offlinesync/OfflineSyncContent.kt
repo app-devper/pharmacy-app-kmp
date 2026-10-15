@@ -21,6 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.model.PendingSaleState
+import app.devper.pharm.domain.model.PendingSaleRefusal
+import app.devper.pharm.domain.model.KyRefusal
+import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.ui.components.LocalRolePermissions
 import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmTextField
@@ -188,7 +191,6 @@ private val samplePending = listOf(
         clientRequestId = "req-3a8f0001-aaaa",
         payloadJson = "{}",
         enqueuedAt = 1716040920000L,
-        lastError = null,
         attempts = 0,
     ),
     PendingSale(
@@ -196,7 +198,6 @@ private val samplePending = listOf(
         clientRequestId = "req-3a8c0002-bbbb",
         payloadJson = "{}",
         enqueuedAt = 1716035880000L,
-        lastError = null,
         attempts = 1,
     ),
     PendingSale(
@@ -204,7 +205,7 @@ private val samplePending = listOf(
         clientRequestId = "req-3a890003-cccc",
         payloadJson = "{}",
         enqueuedAt = 1716033000000L,
-        lastError = "received must be >= total",
+        refusal = PendingSaleRefusal.Server("received must be >= total"),
         attempts = 3,
         state = PendingSaleState.Conflict,
     ),
@@ -213,7 +214,7 @@ private val samplePending = listOf(
         clientRequestId = "req-3a870004-dddd",
         payloadJson = "{}",
         enqueuedAt = 1716031000000L,
-        lastError = "ky10:Tramadol:buyer_name is required",
+        refusal = PendingSaleRefusal.KyRefused(listOf(KyRefusal(KyFormType.Ky10, "Tramadol", "buyer_name is required"))),
         attempts = 1,
         state = PendingSaleState.KyPending,
         billNo = "INV-260517-004",

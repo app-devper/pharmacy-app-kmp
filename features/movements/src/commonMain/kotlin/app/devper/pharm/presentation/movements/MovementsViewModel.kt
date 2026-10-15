@@ -5,13 +5,13 @@ import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.ExportMovementsCsvParam
 import app.devper.pharm.domain.param.reports.MovementsFilterParam
 import app.devper.pharm.domain.usecase.reports.ExportMovementsCsvUseCase
-import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
+import app.devper.pharm.domain.repository.reports.MovementsRepository
 import app.devper.pharm.presentation.movements.exception.MovementsUiStateError
 import app.devper.pharm.ui.common.BaseExportableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
 class MovementsViewModel(
-    private val getMovements: GetMovementsUseCase,
+    private val movements: MovementsRepository,
     private val exportMovementsCsv: ExportMovementsCsvUseCase,
     timeZoneProvider: TimeZoneProvider,
 ) : BaseExportableViewModel<MovementsUiState>(
@@ -61,14 +61,16 @@ class MovementsViewModel(
         val s = current
         load(
             fetch = {
-                getMovements(
-                    MovementsFilterParam(
-                        from = s.dateRange.fromDate,
-                        to = s.dateRange.toDate,
-                        drugName = s.drugName.takeIf { it.isNotBlank() },
-                        types = MovementsTypeCatalog.toEnumSet(s.activeTypeIds),
-                        limit = 200,
-                        offset = 0,
+                Result.success(
+                    movements.list(
+                        MovementsFilterParam(
+                            from = s.dateRange.fromDate,
+                            to = s.dateRange.toDate,
+                            drugName = s.drugName.takeIf { it.isNotBlank() },
+                            types = MovementsTypeCatalog.toEnumSet(s.activeTypeIds),
+                            limit = 200,
+                            offset = 0,
+                        ),
                     ),
                 )
             },

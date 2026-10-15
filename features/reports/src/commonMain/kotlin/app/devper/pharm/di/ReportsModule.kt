@@ -7,7 +7,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val reportsModule = module {
-    factory { ReportsViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    factory { ReportsViewModel(get(), get(), get(), get()) }
     factoryOf(::ProfitViewModel)
     factoryOf(::EodViewModel)
 }

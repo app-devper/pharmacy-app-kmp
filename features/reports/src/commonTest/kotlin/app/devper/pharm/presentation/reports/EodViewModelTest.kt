@@ -16,7 +16,6 @@ import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
-import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,7 +75,7 @@ class EodViewModelTest {
     ): EodViewModel = EodViewModel(
         settings = SettingsProvider(settings),
         pendingSales = pendingSalesOf(offlineQueue),
-        getEodReport = GetEodReportUseCase(reports, dispatchers),
+        reports = reports,
         closeEod = CloseEodUseCase(reports, SignedInUser(FakeProfileRepository()), dispatchers),
         printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
     )

@@ -5,7 +5,6 @@ import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -20,7 +19,7 @@ class ProfitViewModelTest {
 
     private fun vm(d: app.devper.pharm.common.AppDispatchers) =
         ProfitViewModel(
-            GetProfitReportUseCase(FakeReportsRepository(), d),
+            FakeReportsRepository(),
             ExportProfitCsvUseCase(FakeExportRepository(), d),
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )

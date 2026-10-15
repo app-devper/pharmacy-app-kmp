@@ -8,10 +8,8 @@ import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.DashboardRangeParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
-import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
-import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
-import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
+import app.devper.pharm.domain.param.reports.TopOrSlowDrugsParam
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 import app.devper.pharm.ui.format.startOfMonth
 import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.common.BaseLoadableViewModel
@@ -29,10 +27,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
 class ReportsViewModel(
-    private val getDashboard: GetDashboardUseCase,
-    private val getTopDrugs: GetTopDrugsUseCase,
-    private val getSlowDrugs: GetSlowDrugsUseCase,
-    private val getProfitReport: GetProfitReportUseCase,
+    private val reports: ReportsRepository,
     private val timeZoneProvider: TimeZoneProvider,
     private val signedInUser: SignedInUser,
     stockChangeBus: StockChangeBus,
@@ -67,10 +62,10 @@ class ReportsViewModel(
         val monthRange = ReportRangeParam(from = today.startOfMonth(), to = today)
         reloadJob = viewModelScope.launch {
             coroutineScope {
-                val d = async { getDashboard(DashboardRangeParam(days)) }
-                val t = async { getTopDrugs(days) }
-                val s = async { getSlowDrugs(90) }
-                val p = async { getProfitReport(monthRange) }
+                val d = async { catching { reports.dashboard(DashboardRangeParam(days)) } }
+                val t = async { catching { reports.topDrugs(TopOrSlowDrugsParam(days)) } }
+                val s = async { catching { reports.slowDrugs(TopOrSlowDrugsParam(SLOW_DRUG_DAYS)) } }
+                val p = async { catching { reports.profit(monthRange) } }
                 val dashboard = d.await()
                 val top = t.await()
                 val slow = s.await()
@@ -97,7 +92,7 @@ class ReportsViewModel(
         reloadJob?.cancel()
         setState { copy(loading = true, errorState = null) }
         reloadJob = viewModelScope.launch {
-            val slow = getSlowDrugs(90)
+            val slow = catching { reports.slowDrugs(TopOrSlowDrugsParam(SLOW_DRUG_DAYS)) }
             ensureActive()
             val loadedAt = if (slow.isSuccess) now() else null
             setState {
@@ -109,5 +104,9 @@ class ReportsViewModel(
                 )
             }
         }
+    }
+
+    private companion object {
+        const val SLOW_DRUG_DAYS = 90
     }
 }
