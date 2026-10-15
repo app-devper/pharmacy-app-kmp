@@ -6,7 +6,7 @@ import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.ExportProfitCsvParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
 import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 import app.devper.pharm.ui.format.startOfMonth
 import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.format.toYmd
@@ -15,7 +15,7 @@ import app.devper.pharm.ui.format.DateRangeFilter
 
 
 class ProfitViewModel(
-    private val getProfitReport: GetProfitReportUseCase,
+    private val reports: ReportsRepository,
     private val exportProfitCsv: ExportProfitCsvUseCase,
     timeZoneProvider: TimeZoneProvider,
 ) : BaseExportableViewModel<ProfitUiState>(
@@ -55,7 +55,7 @@ class ProfitViewModel(
     fun reload() {
         val s = current
         load(
-            fetch = { getProfitReport(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
+            fetch = { Result.success(reports.profit(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate))) },
             failure = { e -> ProfitUiStateError.LoadReportFailed(e) },
             onLoaded = { rep -> copy(report = rep) },
         )
