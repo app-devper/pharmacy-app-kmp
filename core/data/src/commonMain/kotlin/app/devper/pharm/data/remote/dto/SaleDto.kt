@@ -15,7 +15,6 @@ data class SaleRequest(
     @SerialName("ky") val ky: SaleKyCaptureRequest? = null,
 )
 
-/** The bill's KY capture (pharmacy-api ADR-0011). */
 @Serializable
 data class SaleKyCaptureRequest(
     @SerialName("ky10") val ky10: Ky10CaptureRequest? = null,
@@ -82,7 +81,6 @@ data class VoidSaleRequest(
     @SerialName("reason") val reason: String,
 )
 
-/** POST /sales/abandon (pharmacy-api ADR-0009). [payload] is kept verbatim for audit. */
 @Serializable
 data class AbandonRequest(
     @SerialName("client_request_id") val clientRequestId: String,
@@ -91,7 +89,6 @@ data class AbandonRequest(
     @SerialName("reason") val reason: String,
 )
 
-/** The 409 body when the queued sale was recorded before it could be abandoned. */
 @Serializable
 data class AlreadyRecordedResponse(
     @SerialName("sale") val sale: SaleResponse? = null,

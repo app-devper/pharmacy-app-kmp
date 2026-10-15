@@ -15,10 +15,6 @@ import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 
-/**
- * A closed day shows its figures as closed; sales, voids, or returns
- * recorded afterwards are Late sale adjustments, summarised here.
- */
 @Composable
 internal fun EodAdjustmentsBanner(adjustments: EodAdjustments, modifier: Modifier = Modifier) {
     val t = pharmTokens

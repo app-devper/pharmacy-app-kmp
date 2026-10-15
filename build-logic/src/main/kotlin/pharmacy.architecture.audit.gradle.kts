@@ -1,6 +1,6 @@
 tasks.register("auditArchitecture") {
     group = "verification"
-    description = "Audits inward-only module rules (A10/A17/A19/A20/A23) + DTO conventions (A24 @SerialName, A25 camelCase) + platform-folder ownership (A26 only :composeApp) + no expect/actual (A27 interfaces only) + typed errors (A28 no generic exceptions in production) + localized UI copy (A29 no Thai literals in production UI code)."
+    description = "Audits inward-only module rules (A10/A17/A19/A20/A23) + DTO conventions (A24 @SerialName, A25 camelCase) + platform-folder ownership (A26 only :composeApp) + no expect/actual (A27 interfaces only) + typed errors (A28 no generic exceptions in production) + localized UI copy (A29 no Thai literals in production UI code) + no comments in Kotlin sources (A30)."
 
     val projectRoot = rootProject.projectDir
     val outputFile = layout.buildDirectory.file("reports/architecture-audit.txt")
@@ -216,6 +216,23 @@ tasks.register("auditArchitecture") {
                         if (line.contains(".contains(")) continue
                         if (thaiLiteralRe.containsMatchIn(line)) {
                             violations += "A29 Thai literal in production UI    ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
+                        }
+                    }
+                }
+        }
+
+        val commentLineRe = Regex("""^\s*(//|/\*)""")
+        listOf("core", "features", "composeApp").forEach { topDir ->
+            val root = projectRoot.resolve(topDir)
+            if (!root.exists()) return@forEach
+            root.walkTopDown()
+                .filter { it.isFile && it.name.endsWith(".kt") && !it.absolutePath.contains("/build/") }
+                .forEach { f ->
+                    f.useLines { lines ->
+                        lines.forEachIndexed { i, line ->
+                            if (commentLineRe.containsMatchIn(line)) {
+                                violations += "A30 comment in Kotlin source    ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
+                            }
                         }
                     }
                 }

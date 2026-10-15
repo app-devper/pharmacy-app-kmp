@@ -19,7 +19,6 @@ data class UmUserDto(
     @SerialName("can") val can: UserPermissionsDto? = null,
 )
 
-/** um-api ADR-0006. */
 @Serializable
 data class UserPermissionsDto(
     @SerialName("edit") val edit: Boolean = false,

@@ -73,8 +73,8 @@ cross-feature imports inside `:features` (e.g.
 warning. After the split, the Kotlin compiler refuses any foreign-module
 symbol without an explicit `project(":features:<x>")` dep — the audit
 check became redundant for cross-feature rules (it still enforces
-A26/A27/A28/A29 for platform folders, expect declarations, generic
-exceptions).
+A26/A27/A28/A29/A30 for platform folders, expect declarations, generic
+exceptions, Thai UI literals and comments).
 
 **`:features` decoupling**: no per-feature module can reach `:core:data`
 (no direct dep, no transitive path — `:core:domain` does not re-export
@@ -281,6 +281,7 @@ to check them.
 | Anywhere in the repo | `expect class` / `expect fun` / `expect val` declarations | ❌ A27 |
 | Production code | `throw IllegalStateException` / `RuntimeException` / etc. | ❌ A28 (excludes `:features:test-fixtures/`) |
 | Production UI code (`:core:ui` / `:features` / `:composeApp` commonMain) | Thai string literal (must go through `PharmStrings`) | ❌ A29 (excludes i18n tables, `ui/print/`, previews/sample blocks, `.contains(` data tokens, small allow-list) |
+| Any Kotlin source (`core` / `features` / `composeApp`, production and tests) | A line comment or block comment (`//`, `/* */`, KDoc) — see CLAUDE.md § NO COMMENTS | ❌ A30 |
 
 ## Test layout
 

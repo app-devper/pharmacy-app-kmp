@@ -16,7 +16,6 @@ data class SubmitReturnParam(
     val saleId: String,
     val reason: String,
     val items: List<ReturnLineParam>,
-    /** Set by SubmitSaleReturnUseCase; the same for a retry of the same return. */
     val clientRequestId: String? = null,
 )
 

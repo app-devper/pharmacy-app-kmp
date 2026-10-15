@@ -20,7 +20,6 @@ internal fun KyForm.toPendingDto(): PendingKyFormDto = when (this) {
     )
 }
 
-/** Null for a form this version does not know; it is dropped rather than failing the queue. */
 internal fun PendingKyFormDto.toDomainOrNull(): KyForm? {
     val day = runCatching { LocalDate.parse(date) }.getOrNull() ?: return null
     return when (form) {
