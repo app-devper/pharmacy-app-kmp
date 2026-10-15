@@ -4,8 +4,7 @@ import app.devper.pharm.presentation.reports.exception.ReportsUiStateError
 
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
-import app.devper.pharm.domain.model.permissions
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.DashboardRangeParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
@@ -35,7 +34,7 @@ class ReportsViewModel(
     private val getSlowDrugs: GetSlowDrugsUseCase,
     private val getProfitReport: GetProfitReportUseCase,
     private val timeZoneProvider: TimeZoneProvider,
-    private val getProfile: GetProfileUseCase,
+    private val signedInUser: SignedInUser,
     stockChangeBus: StockChangeBus,
     private val now: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : BaseLoadableViewModel<ReportsUiState>(ReportsUiState()) {
@@ -44,8 +43,8 @@ class ReportsViewModel(
 
     init {
         viewModelScope.launch {
-            val role = getProfile(Unit).getOrNull()?.role
-            setState { copy(slowDrugsOnly = role != null && !role.permissions().canSeeFinancialReports) }
+            val financial = signedInUser.permissions().canSeeFinancialReports
+            setState { copy(slowDrugsOnly = !financial) }
             reload()
         }
         stockChangeBus.events

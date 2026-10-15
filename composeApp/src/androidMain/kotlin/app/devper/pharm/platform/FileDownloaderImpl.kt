@@ -8,11 +8,16 @@ import android.provider.MediaStore
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.StorageException
 import app.devper.pharm.common.platform.FileDownloader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
 class FileDownloaderImpl(private val context: Context) : FileDownloader {
-    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> = runCatching {
+    override suspend fun save(filename: String, mimeType: String, bytes: ByteArray): Result<String> =
+        withContext(Dispatchers.IO) { write(filename, mimeType, bytes) }
+
+    private fun write(filename: String, mimeType: String, bytes: ByteArray): Result<String> = runCatching {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveViaMediaStore(filename, mimeType, bytes)
         } else {

@@ -11,6 +11,7 @@ import app.devper.pharm.domain.repository.FakeOfflineSaleQueue
 import app.devper.pharm.domain.repository.pendingSalesOf
 
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
+import app.devper.pharm.domain.command.CommandAttempts
 
 import app.devper.pharm.domain.validation.SaleValidationError
 
@@ -281,6 +282,19 @@ class CheckoutUseCaseTest {
         checkout.invoke(Money(100.0))
         val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
         checkout.invoke(Money(100.0))
+
+        assertEquals(firstRequestId, sales.lastParam?.clientRequestId)
+    }
+
+    @Test
+    fun retry_from_a_new_screen_reuses_the_request_id_of_the_ambiguous_attempt() = runTest {
+        val sales = FakeSales(failWith = RuntimeException("validation: missing field"))
+        val cart = cartOf(cart(CartLine(drug = drug("a", stock = 10), qty = 1)))
+        val attempts = CommandAttempts()
+        CheckoutUseCase(cart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers(), attempts).invoke(Money(100.0))
+        val firstRequestId = assertNotNull(sales.lastParam?.clientRequestId)
+
+        CheckoutUseCase(cart, sales, pendingSalesOf(FakeOfflineSaleQueue()), testDispatchers(), attempts).invoke(Money(100.0))
 
         assertEquals(firstRequestId, sales.lastParam?.clientRequestId)
     }

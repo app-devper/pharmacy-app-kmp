@@ -119,7 +119,7 @@ private val testPlatformModule = module {
     }
     single<ReceiptPrinter> {
         object : ReceiptPrinter {
-            override fun print(template: ReceiptTemplate): Boolean = true
+            override suspend fun print(template: ReceiptTemplate): Boolean = true
         }
     }
 }
