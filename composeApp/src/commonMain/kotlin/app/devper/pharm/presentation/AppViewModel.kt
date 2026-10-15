@@ -10,7 +10,7 @@ import app.devper.pharm.domain.observer.OfflineAutoSync
 import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.observer.SignedInUser
-import app.devper.pharm.domain.usecase.auth.LogoutUseCase
+import app.devper.pharm.domain.repository.auth.AuthRepository
 import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -22,7 +22,7 @@ class AppViewModel(
     pendingSales: PendingSales,
     uiPreferences: UiPreferencesProvider,
     private val offlineAutoSync: OfflineAutoSync,
-    private val logout: LogoutUseCase,
+    private val auth: AuthRepository,
     private val signedInUser: SignedInUser,
     private val preferences: UiPreferencesRepository,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
@@ -73,7 +73,7 @@ class AppViewModel(
 
     fun signOut() {
         launchResult(
-            block = { logout() },
+            block = { Result.success(auth.logout()) },
             onSuccess = {  },
             onFailure = { e -> setState { copy(errorState = AppUiStateError.LogoutFailed(e)) } },
         )

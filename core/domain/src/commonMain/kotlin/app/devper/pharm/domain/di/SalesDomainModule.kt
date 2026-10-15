@@ -4,8 +4,6 @@ import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.command.CommandAttempts
 import app.devper.pharm.domain.usecase.sales.CheckoutUseCase
-import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
-import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase
 import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.usecase.sales.VoidSaleUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -19,7 +17,5 @@ val salesDomainModule = module {
     single { CommandAttempts() }
     factory { CheckoutUseCase(get(), get(), get(), get(), get()) }
     factoryOf(::VoidSaleUseCase)
-    factoryOf(::GetSaleHistoryUseCase)
-    factoryOf(::GetSaleItemsUseCase)
     factory { SubmitSaleReturnUseCase(get(), get(), get()) }
 }
