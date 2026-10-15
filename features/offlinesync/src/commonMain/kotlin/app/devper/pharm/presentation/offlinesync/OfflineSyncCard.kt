@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.model.PendingSaleState
+import app.devper.pharm.presentation.offlinesync.i18n.localize
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
@@ -70,7 +71,7 @@ internal fun OfflineSyncCard(
                 )
                 else -> Unit
             }
-            row.lastError?.takeIf { it.isNotBlank() }?.let { reason ->
+            row.refusal?.localize(s)?.takeIf { it.isNotBlank() }?.let { reason ->
                 Text(
                     text = reason,
                     style = PharmText.micro.copy(color = t.colors.dangerFg),

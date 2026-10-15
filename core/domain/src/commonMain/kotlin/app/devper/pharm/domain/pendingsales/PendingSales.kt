@@ -15,8 +15,7 @@ import app.devper.pharm.domain.model.PendingSaleState
 import app.devper.pharm.domain.repository.ky.KyRepository
 import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 import app.devper.pharm.domain.repository.sales.SaleRepository
-import app.devper.pharm.domain.usecase.ky.submitForms
-import app.devper.pharm.domain.usecase.ky.withSaleId
+import app.devper.pharm.domain.model.PendingSaleRefusal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -93,7 +92,7 @@ class PendingSales(
                                         state = PendingSaleState.Pending,
                                         billNo = outcome.sale.billNo,
                                         kyForms = entry.kyForms.map { it.withSaleId(outcome.sale.id) },
-                                        lastError = null,
+                                        refusal = null,
                                     ),
                                 )
                             }
@@ -140,11 +139,11 @@ class PendingSales(
                 Delivery.Recorded
             }
             sent.outage != null -> {
-                queue.put(recorded.copy(state = PendingSaleState.Pending, lastError = sent.outage.message))
+                queue.put(recorded.copy(state = PendingSaleState.Pending, refusal = PendingSaleRefusal.Outage(sent.outage.message.orEmpty())))
                 Delivery.StillPending
             }
             else -> {
-                queue.put(recorded.copy(state = PendingSaleState.KyPending, lastError = sent.refusedLabels.joinToString("\n")))
+                queue.put(recorded.copy(state = PendingSaleState.KyPending, refusal = PendingSaleRefusal.KyRefused(sent.refusals)))
                 Delivery.Refused
             }
         }
@@ -155,7 +154,7 @@ class PendingSales(
         queue.put(
             entry.copy(
                 state = if (temporary) PendingSaleState.Pending else PendingSaleState.Conflict,
-                lastError = e.serverReason(),
+                refusal = if (temporary) PendingSaleRefusal.Outage(e.message.orEmpty()) else PendingSaleRefusal.Server(e.serverReason()),
                 attempts = entry.attempts + 1,
             ),
         )

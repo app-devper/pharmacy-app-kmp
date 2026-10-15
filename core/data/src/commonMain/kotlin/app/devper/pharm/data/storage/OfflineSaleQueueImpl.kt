@@ -1,6 +1,7 @@
 package app.devper.pharm.data.storage
 
 import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.domain.model.PendingSaleRefusal
 import app.devper.pharm.domain.model.PendingSaleState
 import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 import com.russhwolf.settings.Settings
@@ -78,7 +79,7 @@ class OfflineSaleQueueImpl(
         clientRequestId = "",
         payloadJson = raw,
         enqueuedAt = 0L,
-        lastError = e.message,
+        refusal = PendingSaleRefusal.Unreadable(e.message.orEmpty()),
         state = PendingSaleState.Damaged,
     )
 
@@ -105,7 +106,8 @@ class OfflineSaleQueueImpl(
         clientRequestId = clientRequestId,
         payload = payloadJson,
         enqueuedAt = enqueuedAt,
-        lastError = lastError,
+        lastError = null,
+        refusal = refusal?.toDto(),
         attempts = attempts,
         ky = kyForms.map { it.toPendingDto() },
         state = when (state) {
@@ -121,7 +123,7 @@ class OfflineSaleQueueImpl(
         clientRequestId = clientRequestId,
         payloadJson = payload,
         enqueuedAt = enqueuedAt,
-        lastError = lastError,
+        refusal = refusal?.toDomain() ?: lastError?.takeIf { it.isNotBlank() }?.let { legacyRefusal(it, kyPending = state == "ky_pending") },
         attempts = attempts,
         kyForms = ky.mapNotNull { it.toDomainOrNull() },
         state = when (state) {
