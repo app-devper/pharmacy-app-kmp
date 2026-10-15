@@ -7,8 +7,6 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.ExpiringLot
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeExpiringLotsRepository
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
 import app.devper.pharm.domain.usecase.reports.ExportDrugsCsvUseCase
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.ui.common.runVmTest
@@ -42,8 +40,8 @@ class StockViewModelTest {
         expiringRepo: FakeExpiringLotsRepository = FakeExpiringLotsRepository(),
         exportRepo: FakeExportRepository = FakeExportRepository(),
     ) = StockViewModel(
-        GetDrugsUseCase(drugRepo, d),
-        GetExpiringLotsUseCase(expiringRepo, d),
+        drugRepo,
+        expiringRepo,
         ExportDrugsCsvUseCase(exportRepo, d),
     )
 

@@ -2,9 +2,6 @@
 
 package app.devper.pharm.domain.usecase
 
-import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
-import app.devper.pharm.domain.usecase.inventory.GetLowStockDrugsUseCase
-import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
 import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 
 import app.devper.pharm.common.value.Money
@@ -56,83 +53,5 @@ class GetMovementsUseCaseTest {
         val result = GetMovementsUseCase(repo, testDispatchers()).invoke(MovementsFilterParam())
 
         assertTrue(result.isFailure)
-    }
-}
-
-class GetExpiringLotsUseCaseTest {
-
-    @Test
-    fun forwards_filter_to_repository_and_returns_list() = runTest {
-        val seed = listOf(
-            ExpiringLot(
-                id = "l1", drugId = "d1", drugName = "Drug A", lotNumber = "LOT-1",
-                expiryDate = LocalDate(2026, 6, 30), remaining = 50, daysLeft = 30,
-            ),
-        )
-        val repo = FakeExpiringLotsRepository(seed = seed)
-        val filter = ExpiringLotsFilterParam(daysAhead = 60)
-
-        val result = GetExpiringLotsUseCase(repo, testDispatchers()).invoke(filter)
-
-        assertEquals(seed, result.getOrThrow())
-        assertEquals(filter, repo.lastFilter)
-    }
-
-    @Test
-    fun repository_failure_wraps_in_result() = runTest {
-        val repo = FakeExpiringLotsRepository(listThrows = true)
-
-        val result = GetExpiringLotsUseCase(repo, testDispatchers()).invoke(ExpiringLotsFilterParam())
-
-        assertTrue(result.isFailure)
-    }
-}
-
-class WriteoffLotsUseCaseTest {
-
-    @Test
-    fun forwards_param_and_returns_result() = runTest {
-        val repo = FakeExpiringLotsRepository(
-            writeoffResult = WriteoffResult(writtenOff = 2, failures = emptyList()),
-        )
-        val param = WriteoffLotsParam(lotIds = listOf("l1", "l2"))
-
-        val result = WriteoffLotsUseCase(repo, testDispatchers()).invoke(param).getOrThrow()
-
-        assertEquals(2, result.writtenOff)
-        assertEquals(param, repo.lastWriteoff)
-    }
-
-    @Test
-    fun repository_failure_wraps_in_result() = runTest {
-        val repo = FakeExpiringLotsRepository(writeoffThrows = true)
-
-        val result = WriteoffLotsUseCase(repo, testDispatchers()).invoke(
-            WriteoffLotsParam(lotIds = listOf("l1")),
-        )
-
-        assertTrue(result.isFailure)
-    }
-}
-
-class GetLowStockDrugsUseCaseTest {
-
-    @Test
-    fun returns_repository_low_stock_seed() = runTest {
-        val seed = listOf(drug("d1", "Low A"), drug("d2", "Low B"))
-        val repo = FakeDrugRepository(lowStockSeed = seed)
-
-        val result = GetLowStockDrugsUseCase(repo, testDispatchers()).invoke()
-
-        assertEquals(seed, result.getOrThrow())
-    }
-
-    @Test
-    fun empty_seed_returns_empty_list() = runTest {
-        val repo = FakeDrugRepository()
-
-        val result = GetLowStockDrugsUseCase(repo, testDispatchers()).invoke()
-
-        assertEquals(emptyList(), result.getOrThrow())
     }
 }

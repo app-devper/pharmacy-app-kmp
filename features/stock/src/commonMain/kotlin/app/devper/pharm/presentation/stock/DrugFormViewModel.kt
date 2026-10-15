@@ -10,16 +10,12 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.param.inventory.AddDrugParam
 import app.devper.pharm.domain.param.inventory.CreateLotPayload
 import app.devper.pharm.domain.param.inventory.UpdateDrugParam
-import app.devper.pharm.domain.usecase.inventory.AddDrugUseCase
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.inventory.UpdateDrugUseCase
+import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.ui.common.BaseEditFormViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
 class DrugFormViewModel(
-    private val getDrugs: GetDrugsUseCase,
-    private val addDrug: AddDrugUseCase,
-    private val updateDrug: UpdateDrugUseCase,
+    private val drugs: DrugRepository,
 ) : BaseEditFormViewModel<DrugFormUiState, DrugFormFields>(DrugFormUiState()) {
 
     fun init(mode: DrugFormMode) {
@@ -64,14 +60,15 @@ class DrugFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val s = current
-        return when (val mode = s.mode) {
-            is DrugFormMode.Add  -> addDrug(buildAddParam(s.form)).map { Unit }
-            is DrugFormMode.Edit -> updateDrug(buildUpdateParam(s.form, mode.drugId))
+        when (val mode = s.mode) {
+            is DrugFormMode.Add  -> drugs.add(buildAddParam(s.form))
+            is DrugFormMode.Edit -> drugs.update(buildUpdateParam(s.form, mode.drugId))
         }
+        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(drugId: String) = hydrate(
-        fetch = { getDrugs().getOrThrow().firstOrNull { it.id == drugId } },
+        fetch = { drugs.list().firstOrNull { it.id == drugId } },
         notFound = { DrugFormUiStateError.NotFound() },
         failure = { e -> DrugFormUiStateError.LoadDrugFailed(e) },
         toForm = { it.toForm() },

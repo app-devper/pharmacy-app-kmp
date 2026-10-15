@@ -13,7 +13,6 @@ import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
 import app.devper.pharm.domain.repository.FakeSupplierRepository
 import app.devper.pharm.domain.model.PurchaseDraftLine
 import app.devper.pharm.domain.observer.PurchaseDraftProvider
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.presentation.imports.exception.ImportFormUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -93,7 +92,7 @@ class ImportFormViewModelTest {
     ): Bundle {
         val vm = ImportFormViewModel(
             purchaseOrders = poRepo,
-            getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
+            drugs = drugRepo,
             suppliers = supplierRepo,
             purchaseDraft = draft,
         )
