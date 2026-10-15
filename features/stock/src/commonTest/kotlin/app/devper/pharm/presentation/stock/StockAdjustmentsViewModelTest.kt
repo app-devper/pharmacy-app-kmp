@@ -9,9 +9,6 @@ import app.devper.pharm.domain.repository.FakeStockAdjustmentsRepository
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.model.LotTarget
 import app.devper.pharm.common.value.Quantity
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
-import app.devper.pharm.domain.usecase.inventory.AddStockAdjustmentUseCase
-import app.devper.pharm.domain.usecase.inventory.GetStockAdjustmentsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -48,9 +45,8 @@ class StockAdjustmentsViewModelTest {
         lots: FakeLotsRepository = FakeLotsRepository(),
     ): Bundle {
         val vm = StockAdjustmentsViewModel(
-            getAdjustments = GetStockAdjustmentsUseCase(repo, dispatchers),
-            addAdjustment = AddStockAdjustmentUseCase(repo, dispatchers),
-            listLots = ListLotsUseCase(lots, dispatchers),
+            adjustments = repo,
+            lots = lots,
         )
         return Bundle(vm, repo)
     }

@@ -5,13 +5,13 @@ import app.devper.pharm.domain.model.LabelLine
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.param.labels.PrintLabelsParam
 import app.devper.pharm.common.error.CommonUiStateMessage
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase
 import app.devper.pharm.presentation.labels.exception.LabelPrintUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class LabelPrintViewModel(
-    private val getDrugs: GetDrugsUseCase,
+    private val drugs: DrugRepository,
     private val printLabels: PrintLabelsUseCase,
 ) : BaseLoadableViewModel<LabelPrintUiState>(LabelPrintUiState()) {
 
@@ -97,7 +97,7 @@ class LabelPrintViewModel(
     fun reload() {
         setState { copy(loading = drugs.isEmpty(), errorState = null) }
         launchResult(
-            block = { getDrugs() },
+            block = { Result.success(drugs.list()) },
             onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
             onFailure = { e ->
                 setState { copy(loading = false, errorState = LabelPrintUiStateError.LoadDrugsFailed(e)) }

@@ -30,6 +30,8 @@ interface OfflineSyncStrings {
     val offlineSyncNeedsActionSub: String
     val offlineSyncKyPendingBill: (String) -> String
     val offlineSyncDamagedHint: String
+    val offlineSyncRefusalOutage: (String) -> String
+    val offlineSyncRefusalKy: (String, String, String) -> String
     val offlineSyncAbandonCta: String
     val offlineSyncCloseKyCta: String
     val offlineSyncExportCta: String

@@ -11,7 +11,6 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.LabelSize
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeLabelRepository
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.domain.usecase.inventory.PrintLabelsUseCase
 import app.devper.pharm.presentation.labels.exception.LabelPrintUiStateError
 import app.devper.pharm.ui.common.runVmTest
@@ -49,7 +48,7 @@ class LabelPrintViewModelTest {
     ): Pair<LabelPrintViewModel, FakeLabelRepository> {
         val drugRepo = FakeDrugRepository(seed = drugs)
         val vm = LabelPrintViewModel(
-            getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
+            drugs = drugRepo,
             printLabels = PrintLabelsUseCase(labelRepo, dispatchers),
         )
         return vm to labelRepo
@@ -262,7 +261,7 @@ class LabelPrintViewModelTest {
     fun load_failure_sets_error_and_clears_loading() = runVmTest { dispatchers ->
         val drugRepo = FakeDrugRepository(listThrows = true)
         val vm = LabelPrintViewModel(
-            getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
+            drugs = drugRepo,
             printLabels = PrintLabelsUseCase(FakeLabelRepository(), dispatchers),
         )
         advanceUntilIdle()
@@ -274,7 +273,7 @@ class LabelPrintViewModelTest {
     fun reload_triggers_another_drug_list_call() = runVmTest { dispatchers ->
         val drugRepo = FakeDrugRepository(seed = listOf(drug("d1")))
         val vm = LabelPrintViewModel(
-            getDrugs = GetDrugsUseCase(drugRepo, dispatchers),
+            drugs = drugRepo,
             printLabels = PrintLabelsUseCase(FakeLabelRepository(), dispatchers),
         )
         advanceUntilIdle()

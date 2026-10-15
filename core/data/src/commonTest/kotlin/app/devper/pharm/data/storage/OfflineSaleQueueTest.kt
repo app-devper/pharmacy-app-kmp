@@ -3,6 +3,9 @@ package app.devper.pharm.data.storage
 import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.model.PendingSaleState
+import app.devper.pharm.domain.model.PendingSaleRefusal
+import app.devper.pharm.domain.model.KyRefusal
+import app.devper.pharm.domain.model.KyFormType
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -37,12 +40,44 @@ class OfflineSaleQueueTest {
         val queue = OfflineSaleQueueImpl(memorySettings())
         queue.put(sale("a", 1))
         queue.put(sale("b", 2))
-        queue.put(sale("a", 1).copy(attempts = 2, lastError = "timeout"))
+        queue.put(sale("a", 1).copy(attempts = 2, refusal = PendingSaleRefusal.Outage("timeout")))
         queue.remove("b")
 
         val only = queue.entries.value.single()
         assertEquals(2, only.attempts)
-        assertEquals("timeout", only.lastError)
+        assertEquals(PendingSaleRefusal.Outage("timeout"), only.refusal)
+    }
+
+    @Test
+    fun a_refused_ky_form_round_trips_with_its_form_drug_and_reason() {
+        val settings = memorySettings()
+        val refusal = PendingSaleRefusal.KyRefused(listOf(KyRefusal(KyFormType.Ky11, "Codeine", "buyer_name is required")))
+        OfflineSaleQueueImpl(settings).put(sale("a", 1, PendingSaleState.KyPending).copy(refusal = refusal))
+        assertEquals(refusal, OfflineSaleQueueImpl(settings).entries.value.single().refusal)
+    }
+
+    @Test
+    fun an_entry_saved_with_a_text_error_reads_back_as_a_typed_refusal() {
+        val settings = memorySettings()
+        settings.putString(
+            "offline.sale.old-ky",
+            """{"id":"old-ky","client_request_id":"r","payload":"{}","enqueued_at":1,"state":"ky_pending","last_error":"ky10:Tramadol:buyer_name is required\nky12:Morphine:rx_no is required"}""",
+        )
+        settings.putString(
+            "offline.sale.old-conflict",
+            """{"id":"old-conflict","client_request_id":"r2","payload":"{}","enqueued_at":2,"state":"conflict","last_error":"received must be >= total"}""",
+        )
+        val entries = OfflineSaleQueueImpl(settings).entries.value.associateBy { it.id }
+        assertEquals(
+            PendingSaleRefusal.KyRefused(
+                listOf(
+                    KyRefusal(KyFormType.Ky10, "Tramadol", "buyer_name is required"),
+                    KyRefusal(KyFormType.Ky12, "Morphine", "rx_no is required"),
+                ),
+            ),
+            entries.getValue("old-ky").refusal,
+        )
+        assertEquals(PendingSaleRefusal.Server("received must be >= total"), entries.getValue("old-conflict").refusal)
     }
 
     @Test

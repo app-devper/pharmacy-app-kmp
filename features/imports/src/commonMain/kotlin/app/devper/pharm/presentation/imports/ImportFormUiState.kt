@@ -5,7 +5,7 @@ import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.validation.buildPurchaseOrderItemInput
 import app.devper.pharm.domain.validation.isPurchaseOrderLineValid
 import app.devper.pharm.common.AppException
-import app.devper.pharm.ui.common.BaseFormUiState
+import app.devper.pharm.ui.common.EditFormUiState
 
 sealed interface ImportFormMode {
     data object Add : ImportFormMode
@@ -41,7 +41,7 @@ data class ImportFormUiState(
     override val saving: Boolean = false,
     override val saved: Boolean = false,
     val errorState: AppException? = null,
-) : BaseFormUiState<ImportFormUiState> {
+) : EditFormUiState<ImportFormUiState, ImportFormFields> {
     override val canSubmit: Boolean
         get() = !saving && !loading && !readOnly &&
             form.supplier.isNotBlank() &&
@@ -61,6 +61,8 @@ data class ImportFormUiState(
     val isEdit: Boolean get() = mode is ImportFormMode.Edit
 
     override fun withSaving(saving: Boolean) = copy(saving = saving)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withHydrated(form: ImportFormFields) = copy(form = form, baselineForm = form)
     override fun withSaved(saved: Boolean) = copy(saved = saved)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
