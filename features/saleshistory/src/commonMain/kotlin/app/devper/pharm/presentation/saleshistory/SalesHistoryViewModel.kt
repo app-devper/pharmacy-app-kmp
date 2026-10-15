@@ -7,8 +7,7 @@ import app.devper.pharm.domain.param.sales.ReturnLineParam
 import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
 import app.devper.pharm.domain.param.sales.SubmitReturnParam
 import app.devper.pharm.domain.observer.TimeZoneProvider
-import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
-import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
 import app.devper.pharm.domain.validation.SaleValidationError
@@ -17,8 +16,7 @@ import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
 class SalesHistoryViewModel(
-    private val getHistory: GetSaleHistoryUseCase,
-    private val getItems: GetSaleItemsUseCase,
+    private val history: SaleHistoryRepository,
     private val submitReturn: SubmitSaleReturnUseCase,
     timeZoneProvider: TimeZoneProvider,
 ) : BaseLoadableViewModel<SalesHistoryUiState>(
@@ -42,11 +40,13 @@ class SalesHistoryViewModel(
         val s = current
         load(
             fetch = {
-                getHistory(
-                    SaleHistoryFilterParam(
-                        from = s.dateRange.fromDate,
-                        to = s.dateRange.toDate,
-                        query = s.query.takeIf { it.isNotBlank() },
+                Result.success(
+                    history.list(
+                        SaleHistoryFilterParam(
+                            from = s.dateRange.fromDate,
+                            to = s.dateRange.toDate,
+                            query = s.query.takeIf { it.isNotBlank() },
+                        ),
                     ),
                 )
             },
@@ -59,7 +59,7 @@ class SalesHistoryViewModel(
         val targetId = sale.id
         setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
         launchResult(
-            block = { getItems(targetId) },
+            block = { Result.success(history.getItems(targetId)) },
             onSuccess = { items ->
                 if (current.selected?.id != targetId) return@launchResult
                 setState { copy(itemsLoading = false, items = items) }
@@ -92,7 +92,7 @@ class SalesHistoryViewModel(
             )
         }
         launchResult(
-            block = { getItems(targetId) },
+            block = { Result.success(history.getItems(targetId)) },
             onSuccess = { items ->
                 if (current.selected?.id != targetId) return@launchResult
                 val zero = items.associate { it.id to 0 }

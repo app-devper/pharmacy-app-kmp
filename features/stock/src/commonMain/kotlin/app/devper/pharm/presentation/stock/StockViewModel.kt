@@ -3,16 +3,16 @@ package app.devper.pharm.presentation.stock
 import app.devper.pharm.domain.param.reports.ExportDrugsCsvParam
 import app.devper.pharm.domain.usecase.reports.ExportDrugsCsvUseCase
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
+import app.devper.pharm.domain.repository.inventory.DrugRepository
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
 import app.devper.pharm.ui.common.BaseExportableViewModel
 import app.devper.pharm.presentation.stock.exception.StockUiStateError
 
 private const val EXPIRING_SOON_DAYS = 90
 
 class StockViewModel(
-    private val getDrugs: GetDrugsUseCase,
-    private val getExpiringLots: GetExpiringLotsUseCase,
+    private val drugs: DrugRepository,
+    private val expiringLots: ExpiringLotsRepository,
     private val exportDrugsCsv: ExportDrugsCsvUseCase,
 ) : BaseExportableViewModel<StockUiState>(StockUiState()) {
 
@@ -27,12 +27,12 @@ class StockViewModel(
 
     fun reload() {
         load(
-            fetch = { getDrugs() },
+            fetch = { Result.success(drugs.list()) },
             failure = { e -> StockUiStateError.LoadStockFailed(e) },
             onLoaded = { list -> copy(drugs = list) },
         )
         launchResult(
-            block = { getExpiringLots(ExpiringLotsFilterParam(daysAhead = EXPIRING_SOON_DAYS)) },
+            block = { Result.success(expiringLots.list(ExpiringLotsFilterParam(daysAhead = EXPIRING_SOON_DAYS))) },
             onSuccess = { lots -> setState { copy(expiringSoonCount = lots.size) } },
             onFailure = { setState { copy(expiringSoonCount = null) } },
         )

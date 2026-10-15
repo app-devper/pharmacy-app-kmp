@@ -2,20 +2,18 @@ package app.devper.pharm.presentation.stock
 
 import app.devper.pharm.domain.model.LotChoice
 import app.devper.pharm.presentation.stock.exception.DrugLotsUiStateError
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
+import app.devper.pharm.domain.repository.inventory.LotsRepository
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.presentation.stock.exception.StockUiStateError
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.param.inventory.AddStockAdjustmentParam
-import app.devper.pharm.domain.usecase.inventory.AddStockAdjustmentUseCase
-import app.devper.pharm.domain.usecase.inventory.GetStockAdjustmentsUseCase
+import app.devper.pharm.domain.repository.inventory.StockAdjustmentsRepository
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 
 class StockAdjustmentsViewModel(
-    private val getAdjustments: GetStockAdjustmentsUseCase,
-    private val addAdjustment: AddStockAdjustmentUseCase,
-    private val listLots: ListLotsUseCase,
+    private val adjustments: StockAdjustmentsRepository,
+    private val lots: LotsRepository,
 ) : BaseLoadableViewModel<StockAdjustmentsUiState>(StockAdjustmentsUiState()) {
 
     fun open(drugId: String, drugName: String) {
@@ -39,12 +37,12 @@ class StockAdjustmentsViewModel(
         if (current.drugId.isBlank()) return
         val id = current.drugId
         load(
-            fetch = { getAdjustments(id) },
+            fetch = { Result.success(adjustments.list(id)) },
             failure = { e -> StockUiStateError.LoadHistoryFailed(e) },
             onLoaded = { list -> copy(history = list) },
         )
         launchResult(
-            block = { listLots(id) },
+            block = { Result.success(lots.listLots(id)) },
             onSuccess = { lots -> setState { copy(lot = LotChoice.forIncrease(lots), lotsUnknown = false) } },
             onFailure = { e -> setState { copy(lotsUnknown = true, errorState = DrugLotsUiStateError.LoadLotsFailed(e)) } },
         )
@@ -71,13 +69,15 @@ class StockAdjustmentsViewModel(
         setState { copy(saving = true, errorState = null) }
         launchResult(
             block = {
-                addAdjustment(
-                    AddStockAdjustmentParam(
-                        drugId = s.drugId,
-                        delta = signed,
-                        reason = s.draft.reason,
-                        note = s.draft.note,
-                        lot = s.lotTarget(),
+                Result.success(
+                    adjustments.add(
+                        AddStockAdjustmentParam(
+                            drugId = s.drugId,
+                            delta = signed,
+                            reason = s.draft.reason,
+                            note = s.draft.note,
+                            lot = s.lotTarget(),
+                        ),
                     ),
                 )
             },

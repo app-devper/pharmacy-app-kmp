@@ -3,7 +3,6 @@
 package app.devper.pharm.domain.usecase
 
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
-import app.devper.pharm.domain.usecase.auth.LogoutUseCase
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.param.auth.LoginParam
@@ -70,31 +69,6 @@ class LoginUseCaseTest {
 
         assertTrue(result.isFailure)
         assertNull(repo.lastLogin)
-        assertFalse(repo.isLoggedIn.first())
-    }
-}
-
-class LogoutUseCaseTest {
-
-    @Test
-    fun calls_repository_logout() = runTest {
-        val repo = FakeAuthRepository()
-
-        LogoutUseCase(repo, testDispatchers()).invoke().getOrThrow()
-
-        assertTrue(repo.lastLogoutCalled)
-    }
-
-    @Test
-    fun logout_flips_is_logged_in_state_to_false() = runTest {
-        val repo = FakeAuthRepository()
-        LoginUseCase(repo, testDispatchers()).invoke(
-            username = "alice", password = "pw",
-        ).getOrThrow()
-        assertTrue(repo.isLoggedIn.first())
-
-        LogoutUseCase(repo, testDispatchers()).invoke().getOrThrow()
-
         assertFalse(repo.isLoggedIn.first())
     }
 }

@@ -8,17 +8,13 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.param.inventory.AddLotParam
 import app.devper.pharm.domain.param.inventory.DeleteLotParam
-import app.devper.pharm.domain.usecase.inventory.AddLotUseCase
-import app.devper.pharm.domain.usecase.inventory.DeleteLotUseCase
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
+import app.devper.pharm.domain.repository.inventory.LotsRepository
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
 
 
 class DrugLotsViewModel(
-    private val listLots: ListLotsUseCase,
-    private val addLot: AddLotUseCase,
-    private val deleteLot: DeleteLotUseCase,
+    private val lots: LotsRepository,
 ) : BaseLoadableViewModel<DrugLotsUiState>(DrugLotsUiState()) {
 
     fun open(drugId: String, drugName: String) {
@@ -42,7 +38,7 @@ class DrugLotsViewModel(
         if (current.drugId.isBlank()) return
         val id = current.drugId
         load(
-            fetch = { listLots(id) },
+            fetch = { Result.success(lots.listLots(id)) },
             failure = { e -> DrugLotsUiStateError.LoadLotsFailed(e) },
             onLoaded = { lots -> copy(lots = lots) },
         )
@@ -76,7 +72,7 @@ class DrugLotsViewModel(
             quantity = Quantity(s.draft.quantity.toIntOrNull() ?: 0),
         )
         launchResult(
-            block = { addLot(param) },
+            block = { Result.success(lots.addLot(param)) },
             onSuccess = {
                 setState { copy(saving = false, addFormOpen = false, draft = LotDraft()) }
                 reload()
@@ -92,7 +88,7 @@ class DrugLotsViewModel(
         val lot = s.pendingDelete ?: return
         setState { copy(pendingDelete = null, saving = true) }
         launchResult(
-            block = { deleteLot(DeleteLotParam(drugId = s.drugId, lotId = lot.id)) },
+            block = { Result.success(lots.deleteLot(DeleteLotParam(drugId = s.drugId, lotId = lot.id))) },
             onSuccess = {
                 setState { copy(saving = false) }
                 reload()

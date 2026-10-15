@@ -6,9 +6,6 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.repository.FakeLotsRepository
-import app.devper.pharm.domain.usecase.inventory.AddLotUseCase
-import app.devper.pharm.domain.usecase.inventory.DeleteLotUseCase
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -27,9 +24,7 @@ class DrugLotsViewModelTest {
         repo: FakeLotsRepository = FakeLotsRepository(),
     ): Pair<DrugLotsViewModel, FakeLotsRepository> {
         val vm = DrugLotsViewModel(
-            listLots = ListLotsUseCase(repo, dispatchers),
-            addLot = AddLotUseCase(repo, dispatchers),
-            deleteLot = DeleteLotUseCase(repo, dispatchers),
+            lots = repo,
         )
         return vm to repo
     }
