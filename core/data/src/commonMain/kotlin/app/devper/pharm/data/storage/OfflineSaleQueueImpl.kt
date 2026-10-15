@@ -16,14 +16,8 @@ import kotlin.time.ExperimentalTime
 
 private const val ENTRY_PREFIX = "offline.sale."
 
-// Before KMP ADR-0006 was implemented the whole queue was one JSON list here.
 private const val LEGACY_KEY = "offline.queue"
 
-/**
- * Pending sales stored one settings key per entry (KMP ADR-0006). An entry
- * that cannot be decoded is reported as damaged with its raw data and is
- * never removed except by [remove].
- */
 @OptIn(ExperimentalTime::class)
 class OfflineSaleQueueImpl(
     private val settings: Settings,
@@ -83,7 +77,6 @@ class OfflineSaleQueueImpl(
         state = PendingSaleState.Damaged,
     )
 
-    /** Move the old single-list queue into per-entry keys, keeping it raw if it cannot be read. */
     private fun migrateLegacyList() {
         val raw = settings.getStringOrNull(LEGACY_KEY) ?: return
         val list = try {
@@ -129,7 +122,6 @@ class OfflineSaleQueueImpl(
         state = when (state) {
             "pending" -> PendingSaleState.Pending
             "ky_pending" -> PendingSaleState.KyPending
-            // A state this version does not know stops automatic retry.
             else -> PendingSaleState.Conflict
         },
         billNo = billNo,

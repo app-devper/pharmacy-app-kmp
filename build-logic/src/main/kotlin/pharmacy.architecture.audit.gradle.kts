@@ -222,20 +222,11 @@ tasks.register("auditArchitecture") {
         }
 
         val commentLineRe = Regex("""^\s*(//|/\*)""")
-        val a30PendingFiles = setOf(
-            "OfflineSaleQueueImpl.kt",
-            "PendingSaleDto.kt",
-            "PendingSale.kt",
-            "CloseEodUseCase.kt",
-            "SubmitSaleReturnUseCase.kt",
-            "GetSaleItemsUseCase.kt",
-        )
         listOf("core", "features", "composeApp").forEach { topDir ->
             val root = projectRoot.resolve(topDir)
             if (!root.exists()) return@forEach
             root.walkTopDown()
                 .filter { it.isFile && it.name.endsWith(".kt") && !it.absolutePath.contains("/build/") }
-                .filter { it.name !in a30PendingFiles }
                 .forEach { f ->
                     f.useLines { lines ->
                         lines.forEachIndexed { i, line ->
