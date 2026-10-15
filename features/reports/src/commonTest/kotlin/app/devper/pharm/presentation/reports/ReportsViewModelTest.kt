@@ -9,10 +9,6 @@ import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.domain.observer.testTimeZoneProvider
 import app.devper.pharm.domain.repository.FakeReportsRepository
-import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
-import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
-import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -34,10 +30,7 @@ class ReportsViewModelTest {
         now: () -> Long = { 1_000L },
     ): ReportsViewModel =
         ReportsViewModel(
-            GetDashboardUseCase(repo, d),
-            GetTopDrugsUseCase(repo, d),
-            GetSlowDrugsUseCase(repo, d),
-            GetProfitReportUseCase(repo, d),
+            repo,
             testTimeZoneProvider(),
             SignedInUser(profile),
             StockChangeBus(),

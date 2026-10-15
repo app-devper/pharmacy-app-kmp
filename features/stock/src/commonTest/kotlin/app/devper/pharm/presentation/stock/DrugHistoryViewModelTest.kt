@@ -6,7 +6,6 @@ import app.devper.pharm.domain.model.StockMovement
 import app.devper.pharm.domain.model.StockMovementsPage
 import app.devper.pharm.domain.param.reports.MovementsFilterParam
 import app.devper.pharm.domain.repository.reports.MovementsRepository
-import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -23,7 +22,7 @@ class DrugHistoryViewModelTest {
         dispatchers: AppDispatchers,
         repo: FakeMovementsRepository = FakeMovementsRepository(),
     ): Pair<DrugHistoryViewModel, FakeMovementsRepository> {
-        val vm = DrugHistoryViewModel(getMovements = GetMovementsUseCase(repo, dispatchers))
+        val vm = DrugHistoryViewModel(movements = repo)
         return vm to repo
     }
 
