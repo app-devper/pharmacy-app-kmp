@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/** The pending sales screen; every decision is made by [PendingSales]. */
 class OfflineSyncViewModel(
     private val pendingSales: PendingSales,
     timeZoneProvider: TimeZoneProvider,
@@ -32,7 +31,6 @@ class OfflineSyncViewModel(
             .launchIn(viewModelScope)
     }
 
-    /** Send every entry that is waiting only for the server. */
     fun syncAll() {
         val s = current
         val count = s.retryableCount
@@ -80,7 +78,6 @@ class OfflineSyncViewModel(
         )
     }
 
-    /** Open the abandon dialog: a whole sale, or only the refused KY forms of a recorded one. */
     fun askAbandon(id: String) = setState {
         val entry = pending.firstOrNull { it.id == id }
         if (busy || entry == null || entry.state == PendingSaleState.Damaged) this

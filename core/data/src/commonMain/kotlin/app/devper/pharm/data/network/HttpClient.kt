@@ -104,7 +104,6 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
     }
 }
 
-// pharmacy-api's 503 body when it cannot confirm the session (ADR-0016).
 private const val IDENTITY_UNAVAILABLE_ERROR = "identity service unavailable"
 
 private fun HttpStatusCode.isSuccess(): Boolean = value in 200..299

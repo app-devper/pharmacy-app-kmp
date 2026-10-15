@@ -27,7 +27,6 @@ class FakeSaleRepository(
     private val abandonThrows: Throwable? = null,
 ) : SaleRepository {
 
-    /** (client request id, kind, reason) of each abandonment sent. */
     val abandoned = mutableListOf<Triple<String, String, String>>()
 
     var lastCheckout: CheckoutParam? = null

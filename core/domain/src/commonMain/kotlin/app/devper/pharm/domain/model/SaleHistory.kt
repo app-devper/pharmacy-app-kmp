@@ -25,10 +25,8 @@ data class SaleItemSnapshot(
     val unitFactor: Int,
     val priceTier: String,
 
-    /** Base units returned so far and still returnable, from the server's return rule. */
     val returnedQty: Int = 0,
     val returnableQty: Int = 0,
-    /** Base units not sold from a lot, which cannot be returned. */
     val unlinkedQty: Int = 0,
 ) {
     val displayUnit: String get() = unit.ifBlank { "หน่วย" }

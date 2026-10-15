@@ -12,9 +12,7 @@ data class EodReport(
     val totalChange: Double,
     val netCash: Double,
     val bills: List<SaleSummary>,
-    /** Set when the day has an End-of-day close; the figures above are then its snapshot. */
     val close: EodCloseInfo? = null,
-    /** Late sale adjustments recorded after the close, if any. */
     val adjustments: EodAdjustments? = null,
 )
 
@@ -24,7 +22,6 @@ data class EodCloseInfo(
     val closedBy: String,
 )
 
-/** A closed day's Late sale adjustments and its totals after them. */
 data class EodAdjustments(
     val count: Int,
     val adjustedBillCount: Int,

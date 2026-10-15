@@ -19,9 +19,7 @@ class FakeSaleHistoryRepository(
         private set
     var lastSubmitReturn: SubmitReturnParam? = null
         private set
-    /** Request id of every submit attempt, including failed ones. */
     val submittedRequestIds = mutableListOf<String?>()
-    /** When true the next submit fails once, like a lost response. */
     var failNextSubmit: Boolean = false
     var listCallCount: Int = 0
         private set

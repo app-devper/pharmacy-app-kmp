@@ -18,7 +18,6 @@ class FakeOfflineSaleQueue(
     private val state = MutableStateFlow(seed)
     override val entries: StateFlow<List<PendingSale>> = state.asStateFlow()
 
-    /** The first stored version of each entry, in order. */
     val added = mutableListOf<PendingSale>()
 
     override fun put(entry: PendingSale) {
@@ -44,7 +43,6 @@ class FakeFileDownloader(private val fails: Throwable? = null) : FileDownloader 
     }
 }
 
-/** [PendingSales] over fakes. */
 fun pendingSalesOf(
     queue: FakeOfflineSaleQueue = FakeOfflineSaleQueue(),
     sales: SaleRepository = FakeSaleRepository(),
