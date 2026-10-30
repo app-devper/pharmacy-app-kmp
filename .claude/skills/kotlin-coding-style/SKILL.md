@@ -10,7 +10,7 @@ metadata:
 
 Idiomatic Kotlin patterns for writing readable, maintainable, and safe code.
 
-> **Companion**: `~/.claude/rules/kotlin/coding-style.md` is the short always-loaded summary.
+> **Companion**: `~/.claude/rules/ecc/kotlin/coding-style.md` is the short always-loaded summary.
 > This skill is the long-form reference + per-project deviation notes.
 
 ## When to Activate
