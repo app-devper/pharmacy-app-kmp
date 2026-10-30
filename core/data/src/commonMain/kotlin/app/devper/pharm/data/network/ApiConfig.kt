@@ -6,6 +6,10 @@ data class ApiConfig(
     val umAuthLogin: String get()  = "$apiBaseUrl/api/um/v1/auth/login"
     val umAuthInfo: String get()   = "$apiBaseUrl/api/um/v1/user/info"
     val umAuthLogout: String get() = "$apiBaseUrl/api/um/v1/auth/logout"
+    val umAuthExchange: String get() = "$apiBaseUrl/api/um/v1/auth/exchange"
+    val umAuthSystem: String get() = "$apiBaseUrl/api/um/v1/auth/system"
+    val umPasskeyLoginOptions: String get() = "$apiBaseUrl/api/um/v1/auth/passkey/login/options"
+    val umPasskeyLogin: String get() = "$apiBaseUrl/api/um/v1/auth/passkey/login"
 
     fun pharmacy(path: String): String = "$apiBaseUrl/api/pharmacy/v1${path.ensureLeadingSlash()}"
 

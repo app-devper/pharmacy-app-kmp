@@ -9,7 +9,11 @@ import app.devper.pharm.common.ForbiddenException
 import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.NetworkException
 import app.devper.pharm.common.NotFoundException
+import app.devper.pharm.common.PasskeyExpiredException
+import app.devper.pharm.common.PasskeyRejectedException
+import app.devper.pharm.common.PasskeysUnavailableException
 import app.devper.pharm.common.ServerException
+import app.devper.pharm.data.remote.dto.UmErrorResponse
 import kotlin.coroutines.cancellation.CancellationException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -24,6 +28,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -77,15 +82,21 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
             val status = response.status
             if (status.isSuccess()) return@validateResponse
             val body = response.bodyAsText()
-            throw when (status) {
-                HttpStatusCode.Unauthorized -> {
-                    tokenStorage.clear()
-                    sessionExpiry.markExpired()
+            val code = umErrorCode(json, body)
+            throw when {
+                code == UM_PASSKEY_REJECTED -> PasskeyRejectedException()
+                code == UM_PASSKEY_EXPIRED -> PasskeyExpiredException()
+                code == UM_PASSKEYS_DISABLED -> PasskeysUnavailableException()
+                status == HttpStatusCode.Unauthorized -> {
+                    if (response.request.headers.contains(HttpHeaders.Authorization)) {
+                        tokenStorage.clear()
+                        sessionExpiry.markExpired()
+                    }
                     AuthException()
                 }
-                HttpStatusCode.Forbidden     -> ForbiddenException()
-                HttpStatusCode.NotFound      -> NotFoundException()
-                HttpStatusCode.Conflict      -> ConflictException(payload = body)
+                status == HttpStatusCode.Forbidden -> ForbiddenException()
+                status == HttpStatusCode.NotFound -> NotFoundException()
+                status == HttpStatusCode.Conflict -> ConflictException(payload = body)
                 else -> if (status == HttpStatusCode.ServiceUnavailable &&
                     body.contains(IDENTITY_UNAVAILABLE_ERROR)
                 ) IdentityUnavailableException() else ServerException(
@@ -105,8 +116,14 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
 }
 
 private const val IDENTITY_UNAVAILABLE_ERROR = "identity service unavailable"
+private const val UM_PASSKEY_REJECTED = "UM-401-005"
+private const val UM_PASSKEY_EXPIRED = "UM-400-006"
+private const val UM_PASSKEYS_DISABLED = "UM-404-002"
 
 private fun HttpStatusCode.isSuccess(): Boolean = value in 200..299
+
+private fun umErrorCode(json: Json, body: String): String? =
+    runCatching { json.decodeFromString(UmErrorResponse.serializer(), body).code }.getOrNull()
 
 val AppJson: Json = Json {
     ignoreUnknownKeys = true

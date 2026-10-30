@@ -37,6 +37,7 @@ import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
+import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmFilterChip
 import app.devper.pharm.ui.designsystem.PharmIcons
 import app.devper.pharm.ui.designsystem.PharmSingleSelectChips
@@ -164,6 +165,28 @@ fun LoginScreen(
                     size = PharmButtonSize.Lg,
                     loading = state.loading,
                 )
+                if (state.passkeySupported) {
+                    Text(
+                        text = strings.loginOr,
+                        style = PharmText.micro.copy(color = t.colors.fgMuted),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    )
+                    PharmButton(
+                        label = strings.loginPasskey,
+                        onClick = viewModel::submitPasskey,
+                        modifier = Modifier.fillMaxWidth(),
+                        variant = PharmButtonVariant.Outline,
+                        size = PharmButtonSize.Lg,
+                        enabled = !state.loading,
+                    )
+                    Text(
+                        text = strings.loginPasskeyHint,
+                        style = PharmText.micro.copy(color = t.colors.fgMuted),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    )
+                }
                 Text(
                     text = "v${AppVersion.name} · ${strings.loginVersionPrefix}",
                     style = PharmText.micro.copy(color = t.colors.fgMuted),

@@ -3,10 +3,16 @@ package app.devper.pharm.presentation.auth
 import app.devper.pharm.presentation.auth.exception.LoginUiStateError
 
 import app.devper.pharm.common.AppDispatchers
+import app.devper.pharm.common.platform.LaunchTicket
+import app.devper.pharm.common.platform.PasskeyAuthenticator
 import app.devper.pharm.domain.observer.UiPreferencesProvider
 import app.devper.pharm.domain.repository.FakeAuthRepository
+import app.devper.pharm.domain.repository.FakeLaunchTicket
+import app.devper.pharm.domain.repository.FakePasskeyAuthenticator
 import app.devper.pharm.domain.repository.FakeUiPreferencesRepository
+import app.devper.pharm.domain.usecase.auth.ContinueFromUmUseCase
 import app.devper.pharm.domain.usecase.auth.LoginUseCase
+import app.devper.pharm.domain.usecase.auth.LoginWithPasskeyUseCase
 import app.devper.pharm.domain.model.UiPreferences
 import app.devper.pharm.domain.observer.SessionExpiryProvider
 import app.devper.pharm.ui.common.runVmTest
@@ -28,14 +34,69 @@ class LoginViewModelTest {
         repo: FakeAuthRepository = FakeAuthRepository(),
         uiPrefs: FakeUiPreferencesRepository = FakeUiPreferencesRepository(),
         sessionExpiry: SessionExpiryProvider = SessionExpiryProvider(),
+        authenticator: PasskeyAuthenticator = PasskeyAuthenticator.Unsupported,
+        launch: LaunchTicket = LaunchTicket.None,
     ): Triple<LoginViewModel, FakeAuthRepository, FakeUiPreferencesRepository> {
         val vm = LoginViewModel(
             login = LoginUseCase(repo, dispatchers),
+            loginWithPasskey = LoginWithPasskeyUseCase(repo, authenticator, dispatchers),
+            continueFromUm = ContinueFromUmUseCase(repo, launch, dispatchers),
+            authenticator = authenticator,
             uiPreferences = UiPreferencesProvider(uiPrefs),
             preferences = uiPrefs,
             sessionExpiry = sessionExpiry,
         )
         return Triple(vm, repo, uiPrefs)
+    }
+
+    @Test
+    fun the_passkey_button_shows_only_when_the_platform_supports_it() = runVmTest { dispatchers ->
+        val (without) = newVm(dispatchers)
+        val (with) = newVm(dispatchers, authenticator = FakePasskeyAuthenticator())
+        advanceUntilIdle()
+        assertFalse(without.state.value.passkeySupported)
+        assertTrue(with.state.value.passkeySupported)
+    }
+
+    @Test
+    fun submitPasskey_signs_in_without_the_form() = runVmTest { dispatchers ->
+        val (vm, repo, _) = newVm(dispatchers, authenticator = FakePasskeyAuthenticator())
+        vm.submitPasskey()
+        advanceUntilIdle()
+        assertEquals("passkey-user", vm.state.value.loggedInUser?.username)
+        assertEquals(1, repo.passkeyLogins.size)
+        assertFalse(vm.state.value.loading)
+        assertNull(vm.state.value.errorState)
+    }
+
+    @Test
+    fun a_refused_passkey_shows_a_passkey_error_and_keeps_the_form() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(dispatchers, repo = FakeAuthRepository(rejectPasskey = true), authenticator = FakePasskeyAuthenticator())
+        vm.onUsernameChange("somsri")
+        vm.submitPasskey()
+        advanceUntilIdle()
+        assertIs<LoginUiStateError.PasskeyFailed>(vm.state.value.errorState)
+        assertEquals("somsri", vm.state.value.username)
+        assertNull(vm.state.value.loggedInUser)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun opening_from_um_signs_in_without_the_form() = runVmTest { dispatchers ->
+        val (vm, repo, _) = newVm(dispatchers, launch = FakeLaunchTicket("good-ticket"))
+        advanceUntilIdle()
+        assertEquals("from-um", vm.state.value.loggedInUser?.username)
+        assertEquals(listOf("good-ticket"), repo.exchangedTickets)
+        assertFalse(vm.state.value.loading)
+    }
+
+    @Test
+    fun an_expired_link_from_um_shows_why_and_leaves_the_form_usable() = runVmTest { dispatchers ->
+        val (vm, _, _) = newVm(dispatchers, launch = FakeLaunchTicket("old-ticket"))
+        advanceUntilIdle()
+        assertIs<LoginUiStateError.LaunchFailed>(vm.state.value.errorState)
+        assertNull(vm.state.value.loggedInUser)
+        assertFalse(vm.state.value.loading)
     }
 
     @Test
