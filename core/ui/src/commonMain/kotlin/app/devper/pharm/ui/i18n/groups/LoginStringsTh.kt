@@ -21,6 +21,7 @@ object LoginStringsTh : LoginStrings {
     override val loginPasskeyFailed = "เข้าสู่ระบบด้วย passkey ไม่สำเร็จ"
     override val loginPasskeyCancelled = "ยกเลิกการใช้ passkey แล้ว"
     override val loginPasskeyRejected = "passkey นี้ใช้กับระบบร้านยาไม่ได้ ลองเลือก passkey อื่นหรือเข้าสู่ระบบด้วยรหัสผ่าน"
+    override val loginPasskeyOtherAccount = "passkey ที่เลือกเป็นของบัญชีอื่น ไม่ตรงกับชื่อผู้ใช้ที่กรอก เลือก passkey ของบัญชีนี้หรือล้างช่องชื่อผู้ใช้"
     override val loginPasskeyExpired = "คำขอ passkey หมดเวลา ลองใหม่อีกครั้ง"
     override val loginPasskeyUnavailable = "เบราว์เซอร์นี้หรือระบบยังใช้ passkey ไม่ได้"
     override val loginFromUmExpired = "ลิงก์จาก UM หมดอายุหรือถูกใช้ไปแล้ว เปิดจาก UM อีกครั้งหรือเข้าสู่ระบบด้านล่าง"

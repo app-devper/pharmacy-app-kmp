@@ -33,7 +33,7 @@ class FakeAuthRepository(
     var lastLogoutCalled: Boolean = false
         private set
     val exchangedTickets = mutableListOf<String>()
-    val passkeyLogins = mutableListOf<Pair<String, String>>()
+    val passkeyLogins = mutableListOf<Triple<String, String, String>>()
 
     override suspend fun login(param: LoginParam): User {
         if (param.username == loginThrowsOn) {
@@ -54,8 +54,8 @@ class FakeAuthRepository(
 
     override suspend fun passkeyLoginOptions(): PasskeyChallenge = PasskeyChallenge("c1", "{\"publicKey\":{}}")
 
-    override suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String): User {
-        passkeyLogins += ceremonyId to credentialJson
+    override suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String, username: String): User {
+        passkeyLogins += Triple(ceremonyId, credentialJson, username)
         if (rejectPasskey) throw PasskeyRejectedException()
         isLoggedInState.value = true
         return loginResult.copy(username = "passkey-user")

@@ -14,7 +14,7 @@ interface AuthRepository {
 
     suspend fun passkeyLoginOptions(): PasskeyChallenge
 
-    suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String): User
+    suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String, username: String): User
 
     suspend fun logout()
 }
