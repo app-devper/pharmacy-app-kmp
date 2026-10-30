@@ -28,14 +28,15 @@ class ContinueFromUmUseCase(
     }
 }
 
+/** Signs in with a passkey; the parameter is the username typed on the form, possibly empty. */
 class LoginWithPasskeyUseCase(
     private val repository: AuthRepository,
     private val authenticator: PasskeyAuthenticator,
     dispatchers: AppDispatchers,
-) : BaseUseCase<Unit, User>(dispatchers) {
-    override suspend fun execute(param: Unit): User {
+) : BaseUseCase<String, User>(dispatchers) {
+    override suspend fun execute(param: String): User {
         val challenge = repository.passkeyLoginOptions()
         val credential = authenticator.get(challenge.optionsJson)
-        return repository.loginWithPasskey(challenge.ceremonyId, credential)
+        return repository.loginWithPasskey(challenge.ceremonyId, credential, param.trim())
     }
 }

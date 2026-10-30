@@ -14,7 +14,8 @@ interface AuthRepository {
 
     suspend fun passkeyLoginOptions(): PasskeyChallenge
 
-    suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String): User
+    /** Finishes a passkey login; a non-blank [username] is the one typed, and UM refuses another account's passkey. */
+    suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String, username: String): User
 
     suspend fun logout()
 }

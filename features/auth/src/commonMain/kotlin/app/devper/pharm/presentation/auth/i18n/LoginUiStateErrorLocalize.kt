@@ -5,6 +5,7 @@ import app.devper.pharm.common.LaunchExpiredException
 import app.devper.pharm.common.LaunchRefusedException
 import app.devper.pharm.common.PasskeyCancelledException
 import app.devper.pharm.common.PasskeyExpiredException
+import app.devper.pharm.common.PasskeyOtherAccountException
 import app.devper.pharm.common.PasskeyRejectedException
 import app.devper.pharm.common.PasskeysUnavailableException
 import app.devper.pharm.common.UnsupportedPlatformException
@@ -23,6 +24,7 @@ fun AppException.localizeLogin(s: PharmStrings): String = when (this) {
 private fun localizePasskeyFailure(cause: Throwable?, s: PharmStrings): String = when (cause) {
     is PasskeyCancelledException -> s.loginPasskeyCancelled
     is PasskeyRejectedException -> s.loginPasskeyRejected
+    is PasskeyOtherAccountException -> s.loginPasskeyOtherAccount
     is PasskeyExpiredException -> s.loginPasskeyExpired
     is PasskeysUnavailableException, is UnsupportedPlatformException -> s.loginPasskeyUnavailable
     is AppException -> cause.localizeCommon(s)

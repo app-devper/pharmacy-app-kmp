@@ -61,10 +61,11 @@ class LoginViewModelTest {
     @Test
     fun submitPasskey_signs_in_without_the_form() = runVmTest { dispatchers ->
         val (vm, repo, _) = newVm(dispatchers, authenticator = FakePasskeyAuthenticator())
+        vm.onUsernameChange("somsri")
         vm.submitPasskey()
         advanceUntilIdle()
         assertEquals("passkey-user", vm.state.value.loggedInUser?.username)
-        assertEquals(1, repo.passkeyLogins.size)
+        assertEquals(listOf("somsri"), repo.passkeyLogins.map { it.third })
         assertFalse(vm.state.value.loading)
         assertNull(vm.state.value.errorState)
     }

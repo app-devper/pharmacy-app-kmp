@@ -82,7 +82,7 @@ class LoginViewModel(
         if (current.loading) return
         setState { copy(loading = true, validationRequested = false, errorState = null) }
         launchResult(
-            block = { loginWithPasskey(Unit) },
+            block = { loginWithPasskey(current.username) },
             onSuccess = { user -> signedIn(user) },
             onFailure = { e -> setState { copy(loading = false, errorState = LoginUiStateError.PasskeyFailed(e)) } },
         )

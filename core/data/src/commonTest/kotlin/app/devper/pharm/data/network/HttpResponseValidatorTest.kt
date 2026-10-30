@@ -6,6 +6,7 @@ import app.devper.pharm.common.ForbiddenException
 import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.PasskeyExpiredException
+import app.devper.pharm.common.PasskeyOtherAccountException
 import app.devper.pharm.common.PasskeyRejectedException
 import app.devper.pharm.common.PasskeysUnavailableException
 import app.devper.pharm.common.ServerException
@@ -86,6 +87,16 @@ class HttpResponseValidatorTest {
         val (client, _) = mockClientReturning(HttpStatusCode.Unauthorized, sessionExpiry = sessionExpiry, token = null)
         assertFailsWith<AuthException> { client.get("https://example.test/auth/exchange") }
         assertFalse(sessionExpiry.state.value)
+    }
+
+    @Test
+    fun a_passkey_of_another_account_is_typed() = runTest {
+        val (client, _) = mockClientReturning(
+            HttpStatusCode.Unauthorized,
+            body = "{\"code\":\"UM-401-006\",\"message\":\"this passkey belongs to a different account\"}",
+            sessionExpiry = SessionExpiryProvider(),
+        )
+        assertFailsWith<PasskeyOtherAccountException> { client.get("https://example.test/auth/passkey/login") }
     }
 
     @Test

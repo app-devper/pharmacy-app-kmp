@@ -21,6 +21,7 @@ object LoginStringsEn : LoginStrings {
     override val loginPasskeyFailed = "Passkey sign-in failed"
     override val loginPasskeyCancelled = "Passkey prompt dismissed"
     override val loginPasskeyRejected = "This passkey cannot open the pharmacy — pick another one or sign in with your password"
+    override val loginPasskeyOtherAccount = "That passkey belongs to a different account than the username you typed — pick this account's passkey or clear the username"
     override val loginPasskeyExpired = "The passkey request timed out — try again"
     override val loginPasskeyUnavailable = "Passkeys are not available in this browser or on this server"
     override val loginFromUmExpired = "The link from UM has expired or was already used — open it from UM again or sign in below"

@@ -83,18 +83,19 @@ class LoginWithPasskeyUseCaseTest {
         val repo = FakeAuthRepository()
         val authenticator = FakePasskeyAuthenticator()
 
-        val user = LoginWithPasskeyUseCase(repo, authenticator, testDispatchers()).invoke(Unit).getOrThrow()
+        val user = LoginWithPasskeyUseCase(repo, authenticator, testDispatchers()).invoke(" somsri ").getOrThrow()
 
         assertEquals("passkey-user", user.username)
         assertEquals(listOf("{\"publicKey\":{}}"), authenticator.seenOptions)
-        assertEquals(listOf("c1" to "{\"id\":\"cred\"}"), repo.passkeyLogins)
+        // The typed username goes along, trimmed, so UM can refuse another account's passkey.
+        assertEquals(listOf(Triple("c1", "{\"id\":\"cred\"}", "somsri")), repo.passkeyLogins)
     }
 
     @Test
     fun a_dismissed_prompt_signs_nobody_in() = runTest {
         val repo = FakeAuthRepository()
 
-        val result = LoginWithPasskeyUseCase(repo, FakePasskeyAuthenticator(cancel = true), testDispatchers()).invoke(Unit)
+        val result = LoginWithPasskeyUseCase(repo, FakePasskeyAuthenticator(cancel = true), testDispatchers()).invoke("")
 
         assertIs<PasskeyCancelledException>(result.exceptionOrNull())
         assertTrue(repo.passkeyLogins.isEmpty())

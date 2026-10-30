@@ -31,6 +31,8 @@ data class PasskeyOptionsResponse(
 data class PasskeyLoginRequest(
     @SerialName("ceremonyId") val ceremonyId: String,
     @SerialName("credential") val credential: JsonElement,
+    /** The username typed on the login form; UM refuses another account's passkey. */
+    @SerialName("username") val username: String? = null,
 )
 
 @Serializable
