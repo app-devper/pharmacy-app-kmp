@@ -31,6 +31,7 @@ data class PasskeyOptionsResponse(
 data class PasskeyLoginRequest(
     @SerialName("ceremonyId") val ceremonyId: String,
     @SerialName("credential") val credential: JsonElement,
+    @SerialName("username") val username: String? = null,
 )
 
 @Serializable

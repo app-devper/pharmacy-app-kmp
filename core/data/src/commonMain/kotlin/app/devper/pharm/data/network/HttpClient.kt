@@ -10,6 +10,7 @@ import app.devper.pharm.common.IdentityUnavailableException
 import app.devper.pharm.common.NetworkException
 import app.devper.pharm.common.NotFoundException
 import app.devper.pharm.common.PasskeyExpiredException
+import app.devper.pharm.common.PasskeyOtherAccountException
 import app.devper.pharm.common.PasskeyRejectedException
 import app.devper.pharm.common.PasskeysUnavailableException
 import app.devper.pharm.common.ServerException
@@ -85,6 +86,7 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
             val code = umErrorCode(json, body)
             throw when {
                 code == UM_PASSKEY_REJECTED -> PasskeyRejectedException()
+                code == UM_PASSKEY_OTHER_ACCOUNT -> PasskeyOtherAccountException()
                 code == UM_PASSKEY_EXPIRED -> PasskeyExpiredException()
                 code == UM_PASSKEYS_DISABLED -> PasskeysUnavailableException()
                 status == HttpStatusCode.Unauthorized -> {
@@ -117,6 +119,7 @@ fun <T : HttpClientEngineConfig> buildHttpClient(
 
 private const val IDENTITY_UNAVAILABLE_ERROR = "identity service unavailable"
 private const val UM_PASSKEY_REJECTED = "UM-401-005"
+private const val UM_PASSKEY_OTHER_ACCOUNT = "UM-401-006"
 private const val UM_PASSKEY_EXPIRED = "UM-400-006"
 private const val UM_PASSKEYS_DISABLED = "UM-404-002"
 

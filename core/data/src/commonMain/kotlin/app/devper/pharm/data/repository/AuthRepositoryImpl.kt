@@ -48,8 +48,9 @@ class AuthRepositoryImpl(
         return PasskeyChallenge(res.ceremonyId, AppJson.encodeToString(JsonElement.serializer(), res.options))
     }
 
-    override suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String): User {
-        val tokenRes = api.passkeyLogin(PasskeyLoginRequest(ceremonyId, AppJson.parseToJsonElement(credentialJson)))
+    override suspend fun loginWithPasskey(ceremonyId: String, credentialJson: String, username: String): User {
+        val request = PasskeyLoginRequest(ceremonyId, AppJson.parseToJsonElement(credentialJson), username.ifBlank { null })
+        val tokenRes = api.passkeyLogin(request)
         return start(tokenRes.accessToken)
     }
 

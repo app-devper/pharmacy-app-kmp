@@ -111,10 +111,19 @@ class AuthRepositoryImplTest {
     fun passkey_login_sends_the_credential_as_a_json_object_and_keeps_the_token() = runTest {
         val h = umWith("PHARMACY")
 
-        val user = h.repo.loginWithPasskey("c1", "{\"id\":\"cred\",\"type\":\"public-key\"}")
+        val user = h.repo.loginWithPasskey("c1", "{\"id\":\"cred\",\"type\":\"public-key\"}", "somsri")
 
         assertEquals("somsri", user.username)
         assertEquals("tok.pk", h.tokenStorage.token)
-        assertEquals("{\"ceremonyId\":\"c1\",\"credential\":{\"id\":\"cred\",\"type\":\"public-key\"}}", h.sent["/api/um/v1/auth/passkey/login"])
+        assertEquals("{\"ceremonyId\":\"c1\",\"credential\":{\"id\":\"cred\",\"type\":\"public-key\"},\"username\":\"somsri\"}", h.sent["/api/um/v1/auth/passkey/login"])
+    }
+
+    @Test
+    fun passkey_login_leaves_the_username_out_when_none_was_typed() = runTest {
+        val h = umWith("PHARMACY")
+
+        h.repo.loginWithPasskey("c1", "{\"id\":\"cred\"}", "")
+
+        assertEquals("{\"ceremonyId\":\"c1\",\"credential\":{\"id\":\"cred\"}}", h.sent["/api/um/v1/auth/passkey/login"])
     }
 }

@@ -32,10 +32,10 @@ class LoginWithPasskeyUseCase(
     private val repository: AuthRepository,
     private val authenticator: PasskeyAuthenticator,
     dispatchers: AppDispatchers,
-) : BaseUseCase<Unit, User>(dispatchers) {
-    override suspend fun execute(param: Unit): User {
+) : BaseUseCase<String, User>(dispatchers) {
+    override suspend fun execute(param: String): User {
         val challenge = repository.passkeyLoginOptions()
         val credential = authenticator.get(challenge.optionsJson)
-        return repository.loginWithPasskey(challenge.ceremonyId, credential)
+        return repository.loginWithPasskey(challenge.ceremonyId, credential, param.trim())
     }
 }

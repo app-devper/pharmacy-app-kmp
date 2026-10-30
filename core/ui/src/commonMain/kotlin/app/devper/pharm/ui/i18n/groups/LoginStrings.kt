@@ -21,6 +21,7 @@ interface LoginStrings {
     val loginPasskeyFailed: String
     val loginPasskeyCancelled: String
     val loginPasskeyRejected: String
+    val loginPasskeyOtherAccount: String
     val loginPasskeyExpired: String
     val loginPasskeyUnavailable: String
     val loginFromUmExpired: String
