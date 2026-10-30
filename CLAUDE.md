@@ -269,7 +269,10 @@ license headers required by upstream libraries.
 - **Adding a new feature** → 6-step recipe in
   [MODULE_GRAPH.md § Per-feature recipe](./MODULE_GRAPH.md#per-feature-recipe).
 
-- **Skills** (`.claude/skills/`, versioned with the code) — reach for
+- **Skills** (`.claude/skills/`, versioned with the code; the generic ones such as
+  `tdd-workflow` and `coding-standards` come from
+  [app-devper/agent-skills](https://github.com/app-devper/agent-skills) via its
+  `install.sh`) — reach for
   these before hand-rolling. They are written against a generic
   `Brand*` / `:core:*` KMP project, so read the placeholder names as
   `Pharm*` and this repo's modules.
