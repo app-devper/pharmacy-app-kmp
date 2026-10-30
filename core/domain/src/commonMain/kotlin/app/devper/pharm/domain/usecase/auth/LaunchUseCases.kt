@@ -28,7 +28,6 @@ class ContinueFromUmUseCase(
     }
 }
 
-/** Signs in with a passkey; the parameter is the username typed on the form, possibly empty. */
 class LoginWithPasskeyUseCase(
     private val repository: AuthRepository,
     private val authenticator: PasskeyAuthenticator,

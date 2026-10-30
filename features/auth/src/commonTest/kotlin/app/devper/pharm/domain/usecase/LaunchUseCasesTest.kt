@@ -87,7 +87,6 @@ class LoginWithPasskeyUseCaseTest {
 
         assertEquals("passkey-user", user.username)
         assertEquals(listOf("{\"publicKey\":{}}"), authenticator.seenOptions)
-        // The typed username goes along, trimmed, so UM can refuse another account's passkey.
         assertEquals(listOf(Triple("c1", "{\"id\":\"cred\"}", "somsri")), repo.passkeyLogins)
     }
 

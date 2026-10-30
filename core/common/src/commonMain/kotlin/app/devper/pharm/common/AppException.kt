@@ -65,7 +65,6 @@ class PasskeyRejectedException(
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
-/** The passkey verified but belongs to a different account than the typed username. */
 class PasskeyOtherAccountException(
     message: String = "Passkey belongs to a different account",
     cause: Throwable? = null,
