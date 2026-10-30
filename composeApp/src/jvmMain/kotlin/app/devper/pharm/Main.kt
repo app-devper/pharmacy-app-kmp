@@ -10,7 +10,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.LaunchTicket
 import app.devper.pharm.common.platform.MotionPreferences
+import app.devper.pharm.common.platform.PasskeyAuthenticator
 import app.devper.pharm.common.platform.PointerPreferences
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.platform.UnsavedChangesHandler
@@ -41,6 +43,8 @@ fun main() {
     val jvmPlatformModule = module {
         single<Settings> { PreferencesSettings(rootPreferences) }
         single<SecureStorage> { JvmSecureStorage() }
+        single<PasskeyAuthenticator> { PasskeyAuthenticator.Unsupported }
+        single<LaunchTicket> { LaunchTicket.None }
         single { buildHttpClient(Java, get<TokenStorage>(), get(), enableLogging = true) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.IO, default = Dispatchers.Default) }

@@ -10,6 +10,7 @@ data class LoginUiState(
     val locale: String = "th",
     val validationRequested: Boolean = false,
     val sessionExpired: Boolean = false,
+    val passkeySupported: Boolean = false,
     override val loading: Boolean = false,
     val errorState: AppException? = null,
     val loggedInUser: User? = null,

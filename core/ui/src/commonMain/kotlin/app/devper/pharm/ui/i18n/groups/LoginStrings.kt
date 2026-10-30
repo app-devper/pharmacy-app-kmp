@@ -15,4 +15,14 @@ interface LoginStrings {
     val loginBrandName: String
     val loginBrandTagline: String
     val loginVersionPrefix: String
+    val loginOr: String
+    val loginPasskey: String
+    val loginPasskeyHint: String
+    val loginPasskeyFailed: String
+    val loginPasskeyCancelled: String
+    val loginPasskeyRejected: String
+    val loginPasskeyExpired: String
+    val loginPasskeyUnavailable: String
+    val loginFromUmExpired: String
+    val loginFromUmRefused: String
 }

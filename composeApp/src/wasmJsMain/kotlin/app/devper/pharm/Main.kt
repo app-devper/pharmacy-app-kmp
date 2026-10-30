@@ -7,7 +7,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.LaunchTicket
 import app.devper.pharm.common.platform.MotionPreferences
+import app.devper.pharm.common.platform.PasskeyAuthenticator
 import app.devper.pharm.common.platform.PointerPreferences
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.platform.UnsavedChangesHandler
@@ -17,6 +19,8 @@ import app.devper.pharm.data.network.buildHttpClient
 import app.devper.pharm.data.network.localQaApiBaseUrl
 import app.devper.pharm.data.storage.TokenStorage
 import app.devper.pharm.di.appModule
+import app.devper.pharm.platform.BrowserLaunchTicket
+import app.devper.pharm.platform.BrowserPasskeyAuthenticator
 import app.devper.pharm.platform.ConnectivityObserverImpl
 import app.devper.pharm.platform.FileDownloaderImpl
 import app.devper.pharm.platform.FilePickerImpl
@@ -38,10 +42,14 @@ fun main() {
     loadJsJodaTimezoneDatabase()
     val settings = StorageSettings()
     applyPersistedLocale(settings.getStringOrNull("ui.locale"))
+    val apiConfig = resolveApiConfig()
+    val launchTicket = BrowserLaunchTicket()
 
     val webPlatformModule = module {
         single<Settings> { settings }
         single<SecureStorage> { WebSecureStorage() }
+        single<PasskeyAuthenticator> { BrowserPasskeyAuthenticator() }
+        single<LaunchTicket> { launchTicket }
         single { buildHttpClient(Js, get<TokenStorage>(), get()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
@@ -53,7 +61,8 @@ fun main() {
         single<PointerPreferences> { PointerPreferencesImpl() }
         single<UnsavedChangesHandler> { UnsavedChangesHandlerImpl() }
     }
-    startKoin { modules(webPlatformModule, appModule(resolveApiConfig())) }
+    val koin = startKoin { modules(webPlatformModule, appModule(apiConfig)) }.koin
+    if (launchTicket.isPending) koin.get<TokenStorage>().clear()
 
     ComposeViewport(content = {
         LaunchedEffect(Unit) {

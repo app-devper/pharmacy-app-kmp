@@ -54,3 +54,33 @@ class UnsupportedPlatformException(
     message: String = "Unsupported on this platform",
     cause: Throwable? = null,
 ) : AppException(message, cause)
+
+class PasskeyCancelledException(
+    message: String = "Passkey prompt dismissed",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeyRejectedException(
+    message: String = "Passkey not accepted",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeyExpiredException(
+    message: String = "Passkey request expired",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeysUnavailableException(
+    message: String = "Passkeys are not enabled",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class LaunchExpiredException(
+    message: String = "Link from UM expired or was already used",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class LaunchRefusedException(
+    message: String = "This account cannot open this system from UM",
+    cause: Throwable? = null,
+) : AppException(message, cause)

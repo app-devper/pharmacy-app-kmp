@@ -5,7 +5,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.LaunchTicket
 import app.devper.pharm.common.platform.MotionPreferences
+import app.devper.pharm.common.platform.PasskeyAuthenticator
 import app.devper.pharm.common.platform.PointerPreferences
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.platform.UnsavedChangesHandler
@@ -40,6 +42,8 @@ private fun ensureKoinStarted() {
     val iosPlatformModule = module {
         single<Settings> { NSUserDefaultsSettings(defaults) }
         single<SecureStorage> { KeychainSecureStorage() }
+        single<PasskeyAuthenticator> { PasskeyAuthenticator.Unsupported }
+        single<LaunchTicket> { LaunchTicket.None }
         single { buildHttpClient(Darwin, get<TokenStorage>(), get()) }
 
         single { AppDispatchers(main = Dispatchers.Main, io = Dispatchers.Default, default = Dispatchers.Default) }
