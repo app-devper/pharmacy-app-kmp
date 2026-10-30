@@ -38,3 +38,4 @@ DerivedData/
 
 # Firebase
 .firebase/
+!.claude/skills
