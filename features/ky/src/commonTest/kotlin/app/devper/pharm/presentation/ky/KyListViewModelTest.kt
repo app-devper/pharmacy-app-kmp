@@ -3,10 +3,6 @@ package app.devper.pharm.presentation.ky
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeKyRepository
-import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,10 +24,8 @@ class KyListViewModelTest {
     ): (d: app.devper.pharm.common.AppDispatchers) -> KyListViewModel =
         { d ->
             KyListViewModel(
-                GetKy10EntriesUseCase(repo, d),
-                GetKy11EntriesUseCase(repo, d),
-                GetKy12EntriesUseCase(repo, d),
-                ExportKyFormUseCase(export, d),
+                repo,
+                export,
             )
         }
 

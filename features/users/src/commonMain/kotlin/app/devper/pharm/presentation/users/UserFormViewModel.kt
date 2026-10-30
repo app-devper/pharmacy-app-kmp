@@ -1,19 +1,15 @@
 package app.devper.pharm.presentation.users
 
+import app.devper.pharm.domain.repository.users.UsersRepository
 import app.devper.pharm.domain.model.UmUser
 import app.devper.pharm.domain.param.users.CreateUserParam
 import app.devper.pharm.domain.param.users.UpdateUserParam
-import app.devper.pharm.domain.usecase.users.CreateUserUseCase
-import app.devper.pharm.domain.usecase.users.GetUsersUseCase
-import app.devper.pharm.domain.usecase.users.UpdateUserUseCase
 import app.devper.pharm.presentation.users.exception.UserFormUiStateError
-import app.devper.pharm.ui.common.BaseFormViewModel
+import app.devper.pharm.ui.common.BaseEditFormViewModel
 
 class UserFormViewModel(
-    private val getUsers: GetUsersUseCase,
-    private val createUser: CreateUserUseCase,
-    private val updateUser: UpdateUserUseCase,
-) : BaseFormViewModel<UserFormUiState>(UserFormUiState()) {
+    private val users: UsersRepository,
+) : BaseEditFormViewModel<UserFormUiState, UserFormFields>(UserFormUiState()) {
 
     fun init(mode: UserFormMode) {
         setState { copy(mode = mode) }
@@ -29,8 +25,8 @@ class UserFormViewModel(
 
     override suspend fun persist(): Result<Unit> {
         val f = current.form
-        return when (val mode = current.mode) {
-            is UserFormMode.Add -> createUser(
+        when (val mode = current.mode) {
+            is UserFormMode.Add -> users.create(
                 CreateUserParam(
                     firstName = f.firstName.trim(),
                     lastName = f.lastName.trim(),
@@ -39,8 +35,8 @@ class UserFormViewModel(
                     phone = f.phone.trim(),
                     email = f.email.trim(),
                 ),
-            ).map { Unit }
-            is UserFormMode.Edit -> updateUser(
+            )
+            is UserFormMode.Edit -> users.update(
                 UpdateUserParam(
                     id = mode.id,
                     firstName = f.firstName.trim(),
@@ -48,45 +44,26 @@ class UserFormViewModel(
                     phone = f.phone.trim(),
                     email = f.email.trim(),
                 ),
-            ).map { Unit }
-        }
-    }
-
-    private fun hydrateForEdit(id: String) {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getUsers() },
-            onSuccess = { list ->
-                val user = list.firstOrNull { it.id == id }
-                if (user == null) {
-                    setState { copy(loading = false, errorState = UserFormUiStateError.NotFound()) }
-                } else {
-                    hydrate(user)
-                }
-            },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = UserFormUiStateError.LoadUserFailed(e)) }
-            },
-        )
-    }
-
-    private fun hydrate(user: UmUser) {
-        val hydratedForm = UserFormFields(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            username = user.username,
-            password = "",
-            phone = user.phone,
-            email = user.email,
-        )
-        setState {
-            copy(
-                loading = false,
-                form = hydratedForm,
-                baselineForm = hydratedForm,
             )
         }
+        return Result.success(Unit)
     }
+
+    private fun hydrateForEdit(id: String) = hydrate(
+        fetch = { users.list().firstOrNull { it.id == id } },
+        notFound = { UserFormUiStateError.NotFound() },
+        failure = { e -> UserFormUiStateError.LoadUserFailed(e) },
+        toForm = ::formOf,
+    )
+
+    private fun formOf(user: UmUser) = UserFormFields(
+        firstName = user.firstName,
+        lastName = user.lastName,
+        username = user.username,
+        password = "",
+        phone = user.phone,
+        email = user.email,
+    )
 
     private fun patch(transform: UserFormFields.() -> UserFormFields) {
         setState { copy(form = form.transform()) }

@@ -28,11 +28,6 @@ class NetworkException(
     cause: Throwable? = null,
 ) : AppException(message, cause)
 
-/**
- * The pharmacy API could not confirm the caller's session because the identity
- * store is unreachable (HTTP 503 `identity service unavailable`, ADR-0016).
- * Temporary: retry later, keep a sale pending, and do not sign the user out.
- */
 class IdentityUnavailableException(
     message: String = "Identity service unavailable",
     cause: Throwable? = null,
@@ -57,5 +52,35 @@ class StorageException(
 
 class UnsupportedPlatformException(
     message: String = "Unsupported on this platform",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeyCancelledException(
+    message: String = "Passkey prompt dismissed",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeyRejectedException(
+    message: String = "Passkey not accepted",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeyExpiredException(
+    message: String = "Passkey request expired",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class PasskeysUnavailableException(
+    message: String = "Passkeys are not enabled",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class LaunchExpiredException(
+    message: String = "Link from UM expired or was already used",
+    cause: Throwable? = null,
+) : AppException(message, cause)
+
+class LaunchRefusedException(
+    message: String = "This account cannot open this system from UM",
     cause: Throwable? = null,
 ) : AppException(message, cause)

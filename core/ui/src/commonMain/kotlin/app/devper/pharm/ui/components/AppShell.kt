@@ -76,7 +76,6 @@ data class NavItem(
     val route: String,
     val label: String,
     val icon: ImageVector,
-    /** Lowest role that may open this screen; matches pharmacy-api's route permissions. */
     val minRole: Role = Role.USER,
     val pinned: Boolean = false,
     val sectionLabel: String = "",
@@ -92,7 +91,6 @@ data class SidebarState(
 val LocalSidebarState = staticCompositionLocalOf { SidebarState() }
 val LocalPageTitle = staticCompositionLocalOf { "" }
 
-/** The signed-in role's permissions; screens hide actions the backend would refuse. */
 val LocalRolePermissions = staticCompositionLocalOf { RolePermissions.Full }
 
 @Composable

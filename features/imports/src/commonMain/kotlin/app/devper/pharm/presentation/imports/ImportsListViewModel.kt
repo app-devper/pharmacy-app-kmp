@@ -1,18 +1,14 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.domain.repository.purchasing.PurchaseOrderRepository
 import app.devper.pharm.common.error.CommonUiStateError
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.model.PurchaseOrderSummary
-import app.devper.pharm.domain.usecase.purchasing.ConfirmPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.DeletePurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrdersUseCase
 import app.devper.pharm.presentation.imports.exception.ImportsUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class ImportsListViewModel(
-    private val getPurchaseOrders: GetPurchaseOrdersUseCase,
-    private val confirmPurchaseOrder: ConfirmPurchaseOrderUseCase,
-    private val deletePurchaseOrder: DeletePurchaseOrderUseCase,
+    private val purchaseOrders: PurchaseOrderRepository,
 ) : BaseLoadableViewModel<ImportsListUiState>(ImportsListUiState()) {
 
     init { reload() }
@@ -20,11 +16,10 @@ class ImportsListViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getPurchaseOrders() },
-            onSuccess = { list -> setState { copy(loading = false, orders = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = ImportsUiStateError.LoadOrdersFailed(e)) } },
+        load(
+            fetch = { Result.success(purchaseOrders.list()) },
+            failure = { e -> ImportsUiStateError.LoadOrdersFailed(e) },
+            onLoaded = { list -> copy(orders = list) },
         )
     }
 
@@ -38,7 +33,7 @@ class ImportsListViewModel(
         val target = current.pendingConfirm ?: return
         setState { copy(busy = true, errorState = null) }
         launchResult(
-            block = { confirmPurchaseOrder(target.id) },
+            block = { Result.success(purchaseOrders.confirm(target.id)) },
             onSuccess = {
                 setState { copy(busy = false, pendingConfirm = null) }
                 reload()
@@ -65,7 +60,7 @@ class ImportsListViewModel(
         val target = current.pendingDelete ?: return
         setState { copy(busy = true, errorState = null) }
         launchResult(
-            block = { deletePurchaseOrder(target.id) },
+            block = { Result.success(purchaseOrders.delete(target.id)) },
             onSuccess = {
                 setState {
                     copy(

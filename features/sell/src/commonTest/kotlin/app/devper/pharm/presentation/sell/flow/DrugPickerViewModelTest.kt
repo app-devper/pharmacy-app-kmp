@@ -9,10 +9,9 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.repository.FakeCartRepository
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeDrugRepository
-import app.devper.pharm.domain.usecase.sales.AddToCartUseCase
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -43,7 +42,7 @@ class DrugPickerViewModelTest {
 
     private data class Bundle(
         val vm: DrugPickerViewModel,
-        val cart: FakeCartRepository,
+        val cart: Cart,
         val repo: FakeDrugRepository,
         val bus: StockChangeBus,
     )
@@ -51,12 +50,12 @@ class DrugPickerViewModelTest {
     private fun newVm(
         dispatchers: AppDispatchers,
         repo: FakeDrugRepository = FakeDrugRepository(),
-        cart: FakeCartRepository = FakeCartRepository(),
+        cart: Cart = testCart(),
         bus: StockChangeBus = StockChangeBus(),
     ): Bundle {
         val vm = DrugPickerViewModel(
-            getDrugs = GetDrugsUseCase(repo, dispatchers),
-            addToCart = AddToCartUseCase(cart),
+            drugs = repo,
+            cart = cart,
             stockChangeBus = bus,
         )
         return Bundle(vm, cart, repo, bus)
@@ -100,8 +99,8 @@ class DrugPickerViewModelTest {
         advanceUntilIdle()
         vm.onTapDrug(d)
         advanceUntilIdle()
-        assertEquals(d, cart.lastAdd?.drug)
-        assertNull(cart.lastAdd?.altUnit)
+        assertEquals(d, cart.current.items.lastOrNull()?.drug)
+        assertNull(cart.current.items.lastOrNull()?.selectedUnit)
 
         assertNull(vm.state.value.altUnitPickerFor)
     }
@@ -116,7 +115,7 @@ class DrugPickerViewModelTest {
         advanceUntilIdle()
 
         assertEquals(d, vm.state.value.altUnitPickerFor)
-        assertNull(cart.lastAdd)
+        assertTrue(cart.current.isEmpty)
     }
 
     @Test
@@ -129,8 +128,8 @@ class DrugPickerViewModelTest {
         advanceUntilIdle()
 
         assertNull(vm.state.value.altUnitPickerFor)
-        assertEquals(d, cart.lastAdd?.drug)
-        assertNull(cart.lastAdd?.altUnit)
+        assertEquals(d, cart.current.items.lastOrNull()?.drug)
+        assertNull(cart.current.items.lastOrNull()?.selectedUnit)
     }
 
     @Test
@@ -142,8 +141,8 @@ class DrugPickerViewModelTest {
         vm.onTapDrug(d)
         vm.onPickAltUnit(alt)
         advanceUntilIdle()
-        assertEquals(d, cart.lastAdd?.drug)
-        assertEquals(alt, cart.lastAdd?.altUnit)
+        assertEquals(d, cart.current.items.lastOrNull()?.drug)
+        assertEquals(alt, cart.current.items.lastOrNull()?.selectedUnit)
         assertNull(vm.state.value.altUnitPickerFor)
     }
 
@@ -156,8 +155,8 @@ class DrugPickerViewModelTest {
         vm.onTapDrug(d)
         vm.onPickAltUnit(null)
         advanceUntilIdle()
-        assertEquals(d, cart.lastAdd?.drug)
-        assertNull(cart.lastAdd?.altUnit)
+        assertEquals(d, cart.current.items.lastOrNull()?.drug)
+        assertNull(cart.current.items.lastOrNull()?.selectedUnit)
         assertNull(vm.state.value.altUnitPickerFor)
     }
 
@@ -168,7 +167,7 @@ class DrugPickerViewModelTest {
         advanceUntilIdle()
         vm.onScanBarcode("8851234567890")
         advanceUntilIdle()
-        assertEquals(d, cart.lastAdd?.drug)
+        assertEquals(d, cart.current.items.lastOrNull()?.drug)
     }
 
     @Test
@@ -186,7 +185,7 @@ class DrugPickerViewModelTest {
         advanceUntilIdle()
         vm.onScanBarcode("UNKNOWN-9999")
         advanceUntilIdle()
-        assertNull(cart.lastAdd)
+        assertTrue(cart.current.isEmpty)
         val barcodeErr = vm.state.value.errorState
         assertIs<DrugPickerUiStateError.BarcodeNotFound>(barcodeErr)
         assertEquals("UNKNOWN-9999", barcodeErr.code)
@@ -201,8 +200,8 @@ class DrugPickerViewModelTest {
         vm.onScanBarcode("ALT-001")
         advanceUntilIdle()
 
-        assertEquals(d, cart.lastAdd?.drug)
-        assertEquals(alt, cart.lastAdd?.altUnit)
+        assertEquals(d, cart.current.items.lastOrNull()?.drug)
+        assertEquals(alt, cart.current.items.lastOrNull()?.selectedUnit)
     }
 
     @Test

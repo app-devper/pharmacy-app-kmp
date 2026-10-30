@@ -8,6 +8,5 @@ data class AddStockAdjustmentParam(
     val delta: Int,
     val reason: AdjustmentReason,
     val note: String = "",
-    /** Required by the backend for an increase of a lot-tracked drug. */
     val lot: LotTarget? = null,
 )

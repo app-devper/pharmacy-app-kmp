@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.imports
 import app.devper.pharm.domain.model.PurchaseOrderSummary
 
 data class ImportsListCallbacks(
+    val onReload: () -> Unit = {},
     val onSearchChange: (String) -> Unit = {},
     val onCreateImport: () -> Unit = {},
     val onOpenImport: (PurchaseOrderSummary) -> Unit = {},

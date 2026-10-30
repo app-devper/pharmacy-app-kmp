@@ -2,8 +2,6 @@ package app.devper.pharm.presentation.settings
 
 import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.repository.FakeSettingsRepository
-import app.devper.pharm.domain.usecase.settings.RefreshSettingsUseCase
-import app.devper.pharm.domain.usecase.settings.UpdateSettingsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -34,7 +32,7 @@ class SettingsEditorViewModelTest {
 
     private class StubPrinter(private val result: Boolean = true) : app.devper.pharm.common.print.ReceiptPrinter {
         var printed: app.devper.pharm.common.print.ReceiptTemplate? = null
-        override fun print(template: app.devper.pharm.common.print.ReceiptTemplate): Boolean {
+        override suspend fun print(template: app.devper.pharm.common.print.ReceiptTemplate): Boolean {
             printed = template
             return result
         }
@@ -55,14 +53,10 @@ class SettingsEditorViewModelTest {
             app.devper.pharm.domain.repository.FakeUiPreferencesRepository(),
     ) = SettingsEditorViewModel(
         SettingsProvider(repo),
-        RefreshSettingsUseCase(repo, d),
-        UpdateSettingsUseCase(repo, d),
+        repo,
         app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase(printer, d),
         app.devper.pharm.domain.observer.UiPreferencesProvider(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetFontSizePreferenceUseCase(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetDensityPreferenceUseCase(uiPrefs),
-        app.devper.pharm.domain.usecase.settings.SetLocalePreferenceUseCase(uiPrefs),
+        uiPrefs,
     )
 
     @Test
@@ -150,6 +144,18 @@ class SettingsEditorViewModelTest {
         assertEquals("ร้านยาทดสอบ", model.state.value.form.storeName)
         assertTrue(model.state.value.dirty)
         assertTrue(model.state.value.canSave)
+    }
+
+    @Test
+    fun the_shop_licence_is_trimmed_and_saved_with_the_store() = runVmTest { d ->
+        val repo = FakeSettingsRepository()
+        val model = vm(repo, d)
+        advanceUntilIdle()
+        model.onStoreName("ร้านยาทดสอบ")
+        model.onStoreLicenseNo("  ขย. 12345/2567 ")
+        model.submit()
+        advanceUntilIdle()
+        assertEquals("ขย. 12345/2567", repo.lastUpdate?.store?.licenseNo)
     }
 
     @Test

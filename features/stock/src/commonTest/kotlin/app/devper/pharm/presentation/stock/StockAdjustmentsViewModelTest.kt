@@ -1,5 +1,6 @@
 package app.devper.pharm.presentation.stock
 
+import app.devper.pharm.domain.model.LotChoice
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.AdjustmentReason
 import app.devper.pharm.domain.model.StockAdjustment
@@ -8,9 +9,6 @@ import app.devper.pharm.domain.repository.FakeStockAdjustmentsRepository
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.model.LotTarget
 import app.devper.pharm.common.value.Quantity
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
-import app.devper.pharm.domain.usecase.inventory.AddStockAdjustmentUseCase
-import app.devper.pharm.domain.usecase.inventory.GetStockAdjustmentsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,9 +45,8 @@ class StockAdjustmentsViewModelTest {
         lots: FakeLotsRepository = FakeLotsRepository(),
     ): Bundle {
         val vm = StockAdjustmentsViewModel(
-            getAdjustments = GetStockAdjustmentsUseCase(repo, dispatchers),
-            addAdjustment = AddStockAdjustmentUseCase(repo, dispatchers),
-            listLots = ListLotsUseCase(lots, dispatchers),
+            adjustments = repo,
+            lots = lots,
         )
         return Bundle(vm, repo)
     }
@@ -256,7 +253,7 @@ class StockAdjustmentsViewModelTest {
         vm.toggleAddForm()
         vm.onSign(AdjustmentSign.Increase)
         vm.onAbsDelta("2")
-        vm.onLotChoice(AdjustmentDraft.NEW_LOT)
+        vm.onLotChoice(LotChoice.NEW_LOT)
         assertFalse(vm.state.value.canSubmitDraft)
 
         vm.onNewLotNumber("N1")
@@ -279,5 +276,22 @@ class StockAdjustmentsViewModelTest {
         vm.submitAdd()
         advanceUntilIdle()
         assertNull(repo.lastAdd?.lot)
+    }
+
+    @Test
+    fun an_increase_waits_for_the_lots_when_they_could_not_be_loaded() = runVmTest { dispatchers ->
+        val (vm, repo) = newVm(dispatchers, lots = FakeLotsRepository(listThrowsOn = "d1"))
+        vm.open("d1", "Paracetamol")
+        advanceUntilIdle()
+        vm.toggleAddForm()
+        vm.onSign(AdjustmentSign.Increase)
+        vm.onAbsDelta("1")
+
+        assertTrue(vm.state.value.lotsUnknown)
+        assertFalse(vm.state.value.canSubmitDraft)
+        assertNotNull(vm.state.value.errorState)
+
+        vm.onSign(AdjustmentSign.Decrease)
+        assertTrue(vm.state.value.canSubmitDraft)
     }
 }

@@ -19,8 +19,9 @@ data class BulkImportUiState(
 
     override val loading: Boolean get() = submitting
 
-    override fun withLoading(value: Boolean) = copy(submitting = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+
+    override fun withLoading(loading: Boolean) = copy(submitting = loading)
 
     val actionsEnabled: Boolean get() = !submitting
 

@@ -1,6 +1,7 @@
 package app.devper.pharm.data.storage
 
 import app.devper.pharm.domain.model.PendingSale
+import app.devper.pharm.domain.model.PendingSaleRefusal
 import app.devper.pharm.domain.model.PendingSaleState
 import app.devper.pharm.domain.repository.offlinesync.OfflineSaleQueue
 import com.russhwolf.settings.Settings
@@ -15,14 +16,8 @@ import kotlin.time.ExperimentalTime
 
 private const val ENTRY_PREFIX = "offline.sale."
 
-// Before KMP ADR-0006 was implemented the whole queue was one JSON list here.
 private const val LEGACY_KEY = "offline.queue"
 
-/**
- * Pending sales stored one settings key per entry (KMP ADR-0006). An entry
- * that cannot be decoded is reported as damaged with its raw data and is
- * never removed except by [remove].
- */
 @OptIn(ExperimentalTime::class)
 class OfflineSaleQueueImpl(
     private val settings: Settings,
@@ -78,11 +73,10 @@ class OfflineSaleQueueImpl(
         clientRequestId = "",
         payloadJson = raw,
         enqueuedAt = 0L,
-        lastError = e.message,
+        refusal = PendingSaleRefusal.Unreadable(e.message.orEmpty()),
         state = PendingSaleState.Damaged,
     )
 
-    /** Move the old single-list queue into per-entry keys, keeping it raw if it cannot be read. */
     private fun migrateLegacyList() {
         val raw = settings.getStringOrNull(LEGACY_KEY) ?: return
         val list = try {
@@ -105,7 +99,8 @@ class OfflineSaleQueueImpl(
         clientRequestId = clientRequestId,
         payload = payloadJson,
         enqueuedAt = enqueuedAt,
-        lastError = lastError,
+        lastError = null,
+        refusal = refusal?.toDto(),
         attempts = attempts,
         ky = kyForms.map { it.toPendingDto() },
         state = when (state) {
@@ -121,13 +116,12 @@ class OfflineSaleQueueImpl(
         clientRequestId = clientRequestId,
         payloadJson = payload,
         enqueuedAt = enqueuedAt,
-        lastError = lastError,
+        refusal = refusal?.toDomain() ?: lastError?.takeIf { it.isNotBlank() }?.let { legacyRefusal(it, kyPending = state == "ky_pending") },
         attempts = attempts,
         kyForms = ky.mapNotNull { it.toDomainOrNull() },
         state = when (state) {
             "pending" -> PendingSaleState.Pending
             "ky_pending" -> PendingSaleState.KyPending
-            // A state this version does not know stops automatic retry.
             else -> PendingSaleState.Conflict
         },
         billNo = billNo,

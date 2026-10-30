@@ -1,0 +1,56 @@
+package app.devper.pharm.data.repository
+
+import app.devper.pharm.common.value.Money
+import app.devper.pharm.common.value.Quantity
+
+import app.devper.pharm.data.storage.MemorySettings
+import app.devper.pharm.data.storage.ParkedCartStorage
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.model.Drug
+import app.devper.pharm.domain.model.Sale
+import com.russhwolf.settings.Settings
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class CartPersistenceTest {
+
+    private fun drug(id: String = "d1") = Drug(
+        id = id, name = "Paracetamol", genericName = null, type = null, strength = null,
+        barcode = null, sellPrice = Money(5.0), costPrice = Money(2.0), stock = Quantity(100), minStock = Quantity(0),
+        unit = "เม็ด", regNo = null,
+    )
+
+    private fun repo(settings: Settings) = Cart(ParkedCartStorage(settings))
+
+    @Test
+    fun active_cart_survives_a_fresh_instance() {
+        val settings = MemorySettings()
+        repo(settings).add(drug())
+
+        val reborn = repo(settings)
+        val items = reborn.state.value.active.items
+        assertEquals(1, items.size)
+        assertEquals("d1", items[0].drug.id)
+    }
+
+    @Test
+    fun clear_removes_the_persisted_active_cart() {
+        val settings = MemorySettings()
+        val first = repo(settings)
+        first.add(drug())
+        first.clear()
+
+        assertTrue(repo(settings).state.value.active.items.isEmpty())
+    }
+
+    @Test
+    fun commit_receipt_removes_the_persisted_active_cart() {
+        val settings = MemorySettings()
+        val first = repo(settings)
+        first.add(drug())
+        first.commitReceipt(Sale("s1", "B1", Money(10.0), Money.Zero, Money.Zero, emptyList()))
+
+        assertTrue(repo(settings).state.value.active.items.isEmpty())
+    }
+}

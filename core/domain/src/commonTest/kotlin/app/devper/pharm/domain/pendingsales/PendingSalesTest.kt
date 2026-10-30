@@ -12,6 +12,8 @@ import app.devper.pharm.domain.model.AbandonOutcome
 import app.devper.pharm.domain.model.KyForm
 import app.devper.pharm.domain.model.PendingSale
 import app.devper.pharm.domain.model.PendingSaleState
+import app.devper.pharm.domain.model.PendingSaleRefusal
+import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.repository.FakeFileDownloader
 import app.devper.pharm.domain.repository.FakeKyRepository
@@ -41,8 +43,6 @@ class PendingSalesTest {
         saleId = "", date = LocalDate(2026, 9, 27), drugName = "Dextro", regNo = "R2", qty = 1,
         unit = "tab", buyerName = "A", purpose = "cough", pharmacist = "P",
     )
-
-    // ── delivery ──────────────────────────────────────────────
 
     @Test
     fun enqueued_sale_is_pending_until_the_server_records_it() = runTest {
@@ -84,7 +84,7 @@ class PendingSalesTest {
             val queue = FakeOfflineSaleQueue(listOf(entry("p1")))
             pendingSalesOf(queue, FakeSaleRepository(replayThrows = failure)).syncAll()
             assertEquals(PendingSaleState.Conflict, queue.entry("p1")?.state)
-            assertEquals(reason, queue.entry("p1")?.lastError)
+            assertEquals(PendingSaleRefusal.Server(reason), queue.entry("p1")?.refusal)
         }
     }
 
@@ -139,6 +139,8 @@ class PendingSalesTest {
         assertEquals("B1", e.billNo)
         assertEquals(listOf("Tramadol"), e.kyForms.map { it.drugName })
         assertEquals("s1", (e.kyForms.single() as KyForm.Ky10).saleId)
+        val refusal = e.refusal as PendingSaleRefusal.KyRefused
+        assertEquals(listOf(KyFormType.Ky10 to "Tramadol"), refusal.forms.map { it.form to it.drugName })
         assertEquals(1, ky.ky11Submissions.size)
         assertEquals(SyncSummary(refused = 1), summary)
     }
@@ -155,7 +157,14 @@ class PendingSalesTest {
         assertTrue(ky.ky11Submissions.isEmpty())
     }
 
-    // ── retry ─────────────────────────────────────────────────
+    @Test
+    fun a_5xx_while_sending_ky_keeps_the_bill_pending_instead_of_needing_a_person() = runTest {
+        val queue = FakeOfflineSaleQueue(listOf(entry("p1", ky = listOf(ky10(), ky11()))))
+        val ky = FakeKyRepository(ky10Error = ServerException("Server error (500)", statusCode = 500))
+        pendingSalesOf(queue, FakeSaleRepository(successResult = recorded), ky).syncAll()
+
+        assertEquals(PendingSaleState.Pending, queue.entry("p1")!!.state)
+    }
 
     @Test
     fun retrying_a_conflict_records_it_or_keeps_it_in_conflict() = runTest {
@@ -164,7 +173,7 @@ class PendingSalesTest {
         val pending = pendingSalesOf(queue, sales)
 
         assertEquals(PendingSaleState.Conflict, pending.retry("p1").getOrThrow())
-        assertEquals("still refused", queue.entry("p1")?.lastError)
+        assertEquals(PendingSaleRefusal.Server("still refused"), queue.entry("p1")?.refusal)
 
         sales.replayThrows = null
         assertNull(pending.retry("p1").getOrThrow())
@@ -179,8 +188,6 @@ class PendingSalesTest {
         assertTrue(pending.retry("x").isFailure)
         assertEquals(0, sales.replayCount)
     }
-
-    // ── abandon ───────────────────────────────────────────────
 
     @Test
     fun abandoning_a_conflict_records_the_reason_then_removes_it() = runTest {
@@ -233,8 +240,6 @@ class PendingSalesTest {
         assertEquals(listOf(Triple("crid-p1", "ky_forms", "recorded on paper")), sales.abandoned)
         assertTrue(queue.entries.value.isEmpty())
     }
-
-    // ── damaged ───────────────────────────────────────────────
 
     @Test
     fun a_damaged_entry_is_exported_raw_and_only_it_can_be_discarded() = runTest {

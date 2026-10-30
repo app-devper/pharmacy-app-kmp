@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.stock
 import app.devper.pharm.domain.model.Drug
 
 data class StockCallbacks(
+    val onReload: () -> Unit = {},
     val onQueryChange: (String) -> Unit = {},
     val onTypeFilterChange: (StockTypeFilter) -> Unit = {},
     val onAddDrug: () -> Unit = {},

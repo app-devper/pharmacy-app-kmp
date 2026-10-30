@@ -9,9 +9,9 @@ import app.devper.pharm.domain.observer.AuthStateProvider
 import app.devper.pharm.domain.observer.OfflineAutoSync
 import app.devper.pharm.domain.pendingsales.PendingSales
 import app.devper.pharm.domain.observer.UiPreferencesProvider
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
-import app.devper.pharm.domain.usecase.auth.LogoutUseCase
-import app.devper.pharm.domain.usecase.settings.SetThemePreferenceUseCase
+import app.devper.pharm.domain.observer.SignedInUser
+import app.devper.pharm.domain.repository.auth.AuthRepository
+import app.devper.pharm.domain.repository.settings.UiPreferencesRepository
 import app.devper.pharm.ui.common.BaseViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
@@ -22,9 +22,9 @@ class AppViewModel(
     pendingSales: PendingSales,
     uiPreferences: UiPreferencesProvider,
     private val offlineAutoSync: OfflineAutoSync,
-    private val logout: LogoutUseCase,
-    private val getProfile: GetProfileUseCase,
-    private val setTheme: SetThemePreferenceUseCase,
+    private val auth: AuthRepository,
+    private val signedInUser: SignedInUser,
+    private val preferences: UiPreferencesRepository,
 ) : BaseViewModel<AppUiState>(AppUiState()) {
 
     init {
@@ -34,8 +34,18 @@ class AppViewModel(
         authState.isLoggedIn
             .onEach { loggedIn ->
                 setState { copy(isLoggedIn = loggedIn) }
-                if (loggedIn) loadRole() else setState {
-                    copy(role = Role.UNKNOWN, userDisplayName = "", userInitial = "")
+                if (loggedIn) loadUser() else signedInUser.clear()
+            }
+            .launchIn(viewModelScope)
+
+        signedInUser.user
+            .onEach { user ->
+                setState {
+                    copy(
+                        role = user?.role ?: Role.UNKNOWN,
+                        userDisplayName = user?.displayName.orEmpty(),
+                        userInitial = user?.initials.orEmpty(),
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -49,21 +59,11 @@ class AppViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun loadRole() {
+    private fun loadUser() {
         launchResult(
-            block = { getProfile(Unit) },
-            onSuccess = { user ->
-                setState {
-                    copy(
-                        role = user.role,
-                        userDisplayName = user.displayName,
-                        userInitial = user.initials,
-                    )
-                }
-            },
-            onFailure = {
-                setState { copy(role = Role.UNKNOWN, userDisplayName = "", userInitial = "") }
-            },
+            block = { Result.success(signedInUser.load()) },
+            onSuccess = { },
+            onFailure = { signedInUser.clear() },
         )
     }
 
@@ -73,14 +73,14 @@ class AppViewModel(
 
     fun signOut() {
         launchResult(
-            block = { logout() },
+            block = { Result.success(auth.logout()) },
             onSuccess = {  },
             onFailure = { e -> setState { copy(errorState = AppUiStateError.LogoutFailed(e)) } },
         )
     }
 
     fun toggleTheme(currentlyDark: Boolean) {
-        setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark)
+        runCatching { preferences.setTheme(if (currentlyDark) ThemePreference.Light else ThemePreference.Dark) }
             .onFailure { e -> setState { copy(errorState = AppUiStateError.ThemeChangeFailed(e)) } }
     }
 

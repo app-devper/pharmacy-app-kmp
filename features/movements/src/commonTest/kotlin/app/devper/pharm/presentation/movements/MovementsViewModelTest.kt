@@ -6,7 +6,6 @@ import app.devper.pharm.domain.model.StockMovementsPage
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeMovementsRepository
 import app.devper.pharm.domain.usecase.reports.ExportMovementsCsvUseCase
-import app.devper.pharm.domain.usecase.reports.GetMovementsUseCase
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +27,7 @@ class MovementsViewModelTest {
 
     private fun vm(d: app.devper.pharm.common.AppDispatchers, page: StockMovementsPage) =
         MovementsViewModel(
-            GetMovementsUseCase(FakeMovementsRepository(page), d),
+            FakeMovementsRepository(page),
             ExportMovementsCsvUseCase(FakeExportRepository(), d),
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
@@ -56,7 +55,7 @@ class MovementsViewModelTest {
     fun export_with_empty_items_sets_message_without_calling_export() = runVmTest { d ->
         val export = FakeExportRepository()
         val model = MovementsViewModel(
-            GetMovementsUseCase(FakeMovementsRepository(StockMovementsPage(emptyList(), 0)), d),
+            FakeMovementsRepository(StockMovementsPage(emptyList(), 0)),
             ExportMovementsCsvUseCase(export, d),
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
@@ -71,7 +70,7 @@ class MovementsViewModelTest {
     fun export_with_items_calls_save_and_sets_done_message() = runVmTest { d ->
         val export = FakeExportRepository(result = "/storage/movements.csv")
         val model = MovementsViewModel(
-            GetMovementsUseCase(FakeMovementsRepository(StockMovementsPage(listOf(movement("a")), 1)), d),
+            FakeMovementsRepository(StockMovementsPage(listOf(movement("a")), 1)),
             ExportMovementsCsvUseCase(export, d),
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
@@ -86,7 +85,7 @@ class MovementsViewModelTest {
     fun dismiss_message_clears_message_state() = runVmTest { d ->
         val export = FakeExportRepository()
         val model = MovementsViewModel(
-            GetMovementsUseCase(FakeMovementsRepository(StockMovementsPage(emptyList(), 0)), d),
+            FakeMovementsRepository(StockMovementsPage(emptyList(), 0)),
             ExportMovementsCsvUseCase(export, d),
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )

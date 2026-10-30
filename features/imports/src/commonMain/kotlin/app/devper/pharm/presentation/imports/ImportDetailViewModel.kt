@@ -1,16 +1,12 @@
 package app.devper.pharm.presentation.imports
 
+import app.devper.pharm.domain.repository.purchasing.PurchaseOrderRepository
 import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.domain.usecase.purchasing.ConfirmPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.DeletePurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.presentation.imports.exception.ImportsUiStateError
 import app.devper.pharm.ui.common.BaseViewModel
 
 class ImportDetailViewModel(
-    private val getPurchaseOrder: GetPurchaseOrderUseCase,
-    private val confirmPurchaseOrder: ConfirmPurchaseOrderUseCase,
-    private val deletePurchaseOrder: DeletePurchaseOrderUseCase,
+    private val purchaseOrders: PurchaseOrderRepository,
 ) : BaseViewModel<ImportDetailUiState>(ImportDetailUiState()) {
 
     private var importId: String? = null
@@ -24,7 +20,7 @@ class ImportDetailViewModel(
         val id = importId ?: return
         setState { copy(loading = true, errorState = null) }
         launchResult(
-            block = { getPurchaseOrder(id) },
+            block = { Result.success(purchaseOrders.get(id)) },
             onSuccess = { po -> setState { copy(loading = false, po = po) } },
             onFailure = { e -> setState { copy(loading = false, errorState = ImportsUiStateError.LoadOrderFailed(e)) } },
         )
@@ -40,7 +36,7 @@ class ImportDetailViewModel(
         val id = importId ?: return
         setState { copy(confirmDialog = false, confirming = true, errorState = null) }
         launchResult(
-            block = { confirmPurchaseOrder(id) },
+            block = { Result.success(purchaseOrders.confirm(id)) },
             onSuccess = { po -> setState { copy(confirming = false, po = po) } },
             onFailure = { e -> setState { copy(confirming = false, errorState = ImportsUiStateError.ConfirmFailed(e)) } },
         )
@@ -50,7 +46,7 @@ class ImportDetailViewModel(
         val id = importId ?: return
         setState { copy(deleteDialog = false, deleting = true, errorState = null) }
         launchResult(
-            block = { deletePurchaseOrder(id) },
+            block = { Result.success(purchaseOrders.delete(id)) },
             onSuccess = { setState { copy(deleting = false, closed = true) } },
             onFailure = { e -> setState { copy(deleting = false, errorState = CommonUiStateError.DeleteFailed(e)) } },
         )

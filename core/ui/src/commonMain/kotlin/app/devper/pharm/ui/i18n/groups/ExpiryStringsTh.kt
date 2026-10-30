@@ -24,6 +24,7 @@ object ExpiryStringsTh : ExpiryStrings {
     override val expiryHeaderLotNumber = "เลขล็อต"
     override val expiryHeaderExpiry = "วันหมดอายุ"
     override val expiryHeaderRemaining = "คงเหลือ"
+    override val expiryHeaderDaysLeft = "เหลือ (วัน)"
     override val expiryStatusExpired = "หมดอายุแล้ว"
     override val expiryStatusDaysLeft: (Int) -> String = { days -> "อีก $days วัน" }
     override val expiryEmpty = "ไม่มีล็อตในช่วงเวลานี้"

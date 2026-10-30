@@ -13,8 +13,8 @@ data class ReorderSuggestionsUiState(
 ) : LoadableUiState<ReorderSuggestionsUiState> {
 
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val draftCount: Int get() = draftDrugIds.size
     val addedSuggestionCount: Int get() = suggestions.count { it.drugId in draftDrugIds }

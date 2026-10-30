@@ -15,9 +15,7 @@ interface SaleRepository {
 
     suspend fun replayCheckout(payloadJson: String): Sale
 
-    /** Record that the queued sale [clientRequestId] will never be recorded (ADMIN+). */
     suspend fun abandonSale(clientRequestId: String, payloadJson: String, reason: String): AbandonOutcome
 
-    /** Close the refused KY [forms] of the recorded sale [clientRequestId] (ADMIN+). */
     suspend fun abandonKyForms(clientRequestId: String, forms: List<KyForm>, reason: String)
 }

@@ -1,6 +1,6 @@
 ---
 name: git-flow
-description: Git flow branching for app-devper/pharmacy-app-kmp — main (production, deploys + tags on merge), develop (default, integration), feature/*, release/*, hotfix/*. Use when starting new work, opening a PR, cutting a release, hotfixing production, or deciding which base branch a change targets.
+description: Git flow branching for app-devper/pharmacy-app-kmp — main (production, manual deploy + tag after merge), develop (default, integration), feature/*, release/*, hotfix/*. Use when starting new work, opening a PR, cutting a release, hotfixing production, or deciding which base branch a change targets.
 ---
 
 # git-flow — branching + release model for this repo
@@ -16,7 +16,7 @@ lives in `dev-flow`; this skill owns the branch rules.
 
 | Branch | Role | PR target | After merge |
 |---|---|---|---|
-| `main` | production — every merge deploys + tags | — | back-merge into `develop` |
+| `main` | production — deploy + tag by hand after every merge | — | back-merge into `develop` |
 | `develop` | default branch, integration | — | — |
 | `feature/<x>` | new work, fixes for next release | `develop` | delete branch |
 | `release/<x.y.z>` | release cut from `develop` | `main` | back-merge `main` → `develop`, delete branch |
@@ -25,20 +25,24 @@ lives in `dev-flow`; this skill owns the branch rules.
 Both `main` and `develop` require the check
 "Linux (JVM + Android + WasmJs + audit)". PRs land via **squash**.
 
-## What merging `main` triggers
+## What merging `main` does — nothing automatic
 
-Cloud Build trigger `deploy-pharm-app` (project `devperpos`,
-[cloudbuild.yaml](../../../cloudbuild.yaml)) runs on every push to `main`:
+The Cloud Build trigger `deploy-pharm-app` (project `devperpos`,
+[cloudbuild.yaml](../../../cloudbuild.yaml)) is **disabled** — its last run
+was 2026-08-10 — so merging `main` neither deploys nor tags. After a
+release/hotfix lands, from a clean `main` checkout:
 
-1. `./gradlew :composeApp:wasmJsBrowserDistribution` (CI-only heap override
-   via `GRADLE_USER_HOME` — machine has 8GB)
-2. `firebase deploy --only hosting:pharm-app` → https://pharm-app.web.app
-3. Tag `v<app-version>` from `gradle/libs.versions.toml` key `app-version` —
-   **skipped if the tag already exists**
+```bash
+git checkout main && git pull --ff-only
+./gradlew :composeApp:wasmJsBrowserDistribution
+firebase deploy --only hosting:pharm-app --project devperpos   # https://pharm-app.web.app
+```
 
-So every `release/*` or `hotfix/*` PR must **bump `app-version`**
-(+ `app-versionCode` for Android) in `gradle/libs.versions.toml`, or the
-deploy goes out untagged.
+and tag `v<app-version>` by hand (Tag recipe). Every `release/*` or
+`hotfix/*` PR must **bump `app-version`** (+ `app-versionCode` for Android)
+in `gradle/libs.versions.toml` so the version, the tag and the shipped app
+agree. If the trigger is re-enabled it also tags `v<app-version>` (skipping
+an existing tag) — update this section then.
 
 ## Recipes
 
@@ -94,7 +98,7 @@ git push origin develop
   (see Back-merge).
 - Never open a feature PR against `main`; only `release/*` and `hotfix/*`
   target `main`.
-- A merge into `main` is a production deploy — treat release/hotfix PRs
-  accordingly (verify sweep green first).
+- A merge into `main` is a release — deploy it by hand right after, from
+  `main` (verify sweep green first).
 - Landing PRs (merge + branch cleanup + sync) is the **pr** skill's job —
   invoke `/pr` rather than hand-rolling the merge.

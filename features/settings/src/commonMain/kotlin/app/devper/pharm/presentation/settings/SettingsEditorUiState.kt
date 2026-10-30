@@ -11,6 +11,7 @@ data class SettingsFormFields(
     val storeAddress: String = "",
     val storePhone: String = "",
     val storeTaxId: String = "",
+    val storeLicenseNo: String = "",
 
     val receiptHeader: String = "",
     val receiptFooter: String = "",
@@ -75,9 +76,9 @@ data class SettingsEditorUiState(
     val errorState: AppException? = null,
 ) : LoadableUiState<SettingsEditorUiState> {
 
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val dirty: Boolean get() = form != baseline
     val canSave: Boolean

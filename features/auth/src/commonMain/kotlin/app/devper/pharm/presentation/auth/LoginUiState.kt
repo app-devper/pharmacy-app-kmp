@@ -10,14 +10,15 @@ data class LoginUiState(
     val locale: String = "th",
     val validationRequested: Boolean = false,
     val sessionExpired: Boolean = false,
+    val passkeySupported: Boolean = false,
     override val loading: Boolean = false,
     val errorState: AppException? = null,
     val loggedInUser: User? = null,
 ) : LoadableUiState<LoginUiState> {
 
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
 
     val usernameMissing: Boolean = validationRequested && username.isBlank()
     val passwordMissing: Boolean = validationRequested && password.isBlank()

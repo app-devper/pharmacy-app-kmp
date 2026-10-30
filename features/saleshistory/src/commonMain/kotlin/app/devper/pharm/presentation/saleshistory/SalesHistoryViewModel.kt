@@ -1,12 +1,13 @@
 package app.devper.pharm.presentation.saleshistory
 
+import app.devper.pharm.ui.format.QuickPeriod
+import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.domain.model.SaleSummary
 import app.devper.pharm.domain.param.sales.ReturnLineParam
 import app.devper.pharm.domain.param.sales.SaleHistoryFilterParam
 import app.devper.pharm.domain.param.sales.SubmitReturnParam
 import app.devper.pharm.domain.observer.TimeZoneProvider
-import app.devper.pharm.domain.usecase.sales.GetSaleHistoryUseCase
-import app.devper.pharm.domain.usecase.sales.GetSaleItemsUseCase
+import app.devper.pharm.domain.repository.sales.SaleHistoryRepository
 import app.devper.pharm.domain.usecase.sales.SubmitSaleReturnUseCase
 import app.devper.pharm.domain.extension.resolveReturnQty
 import app.devper.pharm.domain.validation.SaleValidationError
@@ -15,8 +16,7 @@ import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
 class SalesHistoryViewModel(
-    private val getHistory: GetSaleHistoryUseCase,
-    private val getItems: GetSaleItemsUseCase,
+    private val history: SaleHistoryRepository,
     private val submitReturn: SubmitSaleReturnUseCase,
     timeZoneProvider: TimeZoneProvider,
 ) : BaseLoadableViewModel<SalesHistoryUiState>(
@@ -25,35 +25,33 @@ class SalesHistoryViewModel(
 
     init { loadList() }
 
-    fun onFromChange(value: String) = setState { copy(dateRange = dateRange.withFrom(value)) }
-    fun onToChange(value: String) = setState { copy(dateRange = dateRange.withTo(value)) }
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
-    fun onFromMillisChange(millis: Long?) = setState { copy(dateRange = dateRange.withFromMillis(millis)) }
-    fun onToMillisChange(millis: Long?) = setState { copy(dateRange = dateRange.withToMillis(millis)) }
+    fun onRangeChange(range: PharmDateRange) = setState { copy(dateRange = dateRange.withRange(range)) }
 
     fun applyFilter() = loadList()
 
-    fun onSelectRange(from: String, to: String) {
-        setState { copy(dateRange = dateRange.withFrom(from).withTo(to)) }
+    fun onSelectPeriod(period: QuickPeriod) {
+        setState { copy(dateRange = dateRange.withPeriod(period)) }
         loadList()
     }
 
     fun loadList() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
-                getHistory(
-                    SaleHistoryFilterParam(
-                        from = s.dateRange.fromDate,
-                        to = s.dateRange.toDate,
-                        query = s.query.takeIf { it.isNotBlank() },
+        load(
+            fetch = {
+                Result.success(
+                    history.list(
+                        SaleHistoryFilterParam(
+                            from = s.dateRange.fromDate,
+                            to = s.dateRange.toDate,
+                            query = s.query.takeIf { it.isNotBlank() },
+                        ),
                     ),
                 )
             },
-            onSuccess = { list -> setState { copy(loading = false, sales = list) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = SalesHistoryUiStateError.LoadBillsFailed(e)) } },
+            failure = { e -> SalesHistoryUiStateError.LoadBillsFailed(e) },
+            onLoaded = { list -> copy(sales = list) },
         )
     }
 
@@ -61,7 +59,7 @@ class SalesHistoryViewModel(
         val targetId = sale.id
         setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
         launchResult(
-            block = { getItems(targetId) },
+            block = { Result.success(history.getItems(targetId)) },
             onSuccess = { items ->
                 if (current.selected?.id != targetId) return@launchResult
                 setState { copy(itemsLoading = false, items = items) }
@@ -94,7 +92,7 @@ class SalesHistoryViewModel(
             )
         }
         launchResult(
-            block = { getItems(targetId) },
+            block = { Result.success(history.getItems(targetId)) },
             onSuccess = { items ->
                 if (current.selected?.id != targetId) return@launchResult
                 val zero = items.associate { it.id to 0 }

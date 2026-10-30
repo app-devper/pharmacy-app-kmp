@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.stockcount
 
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
+import app.devper.pharm.domain.model.LotChoice
+import app.devper.pharm.domain.repository.inventory.LotsRepository
 import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 
 import androidx.lifecycle.viewModelScope
@@ -8,11 +9,9 @@ import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.param.inventory.CreateStockCountParam
 import app.devper.pharm.domain.validation.buildStockCountInput
 import app.devper.pharm.domain.validation.parsePendingStockCounts
-import app.devper.pharm.domain.usecase.inventory.ClearStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.inventory.CreateStockCountUseCase
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.inventory.LoadStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.inventory.SaveStockCountDraftUseCase
+import app.devper.pharm.domain.repository.inventory.DrugRepository
+import app.devper.pharm.domain.repository.inventory.StockCountDraftRepository
+import app.devper.pharm.domain.repository.inventory.StockCountsRepository
 import app.devper.pharm.ui.common.BaseFormViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
@@ -27,12 +26,10 @@ import kotlinx.coroutines.flow.onEach
 
 @OptIn(FlowPreview::class, ExperimentalTime::class)
 class StockCountFormViewModel(
-    private val getDrugs: GetDrugsUseCase,
-    private val createStockCount: CreateStockCountUseCase,
-    private val loadDraft: LoadStockCountDraftUseCase,
-    private val saveDraft: SaveStockCountDraftUseCase,
-    private val clearDraft: ClearStockCountDraftUseCase,
-    private val listLots: ListLotsUseCase,
+    private val drugs: DrugRepository,
+    private val stockCounts: StockCountsRepository,
+    private val drafts: StockCountDraftRepository,
+    private val lots: LotsRepository,
 ) : BaseFormViewModel<StockCountFormUiState>(StockCountFormUiState()) {
 
     init {
@@ -44,9 +41,9 @@ class StockCountFormViewModel(
             .debounce(DRAFT_DEBOUNCE_MS.milliseconds)
             .onEach { snapshot ->
                 if (snapshot.counts.isEmpty() && snapshot.note.isBlank()) {
-                    clearDraft(Unit)
+                    drafts.clear()
                 } else {
-                    saveDraft(
+                    drafts.save(
                         StockCountDraft(
                             counts = snapshot.counts,
                             note = snapshot.note,
@@ -112,23 +109,14 @@ class StockCountFormViewModel(
             submit()
             return
         }
-        // Counted increases of lot-tracked drugs must name their lot (ADR-0007).
         setState { copy(saving = true) }
         launchResult(
             block = {
-                var failure: Throwable? = null
-                val lines = increases.mapNotNull { (id, name, delta) ->
-                    if (failure != null) return@mapNotNull null
-                    listLots(id).fold(
-                        onSuccess = { all ->
-                            val lots = all.filterNot { it.writtenOff }.sortedByDescending { it.expiryDate }
-                            if (lots.isEmpty()) null
-                            else CountLotLine(drugId = id, drugName = name, delta = delta, lots = lots, choice = lots.first().id)
-                        },
-                        onFailure = { e -> failure = e; null },
-                    )
-                }
-                failure?.let { Result.failure(it) } ?: Result.success(lines)
+                Result.success(
+                    increases.mapNotNull { (id, name, delta) ->
+                        LotChoice.forIncrease(lots.listLots(id))?.let { CountLotLine(drugId = id, drugName = name, delta = delta, lot = it) }
+                    },
+                )
             },
             onSuccess = { lines ->
                 setState { copy(saving = false) }
@@ -138,9 +126,9 @@ class StockCountFormViewModel(
         )
     }
 
-    fun onLotChoice(drugId: String, choice: String) = patchLotLine(drugId) { copy(choice = choice) }
-    fun onNewLotNumber(drugId: String, value: String) = patchLotLine(drugId) { copy(newLotNumber = value) }
-    fun onNewLotExpiry(drugId: String, value: String) = patchLotLine(drugId) { copy(newLotExpiry = value) }
+    fun onLotChoice(drugId: String, choice: String) = patchLotLine(drugId) { copy(lot = lot.choose(choice)) }
+    fun onNewLotNumber(drugId: String, value: String) = patchLotLine(drugId) { copy(lot = lot.withNewLotNumber(value)) }
+    fun onNewLotExpiry(drugId: String, value: String) = patchLotLine(drugId) { copy(lot = lot.withNewLotExpiry(value)) }
     fun cancelLotStep() = setState { copy(lotStep = null) }
 
     fun confirmLotStep() {
@@ -158,7 +146,7 @@ class StockCountFormViewModel(
     fun reload() {
         setState { copy(loading = drugs.isEmpty(), errorState = null) }
         launchResult(
-            block = { getDrugs() },
+            block = { Result.success(drugs.list()) },
             onSuccess = { list ->
                 setState {
                     val validIds = list.asSequence().map { it.id }.toHashSet()
@@ -173,16 +161,14 @@ class StockCountFormViewModel(
     override suspend fun persist(): Result<Unit> {
         val s = current
         val lines = buildStockCountInput(s.counts).map { it.copy(lot = s.chosenLots[it.drugId]) }
-        val result = createStockCount(CreateStockCountParam(note = s.note.trim(), items = lines)).map { Unit }
-        if (result.isSuccess) {
-            clearDraft(Unit)
-            setState { copy(counts = emptyMap(), note = "", chosenLots = emptyMap()) }
-        }
-        return result
+        stockCounts.add(CreateStockCountParam(note = s.note.trim(), items = lines))
+        drafts.clear()
+        setState { copy(counts = emptyMap(), note = "", chosenLots = emptyMap()) }
+        return Result.success(Unit)
     }
 
     private fun hydrate() {
-        val draft = loadDraft(Unit).getOrNull() ?: return
+        val draft = runCatching { drafts.load() }.getOrNull() ?: return
         if (draft.isEmpty) return
         setState { copy(counts = draft.counts, note = draft.note) }
     }

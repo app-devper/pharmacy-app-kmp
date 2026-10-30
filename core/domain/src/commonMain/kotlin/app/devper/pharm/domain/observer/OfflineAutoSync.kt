@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-/** Syncs pending sales whenever the device comes back online. */
 class OfflineAutoSync(
     private val connectivity: ConnectivityObserver,
     private val pendingSales: PendingSales,

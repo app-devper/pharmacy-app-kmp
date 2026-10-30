@@ -1,12 +1,12 @@
 package app.devper.pharm.presentation.sell.flow
 
 
+import app.devper.pharm.domain.cart.Cart
 import androidx.lifecycle.viewModelScope
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.usecase.sales.AddToCartUseCase
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
+import app.devper.pharm.domain.repository.inventory.DrugRepository
 import app.devper.pharm.presentation.sell.exception.DrugPickerUiStateError
 import app.devper.pharm.domain.model.BarcodeMatch
 import app.devper.pharm.domain.extension.matchBarcode
@@ -18,8 +18,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 
 class DrugPickerViewModel(
-    private val getDrugs: GetDrugsUseCase,
-    private val addToCart: AddToCartUseCase,
+    private val drugs: DrugRepository,
+    private val cart: Cart,
     stockChangeBus: StockChangeBus,
 ) : BaseViewModel<DrugPickerUiState>(DrugPickerUiState()) {
 
@@ -37,7 +37,7 @@ class DrugPickerViewModel(
     fun load() {
         setState { copy(drugsLoading = true, errorState = null) }
         launchResult(
-            block = { getDrugs() },
+            block = { Result.success(drugs.list()) },
             onSuccess = { list ->
                 setState {
                     copy(
@@ -83,7 +83,7 @@ class DrugPickerViewModel(
     }
 
     private fun add(drug: Drug, altUnit: AltUnit?) {
-        addToCart(drug, altUnit)
+        cart.add(drug, altUnit)
         _added.trySend(drug.name)
     }
 

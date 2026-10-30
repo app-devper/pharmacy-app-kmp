@@ -73,8 +73,8 @@ cross-feature imports inside `:features` (e.g.
 warning. After the split, the Kotlin compiler refuses any foreign-module
 symbol without an explicit `project(":features:<x>")` dep — the audit
 check became redundant for cross-feature rules (it still enforces
-A26/A27/A28/A29 for platform folders, expect declarations, generic
-exceptions).
+A26/A27/A28/A29/A30 for platform folders, expect declarations, generic
+exceptions, Thai UI literals and comments).
 
 **`:features` decoupling**: no per-feature module can reach `:core:data`
 (no direct dep, no transitive path — `:core:domain` does not re-export
@@ -92,7 +92,7 @@ direction is correct (features → domain → common), just declared once
 at the layer that needs to re-export.
 
 **Note on DI module layout**:
-- `:core:domain` → `domainModule` (76 bindings: 5 providers + 1 parser + 68 use cases + 2 settings use cases)
+- `:core:domain` → `domainModule` (providers, parsers, and the use cases that hold a rule; pass-through use cases are not bound — view models inject repositories)
 - `:core:data` → `dataModule` (33 bindings: Apis + RepositoryImpls)
 - `:features:<x>/di/<Feature>Module.kt` → ONLY VM `factoryOf` bindings (one DI module per feature module)
 - `:composeApp/di/AppModule.kt` → composition root: `includes(commonModule, domainModule, dataModule, authModule, customersModule, …, sellModule, settingsModule, …)` — 20 per-feature includes.
@@ -152,7 +152,7 @@ bound via Koin in each Main*.kt's platform module.
 | `model/` | Drug, Customer, Supplier, Sale, Cart*, Lot, Adjustment, StockCount, PurchaseOrder, KyEntry*, KyForms, Settings, User, Role, LabelPrint, UiPreferences, … |
 | `param/<feature>/` | All `*Param` inputs grouped per feature |
 | `repository/<feature>/` | Repo interfaces grouped per feature (impls live in `:core:data`) |
-| `usecase/<feature>/` | 70+ use cases grouped per feature: auth, customers, suppliers, inventory, ky, offlinesync, purchasing, reports, sales, settings, labels. Each extends `BaseUseCase` / `BaseSyncUseCase`. |
+| `usecase/<feature>/` | Use cases that hold a rule (checkout, close EOD, void, KY form submission, the CSV exports, …), grouped per feature. Each extends `BaseUseCase` / `BaseSyncUseCase`. A use case that would only forward one call to a repository is not written: view models inject the `<X>Repository` port directly (settings, customers, suppliers, users, purchasing and KY were migrated this way). |
 | `extension/`, `event/`, `observer/` | Cross-cutting domain helpers (extension fns + builders + parsers in `extension/XxxExt.kt`) + 5 Provider classes |
 | `di/<Feature>DomainModule.kt` × 10 | Per-feature Koin modules. Composer `DomainModule.kt` includes all. |
 
@@ -281,6 +281,7 @@ to check them.
 | Anywhere in the repo | `expect class` / `expect fun` / `expect val` declarations | ❌ A27 |
 | Production code | `throw IllegalStateException` / `RuntimeException` / etc. | ❌ A28 (excludes `:features:test-fixtures/`) |
 | Production UI code (`:core:ui` / `:features` / `:composeApp` commonMain) | Thai string literal (must go through `PharmStrings`) | ❌ A29 (excludes i18n tables, `ui/print/`, previews/sample blocks, `.contains(` data tokens, small allow-list) |
+| Any Kotlin source (`core` / `features` / `composeApp`, production and tests) | A line comment or block comment (`//`, `/* */`, KDoc) — see CLAUDE.md § NO COMMENTS | ❌ A30 |
 
 ## Test layout
 
@@ -408,6 +409,25 @@ details in git log.
   aborts on network errors (was inflating `attempts++` on every queued
   sale); deleted unused `GetSaleSummaryUseCase` +
   `MarkOfflineSaleFailedUseCase`.
+- **Active cart module**: the cart's Sales rules (repricing on customer
+  change, line-discount cap, alternative-unit factor, park slots) move
+  from `:core:data`'s `CartRepositoryImpl` into `Cart` in
+  `:core:domain/cart/`. Its storage is the `CartStore` seam with two
+  adapters: `ParkedCartStorage` (settings) and `InMemoryCartStore`
+  (`:features:test-fixtures`). The 13 one-line cart use cases,
+  `CartStateProvider`, `ParkedCartsProvider` and `FakeCartRepository`
+  are deleted; sell view models take `Cart`, and their tests assert on
+  its state.
+- **KY capture session**: `KyCaptureSession` (`:core:domain/cart/`, next
+  to `Cart`) owns when a sale must stop for ขย. capture, a pre-capture
+  and when a cart change invalidates it, the cashier's skip, and what the
+  checkout request carries. `CheckoutViewModel` keeps only dialog flags.
+- **List load states**: `PharmListBody` (`:core:ui/designsystem/`) owns
+  the loading / failed / empty / content decision for every list page
+  (`listBodyOf`, unit-tested once) and always offers retry on a failed
+  empty page; the 17 hand-written `when` ladders in feature `*Content`
+  files are gone, and each list's callbacks carry `onReload`. The unused
+  `LoadableUiState.withLoading` (23 overrides, no callers) is removed.
 
 ## Out of scope (deferred)
 

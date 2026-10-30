@@ -25,11 +25,10 @@ import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.designsystem.PharmListToolbar
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -56,23 +55,28 @@ fun LowStockContent(
             )
         },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty ->
-                PharmErrorState(onRetry = callbacks.onReload)
-            pageIsEmpty ->
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = {
                 PharmEmptyState(
                     icon = PharmIcons.Stock,
                     title = s.planningLowStockEmpty,
                     subtitle = s.planningBelowMinEmpty,
                 )
-            visible.isEmpty() ->
-                PharmEmptyState(
-                    icon = PharmIcons.Search,
-                    title = s.planningLowStockNotFound,
-                )
-            else -> LowStockTable(drugs = visible, callbacks = callbacks)
-        }
+            },
+            content = {
+                when {
+                    visible.isEmpty() -> PharmEmptyState(
+                        icon = PharmIcons.Search,
+                        title = s.planningLowStockNotFound,
+                    )
+                    else -> LowStockTable(drugs = visible, callbacks = callbacks)
+                }
+            },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizePlanning(pharmStrings), onDismiss = callbacks.onDismissError)

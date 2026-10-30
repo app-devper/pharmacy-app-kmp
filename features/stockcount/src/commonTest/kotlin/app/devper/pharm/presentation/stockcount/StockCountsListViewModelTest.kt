@@ -3,7 +3,6 @@ package app.devper.pharm.presentation.stockcount
 import app.devper.pharm.domain.model.StockCount
 import app.devper.pharm.presentation.stockcount.exception.StockCountUiStateError
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
-import app.devper.pharm.domain.usecase.inventory.GetStockCountsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -23,7 +22,7 @@ class StockCountsListViewModelTest {
     @Test
     fun init_loads_counts() = runVmTest { d ->
         val repo = FakeStockCountsRepository(seed = listOf(count("a"), count("b"), count("c")))
-        val vm = StockCountsListViewModel(GetStockCountsUseCase(repo, d))
+        val vm = StockCountsListViewModel(repo)
         advanceUntilIdle()
         assertEquals(3, vm.state.value.counts.size)
         assertFalse(vm.state.value.loading)
@@ -32,7 +31,7 @@ class StockCountsListViewModelTest {
 
     @Test
     fun query_change_updates_state() = runVmTest { d ->
-        val vm = StockCountsListViewModel(GetStockCountsUseCase(FakeStockCountsRepository(), d))
+        val vm = StockCountsListViewModel(FakeStockCountsRepository())
         advanceUntilIdle()
         vm.onQueryChange("SC-001")
         assertEquals("SC-001", vm.state.value.query)
@@ -41,7 +40,7 @@ class StockCountsListViewModelTest {
     @Test
     fun load_failure_surfaces_typed_error_and_clears_loading() = runVmTest { d ->
         val repo = FakeStockCountsRepository(listThrows = true)
-        val vm = StockCountsListViewModel(GetStockCountsUseCase(repo, d))
+        val vm = StockCountsListViewModel(repo)
         advanceUntilIdle()
         assertIs<StockCountUiStateError.LoadRoundsFailed>(vm.state.value.errorState)
         assertFalse(vm.state.value.loading)

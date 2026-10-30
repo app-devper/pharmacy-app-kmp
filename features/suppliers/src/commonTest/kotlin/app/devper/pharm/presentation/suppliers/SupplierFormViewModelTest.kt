@@ -5,9 +5,6 @@ import app.devper.pharm.presentation.suppliers.exception.SupplierFormUiStateErro
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Supplier
 import app.devper.pharm.domain.repository.FakeSupplierRepository
-import app.devper.pharm.domain.usecase.suppliers.AddSupplierUseCase
-import app.devper.pharm.domain.usecase.suppliers.GetSuppliersUseCase
-import app.devper.pharm.domain.usecase.suppliers.UpdateSupplierUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -45,9 +42,7 @@ class SupplierFormViewModelTest {
         repo: FakeSupplierRepository = FakeSupplierRepository(),
     ): Bundle {
         val vm = SupplierFormViewModel(
-            getSuppliers = GetSuppliersUseCase(repo, dispatchers),
-            addSupplier = AddSupplierUseCase(repo, dispatchers),
-            updateSupplier = UpdateSupplierUseCase(repo, dispatchers),
+            suppliers = repo,
         )
         return Bundle(vm, repo)
     }

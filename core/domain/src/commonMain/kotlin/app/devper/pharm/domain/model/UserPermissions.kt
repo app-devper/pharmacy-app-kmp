@@ -1,6 +1,5 @@
 package app.devper.pharm.domain.model
 
-/** What the signed-in user may do to one user, as UM decides it (um-api ADR-0006). */
 data class UserPermissions(
     val edit: Boolean = false,
     val delete: Boolean = false,
@@ -17,5 +16,4 @@ data class UserPermissions(
     }
 }
 
-/** What the signed-in user may do beyond individual users. */
 data class UserRules(val creatableRoles: List<Role> = emptyList())

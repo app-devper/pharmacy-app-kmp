@@ -5,8 +5,9 @@ import kotlinx.coroutines.CancellationException
 
 import app.devper.pharm.domain.usecase.BaseUseCase
 
-import app.devper.pharm.domain.extension.looksLikeTemporaryOutage
-import app.devper.pharm.domain.extension.newClientRequestId
+import app.devper.pharm.domain.extension.isTemporaryDeliveryFailure
+import app.devper.pharm.domain.command.CommandAttempts
+import app.devper.pharm.domain.command.CommandKind
 import app.devper.pharm.domain.validation.SaleValidationError
 
 import app.devper.pharm.common.AppDispatchers
@@ -20,24 +21,23 @@ import app.devper.pharm.domain.model.OversellShortfall
 import app.devper.pharm.domain.param.sales.CheckoutLineParam
 import app.devper.pharm.domain.param.sales.CheckoutParam
 import app.devper.pharm.domain.param.sales.RunCheckoutParam
-import app.devper.pharm.domain.repository.sales.CartRepository
+import app.devper.pharm.domain.cart.Cart
 import app.devper.pharm.domain.repository.sales.SaleRepository
 
 class CheckoutUseCase(
-    private val cart: CartRepository,
+    private val cart: Cart,
     private val sales: SaleRepository,
     private val pendingSales: PendingSales,
     dispatchers: AppDispatchers,
+    private val attempts: CommandAttempts = CommandAttempts(),
 ) : BaseUseCase<RunCheckoutParam, CheckoutOutcome>(dispatchers) {
 
-    private data class Attempt(val request: CheckoutParam, val clientRequestId: String)
     private data class OversellConfirmation(
         val cart: ActiveCart,
         val received: Money,
         val kySkippedByCashier: Boolean,
     )
 
-    private var pendingAttempt: Attempt? = null
     private var pendingOversell: OversellConfirmation? = null
 
     suspend operator fun invoke(
@@ -59,11 +59,7 @@ class CheckoutUseCase(
 
         val checkoutParam = buildCheckoutParam(snapshot, param)
 
-        val requestId = pendingAttempt
-            ?.takeIf { it.request == checkoutParam }
-            ?.clientRequestId
-            ?: newClientRequestId()
-        pendingAttempt = Attempt(checkoutParam, requestId)
+        val requestId = attempts.idFor(CommandKind.Sale, checkoutParam)
         val request = checkoutParam.copy(clientRequestId = requestId)
 
         val serialized = serializeForOfflineQueue(request)
@@ -71,16 +67,16 @@ class CheckoutUseCase(
             sales.checkout(request)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            if (e.looksLikeTemporaryOutage() && serialized != null) {
+            if (e.isTemporaryDeliveryFailure() && serialized != null) {
                 pendingSales.enqueue(requestId, serialized)
                 cart.clear()
-                pendingAttempt = null
+                attempts.settled(CommandKind.Sale)
                 return CheckoutOutcome.OfflineSaved
             }
             throw CheckoutFailure(e)
         }
         cart.commitReceipt(sale)
-        pendingAttempt = null
+        attempts.settled(CommandKind.Sale)
         return CheckoutOutcome.Success(sale)
     }
 

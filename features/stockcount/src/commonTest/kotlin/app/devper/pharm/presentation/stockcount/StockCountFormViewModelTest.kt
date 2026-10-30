@@ -1,11 +1,11 @@
 package app.devper.pharm.presentation.stockcount
 
+import app.devper.pharm.domain.model.LotChoice
 import app.devper.pharm.domain.model.DrugLot
 import app.devper.pharm.domain.model.LotTarget
 import app.devper.pharm.domain.param.inventory.AddLotParam
 import app.devper.pharm.domain.param.inventory.DeleteLotParam
 import app.devper.pharm.domain.repository.inventory.LotsRepository
-import app.devper.pharm.domain.usecase.inventory.ListLotsUseCase
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
 
@@ -15,11 +15,6 @@ import app.devper.pharm.domain.model.StockCountDraft
 import app.devper.pharm.domain.repository.FakeDrugRepository
 import app.devper.pharm.domain.repository.FakeStockCountDraftRepository
 import app.devper.pharm.domain.repository.FakeStockCountsRepository
-import app.devper.pharm.domain.usecase.inventory.ClearStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.inventory.CreateStockCountUseCase
-import app.devper.pharm.domain.usecase.inventory.GetDrugsUseCase
-import app.devper.pharm.domain.usecase.inventory.LoadStockCountDraftUseCase
-import app.devper.pharm.domain.usecase.inventory.SaveStockCountDraftUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceTimeBy
@@ -66,12 +61,10 @@ class StockCountFormViewModelTest {
         lots: Map<String, List<DrugLot>> = emptyMap(),
     ): Bundle {
         val vm = StockCountFormViewModel(
-            getDrugs = GetDrugsUseCase(drugs, dispatchers),
-            createStockCount = CreateStockCountUseCase(counts, dispatchers),
-            loadDraft = LoadStockCountDraftUseCase(drafts),
-            saveDraft = SaveStockCountDraftUseCase(drafts, dispatchers),
-            clearDraft = ClearStockCountDraftUseCase(drafts, dispatchers),
-            listLots = ListLotsUseCase(LotsByDrug(lots), dispatchers),
+            drugs = drugs,
+            stockCounts = counts,
+            drafts = drafts,
+            lots = LotsByDrug(lots),
         )
         return Bundle(vm, drugs, counts, drafts)
     }
@@ -439,10 +432,10 @@ class StockCountFormViewModelTest {
 
         val step = vm.state.value.lotStep
         assertEquals(listOf("up"), step?.map { it.drugId }, "only increases of lot-tracked drugs need a lot")
-        assertEquals("b", step?.single()?.choice, "defaults to the latest-expiring lot")
+        assertEquals("b", step?.single()?.lot?.choice, "defaults to the latest-expiring lot")
         assertNull(counts.lastAdd, "nothing is saved before the lots are chosen")
 
-        vm.onLotChoice("up", CountLotLine.NEW_LOT)
+        vm.onLotChoice("up", LotChoice.NEW_LOT)
         vm.confirmLotStep()
         assertNotNull(vm.state.value.lotStep, "a new lot needs its number and expiry")
         vm.onNewLotNumber("up", "N1")

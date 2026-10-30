@@ -1,16 +1,17 @@
 package app.devper.pharm.presentation.expiry
 
 import app.devper.pharm.domain.param.inventory.ExpiringLotsFilterParam
+import app.devper.pharm.domain.param.reports.ExportExpiringLotsCsvParam
 import app.devper.pharm.domain.param.inventory.WriteoffLotsParam
-import app.devper.pharm.domain.usecase.inventory.GetExpiringLotsUseCase
-import app.devper.pharm.domain.usecase.inventory.WriteoffLotsUseCase
+import app.devper.pharm.domain.repository.inventory.ExpiringLotsRepository
+import app.devper.pharm.domain.usecase.reports.ExportExpiringLotsCsvUseCase
 import app.devper.pharm.presentation.expiry.exception.ExpiryUiStateError
-import app.devper.pharm.ui.common.BaseLoadableViewModel
+import app.devper.pharm.ui.common.BaseExportableViewModel
 
 class ExpiryViewModel(
-    private val getExpiringLots: GetExpiringLotsUseCase,
-    private val writeoffLots: WriteoffLotsUseCase,
-) : BaseLoadableViewModel<ExpiryUiState>(ExpiryUiState()) {
+    private val expiringLots: ExpiringLotsRepository,
+    private val exportExpiringLotsCsv: ExportExpiringLotsCsvUseCase,
+) : BaseExportableViewModel<ExpiryUiState>(ExpiryUiState()) {
 
     init { reload() }
 
@@ -20,6 +21,13 @@ class ExpiryViewModel(
     }
 
     fun onQueryChange(value: String) = setState { copy(query = value) }
+
+    fun onExportExcel(headers: List<String>) {
+        val s = current
+        export(s.filteredLots) { rows ->
+            exportExpiringLotsCsv(ExportExpiringLotsCsvParam(windowTag = s.window.name, rows = rows, headers = headers))
+        }
+    }
 
     fun toggleSelected(lotId: String) = setState {
         copy(selected = if (lotId in selected) selected - lotId else selected + lotId)
@@ -40,7 +48,7 @@ class ExpiryViewModel(
         if (s.selected.isEmpty()) return
         setState { copy(confirmDialog = false, writingOff = true, errorState = null, writeoffResult = null) }
         launchResult(
-            block = { writeoffLots(WriteoffLotsParam(lotIds = s.selected.toList())) },
+            block = { Result.success(expiringLots.writeoff(WriteoffLotsParam(lotIds = s.selected.toList()))) },
             onSuccess = { result ->
                 setState {
                     copy(writingOff = false, writeoffResult = result, selected = emptySet())
@@ -55,25 +63,16 @@ class ExpiryViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
-                getExpiringLots(
-                    ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
+        load(
+            fetch = {
+                Result.success(
+                    expiringLots.list(
+                        ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
+                    ),
                 )
             },
-            onSuccess = { lots ->
-                setState {
-                    copy(
-                        loading = false,
-                        lots = lots,
-                        selected = selected intersect lots.map { it.id }.toSet(),
-                    )
-                }
-            },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = ExpiryUiStateError.LoadLotsFailed(e)) }
-            },
+            failure = { e -> ExpiryUiStateError.LoadLotsFailed(e) },
+            onLoaded = { lots -> copy(lots = lots, selected = selected intersect lots.map { it.id }.toSet()) },
         )
     }
 }

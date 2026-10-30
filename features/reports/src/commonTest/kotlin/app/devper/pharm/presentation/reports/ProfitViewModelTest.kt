@@ -5,7 +5,6 @@ import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.repository.FakeExportRepository
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -20,7 +19,7 @@ class ProfitViewModelTest {
 
     private fun vm(d: app.devper.pharm.common.AppDispatchers) =
         ProfitViewModel(
-            GetProfitReportUseCase(FakeReportsRepository(), d),
+            FakeReportsRepository(),
             ExportProfitCsvUseCase(FakeExportRepository(), d),
             app.devper.pharm.domain.observer.testTimeZoneProvider(),
         )
@@ -45,10 +44,10 @@ class ProfitViewModelTest {
     fun date_range_change_updates_both_ends_before_reloading() = runVmTest { d ->
         val model = vm(d)
         advanceUntilIdle()
-        val from = app.devper.pharm.ui.format.ymdToMillis("2026-06-01", model.state.value.dateRange.tz)
-        val to = app.devper.pharm.ui.format.ymdToMillis("2026-06-30", model.state.value.dateRange.tz)
+        val from = app.devper.pharm.ui.format.ymdToMillis("2026-06-01")
+        val to = app.devper.pharm.ui.format.ymdToMillis("2026-06-30")
 
-        model.onDateRangeChange(from, to)
+        model.onRangeChange(app.devper.pharm.ui.designsystem.PharmDateRange(from, to))
         advanceUntilIdle()
 
         assertEquals("2026-06-01", model.state.value.dateRange.from)

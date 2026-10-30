@@ -22,29 +22,31 @@ abstract class BaseViewModel<S : BaseUiState>(
         _state.update { it.transform() }
     }
 
+    protected suspend fun <T> catching(block: suspend () -> T): Result<T> = try {
+        Result.success(block())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        Result.failure(e)
+    }
+
     protected fun <T> launchResult(
         block: suspend () -> Result<T>,
         onSuccess: suspend (T) -> Unit,
         onFailure: suspend (Throwable) -> Unit = {  },
-        withLoading: ((Boolean) -> Unit)? = null,
     ) {
-        withLoading?.invoke(true)
         viewModelScope.launch {
-            try {
-                val result = try {
-                    block()
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Throwable) {
-                    Result.failure(e)
-                }
-                result.fold(
-                    onSuccess = { value -> onSuccess(value) },
-                    onFailure = { e -> onFailure(e) },
-                )
-            } finally {
-                withLoading?.invoke(false)
+            val result = try {
+                block()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                Result.failure(e)
             }
+            result.fold(
+                onSuccess = { value -> onSuccess(value) },
+                onFailure = { e -> onFailure(e) },
+            )
         }
     }
 }

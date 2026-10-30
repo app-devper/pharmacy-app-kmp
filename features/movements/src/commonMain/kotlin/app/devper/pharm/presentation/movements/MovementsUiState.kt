@@ -3,7 +3,7 @@ package app.devper.pharm.presentation.movements
 import app.devper.pharm.common.AppException
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.domain.model.StockMovement
-import app.devper.pharm.ui.common.LoadableUiState
+import app.devper.pharm.ui.common.ExportableUiState
 import app.devper.pharm.ui.format.DateRangeFilter
 
 data class MovementsUiState(
@@ -18,11 +18,13 @@ data class MovementsUiState(
     val exporting: Boolean = false,
     val messageState: CommonUiStateMessage? = null,
     val errorState: AppException? = null,
-) : LoadableUiState<MovementsUiState> {
+) : ExportableUiState<MovementsUiState> {
 
     override val domainError: AppException? get() = errorState
-    override fun withLoading(value: Boolean) = copy(loading = value)
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(loading = loading)
+    override fun withExporting(exporting: Boolean) = copy(exporting = exporting)
+    override fun withMessage(message: CommonUiStateMessage?) = copy(messageState = message)
 
     val pageCount: Int = run {
         if (pageSize <= 0) 1

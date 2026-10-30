@@ -14,7 +14,6 @@ data class UmUser(
     val email: String,
     val createdDate: LocalDateTime?,
     val updatedDate: LocalDateTime?,
-    /** What the signed-in user may do to this user, as UM decides it (um-api ADR-0006). */
     val can: UserPermissions = UserPermissions.None,
 ) {
     val displayName: String

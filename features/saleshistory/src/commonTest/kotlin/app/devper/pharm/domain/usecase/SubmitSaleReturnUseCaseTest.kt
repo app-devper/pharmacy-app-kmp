@@ -62,8 +62,8 @@ class SubmitSaleReturnUseCaseTest {
         val useCase = SubmitSaleReturnUseCase(repo, testDispatchers())
 
         assertTrue(useCase(returnOf(1)).isFailure)
-        assertTrue(useCase(returnOf(2)).isSuccess) // cashier changed the quantity
-        assertTrue(useCase(returnOf(2)).isSuccess) // a second, separate return
+        assertTrue(useCase(returnOf(2)).isSuccess)
+        assertTrue(useCase(returnOf(2)).isSuccess)
 
         assertEquals(3, repo.submittedRequestIds.toSet().size)
     }

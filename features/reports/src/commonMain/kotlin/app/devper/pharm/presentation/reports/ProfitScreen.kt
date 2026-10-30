@@ -29,10 +29,11 @@ fun ProfitScreen(viewModel: ProfitViewModel = koinViewModel()) {
     ProfitContent(
         state = state,
         callbacks = ProfitCallbacks(
-            onDateRangeChange = viewModel::onDateRangeChange,
+            onRangeChange = viewModel::onRangeChange,
             onSortChange = viewModel::onSort,
             onExportExcel = viewModel::onExportExcel,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }

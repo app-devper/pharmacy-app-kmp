@@ -43,6 +43,8 @@ import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.common.platform.ConnectivityObserver
 import app.devper.pharm.common.platform.FileDownloader
 import app.devper.pharm.common.platform.FilePicker
+import app.devper.pharm.common.platform.LaunchTicket
+import app.devper.pharm.common.platform.PasskeyAuthenticator
 import app.devper.pharm.common.platform.SecureStorage
 import app.devper.pharm.common.print.ReceiptPrinter
 import app.devper.pharm.common.print.ReceiptTemplate
@@ -97,6 +99,8 @@ private class InMemorySecureStorage : SecureStorage {
 private val testPlatformModule = module {
     single<Settings> { MemorySettings() }
     single<SecureStorage> { InMemorySecureStorage() }
+    single<PasskeyAuthenticator> { PasskeyAuthenticator.Unsupported }
+    single<LaunchTicket> { LaunchTicket.None }
     single {
         HttpClient(MockEngine { respond(content = "{}", status = HttpStatusCode.OK) })
     }
@@ -119,7 +123,7 @@ private val testPlatformModule = module {
     }
     single<ReceiptPrinter> {
         object : ReceiptPrinter {
-            override fun print(template: ReceiptTemplate): Boolean = true
+            override suspend fun print(template: ReceiptTemplate): Boolean = true
         }
     }
 }

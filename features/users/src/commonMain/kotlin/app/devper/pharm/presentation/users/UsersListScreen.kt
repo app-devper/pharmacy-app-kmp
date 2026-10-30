@@ -32,6 +32,7 @@ fun UsersListScreen(
             onSubmitPasswordSet = viewModel::submitPasswordSet,
             onDismissAction = viewModel::dismissAction,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::reload,
         ),
     )
 }

@@ -33,6 +33,8 @@ object OfflineSyncStringsTh : OfflineSyncStrings {
     override val offlineSyncNeedsActionSub = "ไม่ส่งซ้ำอัตโนมัติ"
     override val offlineSyncKyPendingBill: (String) -> String = { billNo -> "บันทึกบิล $billNo แล้ว แต่ ขย. ถูกปฏิเสธ" }
     override val offlineSyncDamagedHint = "อ่านข้อมูลบิลนี้ไม่ได้ ให้ส่งออกไฟล์เก็บไว้ก่อน"
+    override val offlineSyncRefusalOutage: (String) -> String = { detail -> "ยังส่งไม่ได้: $detail" }
+    override val offlineSyncRefusalKy: (String, String, String) -> String = { form, drug, reason -> "$form · $drug: $reason" }
     override val offlineSyncAbandonCta = "ยกเลิกบิล"
     override val offlineSyncCloseKyCta = "ปิดเรื่อง ขย."
     override val offlineSyncExportCta = "ส่งออกไฟล์"

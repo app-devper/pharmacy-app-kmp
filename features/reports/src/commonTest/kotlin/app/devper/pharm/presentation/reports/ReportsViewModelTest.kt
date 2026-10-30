@@ -1,17 +1,14 @@
 package app.devper.pharm.presentation.reports
 
+import app.devper.pharm.common.NetworkException
 import app.devper.pharm.domain.event.StockChangeBus
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.repository.FakeProfileRepository
-import app.devper.pharm.domain.usecase.profile.GetProfileUseCase
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.domain.model.ProfitReport
 import app.devper.pharm.domain.model.ProfitSummary
 import app.devper.pharm.domain.observer.testTimeZoneProvider
 import app.devper.pharm.domain.repository.FakeReportsRepository
-import app.devper.pharm.domain.usecase.reports.GetDashboardUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
-import app.devper.pharm.domain.usecase.reports.GetSlowDrugsUseCase
-import app.devper.pharm.domain.usecase.reports.GetTopDrugsUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -29,16 +26,23 @@ class ReportsViewModelTest {
         d: app.devper.pharm.common.AppDispatchers,
         repo: FakeReportsRepository = FakeReportsRepository(),
         role: Role = Role.ADMIN,
+        profile: FakeProfileRepository = FakeProfileRepository(FakeProfileRepository.sampleUser.copy(role = role)),
+        now: () -> Long = { 1_000L },
     ): ReportsViewModel =
         ReportsViewModel(
-            GetDashboardUseCase(repo, d),
-            GetTopDrugsUseCase(repo, d),
-            GetSlowDrugsUseCase(repo, d),
-            GetProfitReportUseCase(repo, d),
+            repo,
             testTimeZoneProvider(),
-            GetProfileUseCase(FakeProfileRepository(FakeProfileRepository.sampleUser.copy(role = role)), d),
+            SignedInUser(profile),
             StockChangeBus(),
+            now,
         )
+
+    @Test
+    fun an_unknown_role_sees_only_slow_drugs_not_financial_reports() = runVmTest { d ->
+        val model = vm(d, profile = FakeProfileRepository(getFailsWith = NetworkException("offline")))
+        advanceUntilIdle()
+        assertTrue(model.state.value.slowDrugsOnly)
+    }
 
     @Test
     fun manager_loads_only_slow_drugs() = runVmTest { d ->
@@ -90,5 +94,44 @@ class ReportsViewModelTest {
         advanceUntilIdle()
         assertEquals(DashboardWindow.Last7, model.state.value.window)
         assertFalse(model.state.value.loading)
+    }
+
+    @Test
+    fun a_successful_load_records_when_the_data_was_confirmed() = runVmTest { d ->
+        val model = vm(d, now = { 5_000L })
+        advanceUntilIdle()
+        assertEquals(5_000L, model.state.value.lastLoadedAtMillis)
+        assertFalse(model.state.value.refreshFailed)
+    }
+
+    @Test
+    fun a_failed_refresh_keeps_old_values_and_their_confirmed_time() = runVmTest { d ->
+        val repo = FakeReportsRepository()
+        var clock = 5_000L
+        val model = vm(d, repo, now = { clock })
+        advanceUntilIdle()
+        repo.dashboardThrows = NetworkException()
+        clock = 9_000L
+        model.reload()
+        advanceUntilIdle()
+        assertNotNull(model.state.value.dashboard)
+        assertEquals(5_000L, model.state.value.lastLoadedAtMillis)
+        assertTrue(model.state.value.refreshFailed)
+    }
+
+    @Test
+    fun a_first_load_failure_has_no_confirmed_time() = runVmTest { d ->
+        val repo = FakeReportsRepository().apply { dashboardThrows = NetworkException() }
+        val model = vm(d, repo)
+        advanceUntilIdle()
+        assertNull(model.state.value.lastLoadedAtMillis)
+        assertFalse(model.state.value.refreshFailed)
+    }
+
+    @Test
+    fun manager_slow_drugs_load_records_its_time() = runVmTest { d ->
+        val model = vm(d, role = Role.MANAGER, now = { 7_000L })
+        advanceUntilIdle()
+        assertEquals(7_000L, model.state.value.lastLoadedAtMillis)
     }
 }

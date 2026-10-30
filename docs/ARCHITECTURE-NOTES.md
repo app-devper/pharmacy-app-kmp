@@ -29,7 +29,6 @@ These are agreed working rules from the whole-project design interview. The cont
 - The pharmacy API currently exposes six report routes to USER; the agreed policy moves `summary`, `dashboard`, `daily`, `monthly`, and `top-drugs` to ADMIN+ and `slow-drugs` to MANAGER+.
 - KY skip currently records a boolean, without reason, actor, time, review state, or resolution.
 - A malformed offline sale queue is currently cleared instead of preserved for recovery.
-- Reports do not expose a clear freshness time or failed-refresh state.
 - CI does not currently require an iOS compile check.
 - Client-version telemetry and the minimum-version enforcement needed to apply the agreed support floor are not yet available.
 - KMP exposes an end-of-day close command, but the current pharmacy API exposes only the end-of-day report read route.
@@ -43,7 +42,6 @@ These are agreed working rules from the whole-project design interview. The cont
 - Android and iOS receipt-printer implementations currently return unsupported; the agreed receipt-display rule still needs verification on each platform.
 - The available mock API fixture has only six drugs; no repeatable 10,000-item search fixture or end-to-end performance harness is present.
 - Offline sync displays raw errors with the same Retry/Cancel actions for transient failures and business conflicts, and a failed refresh can leave the page without a retry action.
-- Reports can retain old values after a failed refresh without showing when those values were last confirmed.
 - `um-api` reloads the current user and session on its protected requests, while `pharmacy-api` authorizes pharmacy requests from JWT claims without checking whether the UM session or role was revoked. A role change or deactivation can therefore remain effective in pharmacy operations until the token expires.
 - Pharmacy returns are currently allowed for USER and above; the agreed policy retains this but requires a bill reference, actor, reason, and retry identity. Whole-bill void remains ADMIN+.
 - KMP, `pharmacy-api`, and `um-api` have separate CI checks, with no cross-repository API contract gate.
@@ -68,7 +66,7 @@ These are agreed working rules from the whole-project design interview. The cont
 1. Protect money and sale intent: make returns idempotent, preserve damaged offline entries, and distinguish replay conflicts from retryable failures.
 2. Make the sale contract explicit across KMP and backend: preserve cashier submission time and approved price, validate clock evidence, and reconcile late sales against closed periods. Align the end-of-day close endpoint with the durable close model.
 3. Align authorization and compliance: define route-level MANAGER permissions, then build reviewable KY exceptions after checking the applicable requirements.
-4. Tighten other ownership and visibility: connect purchase orders to supplier IDs, show report freshness, and keep Catalog price changes separate from Inventory stock changes.
+4. Tighten other ownership and visibility: connect purchase orders to supplier IDs and keep Catalog price changes separate from Inventory stock changes.
 5. Strengthen release confidence: require iOS compilation and measure active client versions before retiring old API behavior.
 
 ## Feature-module map

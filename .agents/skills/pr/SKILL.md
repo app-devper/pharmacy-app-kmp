@@ -56,8 +56,9 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
    Pushed directly on purpose (admin only; GitHub reports
    "Bypassed rule violations" — expected). Then check
    `gh run list --branch develop -L 1` is green.
-   Also remind: the merge fired the `deploy-pharm-app` Cloud Build —
-   report its outcome (`gcloud builds list --limit=1`).
+   Nothing deploys automatically (`deploy-pharm-app` is disabled) — remind
+   the user to tag `v<app-version>` and deploy by hand from `main`
+   (`git-flow` → What merging `main` does).
 
 7. **Report**: merged PR number + URL, the squash commit SHA on the base
    branch (`git log --oneline -1`), branch deleted local + remote, and for

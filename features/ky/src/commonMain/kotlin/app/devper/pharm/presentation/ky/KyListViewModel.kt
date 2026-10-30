@@ -1,21 +1,17 @@
 package app.devper.pharm.presentation.ky
 
+import app.devper.pharm.domain.repository.export.ExportRepository
+import app.devper.pharm.domain.repository.ky.KyRepository
 import app.devper.pharm.domain.model.KyFormType
 import app.devper.pharm.domain.param.ky.ExportKyFormParam
 import app.devper.pharm.domain.param.ky.KyMonthFilterParam
-import app.devper.pharm.domain.usecase.ky.ExportKyFormUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy10EntriesUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy11EntriesUseCase
-import app.devper.pharm.domain.usecase.ky.GetKy12EntriesUseCase
 import app.devper.pharm.common.error.CommonUiStateMessage
 import app.devper.pharm.presentation.ky.exception.KyUiStateError
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 
 class KyListViewModel(
-    private val getKy10: GetKy10EntriesUseCase,
-    private val getKy11: GetKy11EntriesUseCase,
-    private val getKy12: GetKy12EntriesUseCase,
-    private val exportKyForm: ExportKyFormUseCase,
+    private val ky: KyRepository,
+    private val export: ExportRepository,
 ) : BaseLoadableViewModel<KyListUiState>(KyListUiState()) {
 
     fun init(formType: KyFormType) {
@@ -31,7 +27,7 @@ class KyListViewModel(
         val s = current
         setState { copy(exporting = true, errorState = null, messageState = null) }
         launchResult(
-            block = { exportKyForm(ExportKyFormParam(form = s.formType.wire, month = s.month)) },
+            block = { Result.success(export.exportKyForm(ExportKyFormParam(form = s.formType.wire, month = s.month))) },
             onSuccess = { msg -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(msg)) } },
             onFailure = { e -> setState { copy(exporting = false, errorState = KyUiStateError.DownloadPdfFailed(e)) } },
         )
@@ -40,18 +36,17 @@ class KyListViewModel(
     fun reload() {
         val s = current
         val filter = KyMonthFilterParam(month = s.month)
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = {
+        load(
+            fetch = {
                 when (s.formType) {
-                    KyFormType.Ky10 -> getKy10(filter).map { list -> list.map(KyRow::Ky10) }
-                    KyFormType.Ky11 -> getKy11(filter).map { list -> list.map(KyRow::Ky11) }
-                    KyFormType.Ky12 -> getKy12(filter).map { list -> list.map(KyRow::Ky12) }
+                    KyFormType.Ky10 -> Result.success(ky.listKy10(filter).map(KyRow::Ky10))
+                    KyFormType.Ky11 -> Result.success(ky.listKy11(filter).map(KyRow::Ky11))
+                    KyFormType.Ky12 -> Result.success(ky.listKy12(filter).map(KyRow::Ky12))
                     KyFormType.Ky9  -> Result.success(emptyList())
                 }
             },
-            onSuccess = { rows -> setState { copy(loading = false, rows = rows) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = KyUiStateError.LoadEntriesFailed(e)) } },
+            failure = { e -> KyUiStateError.LoadEntriesFailed(e) },
+            onLoaded = { rows -> copy(rows = rows) },
         )
     }
 }

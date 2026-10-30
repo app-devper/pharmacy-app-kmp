@@ -23,11 +23,10 @@ import app.devper.pharm.presentation.reports.i18n.localizeReports
 import app.devper.pharm.ui.components.ErrorBottomSheet
 import app.devper.pharm.ui.components.unlessPageShowsError
 import app.devper.pharm.ui.designsystem.PharmEmptyState
-import app.devper.pharm.ui.designsystem.PharmErrorState
 import app.devper.pharm.ui.designsystem.PharmIcons
+import app.devper.pharm.ui.designsystem.PharmListBody
 import app.devper.pharm.ui.designsystem.PharmListResultLine
 import app.devper.pharm.ui.designsystem.PharmListScaffold
-import app.devper.pharm.ui.designsystem.PharmListSkeleton
 import app.devper.pharm.ui.i18n.pharmStrings
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.PharmacyTheme
@@ -50,17 +49,24 @@ fun ProfitContent(
         toolbar = { ProfitFilterBar(state = state, callbacks = callbacks) },
         resultLine = { PharmListResultLine(total = rows.size, noun = pharmStrings.movementsCountNoun) },
     ) {
-        when {
-            state.loading && pageIsEmpty -> PharmListSkeleton()
-            state.errorState != null && pageIsEmpty -> PharmErrorState()
-            rows.isEmpty() && state.report != null ->
-                PharmEmptyState(
-                    icon = PharmIcons.Profit,
-                    title = pharmStrings.reportsSectionDailySalesEmpty,
-                    subtitle = pharmStrings.reportsEodTryDifferentRange,
-                )
-            else -> ProfitTable(rows = rows, totals = totals)
-        }
+        PharmListBody(
+            loading = state.loading,
+            error = state.errorState,
+            isEmpty = pageIsEmpty,
+            onRetry = callbacks.onReload,
+            empty = { ProfitTable(rows = rows, totals = totals) },
+            content = {
+                if (rows.isEmpty()) {
+                    PharmEmptyState(
+                        icon = PharmIcons.Profit,
+                        title = pharmStrings.reportsSectionDailySalesEmpty,
+                        subtitle = pharmStrings.reportsEodTryDifferentRange,
+                    )
+                } else {
+                    ProfitTable(rows = rows, totals = totals)
+                }
+            },
+        )
     }
 
     ErrorBottomSheet(message = state.errorState.unlessPageShowsError(pageIsEmpty)?.localizeReports(pharmStrings), onDismiss = callbacks.onDismissError)

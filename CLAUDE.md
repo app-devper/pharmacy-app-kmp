@@ -22,14 +22,15 @@ Branches: `main` (production), `develop` (default, integration),
 (then back-merge). Both `main` and `develop` require the
 "Linux (JVM + Android + WasmJs + audit)" check.
 
-Deploy is automatic: merging to `main` fires the Cloud Build trigger
-`deploy-pharm-app` (project `devperpos`, config [cloudbuild.yaml](./cloudbuild.yaml))
-which builds `:composeApp:wasmJsBrowserDistribution`, deploys to Firebase
-Hosting site `pharm-app` (https://pharm-app.web.app), and pushes tag
-`v<app-version>` (from `gradle/libs.versions.toml` key `app-version`) if
-that tag doesn't exist yet. **Bump `app-version` in the release/hotfix PR**
-— an unchanged version deploys but skips tagging. Manual deploy:
-`./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app`.
+Deploy is **manual**. The Cloud Build trigger `deploy-pharm-app` (project
+`devperpos`, config [cloudbuild.yaml](./cloudbuild.yaml)) is **disabled** —
+its last run was 2026-08-10 — so merging to `main` deploys and tags nothing.
+After a release/hotfix lands, from a clean `main` checkout: tag
+`v<app-version>` by hand, then
+`./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app`
+(Firebase Hosting site `pharm-app`, https://pharm-app.web.app).
+**Bump `app-version`** (+ `app-versionCode`) in `gradle/libs.versions.toml`
+in every release/hotfix PR so the version, the tag and the shipped app agree.
 
 ## Navigation (two-level NavHost + single shell)
 
@@ -60,6 +61,7 @@ self-documenting ผ่านชื่อ + types + small functions. ถ้า�
 อะไร → rename หรือ refactor แทน.
 
 Applies to production + tests + fakes + helpers (incl. `:features:test-fixtures`).
+`auditArchitecture` enforces it (A30: no line may start with `//` or `/*`).
 When restyling existing code, **strip surrounding comments as part of
 the edit**.
 
@@ -101,7 +103,7 @@ license headers required by upstream libraries.
   whenever you add tests that push coverage up.**
 
 - **Forbidden imports** (enforced by `auditArchitecture` — A10 / A17 /
-  A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28 / A29). Full rule list in
+  A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28 / A29 / A30). Full rule list in
   [MODULE_GRAPH.md § Forbidden imports](./MODULE_GRAPH.md#forbidden-imports-p0).
   Headline: `:core:*` ห้าม import จาก `:features:*`; `:features:<x>` ห้าม
   import จาก `:core:data` หรือ feature `<y>` อื่น; platform source folders
@@ -140,7 +142,14 @@ license headers required by upstream libraries.
     through `mapSaveError(cause)` — passes `AppException`s through,
     wraps unknowns in `CommonUiStateError.SaveFailed`; state mutates via
     `withDomainError(AppException?)` on `BaseFormUiState`. Loadable base
-    (`BaseLoadableViewModel`) only provides `dismissError()`.
+    (`BaseLoadableViewModel`) owns the load cycle: `load(fetch, failure,
+    onLoaded)` starts loading, clears the error, cancels a load still in
+    flight (a slow older answer never overwrites a newer one), then applies
+    the value or the typed failure; plus `dismissError()`.
+    `BaseExportableViewModel` (states implement `ExportableUiState`) adds
+    `export(rows, save)` — nothing to export → `ExportEmpty`; otherwise
+    `exporting` → `ExportDone(path)` or `CommonUiStateError.ExportFailed` —
+    plus `dismissMessage()`.
   - **Domain validation is structured, not stringly**:
     `:core:domain/validation/` — `FieldValidationError(field: FieldLabel,
     rule)` thrown by `Field.*` validators, plus `SaleValidationError`
@@ -311,7 +320,7 @@ license headers required by upstream libraries.
     that read `Locale.current`.)
   - **Locale storage**: `UiPreferences.locale: LocalePreference = System`
     (System/Th/En), persisted via `UiPreferencesRepository.setLocale(...)`
-    → `SetLocalePreferenceUseCase`. Picker UI: `ProfileScreen` → 'ภาษา'
+    (view models inject the repository directly). Picker UI: `ProfileScreen` → 'ภาษา'
     chip group.
   - **Adding copy** (the only supported path): add the key to the right
     group interface + `Th` + `En` objects (feature keys in

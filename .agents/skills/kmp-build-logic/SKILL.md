@@ -180,12 +180,10 @@ include(
 
 ## 6. Deploy
 
-Merging to `main` fires the Cloud Build trigger `deploy-pharm-app` (project
-`devperpos`, config `cloudbuild.yaml`): it builds
-`:composeApp:wasmJsBrowserDistribution`, deploys to Firebase Hosting site
-`pharm-app`, and pushes tag `v<app-version>` if that tag doesn't exist yet.
-
-Manual:
+Deploy is manual. The Cloud Build trigger `deploy-pharm-app` (project
+`devperpos`, config `cloudbuild.yaml`) is disabled, so merging to `main`
+neither deploys nor tags. From a clean `main` checkout, after tagging
+`v<app-version>` by hand:
 ```bash
 ./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app
 ```

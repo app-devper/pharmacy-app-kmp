@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.expiry
 
 data class ExpiryCallbacks(
+    val onReload: () -> Unit = {},
     val onWindowChange: (ExpiryWindow) -> Unit = {},
     val onQueryChange: (String) -> Unit = {},
     val onToggleRow: (String) -> Unit = {},
@@ -10,6 +11,6 @@ data class ExpiryCallbacks(
     val onConfirmWriteoff: () -> Unit = {},
     val onCancelWriteoff: () -> Unit = {},
     val onDismissResult: () -> Unit = {},
-    val onExportExcel: () -> Unit = {},
+    val onExportExcel: (List<String>) -> Unit = {},
     val onDismissError: () -> Unit = {},
 )

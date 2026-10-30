@@ -6,9 +6,6 @@ import app.devper.pharm.common.value.Quantity
 import app.devper.pharm.domain.model.PurchaseOrder
 import app.devper.pharm.domain.model.PurchaseOrderStatus
 import app.devper.pharm.domain.repository.FakePurchaseOrderRepository
-import app.devper.pharm.domain.usecase.purchasing.ConfirmPurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.DeletePurchaseOrderUseCase
-import app.devper.pharm.domain.usecase.purchasing.GetPurchaseOrderUseCase
 import app.devper.pharm.presentation.imports.exception.ImportsUiStateError
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,9 +27,7 @@ class ImportDetailViewModelTest {
 
     private fun vm(repo: FakePurchaseOrderRepository, d: app.devper.pharm.common.AppDispatchers) =
         ImportDetailViewModel(
-            GetPurchaseOrderUseCase(repo, d),
-            ConfirmPurchaseOrderUseCase(repo, d),
-            DeletePurchaseOrderUseCase(repo, d),
+            repo,
         )
 
     @Test

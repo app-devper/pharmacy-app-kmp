@@ -30,14 +30,14 @@ fun MovementsScreen(viewModel: MovementsViewModel = koinViewModel()) {
         state = state,
         callbacks = MovementsCallbacks(
             onSearchChange = viewModel::onSearchChange,
-            onFromMillisChange = viewModel::onFromMillisChange,
-            onToMillisChange = viewModel::onToMillisChange,
+            onRangeChange = viewModel::onRangeChange,
             onApplyFilter = viewModel::applyFilter,
             onToggleType = viewModel::onToggleType,
             onPrevPage = viewModel::onPrevPage,
             onNextPage = viewModel::onNextPage,
             onExportExcel = viewModel::onExportExcel,
             onDismissError = viewModel::dismissError,
+            onReload = viewModel::applyFilter,
         ),
     )
 }

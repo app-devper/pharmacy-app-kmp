@@ -4,11 +4,9 @@ import app.devper.pharm.presentation.sell.exception.CustomerPickerUiStateError
 
 import app.devper.pharm.common.AppDispatchers
 import app.devper.pharm.domain.model.Customer
-import app.devper.pharm.domain.repository.FakeCartRepository
+import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.domain.cart.testCart
 import app.devper.pharm.domain.repository.FakeCustomerRepository
-import app.devper.pharm.domain.usecase.sales.ClearCustomerUseCase
-import app.devper.pharm.domain.usecase.customers.GetCustomersUseCase
-import app.devper.pharm.domain.usecase.sales.SelectCustomerUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -27,19 +25,18 @@ class CustomerPickerViewModelTest {
 
     private data class Bundle(
         val vm: CustomerPickerViewModel,
-        val cart: FakeCartRepository,
+        val cart: Cart,
         val repo: FakeCustomerRepository,
     )
 
     private fun newVm(
         dispatchers: AppDispatchers,
-        cart: FakeCartRepository = FakeCartRepository(),
+        cart: Cart = testCart(),
         repo: FakeCustomerRepository = FakeCustomerRepository(),
     ): Bundle {
         val vm = CustomerPickerViewModel(
-            getCustomers = GetCustomersUseCase(repo, dispatchers),
-            selectCustomer = SelectCustomerUseCase(cart),
-            clearCustomer = ClearCustomerUseCase(cart),
+            customers = repo,
+            cart = cart,
         )
         return Bundle(vm, cart, repo)
     }
@@ -76,9 +73,8 @@ class CustomerPickerViewModelTest {
                 throw NotImplementedError("not under test")
         }
         val vm = CustomerPickerViewModel(
-            getCustomers = GetCustomersUseCase(countingRepo, dispatchers),
-            selectCustomer = SelectCustomerUseCase(FakeCartRepository()),
-            clearCustomer = ClearCustomerUseCase(FakeCartRepository()),
+            customers = countingRepo,
+            cart = testCart(),
         )
         advanceUntilIdle()
         vm.open()
@@ -98,20 +94,18 @@ class CustomerPickerViewModelTest {
         val charlie = customer("c3", "Charlie")
         vm.pick(charlie)
         advanceUntilIdle()
-        assertEquals(charlie, cart.lastSelectCustomer)
         assertEquals(charlie, cart.state.value.active.customer)
         assertFalse(vm.state.value.open)
     }
 
     @Test
     fun clear_drops_customer_from_cart_without_touching_sheet() = runVmTest { dispatchers ->
-        val cart = FakeCartRepository(initialCustomer = customer("c1", "Alice"))
+        val cart = testCart(customer = customer("c1", "Alice"))
         val (vm, _) = newVm(dispatchers, cart = cart)
         advanceUntilIdle()
         vm.open()
         vm.clear()
         advanceUntilIdle()
-        assertTrue(cart.clearCustomerCalled)
         assertNull(cart.state.value.active.customer)
 
         assertTrue(vm.state.value.open)
@@ -129,9 +123,8 @@ class CustomerPickerViewModelTest {
                 throw NotImplementedError()
         }
         val vm = CustomerPickerViewModel(
-            getCustomers = GetCustomersUseCase(throwingRepo, dispatchers),
-            selectCustomer = SelectCustomerUseCase(FakeCartRepository()),
-            clearCustomer = ClearCustomerUseCase(FakeCartRepository()),
+            customers = throwingRepo,
+            cart = testCart(),
         )
         advanceUntilIdle()
         vm.open()

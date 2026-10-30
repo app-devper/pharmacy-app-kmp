@@ -1,25 +1,24 @@
 package app.devper.pharm.presentation.reports
 
-import app.devper.pharm.common.error.CommonUiStateError
-import app.devper.pharm.common.error.CommonUiStateMessage
+import app.devper.pharm.ui.designsystem.PharmDateRange
 import app.devper.pharm.presentation.reports.exception.ProfitUiStateError
 import app.devper.pharm.domain.observer.TimeZoneProvider
 import app.devper.pharm.domain.param.reports.ExportProfitCsvParam
 import app.devper.pharm.domain.param.reports.ReportRangeParam
 import app.devper.pharm.domain.usecase.reports.ExportProfitCsvUseCase
-import app.devper.pharm.domain.usecase.reports.GetProfitReportUseCase
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 import app.devper.pharm.ui.format.startOfMonth
 import app.devper.pharm.ui.format.todayLocalDate
 import app.devper.pharm.ui.format.toYmd
-import app.devper.pharm.ui.common.BaseLoadableViewModel
+import app.devper.pharm.ui.common.BaseExportableViewModel
 import app.devper.pharm.ui.format.DateRangeFilter
 
 
 class ProfitViewModel(
-    private val getProfitReport: GetProfitReportUseCase,
+    private val reports: ReportsRepository,
     private val exportProfitCsv: ExportProfitCsvUseCase,
     timeZoneProvider: TimeZoneProvider,
-) : BaseLoadableViewModel<ProfitUiState>(
+) : BaseExportableViewModel<ProfitUiState>(
     ProfitUiState(
         dateRange = DateRangeFilter(
             tz = timeZoneProvider.current,
@@ -31,47 +30,34 @@ class ProfitViewModel(
 
     init { reload() }
 
-    fun onDateRangeChange(fromMillis: Long?, toMillis: Long?) {
-        val next = current.dateRange.withFromMillis(fromMillis).withToMillis(toMillis)
+    fun onRangeChange(range: PharmDateRange) {
+        val next = current.dateRange.withRange(range)
         if (next == current.dateRange) return
         setState { copy(dateRange = next) }
         reload()
     }
 
     fun onSort(sort: ProfitSort) = setState { copy(sort = sort) }
-    fun dismissMessage() = setState { copy(messageState = null) }
-
     fun onExportExcel(headers: List<String>) {
         val s = current
-        val rows = s.sortedRows
-        if (rows.isEmpty()) {
-            setState { copy(messageState = CommonUiStateMessage.ExportEmpty) }
-            return
+        export(s.sortedRows) { rows ->
+            exportProfitCsv(
+                ExportProfitCsvParam(
+                    from = s.dateRange.fromDate,
+                    to = s.dateRange.toDate,
+                    rows = rows,
+                    headers = headers,
+                ),
+            )
         }
-        setState { copy(exporting = true) }
-        launchResult(
-            block = {
-                exportProfitCsv(
-                    ExportProfitCsvParam(
-                        from = s.dateRange.fromDate,
-                        to = s.dateRange.toDate,
-                        rows = rows,
-                        headers = headers,
-                    )
-                )
-            },
-            onSuccess = { feedback -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(feedback)) } },
-            onFailure = { e -> setState { copy(exporting = false, errorState = CommonUiStateError.ExportFailed(e)) } },
-        )
     }
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getProfitReport(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
-            onSuccess = { rep -> setState { copy(loading = false, report = rep) } },
-            onFailure = { e -> setState { copy(loading = false, errorState = ProfitUiStateError.LoadReportFailed(e)) } },
+        load(
+            fetch = { Result.success(reports.profit(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate))) },
+            failure = { e -> ProfitUiStateError.LoadReportFailed(e) },
+            onLoaded = { rep -> copy(report = rep) },
         )
     }
 }

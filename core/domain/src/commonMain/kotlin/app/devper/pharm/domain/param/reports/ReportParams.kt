@@ -21,6 +21,5 @@ data class EodReportParam(
 
 data class CloseEodParam(
     val date: LocalDate? = null,
-    /** Name printed on the close receipt; filled by CloseEodUseCase. */
     val closedByName: String = "",
 )

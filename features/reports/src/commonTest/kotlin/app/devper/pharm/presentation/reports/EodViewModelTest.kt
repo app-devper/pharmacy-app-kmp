@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.reports
 
 import app.devper.pharm.domain.repository.FakeProfileRepository
+import app.devper.pharm.domain.observer.SignedInUser
 import app.devper.pharm.presentation.reports.exception.EodUiStateError
 
 import app.devper.pharm.common.AppDispatchers
@@ -15,7 +16,6 @@ import app.devper.pharm.domain.repository.pendingSalesOf
 import app.devper.pharm.domain.repository.FakeReportsRepository
 import app.devper.pharm.domain.repository.FakeSettingsRepository
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
-import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.ui.common.runVmTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +34,7 @@ private class RecordingPrinter(private val result: Boolean = true) : ReceiptPrin
     var calls: Int = 0
         private set
 
-    override fun print(template: ReceiptTemplate): Boolean {
+    override suspend fun print(template: ReceiptTemplate): Boolean {
         calls++
         lastTemplate = template
         return result
@@ -75,8 +75,8 @@ class EodViewModelTest {
     ): EodViewModel = EodViewModel(
         settings = SettingsProvider(settings),
         pendingSales = pendingSalesOf(offlineQueue),
-        getEodReport = GetEodReportUseCase(reports, dispatchers),
-        closeEod = CloseEodUseCase(reports, FakeProfileRepository(), dispatchers),
+        reports = reports,
+        closeEod = CloseEodUseCase(reports, SignedInUser(FakeProfileRepository()), dispatchers),
         printReceiptUseCase = PrintReceiptUseCase(printer, dispatchers),
     )
 

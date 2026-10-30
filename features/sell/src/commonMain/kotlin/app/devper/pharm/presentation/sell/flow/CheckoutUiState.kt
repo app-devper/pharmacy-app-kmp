@@ -26,9 +26,9 @@ data class CheckoutUiState(
 
     override val loading: Boolean get() = checkingOut
 
-    override fun withLoading(value: Boolean) = copy(checkingOut = value)
     override val domainError: AppException? get() = errorState
     override fun withDomainError(error: AppException?) = copy(errorState = error)
+    override fun withLoading(loading: Boolean) = copy(checkingOut = loading)
 
     val canCheckout: Boolean get() =
         !cartIsEmpty &&

@@ -12,7 +12,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Role
 import app.devper.pharm.domain.model.UmUser
-import app.devper.pharm.domain.extension.canViewUsers
 import app.devper.pharm.ui.designsystem.PharmAction
 import app.devper.pharm.ui.designsystem.PharmActionMenu
 import app.devper.pharm.ui.designsystem.PharmActionTone
@@ -178,7 +177,6 @@ private fun UserPhoneCell(user: UmUser) {
     }
 }
 
-/** Only what UM says the signed-in user may do to this user (um-api ADR-0006). */
 @Composable
 private fun UsersRowActions(
     user: UmUser,
@@ -238,5 +236,4 @@ private fun UsersRowActions(
     }
     if (actions.isNotEmpty()) PharmActionMenu(actions = actions)
 }
-
 

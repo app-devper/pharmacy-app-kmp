@@ -2,7 +2,7 @@ package app.devper.pharm.domain.repository
 
 import app.devper.pharm.common.ServerException
 
-import app.devper.pharm.domain.repository.ky.ExportRepository
+import app.devper.pharm.domain.repository.export.ExportRepository
 
 import app.devper.pharm.domain.param.ky.ExportKyFormParam
 

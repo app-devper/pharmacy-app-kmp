@@ -10,7 +10,7 @@ import app.devper.pharm.domain.observer.SettingsProvider
 import app.devper.pharm.domain.param.reports.CloseEodParam
 import app.devper.pharm.domain.param.reports.EodReportParam
 import app.devper.pharm.domain.usecase.reports.CloseEodUseCase
-import app.devper.pharm.domain.usecase.reports.GetEodReportUseCase
+import app.devper.pharm.domain.repository.reports.ReportsRepository
 import app.devper.pharm.domain.usecase.reports.PrintReceiptUseCase
 import app.devper.pharm.ui.common.BaseLoadableViewModel
 import app.devper.pharm.ui.format.toLocalDateOrNull
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.onEach
 class EodViewModel(
     settings: SettingsProvider,
     pendingSales: PendingSales,
-    private val getEodReport: GetEodReportUseCase,
+    private val reports: ReportsRepository,
     private val closeEod: CloseEodUseCase,
     private val printReceiptUseCase: PrintReceiptUseCase,
 ) : BaseLoadableViewModel<EodUiState>(EodUiState()) {
@@ -115,29 +115,22 @@ class EodViewModel(
 
     fun reload() {
         val s = current
-        setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getEodReport(EodReportParam(date = s.date.toLocalDateOrNull())) },
-            onSuccess = { rep ->
-                // A day closed earlier (on this device or another) stays closed
-                // after a reload, with its receipt available to reprint. An API
-                // that does not report the close yet keeps this device's close.
+        load(
+            fetch = { Result.success(reports.eod(EodReportParam(date = s.date.toLocalDateOrNull()))) },
+            failure = { e -> EodUiStateError.LoadReportFailed(e) },
+            onLoaded = { rep ->
                 val closedResult = rep.close?.let {
                     EodCloseResult(closeId = it.closeId, date = rep.date, closedAt = it.closedAt, closedBy = it.closedBy, report = rep)
-                } ?: current.closeResult?.takeIf { it.date == rep.date }
-                setState {
-                    copy(
-                        date = rep.date.toString(),
-                        validationRequested = false,
-                        loading = false,
-                        report = rep,
-                        closed = closedResult != null,
-                        closeResult = closedResult,
-                        closedTemplate = closedResult?.let { buildEodReceiptTemplate(closed = it, settings = lastSettings) },
-                    )
-                }
+                } ?: closeResult?.takeIf { it.date == rep.date }
+                copy(
+                    date = rep.date.toString(),
+                    validationRequested = false,
+                    report = rep,
+                    closed = closedResult != null,
+                    closeResult = closedResult,
+                    closedTemplate = closedResult?.let { buildEodReceiptTemplate(closed = it, settings = lastSettings) },
+                )
             },
-            onFailure = { e -> setState { copy(loading = false, errorState = EodUiStateError.LoadReportFailed(e)) } },
         )
     }
 }
