@@ -50,7 +50,7 @@ the same flags if Edge is not installed.
 `websockets` package — the mock-api venv already has it.
 
 ```bash
-DRIVE_OUT=/tmp/shots ../../mock-api/.venv/bin/python .Codex/skills/run/drive.py \
+DRIVE_OUT=/tmp/shots ../../mock-api/.venv/bin/python .claude/skills/run/drive.py \
   click:636:398 type:admin click:636:483 type:qa1234 click:636:551 wait:7 shot:home
 ```
 

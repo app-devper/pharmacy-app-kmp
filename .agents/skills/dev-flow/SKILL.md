@@ -10,6 +10,19 @@ exit check that must hold before moving on. Skip a stage only where it says
 so. Branching and PR mechanics are owned by `git-flow` and `pr`; this skill
 only sequences them.
 
+Skills named below live in two places. `.agents/skills/` in this repo holds
+the ones about this repo: `compose-multiplatform-patterns`, `dev-flow`,
+`git-flow`, `kmp-add-form`, `kmp-build-logic`, `kmp-code-pattern`,
+`kmp-data-layer`, `kmp-design-system`, `kmp-error-handling`, `kmp-feature`,
+`kmp-layout-pattern`, `kmp-navigation`, `kmp-platform`, `kmp-review`,
+`kmp-rules`, `kmp-screen-split`, `kmp-test`, `kotlin-coding-style`,
+`kotlin-coroutines-flows`, `pr`, `run`. The generic ones — `codebase-design`,
+`domain-modeling`, `grill-with-docs`, `grilling`,
+`improve-codebase-architecture`, `tdd-workflow` — come from
+`app-devper/agent-skills`, linked into `~/.claude/skills` by its `install.sh`.
+If a generic skill is missing, clone that repo and run the script; never
+recreate one inside this repo, because a same-named copy would be shadowed.
+
 ## 0. Pick the track
 
 | Track | Starts at | Branch from → PR into |
@@ -23,7 +36,8 @@ only sequences them.
 ## 1. Shape — agree on what and why
 
 - New behaviour or unclear requirement → `/grill-with-docs` (runs `grilling`
-  + `domain-modeling`). This repo has several contexts: find the one the
+  + `domain-modeling`; the user starts it — when you drive the flow
+  yourself, load `grilling` and then `domain-modeling`). This repo has several contexts: find the one the
   change belongs to in `CONTEXT-MAP.md`, put terms in
   `docs/contexts/<context>/CONTEXT.md`, and record hard-to-reverse decisions
   in `docs/adr/`. A change to how contexts relate goes into `CONTEXT-MAP.md`

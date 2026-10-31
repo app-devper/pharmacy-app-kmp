@@ -11,7 +11,7 @@ metadata:
 Patterns for building shared UI across Android, iOS, Desktop, and Web using Compose Multiplatform
 and Jetpack Compose. Covers state management, navigation, theming, and performance.
 
-> **Companions**: see `.Codex/skills/kmp-*` for strict-KMP project conventions
+> **Companions**: see `.claude/skills/kmp-*` for strict-KMP project conventions
 > (`kmp-code-pattern`, `kmp-layout-pattern`, `kmp-design-system`, `kmp-navigation`, `kmp-platform`)
 > when working in a project that adopts those rules.
 
@@ -167,7 +167,7 @@ NavHost(navController, startDestination = HomeRoute) {
 ```
 
 > For app shells with a sidebar/topbar that should persist across feature navigation, see
-> `.Codex/skills/kmp-navigation/` — it documents a two-level `NavHost` with the shell
+> `.claude/skills/kmp-navigation/` — it documents a two-level `NavHost` with the shell
 > composed once around a nested `NavHost` of per-feature routes.
 
 ---
@@ -272,7 +272,7 @@ fun PlatformStatusBar(darkIcons: Boolean) {
 - You want fakeable contracts for tests (`FakeStatusBarController : StatusBarController`).
 - You want `Find Usages` on the interface to reliably surface every impl.
 
-See `.Codex/skills/kmp-platform/` for the full pattern with `FileDownloader`,
+See `.claude/skills/kmp-platform/` for the full pattern with `FileDownloader`,
 `ReceiptPrinter`, `HttpClient` engine, `AppDispatchers`, and `Settings`.
 
 ---
@@ -358,7 +358,7 @@ fun AppTheme(
 
 > Projects with a hand-curated brand palette **disable** dynamic theming (it would override the
 > brand colors) and read tokens from a custom tokens data class via a `CompositionLocal` — here
-> `PharmTokens` behind `LocalPharmTokens`. See `.Codex/skills/kmp-design-system/` for the token + primitives
+> `PharmTokens` behind `LocalPharmTokens`. See `.claude/skills/kmp-design-system/` for the token + primitives
 > approach.
 
 ---
@@ -377,27 +377,27 @@ fun AppTheme(
 ## Project-specific deviations (strict KMP-style projects)
 
 Opinionated KMP projects often tighten or invert the general patterns above. When a project's
-`AGENTS.md` adopts the **`kmp-*` skill set** (`.Codex/skills/kmp-code-pattern`,
+`CLAUDE.md` adopts the **`kmp-*` skill set** (`.claude/skills/kmp-code-pattern`,
 `kmp-layout-pattern`, `kmp-design-system`, `kmp-navigation`, `kmp-platform`,
 `kmp-error-handling`), follow the project's rules when they conflict with the general patterns.
 
 | General pattern | Strict-KMP project rule | Why / reference |
 |---|---|---|
-| `class FooViewModel : ViewModel()` + raw `_state = MutableStateFlow(...)` + manual `viewModelScope.launch { try { ... } catch (e) { ... } }` | All VMs extend `BaseViewModel<S>(initial)` and use `setState { copy(...) }` + `launchResult(block = { useCase() }, onSuccess, onFailure)`. Form VMs extend `BaseFormViewModel<S>` over F-bounded `BaseFormUiState<S>` and override `persist(): Result<Unit>` only. | See `.Codex/skills/kmp-code-pattern/` and `.Codex/skills/kmp-add-form/`. Eliminates boilerplate; consistent error lifecycle (typed `errorState: AppException?` + `dismissError()`); `launchResult` already handles `runCatching` + `CancellationException` rethrow. |
-| `expect fun PlatformX()` / `actual fun PlatformX()` for platform-bound composables and APIs | **Banned**: NO `expect class` / `expect fun` / `expect val` anywhere. Define an interface in `:core:common`, implement in `:composeApp/<plat>Main/platform/X*Impl.kt`, bind per-platform via Koin in each `Main*.kt`. The audit task fails the build on any `expect` declaration. | See `.Codex/skills/kmp-platform/`. The expect/actual seam is repeatedly the friction point — interface + impl + Koin binding makes the platform contract explicit + testable + DI-substitutable. |
-| `MaterialTheme(colorScheme = dynamicLightColorScheme(...))` | Use `PharmacyTheme { ... }` which provides `LocalPharmTokens` (a `PharmTokens(colors, spacing, radii, shapes, dimens, fontScale)` data class) — production code reads `pharmTokens.colors.accent` not `MaterialTheme.colorScheme.primary`. It still wraps `MaterialTheme` so M3 internals (ripple, IME insets, sheet scrims) inherit the palette. **No raw M3 widgets in new files**: use `PharmButton` / `PharmBadge` / `PharmTextField` / `FormField` / `PharmModal` / `MetricCard` / `PharmTable` / `PharmFilterChips` / `PharmActionMenu` / `PharmTabBar` / `PharmStatusBadge` / `PharmDateRangeField` from `:core:ui/.../designsystem/`. | See `.Codex/skills/kmp-design-system/`. The design follows a hand-curated palette; dynamic Material You theming would override and clash with it. |
-| `class FooViewModel(private val repo: FooRepository)` | VM constructor injects only `<X>UseCase`s + `<X>Provider`s (read-only singletons) + buses — never the Repository directly. Repository → use case → VM. | See `.Codex/skills/kmp-code-pattern/` §3. Keeps business logic out of the VM; use cases are independently testable; Providers give an ISP narrow read-only surface. |
-| `sealed interface FooEvent + onEvent(event)` sink | Project uses explicit setters (`onSearch(q)`, `onDelete(id)`, `onRefresh()`) bundled in a `<Feature>Callbacks` data class with default no-ops, passed to `<Feature>Content(state, callbacks)`. | See `.Codex/skills/kmp-code-pattern/` §2. Makes `@Preview` trivial (`Callbacks()` constructs all no-ops); IDE call-site references are direct; one less indirection through `when`. Both patterns are valid — strict-KMP picks the callbacks-data-class shape. |
-| `viewModelScope.launch(Dispatchers.IO) { ... }` | Use cases own their own IO switch via `BaseUseCase(dispatchers: AppDispatchers)` + `withContext(dispatchers.io)`. VM constructor does NOT take `dispatchers` or `logger` at all. `viewModelScope.launch { ... }` only — no dispatcher arg ever. | See `.Codex/skills/kmp-code-pattern/` and `.Codex/skills/kmp-test/`. Single source of truth for IO offload; VM stays on Main; tests use `runVmTest { dispatchers -> }` to inject a test-scheduler-backed `AppDispatchers`. |
-| `class FooRepositoryImpl { suspend fun get(): Result<Foo> = runCatching { ... } }` | Repository interfaces return bare `T` (no `Result`); impls throw typed `AppException` subclasses (`AuthException` / `ForbiddenException` / `NotFoundException` / `ConflictException` / `NetworkException` / `ServerException` / `ValidationException` / `StorageException` / `UnsupportedPlatformException`). `BaseUseCase` wraps the call once in `runCatching` and converts to `Result<R>`. Ktor `HttpResponseValidator` translates HTTP status → typed `AppException` automatically. | See `.Codex/skills/kmp-error-handling/` and `.Codex/skills/kmp-data-layer/`. Repos stay bare; use cases own the error policy; no double-wrapping. |
-| `Screen.kt` + `Content.kt` + `ViewModel.kt` + `UiState.kt` may live in the same file when small | **File-per-class**: each must live in its own file. This one is a review-time rule, not build-enforced — the audit task does not grep for it. | See `.Codex/skills/kmp-code-pattern/` §2. |
-| Page header is custom per screen (Topbar / Toolbar / breadcrumb) | List pages are `PharmListScaffold(toolbar, metrics?, resultLine, content)`; sub-pages are `Column { PharmListToolbar(title, onBack, actions?) ; weight(1f) content }`. No M3 `Scaffold`, no per-feature page wrapper — the app shell renders once in `MainShell`. | See `.Codex/skills/kmp-layout-pattern/`. |
+| `class FooViewModel : ViewModel()` + raw `_state = MutableStateFlow(...)` + manual `viewModelScope.launch { try { ... } catch (e) { ... } }` | All VMs extend `BaseViewModel<S>(initial)` and use `setState { copy(...) }` + `launchResult(block = { useCase() }, onSuccess, onFailure)`. Form VMs extend `BaseFormViewModel<S>` over F-bounded `BaseFormUiState<S>` and override `persist(): Result<Unit>` only. | See `.claude/skills/kmp-code-pattern/` and `.claude/skills/kmp-add-form/`. Eliminates boilerplate; consistent error lifecycle (typed `errorState: AppException?` + `dismissError()`); `launchResult` already handles `runCatching` + `CancellationException` rethrow. |
+| `expect fun PlatformX()` / `actual fun PlatformX()` for platform-bound composables and APIs | **Banned**: NO `expect class` / `expect fun` / `expect val` anywhere. Define an interface in `:core:common`, implement in `:composeApp/<plat>Main/platform/X*Impl.kt`, bind per-platform via Koin in each `Main*.kt`. The audit task fails the build on any `expect` declaration. | See `.claude/skills/kmp-platform/`. The expect/actual seam is repeatedly the friction point — interface + impl + Koin binding makes the platform contract explicit + testable + DI-substitutable. |
+| `MaterialTheme(colorScheme = dynamicLightColorScheme(...))` | Use `PharmacyTheme { ... }` which provides `LocalPharmTokens` (a `PharmTokens(colors, spacing, radii, shapes, dimens, fontScale)` data class) — production code reads `pharmTokens.colors.accent` not `MaterialTheme.colorScheme.primary`. It still wraps `MaterialTheme` so M3 internals (ripple, IME insets, sheet scrims) inherit the palette. **No raw M3 widgets in new files**: use `PharmButton` / `PharmBadge` / `PharmTextField` / `FormField` / `PharmModal` / `MetricCard` / `PharmTable` / `PharmFilterChips` / `PharmActionMenu` / `PharmTabBar` / `PharmStatusBadge` / `PharmDateRangeField` from `:core:ui/.../designsystem/`. | See `.claude/skills/kmp-design-system/`. The design follows a hand-curated palette; dynamic Material You theming would override and clash with it. |
+| `class FooViewModel(private val repo: FooRepository)` | VM constructor injects only `<X>UseCase`s + `<X>Provider`s (read-only singletons) + buses — never the Repository directly. Repository → use case → VM. | See `.claude/skills/kmp-code-pattern/` §3. Keeps business logic out of the VM; use cases are independently testable; Providers give an ISP narrow read-only surface. |
+| `sealed interface FooEvent + onEvent(event)` sink | Project uses explicit setters (`onSearch(q)`, `onDelete(id)`, `onRefresh()`) bundled in a `<Feature>Callbacks` data class with default no-ops, passed to `<Feature>Content(state, callbacks)`. | See `.claude/skills/kmp-code-pattern/` §2. Makes `@Preview` trivial (`Callbacks()` constructs all no-ops); IDE call-site references are direct; one less indirection through `when`. Both patterns are valid — strict-KMP picks the callbacks-data-class shape. |
+| `viewModelScope.launch(Dispatchers.IO) { ... }` | Use cases own their own IO switch via `BaseUseCase(dispatchers: AppDispatchers)` + `withContext(dispatchers.io)`. VM constructor does NOT take `dispatchers` or `logger` at all. `viewModelScope.launch { ... }` only — no dispatcher arg ever. | See `.claude/skills/kmp-code-pattern/` and `.claude/skills/kmp-test/`. Single source of truth for IO offload; VM stays on Main; tests use `runVmTest { dispatchers -> }` to inject a test-scheduler-backed `AppDispatchers`. |
+| `class FooRepositoryImpl { suspend fun get(): Result<Foo> = runCatching { ... } }` | Repository interfaces return bare `T` (no `Result`); impls throw typed `AppException` subclasses (`AuthException` / `ForbiddenException` / `NotFoundException` / `ConflictException` / `NetworkException` / `ServerException` / `ValidationException` / `StorageException` / `UnsupportedPlatformException`). `BaseUseCase` wraps the call once in `runCatching` and converts to `Result<R>`. Ktor `HttpResponseValidator` translates HTTP status → typed `AppException` automatically. | See `.claude/skills/kmp-error-handling/` and `.claude/skills/kmp-data-layer/`. Repos stay bare; use cases own the error policy; no double-wrapping. |
+| `Screen.kt` + `Content.kt` + `ViewModel.kt` + `UiState.kt` may live in the same file when small | **File-per-class**: each must live in its own file. This one is a review-time rule, not build-enforced — the audit task does not grep for it. | See `.claude/skills/kmp-code-pattern/` §2. |
+| Page header is custom per screen (Topbar / Toolbar / breadcrumb) | List pages are `PharmListScaffold(toolbar, metrics?, resultLine, content)`; sub-pages are `Column { PharmListToolbar(title, onBack, actions?) ; weight(1f) content }`. No M3 `Scaffold`, no per-feature page wrapper — the app shell renders once in `MainShell`. | See `.claude/skills/kmp-layout-pattern/`. |
 
-For the full set of strict-KMP rules: see `.Codex/skills/kmp-rules/` (cross-cutting
-conventions), `.Codex/skills/kmp-feature/` (vertical-slice scaffold),
-`.Codex/skills/kmp-review/` (audit checks), `.Codex/skills/kmp-add-form/` (form recipe),
-`.Codex/skills/kmp-screen-split/` (Content split recipe),
-`.Codex/skills/kmp-build-logic/` (convention plugins + the audit Gradle task).
+For the full set of strict-KMP rules: see `.claude/skills/kmp-rules/` (cross-cutting
+conventions), `.claude/skills/kmp-feature/` (vertical-slice scaffold),
+`.claude/skills/kmp-review/` (audit checks), `.claude/skills/kmp-add-form/` (form recipe),
+`.claude/skills/kmp-screen-split/` (Content split recipe),
+`.claude/skills/kmp-build-logic/` (convention plugins + the audit Gradle task).
 
-When in doubt: **the project's `AGENTS.md` supersedes the general patterns above** when working
+When in doubt: **the project's `CLAUDE.md` supersedes the general patterns above** when working
 in that codebase. Outside such projects, the general patterns apply as written.

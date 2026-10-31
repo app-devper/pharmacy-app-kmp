@@ -243,11 +243,11 @@ license headers required by upstream libraries.
 - **Adding a new feature** → 6-step recipe in
   [MODULE_GRAPH.md § Per-feature recipe](./MODULE_GRAPH.md#per-feature-recipe).
 
-- **Skills** (`.Codex/skills/`) — reach for these before hand-rolling:
-  `pharmacy-kmp-feature` (scaffold), `pharmacy-kmp-add-form`
-  (`BaseFormViewModel`), `pharmacy-kmp-test` (`runVmTest` + fakes),
-  `pharmacy-kmp-screen-split` (Screen↔Content + responsive),
-  `pharmacy-kmp-review` (audit a diff against the build-enforced rules).
+- **Skills** (`.agents/skills/`, with `.claude/skills` a symlink to it) — reach for
+  these before hand-rolling: `kmp-feature` (scaffold), `kmp-add-form`
+  (`BaseFormViewModel`), `kmp-test` (`runVmTest` + fakes), `kmp-screen-split`
+  (Screen↔Content + responsive), `kmp-review` (audit a diff against the
+  build-enforced rules).
 
 - **Localization — COMPLETE & build-enforced** (default ภาษาไทย, English
   switchable live; **A29** fails the build on any new Thai literal in

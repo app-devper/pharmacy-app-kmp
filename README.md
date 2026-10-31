@@ -69,3 +69,11 @@ The runtime override is accepted only when the web app itself is served from loc
 - [`CLAUDE.md`](CLAUDE.md) — project conventions, module rules, verify command
 - [`MODULE_GRAPH.md`](MODULE_GRAPH.md) — full 26-module dep matrix, what lives where, per-feature recipe
 - [`VISUAL_QA.md`](VISUAL_QA.md) — manual pass over every feature against the mock API
+
+## Agent skills
+
+The generic Claude Code / Codex skills (`coding-standards`, `tdd-workflow`,
+`grilling`, …) and the `ecc` rules are not in this repo. Every app-devper
+repo shares them from [app-devper/agent-skills](https://github.com/app-devper/agent-skills):
+clone it and run its `install.sh` once per machine. Only the skills about this
+repo live in `.agents/skills/`: `compose-multiplatform-patterns`, `dev-flow`, `git-flow`, `kmp-add-form`, `kmp-build-logic`, `kmp-code-pattern`, `kmp-data-layer`, `kmp-design-system`, `kmp-error-handling`, `kmp-feature`, `kmp-layout-pattern`, `kmp-navigation`, `kmp-platform`, `kmp-review`, `kmp-rules`, `kmp-screen-split`, `kmp-test`, `kotlin-coding-style`, `kotlin-coroutines-flows`, `pr`, `run`.

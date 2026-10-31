@@ -5,8 +5,13 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.library")
 }
+
+// Applied imperatively, not in the plugins block: Gradle generates this script's accessors by
+// applying its plugins to a synthetic project that does not read our gradle.properties, and
+// AGP 9 refuses com.android.library next to kotlin.multiplatform unless android.builtInKotlin
+// and android.newDsl are off. The real projects have both flags.
+apply(plugin = "com.android.library")
 
 val libs = the<LibrariesForLibs>()
 
