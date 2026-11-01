@@ -24,8 +24,10 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.core.ui"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.core.ui"
+    }
 }
 
 compose.resources {

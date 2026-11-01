@@ -14,6 +14,8 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.features.testfixtures"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.features.testfixtures"
+    }
 }

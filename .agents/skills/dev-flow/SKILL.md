@@ -71,7 +71,7 @@ Commit in small conventional commits: `feat(scope): …`, `fix(scope): …`,
 
 ```bash
 # the canonical sweep in CLAUDE.md § Test verify, plus the coverage gate
-./gradlew :composeApp:auditArchitecture :composeApp:testDebugUnitTest \
+./gradlew :composeApp:auditArchitecture :androidApp:testDebugUnitTest \
   :composeApp:compileTestKotlinWasmJs koverVerify   # + the :core/:features jvmTest list
 ```
 

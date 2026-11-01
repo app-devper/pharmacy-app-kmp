@@ -162,7 +162,7 @@ ships a `<X>ViewModelTest.kt` in `:features:<feat>:commonTest`.
 
 ```bash
 ./gradlew :composeApp:auditArchitecture :features:<feat>:jvmTest \
-          :composeApp:testDebugUnitTest \
+          :androidApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs
 ```

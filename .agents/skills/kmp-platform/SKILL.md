@@ -137,10 +137,10 @@ class FakeFileDownloader(private val fails: Boolean = false) : FileDownloader {
 
 ```bash
 ./gradlew :composeApp:auditArchitecture \
-          :composeApp:assembleDebug \
+          :androidApp:assembleDebug \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs \
-          :composeApp:testDebugUnitTest
+          :androidApp:testDebugUnitTest
 ```
 
 Compiling only one target is how a missing impl reaches `develop`.

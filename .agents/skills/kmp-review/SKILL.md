@@ -167,7 +167,7 @@ convention below.
 
 ```bash
 ./gradlew :composeApp:auditArchitecture \
-          :composeApp:testDebugUnitTest \
+          :androidApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs \
           :core:{common,domain,ui,data}:jvmTest \

@@ -24,6 +24,8 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.features.ky"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.features.ky"
+    }
 }

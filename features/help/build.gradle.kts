@@ -21,8 +21,10 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.features.help"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.features.help"
+    }
 }
 
 compose.resources {

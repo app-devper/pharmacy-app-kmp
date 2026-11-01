@@ -103,6 +103,7 @@ ktor-common = [
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }

@@ -18,6 +18,8 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.domain"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.domain"
+    }
 }
