@@ -24,6 +24,8 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.features.offlinesync"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.features.offlinesync"
+    }
 }

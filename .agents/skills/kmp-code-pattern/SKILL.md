@@ -187,7 +187,7 @@ Note what is **not** enforced: raw Material 3 usage, hex colors outside
 
 ```bash
 ./gradlew :composeApp:auditArchitecture \
-          :composeApp:testDebugUnitTest \
+          :androidApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs \
           :core:common:jvmTest :core:domain:jvmTest :core:ui:jvmTest :core:data:jvmTest \

@@ -18,8 +18,10 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.core.common"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.core.common"
+    }
 }
 
 buildkonfig {

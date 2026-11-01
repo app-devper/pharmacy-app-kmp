@@ -2,10 +2,11 @@
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
@@ -15,7 +16,13 @@ plugins {
 kotlin {
     jvmToolchain(17)
 
-    androidTarget()
+    // Shared UI as an Android library; the installable app is :androidApp.
+    android {
+        namespace = "app.devper.pharm.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+    }
     jvm()
 
     listOf(
@@ -41,10 +48,10 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":core:common"))
-            implementation(project(":core:domain"))
+            api(project(":core:common")) // :androidApp wires the platform modules
+            api(project(":core:domain")) // buildHttpClient signature reaches :androidApp
             implementation(project(":core:ui"))
-            implementation(project(":core:data"))
+            api(project(":core:data"))
             implementation(project(":features:help"))
             implementation(project(":features:profile"))
             implementation(project(":features:planning"))
@@ -82,14 +89,11 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
 
-            implementation(libs.multiplatform.settings)
+            api(libs.multiplatform.settings)
         }
 
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.koin.android)
-            implementation(libs.ktor.client.okhttp)
         }
 
         iosMain.dependencies {
@@ -122,41 +126,6 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        applicationId = "app.devper.pharm"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = libs.versions.app.versionCode.get().toInt()
-        versionName = libs.versions.app.version.get()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildFeatures {
-        buildConfig = true
-    }
-
-    buildTypes {
-        debug {
-            isMinifyEnabled = false
-        }
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
-        }
-    }
-}
 
 compose.resources {
     generateResClass = org.jetbrains.compose.resources.ResourcesExtension.ResourceClassGeneration.Never
