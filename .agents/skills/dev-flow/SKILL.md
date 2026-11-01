@@ -124,6 +124,29 @@ directly.
 
 **Exit:** tag `vX.Y.Z` on `main`, pharm-app.web.app released from that commit, `develop` contains `main`.
 
+
+### Android test builds: Firebase App Distribution
+
+After the release lands, testers get the Android build from App Distribution
+(project `devperpos`, group `testers`, Firebase app `1:1056670356976:android:4356c801c9c2a30da73935`):
+```bash
+git checkout main && git pull --ff-only
+./gradlew :androidApp:assembleRelease
+firebase appdistribution:distribute androidApp/build/outputs/apk/release/androidApp-release.apk \
+  --project devperpos --app 1:1056670356976:android:4356c801c9c2a30da73935 --groups testers --release-notes "vX.Y.Z: <one line>"
+```
+The release APK is signed with the key in `~/.devper/keystores/pharm-release.properties`
+(never in the repo; without it the APK is unsigned and App Distribution refuses it). It is
+backed up in Secret Manager of `devperpos`; on a new machine:
+```bash
+mkdir -p ~/.devper/keystores && chmod 700 ~/.devper ~/.devper/keystores
+gcloud secrets versions access latest --secret pharm-release-keystore --project devperpos | base64 -d > ~/.devper/keystores/pharm-release.jks
+gcloud secrets versions access latest --secret pharm-release-keystore-properties --project devperpos > ~/.devper/keystores/pharm-release.properties
+chmod 600 ~/.devper/keystores/pharm-release.*
+```
+Losing the key means a new applicationId for every future install. A tester is added once with
+`firebase appdistribution:testers:add <email> --group-alias testers --project devperpos`.
+
 ## 9. Hotfix — production is broken
 
 `git-flow` hotfix recipe: `hotfix/<slug>` from `main` → stages 4–6 (test
