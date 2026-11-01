@@ -59,7 +59,7 @@ jobs:
             :features:stockcount:jvmTest \
             :features:suppliers:jvmTest \
             :features:users:jvmTest \
-            :composeApp:testDebugUnitTest \
+            :androidApp:testDebugUnitTest \
             :composeApp:compileTestKotlinWasmJs \
             koverVerify \
             --stacktrace

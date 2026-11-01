@@ -1,24 +1,26 @@
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
+    id("com.android.kotlin.multiplatform.library")
 }
-
-// Applied imperatively, not in the plugins block: Gradle generates this script's accessors by
-// applying its plugins to a synthetic project that does not read our gradle.properties, and
-// AGP 9 refuses com.android.library next to kotlin.multiplatform unless android.builtInKotlin
-// and android.newDsl are off. The real projects have both flags.
-apply(plugin = "com.android.library")
 
 val libs = the<LibrariesForLibs>()
 
 extensions.configure<KotlinMultiplatformExtension>("kotlin") {
     jvmToolchain(17)
 
-    androidTarget()
+    // The Android target comes from AGP's KMP library plugin: one variant, no build types, and
+    // the module sets `kotlin { android { namespace = ... } }` itself.
+    (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryTarget>("android") {
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+    }
     jvm()
     iosArm64()
     iosSimulatorArm64()
@@ -32,18 +34,5 @@ extensions.configure<KotlinMultiplatformExtension>("kotlin") {
         dependencies {
             implementation(libs.kotlin.test)
         }
-    }
-}
-
-extensions.configure<LibraryExtension>("android") {
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 }

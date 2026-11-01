@@ -26,6 +26,8 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.core.data"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.core.data"
+    }
 }

@@ -21,7 +21,7 @@ KMP / Compose Multiplatform port of the React `frontend/` web POS. One Kotlin co
 ./gradlew :composeApp:check
 
 # Per-platform targets
-./gradlew :composeApp:assembleDebug                 # Android
+./gradlew :androidApp:assembleDebug                 # Android
 ./gradlew :composeApp:run                           # Desktop (JVM)
 ./gradlew :composeApp:wasmJsBrowserDevelopmentRun   # Web
 ./gradlew :composeApp:iosSimulatorArm64Test         # iOS sim

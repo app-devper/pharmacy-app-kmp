@@ -24,6 +24,8 @@ kotlin {
     }
 }
 
-android {
-    namespace = "app.devper.pharm.features.movements"
+kotlin {
+    android {
+        namespace = "app.devper.pharm.features.movements"
+    }
 }
