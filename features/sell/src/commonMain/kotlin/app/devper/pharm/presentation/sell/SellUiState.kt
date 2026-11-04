@@ -32,7 +32,7 @@ data class SellUiState(
     val subtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
     val cartDiscountAmount: Money get() = cartDiscount.apply(subtotal)
     val total: Money get() = (subtotal - cartDiscountAmount).coerceAtLeast(Money.Zero)
-    val grossSubtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.unitPrice * line.qty }
+    val grossSubtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.unitPrice * line.displayQty }
     val itemDiscountTotal: Money get() = grossSubtotal - subtotal
     val receivedNum: Double get() = received.toDoubleOrNull() ?: 0.0
     val change: Money get() = (Money(receivedNum) - total).coerceAtLeast(Money.Zero)
