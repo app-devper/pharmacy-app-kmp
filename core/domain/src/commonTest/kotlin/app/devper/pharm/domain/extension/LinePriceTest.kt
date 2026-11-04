@@ -46,4 +46,22 @@ class LinePriceTest {
 
         assertEquals(Money(100.0), linePrice(drug(), pack, Tier.Wholesale))
     }
+
+    @Test
+    fun altUnitWithEveryTierPriceZero_fallsBackToTheUnitSellPrice() {
+        val pack = AltUnit(
+            name = "กล่อง", factor = 10, sellPrice = Money(90.0),
+            prices = mapOf("wholesale" to Money(0.0), "retail" to Money(0.0)),
+        )
+
+        assertEquals(Money(90.0), linePrice(drug(), pack, Tier.Wholesale))
+    }
+
+    @Test
+    fun boxOf12At250_linePriceIsExactly249_96() {
+        val box = AltUnit("กล่อง", 12, Money(250.0))
+
+        assertEquals(Money(249.96), linePrice(drug(), box, Tier.Retail))
+        assertEquals("249.96", linePrice(drug(), box, Tier.Retail).format())
+    }
 }

@@ -136,4 +136,15 @@ class CartTest {
         cart.dismissReceipt()
         assertNull(cart.current.lastReceipt)
     }
+
+    @Test
+    fun fullPackDiscount_makesTheLineTotalExactlyZero() {
+        val pack = AltUnit(name = "pack", factor = 6, sellPrice = Money(35.0))
+        cart.add(drug(), pack)
+        val line = cart.current.items.single()
+
+        cart.setLineDiscount(line.key, line.unitPrice.amount / line.factor)
+
+        assertEquals(Money.Zero, cart.current.items.single().lineTotal)
+    }
 }

@@ -22,6 +22,7 @@ import app.devper.pharm.ui.designsystem.PharmButtonSize
 import app.devper.pharm.ui.designsystem.PharmButtonVariant
 import app.devper.pharm.ui.designsystem.PharmTextField
 import app.devper.pharm.ui.theme.PharmText
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
 import app.devper.pharm.ui.theme.tabular
@@ -42,7 +43,8 @@ fun LineDiscountSheet(
     val parsed = draft.toDoubleOrNull()
     val unitPriceDouble = line.unitPrice.amount
     val effective = (unitPriceDouble - (parsed ?: 0.0)).coerceAtLeast(0.0)
-    val invalid = parsed != null && (parsed < 0.0 || parsed > unitPriceDouble)
+    val parsedMoney = parsed?.let { Money(it) }
+    val invalid = parsedMoney != null && (parsedMoney < Money.Zero || parsedMoney > line.unitPrice)
 
     PharmBottomSheet(
         onDismissRequest = onDismiss,
@@ -64,7 +66,7 @@ fun LineDiscountSheet(
 
             FormField(
                 label = pharmStrings.sellLineDiscountField,
-                error = if (invalid) pharmStrings.sellLineDiscountInvalid(unitPriceDouble.toString()) else null,
+                error = if (invalid) pharmStrings.sellLineDiscountInvalid(fmtBaht(unitPriceDouble)) else null,
             ) {
                 PharmTextField(
                     value = draft,

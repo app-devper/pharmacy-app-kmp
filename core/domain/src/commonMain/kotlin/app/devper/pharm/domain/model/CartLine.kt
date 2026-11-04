@@ -3,6 +3,7 @@ package app.devper.pharm.domain.model
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.domain.extension.basePriceOf
+import app.devper.pharm.domain.extension.linePrice
 
 data class CartLine(
     val drug: Drug,
@@ -22,7 +23,9 @@ data class CartLine(
 
     val basePrice: Money get() = basePriceOf(drug, selectedUnit, tier)
 
-    val unitPrice: Money get() = basePrice * factor
+    val unitPrice: Money get() = linePrice(drug, selectedUnit, tier)
+
+    val grossTotal: Money get() = unitPrice * displayQty
 
     val effectiveUnitPrice: Money
         get() = (unitPrice - discount * factor).coerceAtLeast(Money.Zero)

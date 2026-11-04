@@ -7,6 +7,7 @@ import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Drug
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class SellUiStateTest {
 
@@ -41,5 +42,14 @@ class SellUiStateTest {
 
         assertEquals(Money(30.0), state.grossSubtotal)
         assertEquals(Money(3.0), state.itemDiscountTotal)
+    }
+
+    @Test
+    fun itemDiscountTotal_isExactlyZero_forAnUndiscountedPack() {
+        val pack = AltUnit(name = "แพ็ค", factor = 6, sellPrice = Money(35.0))
+        val state = SellUiState(cart = listOf(CartLine(drug = drug(), qty = 18, selectedUnit = pack)))
+
+        assertEquals(Money.Zero, state.itemDiscountTotal)
+        assertTrue(state.itemDiscountTotal.isZero)
     }
 }

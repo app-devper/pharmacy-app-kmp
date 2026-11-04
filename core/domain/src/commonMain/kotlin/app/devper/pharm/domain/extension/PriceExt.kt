@@ -23,4 +23,4 @@ fun basePriceOf(drug: Drug, unit: AltUnit?, tier: String): Money {
 }
 
 fun linePrice(drug: Drug, unit: AltUnit?, tier: String): Money =
-    basePriceOf(drug, unit, tier) * (unit?.factor?.coerceAtLeast(1) ?: 1)
+    (basePriceOf(drug, unit, tier) * (unit?.factor?.coerceAtLeast(1) ?: 1)).roundToSatang()

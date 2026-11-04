@@ -67,7 +67,7 @@ class Cart(
         mutateActive { current ->
             current.copy(
                 items = current.items.map {
-                    if (it.key == key) it.copy(discount = Money(discount.coerceIn(0.0, it.basePrice.amount))) else it
+                    if (it.key == key) it.copy(discount = clampedDiscount(discount, it.basePrice)) else it
                 },
             )
         }
@@ -173,3 +173,12 @@ private fun CartState.snapshot() = CartSnapshot(
     cashReceived = active.cashReceived,
     lastReceipt = lastReceipt,
 )
+
+private fun clampedDiscount(discount: Double, basePrice: Money): Money {
+    val requested = Money(discount).roundToSatang()
+    return when {
+        requested < Money.Zero -> Money.Zero
+        requested >= basePrice -> basePrice
+        else -> requested
+    }
+}
