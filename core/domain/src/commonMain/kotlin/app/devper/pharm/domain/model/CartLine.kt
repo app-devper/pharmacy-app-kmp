@@ -20,9 +20,10 @@ data class CartLine(
 
     val factor: Int get() = selectedUnit?.factor?.coerceAtLeast(1) ?: 1
 
+    /** The price of one base unit, as pharmacy-api's LinePrice records it. */
     val basePrice: Money
         get() = if (selectedUnit != null) {
-            resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor
+            (resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor).roundToSatang()
         } else {
             resolvePrice(drug.sellPrice, drug.prices, tier)
         }
