@@ -3,7 +3,6 @@ package app.devper.pharm.common.value
 import kotlin.jvm.JvmInline
 import kotlin.math.abs
 import kotlin.math.roundToLong
-import kotlin.math.sign
 
 @JvmInline
 value class Money(val amount: Double) : Comparable<Money> {
@@ -26,7 +25,7 @@ value class Money(val amount: Double) : Comparable<Money> {
 
     fun absoluteValue(): Money = Money(abs(amount))
 
-    fun roundToSatang(): Money = Money(sign(amount) * (abs(amount) * 100).roundToLong() / 100.0)
+    fun roundToSatang(): Money = Money((amount * 100).roundToLong() / 100.0)
 
     fun format(decimals: Int = 2): String {
         require(decimals in 0..6) { "decimals must be 0..6" }
