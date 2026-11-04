@@ -22,7 +22,7 @@ data class CartLine(
 
     val basePrice: Money
         get() = if (selectedUnit != null) {
-            resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor
+            (resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor).roundToSatang()
         } else {
             resolvePrice(drug.sellPrice, drug.prices, tier)
         }

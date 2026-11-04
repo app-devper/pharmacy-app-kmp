@@ -10,8 +10,8 @@ object Tier {
 
 fun resolvePrice(base: Money, prices: Map<String, Money>?, tier: String): Money {
     if (prices.isNullOrEmpty()) return base
-    prices[tier]?.let { return it }
-    prices[Tier.Retail]?.let { return it }
+    prices[tier]?.takeIf { it.isPositive }?.let { return it }
+    prices[Tier.Retail]?.takeIf { it.isPositive }?.let { return it }
     return base
 }
 
