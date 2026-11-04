@@ -8,10 +8,6 @@ object Tier {
     const val Wholesale = "wholesale"
 }
 
-/**
- * The price of [tier], else the retail price, else [base]. A tier price that is
- * not positive is unset, as pharmacy-api's ResolveTierPrice treats it.
- */
 fun resolvePrice(base: Money, prices: Map<String, Money>?, tier: String): Money {
     if (prices.isNullOrEmpty()) return base
     prices[tier]?.takeIf { it.isPositive }?.let { return it }

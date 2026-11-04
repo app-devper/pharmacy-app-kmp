@@ -26,7 +26,6 @@ value class Money(val amount: Double) : Comparable<Money> {
 
     fun absoluteValue(): Money = Money(abs(amount))
 
-    /** Rounded to the satang, half away from zero, as pharmacy-api rounds a price. */
     fun roundToSatang(): Money = Money(sign(amount) * (abs(amount) * 100).roundToLong() / 100.0)
 
     fun format(decimals: Int = 2): String {
