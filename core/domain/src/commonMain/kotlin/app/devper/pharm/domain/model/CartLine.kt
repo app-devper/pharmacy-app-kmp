@@ -2,7 +2,7 @@ package app.devper.pharm.domain.model
 
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.extension.Tier
-import app.devper.pharm.domain.extension.resolvePrice
+import app.devper.pharm.domain.extension.basePriceOf
 
 data class CartLine(
     val drug: Drug,
@@ -20,12 +20,7 @@ data class CartLine(
 
     val factor: Int get() = selectedUnit?.factor?.coerceAtLeast(1) ?: 1
 
-    val basePrice: Money
-        get() = if (selectedUnit != null) {
-            (resolvePrice(selectedUnit.sellPrice, selectedUnit.prices, tier) / factor).roundToSatang()
-        } else {
-            resolvePrice(drug.sellPrice, drug.prices, tier)
-        }
+    val basePrice: Money get() = basePriceOf(drug, selectedUnit, tier)
 
     val unitPrice: Money get() = basePrice * factor
 
