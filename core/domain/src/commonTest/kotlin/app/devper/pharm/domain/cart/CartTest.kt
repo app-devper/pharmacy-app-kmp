@@ -11,6 +11,7 @@ import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.model.Sale
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -146,5 +147,31 @@ class CartTest {
         cart.setLineDiscount(line.key, line.unitPrice.amount / line.factor)
 
         assertEquals(Money.Zero, cart.current.items.single().lineTotal)
+    }
+
+    @Test
+    fun discountOneSatangBelowThePackPrice_leavesOneSatang() {
+        val pack = AltUnit(name = "pack", factor = 6, sellPrice = Money(35.0))
+        cart.add(drug(), pack)
+        val key = cart.current.items.single().key
+
+        cart.setLineDiscount(key, 34.97 / 6)
+
+        val line = cart.current.items.single()
+        assertEquals("0.01", line.lineTotal.format())
+        assertFalse(line.lineTotal.isZero)
+    }
+
+    @Test
+    fun discountBelowThePackPrice_isStoredAsTyped_notRounded() {
+        val pack = AltUnit(name = "pack", factor = 6, sellPrice = Money(35.0))
+        cart.add(drug(), pack)
+        val key = cart.current.items.single().key
+
+        cart.setLineDiscount(key, 34.93 / 6)
+
+        val line = cart.current.items.single()
+        assertEquals(Money(34.93 / 6), line.discount)
+        assertEquals("0.05", line.lineTotal.format())
     }
 }
