@@ -44,4 +44,23 @@ class CartLineTest {
         assertEquals(Money(15.0), line.unitPrice * line.displayQty)
         assertEquals(Money(15.0), line.lineTotal)
     }
+
+    @Test
+    fun altUnitLine_pricesEachBaseUnitToTheSatang_asPharmacyApiRecordsIt() {
+        val pack = AltUnit(name = "แพ็ค", factor = 3, sellPrice = Money(100.0))
+        val line = CartLine(drug = drug(), qty = 3, selectedUnit = pack)
+
+        assertEquals(Money(33.33), line.basePrice)
+        assertEquals("99.99", line.lineTotal.format())
+    }
+
+    @Test
+    fun tierPriceOfZero_fallsBackToRetail_asPharmacyApiDoes() {
+        val zeroWholesale = drug(sellPrice = Money(10.0)).copy(
+            prices = mapOf("wholesale" to Money(0.0), "retail" to Money(12.0)),
+        )
+        val line = CartLine(drug = zeroWholesale, qty = 1, tier = "wholesale")
+
+        assertEquals(Money(12.0), line.basePrice)
+    }
 }

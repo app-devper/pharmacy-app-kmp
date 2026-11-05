@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.Drug
 import app.devper.pharm.domain.extension.SearchSubmitAction
 import app.devper.pharm.domain.extension.nextLotDaysLeft
-import app.devper.pharm.domain.extension.resolvePrice
+import app.devper.pharm.domain.extension.linePrice
 import app.devper.pharm.domain.extension.resolveSearchSubmit
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
@@ -181,7 +181,7 @@ fun DrugPickerColumn(
                             modifier = Modifier.height(DRUG_CARD_HEIGHT),
                             name = drug.name,
                             generic = drug.genericName,
-                            price = resolvePrice(drug.sellPrice, drug.prices, activeTier).amount,
+                            price = linePrice(drug, null, activeTier).amount,
                             stock = drug.stock.value,
                             unit = drug.unit ?: pharmStrings.commonUnitDefault,
                             type = inferType(drug),

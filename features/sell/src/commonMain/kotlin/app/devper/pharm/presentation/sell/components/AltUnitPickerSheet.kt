@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.Drug
-import app.devper.pharm.domain.extension.resolvePrice
+import app.devper.pharm.domain.extension.linePrice
 import app.devper.pharm.ui.theme.PharmText
 import app.devper.pharm.ui.theme.fmtBaht
 import app.devper.pharm.ui.theme.pharmTokens
@@ -53,7 +53,7 @@ fun AltUnitPickerSheet(
             UnitRow(
                 label = drug.unit ?: pharmStrings.commonUnit,
                 factorHint = null,
-                price = resolvePrice(drug.sellPrice, drug.prices, activeTier).amount,
+                price = linePrice(drug, null, activeTier).amount,
                 onClick = { onPick(null) },
             )
             Divider()
@@ -61,7 +61,7 @@ fun AltUnitPickerSheet(
                 UnitRow(
                     label = alt.name,
                     factorHint = "× ${alt.factor} ${drug.unit ?: ""}".trim(),
-                    price = resolvePrice(alt.sellPrice, alt.prices, activeTier).amount,
+                    price = linePrice(drug, alt, activeTier).amount,
                     onClick = { onPick(alt) },
                 )
                 Divider()

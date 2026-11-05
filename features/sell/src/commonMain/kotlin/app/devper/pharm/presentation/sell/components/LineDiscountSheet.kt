@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
@@ -42,7 +43,8 @@ fun LineDiscountSheet(
     val parsed = draft.toDoubleOrNull()
     val unitPriceDouble = line.unitPrice.amount
     val effective = (unitPriceDouble - (parsed ?: 0.0)).coerceAtLeast(0.0)
-    val invalid = parsed != null && (parsed < 0.0 || parsed > unitPriceDouble)
+    val parsedMoney = parsed?.let { Money(it) }
+    val invalid = parsedMoney != null && (parsedMoney < Money.Zero || parsedMoney > line.unitPrice)
 
     PharmBottomSheet(
         onDismissRequest = onDismiss,
@@ -64,7 +66,7 @@ fun LineDiscountSheet(
 
             FormField(
                 label = pharmStrings.sellLineDiscountField,
-                error = if (invalid) pharmStrings.sellLineDiscountInvalid(unitPriceDouble.toString()) else null,
+                error = if (invalid) pharmStrings.sellLineDiscountInvalid(fmtBaht(unitPriceDouble)) else null,
             ) {
                 PharmTextField(
                     value = draft,

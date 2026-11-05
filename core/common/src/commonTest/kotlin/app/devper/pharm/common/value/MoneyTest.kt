@@ -104,6 +104,26 @@ class MoneyTest {
     }
 
     @Test
+    fun roundToSatang_keepsTwoDecimals_halfUp() {
+        assertEquals(Money(33.33), Money(100.0 / 3).roundToSatang())
+        assertEquals(Money(0.01), Money(0.005).roundToSatang())
+        assertEquals(Money(12.46), Money(12.4567).roundToSatang())
+    }
+
+    @Test
+    fun roundToSatang_agreesWithFormat() {
+        for (raw in listOf(33.333, 0.005, 12.4567, -0.125, -1.004, 99.995)) {
+            assertEquals(Money(raw).format(), Money(raw).roundToSatang().format())
+        }
+    }
+
+    @Test
+    fun roundToSatang_belowHalfASatang_isZero_notNegativeZero() {
+        assertEquals(Money.Zero, Money(-0.004).roundToSatang())
+        assertEquals(Money.Zero, Money(0.004).roundToSatang())
+    }
+
+    @Test
     fun parse_returns_money_for_numeric_string() {
         assertEquals(Money(12.5), Money.parse("12.5"))
         assertEquals(Money(12.5), Money.parse(" 12.5 "))
