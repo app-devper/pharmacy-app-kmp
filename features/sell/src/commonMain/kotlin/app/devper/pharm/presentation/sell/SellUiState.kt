@@ -5,8 +5,10 @@ import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.KyCaptureFields
+import app.devper.pharm.domain.model.PricedBill
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
+import app.devper.pharm.domain.model.priceBill
 import app.devper.pharm.domain.extension.Tier
 import app.devper.pharm.common.AppException
 import app.devper.pharm.ui.common.BaseUiState
@@ -29,13 +31,14 @@ data class SellUiState(
 
     override val domainError: AppException? get() = errorState
 
-    val subtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
-    val cartDiscountAmount: Money get() = cartDiscount.apply(subtotal)
-    val total: Money get() = (subtotal - cartDiscountAmount).coerceAtLeast(Money.Zero)
-    val grossSubtotal: Money get() = cart.fold(Money.Zero) { acc, line -> acc + line.grossTotal }
-    val itemDiscountTotal: Money get() = (grossSubtotal - subtotal).roundToSatang()
+    val bill: PricedBill get() = priceBill(cart, cartDiscount)
+    val subtotal: Money get() = bill.subtotal
+    val cartDiscountAmount: Money get() = bill.cartDiscountAmount
+    val total: Money get() = bill.total
+    val grossSubtotal: Money get() = bill.grossSubtotal
+    val itemDiscountTotal: Money get() = bill.itemDiscountTotal
     val receivedNum: Double get() = received.toDoubleOrNull() ?: 0.0
-    val change: Money get() = (Money(receivedNum) - total).coerceAtLeast(Money.Zero)
+    val change: Money get() = bill.change(Money(receivedNum))
     val cartItemCount: Int get() = cart.sumOf { it.qty }
 
     val kyInitialFields: KyCaptureFields
