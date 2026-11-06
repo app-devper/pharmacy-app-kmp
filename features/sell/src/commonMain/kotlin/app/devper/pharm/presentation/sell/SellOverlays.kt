@@ -106,6 +106,8 @@ internal fun SellOverlays(
         PaymentDialog(
             received = sellState.received,
             total = sellState.total.amount,
+            change = sellState.change.amount,
+            shortBy = sellState.shortfall.amount,
             checkingOut = checkoutState.checkingOut,
             onReceivedChange = callbacks.onReceivedChange,
             onSubmit = callbacks.onSubmitPayment,
@@ -164,7 +166,7 @@ internal fun SellOverlays(
         if (sellState.cartDiscountSheetOpen) {
             CartDiscountSheet(
                 current = sellState.cartDiscount,
-                subtotal = sellState.subtotal.amount,
+                lines = sellState.cart,
                 onApply = callbacks.onApplyCartDiscount,
                 onDismiss = callbacks.onCloseCartDiscount,
             )

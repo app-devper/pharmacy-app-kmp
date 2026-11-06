@@ -28,10 +28,10 @@ class ParkedCartTest {
     }
 
     @Test
-    fun parkedCart_bill_rounds_the_sum_of_fractional_line_totals() {
+    fun parkedCart_bill_sums_rounded_line_totals() {
         val items = List(3) { CartLine(drug = drug(Money(1.115)), qty = 1) }
         val cart = parked(items)
-        assertEquals(Money(3.35), cart.bill.subtotal)
+        assertEquals(Money(3.36), cart.bill.subtotal)
         assertEquals(cart.bill.subtotal.roundToSatang(), cart.bill.subtotal)
     }
 }

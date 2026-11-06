@@ -91,4 +91,23 @@ class PricedBillTest {
         assertEquals(Money(0.19), bill.change(Money(115.0)))
         assertEquals(Money.Zero, bill.change(Money(100.0)))
     }
+
+    @Test
+    fun linesWithSubSatangTotals_areRoundedBeforeSumming() {
+        val lines = List(2) { CartLine(drug(Money(10.0)), qty = 1, discount = Money(0.333)) }
+
+        val bill = priceBill(lines, CartDiscount.None)
+
+        assertEquals(Money(19.34), bill.subtotal)
+        assertEquals(Money(19.34), bill.total)
+    }
+
+    @Test
+    fun shortfall_isTheRoundedAmountStillOwed() {
+        val bill = priceBill(listOf(CartLine(drug(Money(10.0)), qty = 1)), CartDiscount.None)
+
+        assertEquals(Money(4.0), bill.shortfall(Money(6.0)))
+        assertEquals(Money.Zero, bill.shortfall(Money(10.0)))
+        assertEquals(Money.Zero, bill.shortfall(Money(12.0)))
+    }
 }

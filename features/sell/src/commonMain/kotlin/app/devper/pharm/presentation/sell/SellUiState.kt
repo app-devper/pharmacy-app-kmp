@@ -39,6 +39,7 @@ data class SellUiState(
     val itemDiscountTotal: Money get() = bill.itemDiscountTotal
     val receivedNum: Double get() = received.toDoubleOrNull() ?: 0.0
     val change: Money get() = bill.change(Money(receivedNum))
+    val shortfall: Money get() = bill.shortfall(Money(receivedNum))
     val cartItemCount: Int get() = cart.sumOf { it.qty }
 
     val kyInitialFields: KyCaptureFields

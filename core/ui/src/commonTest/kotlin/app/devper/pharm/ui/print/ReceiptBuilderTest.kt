@@ -64,5 +64,7 @@ class ReceiptBuilderTest {
 
         assertEquals(6.0, receipt.itemDiscountTotal)
         assertEquals(30.0, receipt.subtotal)
+        assertEquals(104.94, receipt.total)
+        assertEquals(0.0, receipt.change)
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.presentation.sell.cashQuickAmounts
 import app.devper.pharm.ui.designsystem.PharmButton
 import app.devper.pharm.ui.designsystem.PharmButtonSize
@@ -36,6 +37,8 @@ import app.devper.pharm.ui.theme.tabular
 fun PaymentDialog(
     received: String,
     total: Double,
+    change: Double,
+    shortBy: Double,
     checkingOut: Boolean,
     onReceivedChange: (String) -> Unit,
     onSubmit: () -> Unit,
@@ -44,9 +47,8 @@ fun PaymentDialog(
 ) {
     val s = pharmStrings
     val receivedNum = received.toDoubleOrNull() ?: 0.0
-    val change = receivedNum - total
     val isExactOrEmpty = receivedNum == 0.0
-    val isShort = receivedNum > 0.0 && change < 0.0
+    val isShort = receivedNum > 0.0 && Money(receivedNum) < Money(total)
 
     val onKeypadKey = { key: String ->
         val hasDot = received.contains(".")
@@ -71,6 +73,7 @@ fun PaymentDialog(
                 isShort = isShort,
                 total = total,
                 change = change,
+                shortBy = shortBy,
                 checkingOut = checkingOut,
                 onSubmit = onSubmit,
                 onSubmitExact = onSubmitExact,
@@ -120,7 +123,7 @@ fun PaymentDialog(
                     label = s.sellPayChangeLabel,
                     value = when {
                         isExactOrEmpty -> s.sellPayExactTender
-                        isShort -> s.sellShortBy(fmtBaht(-change))
+                        isShort -> s.sellShortBy(fmtBaht(shortBy))
                         else -> fmtBaht(change)
                     },
                     bg = pharmTokens.colors.warningBg,
@@ -190,6 +193,7 @@ private fun PaymentCta(
     isShort: Boolean,
     total: Double,
     change: Double,
+    shortBy: Double,
     checkingOut: Boolean,
     onSubmit: () -> Unit,
     onSubmitExact: () -> Unit,
@@ -197,7 +201,7 @@ private fun PaymentCta(
     val s = pharmStrings
     val label = when {
         isExactOrEmpty -> s.sellPayExactCta
-        isShort -> s.sellShortBy(fmtBaht(-change))
+        isShort -> s.sellShortBy(fmtBaht(shortBy))
         else -> s.sellPayChangeCta(fmtBaht(change))
     }
     PharmButton(
@@ -217,6 +221,8 @@ private fun PaymentDialog_Exact_Preview() {
         PaymentDialog(
             received = "",
             total = 210.0,
+            change = 0.0,
+            shortBy = 0.0,
             checkingOut = false,
             onReceivedChange = {},
             onSubmit = {},
@@ -233,6 +239,8 @@ private fun PaymentDialog_WithChange_Preview() {
         PaymentDialog(
             received = "300",
             total = 210.0,
+            change = 90.0,
+            shortBy = 0.0,
             checkingOut = false,
             onReceivedChange = {},
             onSubmit = {},
@@ -249,6 +257,8 @@ private fun PaymentDialog_Short_Preview() {
         PaymentDialog(
             received = "100",
             total = 210.0,
+            change = 0.0,
+            shortBy = 110.0,
             checkingOut = false,
             onReceivedChange = {},
             onSubmit = {},
