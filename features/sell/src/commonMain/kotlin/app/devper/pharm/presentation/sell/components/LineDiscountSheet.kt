@@ -31,7 +31,7 @@ import app.devper.pharm.ui.i18n.pharmStrings
 @Composable
 fun LineDiscountSheet(
     line: CartLine,
-    onApply: (key: app.devper.pharm.domain.model.CartLineKey, discount: Double) -> Unit,
+    onApply: (key: app.devper.pharm.domain.model.CartLineKey, perDisplayUnit: Money) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val t = pharmTokens
@@ -88,17 +88,14 @@ fun LineDiscountSheet(
             ) {
                 PharmButton(
                     label = pharmStrings.sellDiscountClear,
-                    onClick = { onApply(line.key, 0.0) },
+                    onClick = { onApply(line.key, Money.Zero) },
                     variant = PharmButtonVariant.Ghost,
                     size = PharmButtonSize.Md,
                     modifier = Modifier.weight(1f),
                 )
                 PharmButton(
                     label = pharmStrings.commonSave,
-                    onClick = {
-                        val perBase = (parsed ?: 0.0) / factor
-                        onApply(line.key, perBase)
-                    },
+                    onClick = { onApply(line.key, Money(parsed ?: 0.0)) },
                     enabled = !invalid,
                     size = PharmButtonSize.Md,
                     modifier = Modifier.weight(1f),

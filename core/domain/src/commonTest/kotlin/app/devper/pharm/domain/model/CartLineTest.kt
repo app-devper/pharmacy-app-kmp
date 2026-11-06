@@ -63,4 +63,11 @@ class CartLineTest {
 
         assertEquals(Money(12.0), line.basePrice)
     }
+
+    @Test
+    fun savings_isTheDiscountTimesBaseQty() {
+        val line = CartLine(drug = drug(), qty = 18, discount = Money(0.5))
+
+        assertEquals(Money(9.0), line.savings)
+    }
 }

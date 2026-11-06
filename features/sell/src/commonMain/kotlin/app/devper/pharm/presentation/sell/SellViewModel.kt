@@ -1,6 +1,7 @@
 package app.devper.pharm.presentation.sell
 
 import app.devper.pharm.domain.cart.Cart
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.presentation.sell.flow.CheckoutViewModel
 import app.devper.pharm.presentation.sell.flow.CustomerPickerViewModel
 import app.devper.pharm.presentation.sell.flow.DrugPickerViewModel
@@ -71,8 +72,8 @@ class SellViewModel(
 
     fun onOpenLineDiscount(line: CartLine) = setState { copy(lineDiscountFor = line) }
     fun onCloseLineDiscount() = setState { copy(lineDiscountFor = null) }
-    fun onApplyLineDiscount(key: CartLineKey, discount: Double) {
-        cart.setLineDiscount(key, discount)
+    fun onApplyLineDiscount(key: CartLineKey, perDisplayUnit: Money) {
+        cart.setLineDiscount(key, perDisplayUnit)
         setState { copy(lineDiscountFor = null) }
     }
 
