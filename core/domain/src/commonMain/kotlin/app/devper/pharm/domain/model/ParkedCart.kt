@@ -11,9 +11,6 @@ data class ParkedCart(
     val parkedAt: Long,
 ) {
     val itemCount: Int get() = items.sumOf { it.qty }
-    val total: Money
-        get() {
-            val subtotal = items.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
-            return (subtotal - cartDiscount.apply(subtotal)).coerceAtLeast(Money.Zero)
-        }
+    val bill: PricedBill get() = priceBill(items, cartDiscount)
+    val total: Money get() = bill.total
 }

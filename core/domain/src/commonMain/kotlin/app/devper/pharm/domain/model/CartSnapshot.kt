@@ -13,7 +13,8 @@ data class CartSnapshot(
     val lastReceipt: Sale?,
 ) {
     val isEmpty: Boolean get() = items.isEmpty()
-    val subtotal: Money get() = items.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
-    val cartDiscountAmount: Money get() = cartDiscount.apply(subtotal)
-    val total: Money get() = (subtotal - cartDiscountAmount).coerceAtLeast(Money.Zero)
+    val bill: PricedBill get() = priceBill(items, cartDiscount)
+    val subtotal: Money get() = bill.subtotal
+    val cartDiscountAmount: Money get() = bill.cartDiscountAmount
+    val total: Money get() = bill.total
 }
