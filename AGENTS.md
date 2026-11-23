@@ -25,11 +25,13 @@ Branches: `main` (production), `develop` (default, integration),
 Deploy is **manual**. The Cloud Build trigger `deploy-pharm-app` (project
 `devperpos`, config [cloudbuild.yaml](./cloudbuild.yaml)) is **disabled** —
 its last run was 2026-08-10 — so merging to `main` deploys and tags nothing.
-After a release/hotfix lands, from a clean `main` checkout: tag
-`v<app-version>` by hand, then
+After a release/hotfix lands: tag `v<app-version>` by hand, then from that
+tagged `main` checkout
 `./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app`
-(Firebase Hosting site `pharm-app`, https://pharm-app.web.app).
-**Bump `app-version`** (+ `app-versionCode`) in `gradle/libs.versions.toml`
+(Firebase Hosting site `pharm-app`, https://pharm-app.web.app) and send the
+Android build to App Distribution (`dev-flow` stage 8, steps 6–8 — the same
+eight release steps as the other KMP repos).
+**Bump `app-version`** and `app-versionCode` in `gradle/libs.versions.toml`
 in every release/hotfix PR so the version, the tag and the shipped app agree.
 
 ## Navigation (two-level NavHost + single shell)

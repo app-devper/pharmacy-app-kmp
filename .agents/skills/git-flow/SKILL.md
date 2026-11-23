@@ -1,6 +1,6 @@
 ---
 name: git-flow
-description: Git flow branching for app-devper/pharmacy-app-kmp — main (production, manual deploy + tag after merge), develop (default, integration), feature/*, release/*, hotfix/*. Use when starting new work, opening a PR, cutting a release, hotfixing production, or deciding which base branch a change targets.
+description: Git flow branching for app-devper/pharmacy-app-kmp — main (production, manual tag + deploy after merge), develop (default, integration), feature/*, release/*, hotfix/*. Use when starting new work, opening a PR, cutting a release, hotfixing production, or deciding which base branch a change targets.
 ---
 
 # git-flow — branching + release model for this repo
@@ -16,7 +16,7 @@ lives in `dev-flow`; this skill owns the branch rules.
 
 | Branch | Role | PR target | After merge |
 |---|---|---|---|
-| `main` | production — deploy + tag by hand after every merge | — | back-merge into `develop` |
+| `main` | production — tag + deploy by hand after every merge | — | back-merge into `develop` |
 | `develop` | default branch, integration | — | — |
 | `feature/<x>` | new work, fixes for next release | `develop` | delete branch |
 | `release/<x.y.z>` | release cut from `develop` | `main` | back-merge `main` → `develop`, delete branch |
@@ -30,18 +30,14 @@ Both `main` and `develop` require the check
 The Cloud Build trigger `deploy-pharm-app` (project `devperpos`,
 [cloudbuild.yaml](../../../cloudbuild.yaml)) is **disabled** — its last run
 was 2026-08-10 — so merging `main` neither deploys nor tags. After a
-release/hotfix lands, from a clean `main` checkout:
+release/hotfix lands, tag first, then build and deploy the web app
+(https://pharm-app.web.app) and the Android build from the tagged `main`
+checkout. The commands are in `dev-flow` stage 8, steps 6–8 — only there,
+so the two skills cannot drift.
 
-```bash
-git checkout main && git pull --ff-only
-./gradlew :composeApp:wasmJsBrowserDistribution
-firebase deploy --only hosting:pharm-app --project devperpos   # https://pharm-app.web.app
-```
-
-and tag `v<app-version>` by hand (Tag recipe). Every `release/*` or
-`hotfix/*` PR must **bump `app-version`** (+ `app-versionCode` for Android)
-in `gradle/libs.versions.toml` so the version, the tag and the shipped app
-agree. If the trigger is re-enabled it also tags `v<app-version>` (skipping
+Every `release/*` or `hotfix/*` PR must **bump `app-version`** and
+`app-versionCode` in `gradle/libs.versions.toml` so the version, the tag
+and the shipped app agree. If the trigger is re-enabled it also tags `v<app-version>` (skipping
 an existing tag) — update this section then.
 
 ## Recipes
@@ -98,7 +94,7 @@ git push origin develop
   (see Back-merge).
 - Never open a feature PR against `main`; only `release/*` and `hotfix/*`
   target `main`.
-- A merge into `main` is a release — deploy it by hand right after, from
-  `main` (verify sweep green first).
+- A merge into `main` is a release — tag it, then deploy it by hand from
+  the tagged `main` (verify sweep green first).
 - Landing PRs (merge + branch cleanup + sync) is the **pr** skill's job —
   invoke `/pr` rather than hand-rolling the merge.
