@@ -116,7 +116,8 @@ directly.
    Build trigger `deploy-pharm-app` is disabled (last run 2026-08-10), so
    merging `main` deploys nothing.
    ```bash
-   git checkout main && git pull --ff-only   # HEAD is the commit tagged vX.Y.Z
+   git checkout main && git pull --ff-only
+   git describe --exact-match --tags HEAD    # must print vX.Y.Z; anything else: stop, main moved past the tag
    ./gradlew :composeApp:wasmJsBrowserDistribution
    firebase deploy --only hosting:pharm-app --project devperpos
    ./gradlew :androidApp:assembleRelease
@@ -130,8 +131,13 @@ directly.
    firebase hosting:channel:list --site pharm-app --project devperpos   # live release time is after the tag
    ```
    Then open https://pharm-app.web.app and see the new version load.
+   The `appdistribution:distribute` run in step 7 must have ended with
+   `… release X.Y.Z (<versionCode>) successfully` and
+   `distributed to testers/groups successfully` — the CLI cannot list
+   releases, so that output (or the App Distribution console) is the proof
+   for the Android build.
 
-**Exit:** tag `vX.Y.Z` on `main`, pharm-app.web.app released from that commit, `develop` contains `main`.
+**Exit:** tag `vX.Y.Z` on `main`, pharm-app.web.app released from that commit, the Android build on App Distribution, `develop` contains `main`.
 
 
 ### Android release key
@@ -161,6 +167,6 @@ steps 3 and 5–8 with a **patch** bump.
 - No direct pushes to `main` or `develop` except the stage-8 back-merge
   (admin only, see `git-flow`); every other change goes through a PR
   with `Linux (JVM + Android + WasmJs + audit)` green.
-- A merge into `main` is a release, deployed by hand right after —
+- A merge into `main` is a release, tagged and then deployed by hand —
   only `release/*` and `hotfix/*` PRs target `main`.
 - Never tag a commit that is not on `main`; never move or delete a pushed tag.

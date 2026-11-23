@@ -30,15 +30,10 @@ Both `main` and `develop` require the check
 The Cloud Build trigger `deploy-pharm-app` (project `devperpos`,
 [cloudbuild.yaml](../../../cloudbuild.yaml)) is **disabled** — its last run
 was 2026-08-10 — so merging `main` neither deploys nor tags. After a
-release/hotfix lands, tag first, then build and deploy from the tagged
-`main` checkout (`dev-flow` stage 8, steps 6–8):
-
-```bash
-git checkout main && git pull --ff-only
-git tag -a v<x.y.z> -m "v<x.y.z>" HEAD && git push origin v<x.y.z>
-./gradlew :composeApp:wasmJsBrowserDistribution
-firebase deploy --only hosting:pharm-app --project devperpos   # https://pharm-app.web.app
-```
+release/hotfix lands, tag first, then build and deploy the web app
+(https://pharm-app.web.app) and the Android build from the tagged `main`
+checkout. The commands are in `dev-flow` stage 8, steps 6–8 — only there,
+so the two skills cannot drift.
 
 Every `release/*` or `hotfix/*` PR must **bump `app-version`** and
 `app-versionCode` in `gradle/libs.versions.toml` so the version, the tag
