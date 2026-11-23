@@ -137,7 +137,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "PharmacyApp"
-            packageVersion = "1.0.0"
+            packageVersion = libs.versions.app.version.get()
         }
     }
 }

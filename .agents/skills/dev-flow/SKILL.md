@@ -101,40 +101,43 @@ directly.
    (`git log $(git describe --tags --abbrev=0 --match 'v*' origin/main)..origin/develop --oneline`):
    breaking → major, any `feat` → minor, only `fix` → patch.
 2. **Cut the branch:** `git-flow` release recipe → `release/X.Y.Z` from `develop`.
-3. **Version:** Bump `app-version` (+ `app-versionCode` for Android) in `gradle/libs.versions.toml`.
+3. **Version:** Bump `app-version` and `app-versionCode` (+1) in `gradle/libs.versions.toml`, in one commit on the release branch. Every target reads the catalog; no other file carries the version.
 4. **PR:** `gh pr create --base main --title "release: vX.Y.Z" --body "<changelog: PR list since last tag>"`.
    CI `Linux (JVM + Android + WasmJs + audit)` must be green.
-5. **Land:** `pr` skill (squash into `main`).
-6. **Deploy:** **Manual** — Cloud Build trigger `deploy-pharm-app` is disabled (last run 2026-08-10), so merging `main` deploys nothing. Deploy from a clean `main` checkout in step 9.
-7. **Tag:** Tag by hand — nothing tags automatically.
+5. **Land:** `pr` skill — it waits for the required check, squash-merges into
+   `main`, and back-merges `main` → `develop`.
+6. **Tag:** Tag by hand — nothing tags automatically.
    ```bash
    git checkout main && git pull --ff-only
    git tag -a vX.Y.Z -m "vX.Y.Z" HEAD   # HEAD = the "release: vX.Y.Z (#n)" squash commit
    git push origin vX.Y.Z
    ```
-8. **Back-merge** `main` → `develop` (`git-flow`; the `pr` skill does it
-   after a PR into `main`).
-9. **Deploy and check:**
+7. **Build and deploy:** **Manual**, from the tagged `main` checkout — the Cloud
+   Build trigger `deploy-pharm-app` is disabled (last run 2026-08-10), so
+   merging `main` deploys nothing.
    ```bash
-   git checkout main && git pull --ff-only
+   git checkout main && git pull --ff-only   # HEAD is the commit tagged vX.Y.Z
    ./gradlew :composeApp:wasmJsBrowserDistribution
    firebase deploy --only hosting:pharm-app --project devperpos
-   firebase hosting:channel:list --site pharm-app --project devperpos   # live release time
+   ./gradlew :androidApp:assembleRelease
+   firebase appdistribution:distribute androidApp/build/outputs/apk/release/androidApp-release.apk \
+     --project devperpos --app 1:1056670356976:android:4356c801c9c2a30da73935 --groups testers --release-notes "vX.Y.Z: <one line>"
    ```
+   The web build goes to Firebase Hosting site `pharm-app`; the Android build
+   goes to the testers through App Distribution (signing key below).
+8. **Check:**
+   ```bash
+   firebase hosting:channel:list --site pharm-app --project devperpos   # live release time is after the tag
+   ```
+   Then open https://pharm-app.web.app and see the new version load.
 
 **Exit:** tag `vX.Y.Z` on `main`, pharm-app.web.app released from that commit, `develop` contains `main`.
 
 
-### Android test builds: Firebase App Distribution
+### Android release key
 
-After the release lands, testers get the Android build from App Distribution
-(project `devperpos`, group `testers`, Firebase app `1:1056670356976:android:4356c801c9c2a30da73935`):
-```bash
-git checkout main && git pull --ff-only
-./gradlew :androidApp:assembleRelease
-firebase appdistribution:distribute androidApp/build/outputs/apk/release/androidApp-release.apk \
-  --project devperpos --app 1:1056670356976:android:4356c801c9c2a30da73935 --groups testers --release-notes "vX.Y.Z: <one line>"
-```
+The App Distribution build in step 7 (project `devperpos`, group `testers`,
+Firebase app `1:1056670356976:android:4356c801c9c2a30da73935`) must be signed.
 The release APK is signed with the key in `~/.devper/keystores/pharm-release.properties`
 (never in the repo; without it the APK is unsigned and App Distribution refuses it). It is
 backed up in Secret Manager of `devperpos`; on a new machine:
@@ -151,7 +154,7 @@ Losing the key means a new applicationId for every future install. A tester is a
 
 `git-flow` hotfix recipe: `hotfix/<slug>` from `main` → stages 4–6 (test
 reproducing the bug first) → PR into `main` titled `fix(scope): …` → release
-steps 3 and 5–9 with a **patch** bump.
+steps 3 and 5–8 with a **patch** bump.
 
 ## Guard rails
 

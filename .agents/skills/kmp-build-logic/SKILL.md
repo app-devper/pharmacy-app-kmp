@@ -102,10 +102,10 @@ plugin compiles green and throws `SerializationException` at runtime.
 `gradle/libs.versions.toml` is the single source of versions — nothing is
 pinned in a module build file. Two keys matter beyond dependencies:
 
-- **`app-version`** — the deploy pipeline tags `v<app-version>` on merge to
-  `main`. **Bump it in every release/hotfix PR** or the deploy runs but skips
-  tagging.
-- **`app-versionCode`** — the Android version code.
+- **`app-version`** — the release is tagged `v<app-version>` by hand after it
+  lands on `main`. **Bump it in every release/hotfix PR.** Android
+  (`versionName`), the desktop package and `BuildConfig` all read it.
+- **`app-versionCode`** — the Android version code; +1 in the same commit.
 
 ## 3. `auditArchitecture`
 
@@ -182,8 +182,8 @@ include(
 
 Deploy is manual. The Cloud Build trigger `deploy-pharm-app` (project
 `devperpos`, config `cloudbuild.yaml`) is disabled, so merging to `main`
-neither deploys nor tags. From a clean `main` checkout, after tagging
-`v<app-version>` by hand:
+neither deploys nor tags. Tag `v<app-version>` by hand first, then from
+that tagged `main` checkout (`dev-flow` stage 8, steps 6–8):
 ```bash
 ./gradlew :composeApp:wasmJsBrowserDistribution && firebase deploy --only hosting:pharm-app
 ```

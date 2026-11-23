@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Land the current branch's open pull request in app-devper/pharmacy-app-kmp — squash-merge (auto-merge if the required check is still running), delete the branch, sync the base branch, and back-merge main into develop when the PR targeted main. Use when the user says "pr land", "merge it", "/pr", or otherwise asks to land the current PR.
+description: Land the current branch's open pull request in app-devper/pharmacy-app-kmp — wait for the required check, squash-merge, delete the branch, sync the base branch, and back-merge main into develop when the PR targeted main. Use when the user says "pr land", "merge it", "/pr", or otherwise asks to land the current PR.
 ---
 
 # pr — land the current branch's PR
@@ -27,17 +27,16 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
 3. **Check mergeability.** `CONFLICTING` → stop and report — do **not**
    force. `UNKNOWN` → re-run step 1 once before proceeding.
 
-4. **Squash-merge**
+4. **Wait for CI, then squash-merge.** Never hand the merge to auto-merge:
+   wait for the required check and merge yourself.
    ```bash
-   gh pr checks <number>
+   gh pr checks <number> --required --watch --interval 30   # in the background; you're notified when it ends
+   gh pr checks <number> --required                         # "Linux (JVM + Android + WasmJs + audit)" pass?
+   gh pr merge <number> --squash --delete-branch
    ```
-   - Required check passed → `gh pr merge <number> --squash --delete-branch`
-   - Still running → `gh pr merge <number> --squash --auto --delete-branch`
-     then watch until it lands:
-     ```bash
-     gh pr view <number> --json state -q .state   # poll / Monitor until MERGED
-     ```
-   - Check failed → stop, show the failure, do not merge.
+   - Required check failed → stop, do not merge, and show the failing step:
+     `gh run list --branch <headRefName> -L 1 --json databaseId -q '.[0].databaseId'`
+     gives the run id for `gh run view <id> --log-failed`.
 
 5. **Sync the base branch and clean up**
    ```bash
@@ -56,9 +55,9 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
    Pushed directly on purpose (admin only; GitHub reports
    "Bypassed rule violations" — expected). Then check
    `gh run list --branch develop -L 1` is green.
-   Nothing deploys automatically (`deploy-pharm-app` is disabled) — remind
-   the user to tag `v<app-version>` and deploy by hand from `main`
-   (`git-flow` → What merging `main` does).
+   Nothing deploys or tags automatically (`deploy-pharm-app` is disabled) —
+   continue with `dev-flow` stage 8 steps 6–8: tag `v<app-version>`, build
+   and deploy from the tagged `main`, check.
 
 7. **Report**: merged PR number + URL, the squash commit SHA on the base
    branch (`git log --oneline -1`), branch deleted local + remote, and for
@@ -68,6 +67,7 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
 
 - Default strategy is `--squash`. Only `--merge` / `--rebase` if the user
   explicitly asks.
-- A merge into `main` deploys to production and tags `v<app-version>` —
-  confirm the release/hotfix PR bumped `app-version` before landing.
+- A merge into `main` is a release, tagged and deployed by hand right
+  after — confirm the release/hotfix PR bumped `app-version` and
+  `app-versionCode` before landing.
 - Run from inside `/Users/admin/ProjectPos/pharmacy-app/app-kmp`.
