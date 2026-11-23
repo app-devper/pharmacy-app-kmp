@@ -9,6 +9,8 @@ data class ActiveCart(
     val activeTier: String = Tier.Retail,
     val cashReceived: String = "",
 ) {
+    val bill: PricedBill get() = priceBill(items, cartDiscount)
+
     companion object {
         val Empty: ActiveCart = ActiveCart()
     }

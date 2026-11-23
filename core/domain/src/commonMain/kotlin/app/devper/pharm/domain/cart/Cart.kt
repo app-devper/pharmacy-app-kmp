@@ -63,11 +63,11 @@ class Cart(
         }
     }
 
-    fun setLineDiscount(key: CartLineKey, discount: Double) {
+    fun setLineDiscount(key: CartLineKey, perDisplayUnit: Money) {
         mutateActive { current ->
             current.copy(
                 items = current.items.map {
-                    if (it.key == key) it.copy(discount = clampedDiscount(discount, it)) else it
+                    if (it.key == key) it.copy(discount = clampedDiscount(perDisplayUnit, it)) else it
                 },
             )
         }
@@ -174,8 +174,6 @@ private fun CartState.snapshot() = CartSnapshot(
     lastReceipt = lastReceipt,
 )
 
-private fun clampedDiscount(discount: Double, line: CartLine): Money {
-    val asPack = (Money(discount) * line.factor).roundToSatang()
-    return if (asPack >= line.unitPrice) line.basePrice
-    else Money(discount.coerceIn(0.0, line.basePrice.amount))
-}
+private fun clampedDiscount(perDisplayUnit: Money, line: CartLine): Money =
+    if (perDisplayUnit.roundToSatang() >= line.unitPrice) line.basePrice
+    else (perDisplayUnit / line.factor).coerceAtLeast(Money.Zero).coerceAtMost(line.basePrice)

@@ -12,6 +12,7 @@ import app.devper.pharm.domain.model.CheckoutFailure
 import app.devper.pharm.domain.model.CheckoutOutcome
 import app.devper.pharm.domain.model.Customer
 import app.devper.pharm.domain.model.KyCaptureFields
+import app.devper.pharm.domain.model.PricedBill
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
 import app.devper.pharm.domain.observer.SettingsProvider
@@ -152,6 +153,7 @@ class CheckoutViewModel(
         val tzAtSubmit = timeZoneProvider.current
         val snap = cart.current
         val cartSnapshot = snap.items
+        val billSnapshot = snap.bill
         val customerSnapshot = snap.selectedCustomer
         val receivedSnapshot = snap.cashReceived.toDoubleOrNull() ?: 0.0
 
@@ -183,6 +185,7 @@ class CheckoutViewModel(
                         sale = outcome.sale,
                         tz = tzAtSubmit,
                         cart = cartSnapshot,
+                        bill = billSnapshot,
                         customer = customerSnapshot,
                         received = receivedSnapshot,
                     )
@@ -198,13 +201,15 @@ class CheckoutViewModel(
         sale: Sale,
         tz: kotlinx.datetime.TimeZone,
         cart: List<CartLine>,
+        bill: PricedBill,
         customer: Customer?,
         received: Double,
     ) {
         ky.settle()
         val template = buildReceiptTemplate(
             sale = sale,
-            cartSnapshot = cart,
+            bill = bill,
+            lines = cart,
             customer = customer,
             settings = lastSettings,
             received = received,

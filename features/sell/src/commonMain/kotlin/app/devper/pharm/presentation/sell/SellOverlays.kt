@@ -3,6 +3,7 @@ package app.devper.pharm.presentation.sell
 import app.devper.pharm.ui.components.LocalRolePermissions
 import androidx.compose.runtime.Composable
 import app.devper.pharm.common.print.ReceiptTemplate
+import app.devper.pharm.common.value.Money
 import app.devper.pharm.domain.model.AltUnit
 import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLineKey
@@ -49,7 +50,7 @@ data class SellOverlayCallbacks(
     val onCancelSkipKy: () -> Unit = {},
     val onPickCustomer: (Customer) -> Unit = {},
     val onCloseCustomerPicker: () -> Unit = {},
-    val onApplyLineDiscount: (CartLineKey, Double) -> Unit = { _, _ -> },
+    val onApplyLineDiscount: (CartLineKey, Money) -> Unit = { _, _ -> },
     val onCloseLineDiscount: () -> Unit = {},
     val onApplyCartDiscount: (CartDiscount) -> Unit = {},
     val onCloseCartDiscount: () -> Unit = {},
@@ -105,6 +106,8 @@ internal fun SellOverlays(
         PaymentDialog(
             received = sellState.received,
             total = sellState.total.amount,
+            change = sellState.change.amount,
+            shortBy = sellState.shortfall.amount,
             checkingOut = checkoutState.checkingOut,
             onReceivedChange = callbacks.onReceivedChange,
             onSubmit = callbacks.onSubmitPayment,
@@ -163,7 +166,7 @@ internal fun SellOverlays(
         if (sellState.cartDiscountSheetOpen) {
             CartDiscountSheet(
                 current = sellState.cartDiscount,
-                subtotal = sellState.subtotal.amount,
+                lines = sellState.cart,
                 onApply = callbacks.onApplyCartDiscount,
                 onDismiss = callbacks.onCloseCartDiscount,
             )

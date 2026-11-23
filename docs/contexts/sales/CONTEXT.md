@@ -24,6 +24,10 @@ _Avoid_: Cashier submission time
 The price recorded for a drug in a confirmed sale, distinct from its configured price at a later time.
 _Avoid_: Current catalog price
 
+**Satang rounding**:
+Every money amount in a Sale (line total, subtotal, discounts, total, change, refund) is settled to the satang, half-up, exactly once per value; the client's bill and the server's Sale show the same figures. Defined by pharmacy-api ADR-0013.
+_Avoid_: round-off, truncate
+
 **Return**:
 A reversal of some or all goods from a confirmed sale, with its own confirmed outcome.
 _Avoid_: New sale, repeated return

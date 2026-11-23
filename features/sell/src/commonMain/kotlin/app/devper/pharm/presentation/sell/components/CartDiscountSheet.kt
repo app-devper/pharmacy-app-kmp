@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.devper.pharm.domain.model.CartDiscount
+import app.devper.pharm.domain.model.CartLine
+import app.devper.pharm.domain.model.priceBill
 import app.devper.pharm.ui.designsystem.FormField
 import app.devper.pharm.ui.designsystem.PharmBottomSheet
 import app.devper.pharm.ui.designsystem.PharmButton
@@ -39,7 +41,7 @@ private enum class Kind { Flat, Percent }
 @Composable
 fun CartDiscountSheet(
     current: CartDiscount,
-    subtotal: Double,
+    lines: List<CartLine>,
     onApply: (CartDiscount) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -62,8 +64,10 @@ fun CartDiscountSheet(
         Kind.Flat -> CartDiscount.Flat(Money(value))
         Kind.Percent -> CartDiscount.Percent(value)
     }
-    val applied = proposed.apply(Money(subtotal)).amount
-    val net = (subtotal - applied).coerceAtLeast(0.0)
+    val subtotal = priceBill(lines, CartDiscount.None).subtotal.amount
+    val preview = priceBill(lines, proposed)
+    val applied = preview.cartDiscountAmount.amount
+    val net = preview.total.amount
     val invalid = when (kind) {
         Kind.Flat    -> value < 0 || value > subtotal
         Kind.Percent -> value < 0 || value > 100

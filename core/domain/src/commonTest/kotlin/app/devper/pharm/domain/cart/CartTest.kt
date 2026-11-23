@@ -67,9 +67,9 @@ class CartTest {
         cart.add(drug())
         val key = CartLineKey("d1", null)
 
-        cart.setLineDiscount(key, 25.0)
+        cart.setLineDiscount(key, Money(25.0))
         assertEquals(Money(10.0), cart.current.items.single().discount)
-        cart.setLineDiscount(key, -3.0)
+        cart.setLineDiscount(key, Money(-3.0))
         assertEquals(Money.Zero, cart.current.items.single().discount)
     }
 
@@ -144,7 +144,7 @@ class CartTest {
         cart.add(drug(), pack)
         val line = cart.current.items.single()
 
-        cart.setLineDiscount(line.key, line.unitPrice.amount / line.factor)
+        cart.setLineDiscount(line.key, Money(34.98))
 
         assertEquals(Money.Zero, cart.current.items.single().lineTotal)
     }
@@ -155,7 +155,7 @@ class CartTest {
         cart.add(drug(), pack)
         val key = cart.current.items.single().key
 
-        cart.setLineDiscount(key, 34.97 / 6)
+        cart.setLineDiscount(key, Money(34.97))
 
         val line = cart.current.items.single()
         assertEquals("0.01", line.lineTotal.format())
@@ -168,7 +168,7 @@ class CartTest {
         cart.add(drug(), pack)
         val key = cart.current.items.single().key
 
-        cart.setLineDiscount(key, 34.93 / 6)
+        cart.setLineDiscount(key, Money(34.93))
 
         val line = cart.current.items.single()
         assertEquals(Money(34.93 / 6), line.discount)

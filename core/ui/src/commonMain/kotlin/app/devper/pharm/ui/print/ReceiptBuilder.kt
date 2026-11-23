@@ -4,20 +4,19 @@ import app.devper.pharm.common.print.ReceiptLine
 import app.devper.pharm.common.print.ReceiptTemplate
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Customer
+import app.devper.pharm.domain.model.PricedBill
 import app.devper.pharm.domain.model.Sale
 import app.devper.pharm.domain.model.Settings
 
 fun buildReceiptTemplate(
     sale: Sale,
-    cartSnapshot: List<CartLine>,
+    bill: PricedBill,
+    lines: List<CartLine>,
     customer: Customer?,
     settings: Settings,
     received: Double,
     soldAtFormatted: String,
 ): ReceiptTemplate {
-    val grossSubtotal = cartSnapshot.sumOf { it.grossTotal.amount }
-    val subtotalAfterLineDiscounts = cartSnapshot.sumOf { it.lineTotal.amount }
-    val itemDiscountTotal = grossSubtotal - subtotalAfterLineDiscounts
     return ReceiptTemplate(
         storeName = settings.store.name,
         storeAddress = settings.store.address,
@@ -26,7 +25,7 @@ fun buildReceiptTemplate(
         billNo = sale.billNo,
         soldAt = soldAtFormatted,
         customerName = customer?.name.orEmpty(),
-        items = cartSnapshot.map { line ->
+        items = lines.map { line ->
             ReceiptLine(
                 name = line.drug.name,
                 displayQty = line.displayQty,
@@ -35,8 +34,8 @@ fun buildReceiptTemplate(
                 lineTotal = line.lineTotal.amount,
             )
         },
-        subtotal = grossSubtotal,
-        itemDiscountTotal = itemDiscountTotal,
+        subtotal = bill.grossSubtotal.amount,
+        itemDiscountTotal = bill.itemDiscountTotal.amount,
         cartDiscount = sale.discount.amount,
         total = sale.total.amount,
         received = received,

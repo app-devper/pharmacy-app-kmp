@@ -30,6 +30,8 @@ data class CartLine(
     val effectiveUnitPrice: Money
         get() = (unitPrice - discount * factor).coerceAtLeast(Money.Zero)
 
+    val savings: Money get() = discount * qty
+
     val lineTotal: Money get() = (basePrice - discount).coerceAtLeast(Money.Zero) * qty
 }
 

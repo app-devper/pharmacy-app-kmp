@@ -134,7 +134,7 @@ fun CartScreen(
     if (sellState.cartDiscountSheetOpen) {
         CartDiscountSheet(
             current = sellState.cartDiscount,
-            subtotal = sellState.subtotal.amount,
+            lines = sellState.cart,
             onApply = sellVM::onApplyCartDiscount,
             onDismiss = sellVM::onCloseCartDiscount,
         )
@@ -170,6 +170,8 @@ fun CartScreen(
         PaymentDialog(
             received = sellState.received,
             total = sellState.total.amount,
+            change = sellState.change.amount,
+            shortBy = sellState.shortfall.amount,
             checkingOut = checkoutState.checkingOut,
             onReceivedChange = sellVM::onReceivedChange,
             onSubmit = checkoutVM::submit,

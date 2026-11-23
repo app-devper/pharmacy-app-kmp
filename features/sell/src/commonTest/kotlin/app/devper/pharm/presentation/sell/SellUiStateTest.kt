@@ -2,12 +2,11 @@ package app.devper.pharm.presentation.sell
 
 import app.devper.pharm.common.value.Money
 import app.devper.pharm.common.value.Quantity
-import app.devper.pharm.domain.model.AltUnit
+import app.devper.pharm.domain.model.CartDiscount
 import app.devper.pharm.domain.model.CartLine
 import app.devper.pharm.domain.model.Drug
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class SellUiStateTest {
 
@@ -27,29 +26,16 @@ class SellUiStateTest {
     )
 
     @Test
-    fun grossSubtotal_countsAnAltUnitLineOnce_notOncePerBaseUnit() {
-        val box = AltUnit(name = "กล่อง", factor = 10, sellPrice = Money(100.0))
-        val state = SellUiState(cart = listOf(CartLine(drug = drug(), qty = 20, selectedUnit = box)))
+    fun totals_areTheBillsTotals() {
+        val line = CartLine(drug = drug(), qty = 3, discount = Money(1.0))
+        val state = SellUiState(
+            cart = listOf(line),
+            cartDiscount = CartDiscount.Percent(7.0),
+            received = "100",
+        )
 
-        assertEquals(Money(200.0), state.grossSubtotal)
-        assertEquals(Money.Zero, state.itemDiscountTotal)
-    }
-
-    @Test
-    fun itemDiscountTotal_isTheDiscountGivenOnLines() {
-        val line = CartLine(drug = drug(sellPrice = Money(10.0)), qty = 3, discount = Money(1.0))
-        val state = SellUiState(cart = listOf(line))
-
-        assertEquals(Money(30.0), state.grossSubtotal)
-        assertEquals(Money(3.0), state.itemDiscountTotal)
-    }
-
-    @Test
-    fun itemDiscountTotal_isExactlyZero_forAnUndiscountedPack() {
-        val pack = AltUnit(name = "แพ็ค", factor = 6, sellPrice = Money(35.0))
-        val state = SellUiState(cart = listOf(CartLine(drug = drug(), qty = 18, selectedUnit = pack)))
-
-        assertEquals(Money.Zero, state.itemDiscountTotal)
-        assertTrue(state.itemDiscountTotal.isZero)
+        assertEquals(state.bill.total, state.total)
+        assertEquals(state.bill.itemDiscountTotal, state.itemDiscountTotal)
+        assertEquals(state.bill.change(Money(state.receivedNum)), state.change)
     }
 }

@@ -111,6 +111,18 @@ class CheckoutUseCaseTest {
     }
 
     @Test
+    fun percentDiscount_isSentAsATwoDecimalAmount() = runTest {
+        val sales = FakeSales()
+        val active = ActiveCart(
+            items = listOf(CartLine(drug = drug("a", stock = 10).copy(sellPrice = Money(123.45)), qty = 1)),
+            cartDiscount = CartDiscount.Percent(7.0),
+            cashReceived = "200",
+        )
+        useCase(active, sales).invoke(received = Money(200.0)).getOrThrow()
+        assertEquals(Money(8.64), sales.lastParam!!.discount)
+    }
+
+    @Test
     fun line_without_alt_unit_sends_unit_factor_one_not_zero() = runTest {
         val sales = FakeSales()
         val line = CartLine(drug = drug("a", stock = 10), qty = 2)

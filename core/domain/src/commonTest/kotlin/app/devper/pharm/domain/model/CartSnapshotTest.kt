@@ -28,9 +28,9 @@ class CartSnapshotTest {
             items = listOf(CartLine(drug = drug(Money(10.0)), qty = 3)),
             discount = CartDiscount.Percent(percent = 10.0),
         )
-        assertEquals(Money(30.0), snap.subtotal)
-        assertEquals(Money(3.0), snap.cartDiscountAmount)
-        assertEquals(Money(27.0), snap.total)
+        assertEquals(Money(30.0), snap.bill.subtotal)
+        assertEquals(Money(3.0), snap.bill.cartDiscountAmount)
+        assertEquals(Money(27.0), snap.bill.total)
         assertFalse(snap.isEmpty)
     }
 
@@ -40,5 +40,22 @@ class CartSnapshotTest {
         assertTrue(snap.isEmpty)
         assertEquals(Money.Zero, snap.subtotal)
         assertEquals(Money.Zero, snap.total)
+    }
+
+    @Test
+    fun change_is_zero_when_received_equals_total() {
+        val snap = snapshot(
+            items = listOf(CartLine(drug = drug(Money(10.0)), qty = 3)),
+            discount = CartDiscount.Percent(percent = 10.0),
+        )
+        assertEquals(Money.Zero, snap.bill.change(snap.bill.total))
+    }
+
+    @Test
+    fun activeCart_bill_matches_snapshot_bill() {
+        val items = listOf(CartLine(drug = drug(Money(10.0)), qty = 3))
+        val discount = CartDiscount.Percent(percent = 10.0)
+        val active = ActiveCart(items = items, cartDiscount = discount)
+        assertEquals(snapshot(items, discount).bill, active.bill)
     }
 }

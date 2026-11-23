@@ -221,8 +221,7 @@ private fun CartLinePrice(line: CartLine) {
 
 private fun priceMetaLabel(line: CartLine, s: PharmStrings): String {
     if (line.discount.isPositive) {
-        val saved = line.discount * line.qty
-        return "−${fmtBaht(saved.amount)}"
+        return "−${fmtBaht(line.savings.amount)}"
     }
     return when (line.tier) {
         "wholesale" -> s.sellTierWholesale

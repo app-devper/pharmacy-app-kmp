@@ -220,7 +220,7 @@ class SellViewModelTest {
         advanceUntilIdle()
         vm.onOpenLineDiscount(theLine)
         assertNotNull(vm.state.value.lineDiscountFor)
-        vm.onApplyLineDiscount(theLine.key, discount = 1.50)
+        vm.onApplyLineDiscount(theLine.key, Money(1.50))
         advanceUntilIdle()
         assertEquals(Money(1.50), cart.current.items.single().discount)
         assertNull(vm.state.value.lineDiscountFor)

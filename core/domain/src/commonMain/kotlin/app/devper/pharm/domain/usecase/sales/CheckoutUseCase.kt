@@ -101,8 +101,6 @@ class CheckoutUseCase(
     private fun buildCheckoutParam(snapshot: ActiveCart, param: RunCheckoutParam): CheckoutParam {
         val lines = snapshot.items
         val tier = snapshot.activeTier
-        val subtotal = lines.fold(Money.Zero) { acc, line -> acc + line.lineTotal }
-        val discountAmount = snapshot.cartDiscount.apply(subtotal)
         val oversoldDrugIds = if (param.allowOversell) {
             computeShortfalls(lines).map { it.drugId }.toSet()
         } else emptySet()
@@ -123,7 +121,7 @@ class CheckoutUseCase(
             },
             received = param.received,
             customerId = snapshot.customer?.id,
-            discount = discountAmount,
+            discount = snapshot.bill.cartDiscountAmount,
             priceTier = tier,
             kySkippedByCashier = param.kySkippedByCashier,
             ky = param.ky,
