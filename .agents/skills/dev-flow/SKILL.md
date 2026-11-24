@@ -1,6 +1,6 @@
 ---
 name: dev-flow
-description: End-to-end delivery flow for app-devper/pharmacy-app-kmp — from an idea or bug through shaping, design, test-first build, verify, review, PR into develop, release PR into main, tag, deploy check and back-merge. Says which skill to use at each stage. Use when starting any change, when unsure what comes next, or when asked to ship, release or hotfix.
+description: End-to-end delivery flow for app-devper/pharmacy-app-kmp — from an idea or bug through shaping, design, test-first build, verify, review, PR into develop, release PR into main, back-merge, tag, build and deploy, check. Says which skill to use at each stage. Use when starting any change, when unsure what comes next, or when asked to ship, release or hotfix.
 ---
 
 # dev-flow — idea → release for pharmacy-app-kmp
@@ -101,7 +101,7 @@ directly.
    (`git log $(git describe --tags --abbrev=0 --match 'v*' origin/main)..origin/develop --oneline`):
    breaking → major, any `feat` → minor, only `fix` → patch.
 2. **Cut the branch:** `git-flow` release recipe → `release/X.Y.Z` from `develop`.
-3. **Version:** Bump `app-version` and `app-versionCode` (+1) in `gradle/libs.versions.toml`, in one commit on the release branch. Every target reads the catalog; no other file carries the version.
+3. **Version:** Bump `app-version` and `app-versionCode` (+1) in `gradle/libs.versions.toml`, in one commit on the release branch. Every shipped target reads the catalog. The one other copy is `iosApp/iosApp/Info.plist` (0.1.0); iOS is not shipped, so leave it.
 4. **PR:** `gh pr create --base main --title "release: vX.Y.Z" --body "<changelog: PR list since last tag>"`.
    CI `Linux (JVM + Android + WasmJs + audit)` must be green.
 5. **Land:** `pr` skill — it waits for the required check, squash-merges into

@@ -57,7 +57,8 @@ gh pr create --base develop --title "..." --body "..."
 ```bash
 git checkout develop && git pull --ff-only
 git checkout -b release/<x.y.z>
-# bump app-version (and app-versionCode) in gradle/libs.versions.toml
+# bump app-version and app-versionCode in gradle/libs.versions.toml, commit
+git push -u origin release/<x.y.z>
 gh pr create --base main --title "release: v<x.y.z>" --body "..."
 ```
 
@@ -66,7 +67,8 @@ gh pr create --base main --title "release: v<x.y.z>" --body "..."
 ```bash
 git checkout main && git pull --ff-only
 git checkout -b hotfix/<slug>
-# fix + bump patch version
+# failing test, fix + bump app-version (patch) and app-versionCode, commit
+git push -u origin hotfix/<slug>
 gh pr create --base main --title "fix(...): ..." --body "..."
 ```
 
