@@ -27,17 +27,17 @@ private data class DummyFormState(
 }
 
 private class DummyFormViewModel(
-    private val persistResult: () -> Result<Unit>,
+    private val persistAction: () -> Unit,
 ) : BaseFormViewModel<DummyFormState>(DummyFormState()) {
     fun setName(value: String) = setState { copy(name = value) }
-    override suspend fun persist(): Result<Unit> = persistResult()
+    override suspend fun persist() = persistAction()
 }
 
 class BaseFormViewModelTest {
 
     @Test
     fun submit_is_noop_when_canSubmit_is_false() = runVmTest { _ ->
-        val vm = DummyFormViewModel(persistResult = { Result.success(Unit) })
+        val vm = DummyFormViewModel(persistAction = { })
         vm.submit()
         advanceUntilIdle()
         assertFalse(vm.state.value.saving)
@@ -46,7 +46,7 @@ class BaseFormViewModelTest {
 
     @Test
     fun submit_sets_saving_then_saved_on_success() = runVmTest { _ ->
-        val vm = DummyFormViewModel(persistResult = { Result.success(Unit) })
+        val vm = DummyFormViewModel(persistAction = { })
         vm.setName("น้ำเกลือ")
         vm.submit()
         advanceUntilIdle()
@@ -57,7 +57,7 @@ class BaseFormViewModelTest {
 
     @Test
     fun submit_with_untyped_throwable_maps_to_save_failed() = runVmTest { _ ->
-        val vm = DummyFormViewModel(persistResult = { Result.failure(IllegalStateException("server down")) })
+        val vm = DummyFormViewModel(persistAction = { throw IllegalStateException("server down") })
         vm.setName("น้ำเกลือ")
         vm.submit()
         advanceUntilIdle()
@@ -68,7 +68,7 @@ class BaseFormViewModelTest {
 
     @Test
     fun submit_with_typed_AppException_passes_it_through() = runVmTest { _ ->
-        val vm = DummyFormViewModel(persistResult = { Result.failure(AuthException()) })
+        val vm = DummyFormViewModel(persistAction = { throw AuthException() })
         vm.setName("น้ำเกลือ")
         vm.submit()
         advanceUntilIdle()
@@ -79,7 +79,7 @@ class BaseFormViewModelTest {
 
     @Test
     fun dismissError_clears_error() = runVmTest { _ ->
-        val vm = DummyFormViewModel(persistResult = { Result.failure(RuntimeException("x")) })
+        val vm = DummyFormViewModel(persistAction = { throw RuntimeException("x") })
         vm.setName("Foo")
         vm.submit()
         advanceUntilIdle()
@@ -90,7 +90,7 @@ class BaseFormViewModelTest {
 
     @Test
     fun resetSaved_clears_saved_flag() = runVmTest { _ ->
-        val vm = DummyFormViewModel(persistResult = { Result.success(Unit) })
+        val vm = DummyFormViewModel(persistAction = { })
         vm.setName("Foo")
         vm.submit()
         advanceUntilIdle()

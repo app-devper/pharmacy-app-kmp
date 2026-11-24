@@ -30,6 +30,12 @@ abstract class BaseViewModel<S : BaseUiState>(
         Result.failure(e)
     }
 
+    protected fun <T> launchCatching(
+        block: suspend () -> T,
+        onSuccess: suspend (T) -> Unit,
+        onFailure: suspend (Throwable) -> Unit = {  },
+    ) = launchResult(block = { catching(block) }, onSuccess = onSuccess, onFailure = onFailure)
+
     protected fun <T> launchResult(
         block: suspend () -> Result<T>,
         onSuccess: suspend (T) -> Unit,

@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,5 +49,16 @@ class Ky11AddViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.saved)
         assertTrue(repo.ky11Submissions.isEmpty())
+    }
+
+    @Test
+    fun submit_keeps_the_form_unsaved_when_the_save_fails() = runVmTest { d ->
+        val vm = Ky11AddViewModel(FakeKyRepository(ky11Throws = true))
+        fill(vm)
+        vm.submit()
+        advanceUntilIdle()
+        assertFalse(vm.state.value.saved)
+        assertFalse(vm.state.value.saving)
+        assertNotNull(vm.state.value.domainError)
     }
 }

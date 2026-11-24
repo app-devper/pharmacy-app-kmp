@@ -110,13 +110,11 @@ class StockCountFormViewModel(
             return
         }
         setState { copy(saving = true) }
-        launchResult(
+        launchCatching(
             block = {
-                Result.success(
-                    increases.mapNotNull { (id, name, delta) ->
-                        LotChoice.forIncrease(lots.listLots(id))?.let { CountLotLine(drugId = id, drugName = name, delta = delta, lot = it) }
-                    },
-                )
+                increases.mapNotNull { (id, name, delta) ->
+                    LotChoice.forIncrease(lots.listLots(id))?.let { CountLotLine(drugId = id, drugName = name, delta = delta, lot = it) }
+                }
             },
             onSuccess = { lines ->
                 setState { copy(saving = false) }
@@ -145,8 +143,8 @@ class StockCountFormViewModel(
 
     fun reload() {
         setState { copy(loading = drugs.isEmpty(), errorState = null) }
-        launchResult(
-            block = { Result.success(drugs.list()) },
+        launchCatching(
+            block = { drugs.list() },
             onSuccess = { list ->
                 setState {
                     val validIds = list.asSequence().map { it.id }.toHashSet()
@@ -158,13 +156,12 @@ class StockCountFormViewModel(
         )
     }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val s = current
         val lines = buildStockCountInput(s.counts).map { it.copy(lot = s.chosenLots[it.drugId]) }
         stockCounts.add(CreateStockCountParam(note = s.note.trim(), items = lines))
         drafts.clear()
         setState { copy(counts = emptyMap(), note = "", chosenLots = emptyMap()) }
-        return Result.success(Unit)
     }
 
     private fun hydrate() {

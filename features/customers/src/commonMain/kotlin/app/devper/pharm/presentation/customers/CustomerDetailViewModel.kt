@@ -12,8 +12,8 @@ class CustomerDetailViewModel(
         setState {
             copy(customer = null, sales = emptyList(), customerLoading = true, salesLoading = true)
         }
-        launchResult(
-            block = { Result.success(customers.list()) },
+        launchCatching(
+            block = { customers.list() },
             onSuccess = { list ->
                 val c = list.firstOrNull { it.id == customerId }
                 setState { copy(customerLoading = false, customer = c, errorState = errorState ?: if (c == null) CustomerDetailUiStateError.CustomerNotFound() else null) }
@@ -22,8 +22,8 @@ class CustomerDetailViewModel(
                 setState { copy(customerLoading = false, errorState = errorState ?: CustomerDetailUiStateError.LoadCustomerFailed(e)) }
             },
         )
-        launchResult(
-            block = { Result.success(customers.getCustomerSales(customerId)) },
+        launchCatching(
+            block = { customers.getCustomerSales(customerId) },
             onSuccess = { list -> setState { copy(salesLoading = false, sales = list) } },
             onFailure = { e ->
                 setState { copy(salesLoading = false, errorState = errorState ?: CustomerDetailUiStateError.LoadSalesFailed(e)) }

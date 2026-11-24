@@ -26,7 +26,7 @@ private data class DummyLoadableState(
 private class DummyLoadableViewModel : BaseLoadableViewModel<DummyLoadableState>(DummyLoadableState()) {
     fun fail() = setState { withDomainError(CommonUiStateError.LoadFailed()) }
 
-    fun read(fetch: suspend () -> Result<Int>) = load(
+    fun read(fetch: suspend () -> Int) = load(
         fetch = fetch,
         failure = { e -> CommonUiStateError.LoadFailed(e) },
         onLoaded = { v -> copy(value = v) },
@@ -47,10 +47,10 @@ class BaseLoadableViewModelTest {
     @Test
     fun load_shows_loading_then_applies_the_value() = runVmTest { _ ->
         val vm = DummyLoadableViewModel()
-        val answer = CompletableDeferred<Result<Int>>()
+        val answer = CompletableDeferred<Int>()
         vm.read { answer.await() }
         assertTrue(vm.state.value.loading)
-        answer.complete(Result.success(7))
+        answer.complete(7)
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertEquals(7, vm.state.value.value)
@@ -59,10 +59,10 @@ class BaseLoadableViewModelTest {
     @Test
     fun load_clears_the_previous_error_and_keeps_data_on_a_typed_failure() = runVmTest { _ ->
         val vm = DummyLoadableViewModel()
-        vm.read { Result.success(3) }
+        vm.read { 3 }
         advanceUntilIdle()
         vm.fail()
-        vm.read { Result.failure(RuntimeException("offline")) }
+        vm.read { throw RuntimeException("offline") }
         assertNull(vm.state.value.errorState)
         advanceUntilIdle()
         assertIs<CommonUiStateError.LoadFailed>(vm.state.value.errorState)
@@ -73,11 +73,11 @@ class BaseLoadableViewModelTest {
     @Test
     fun a_newer_load_wins_over_an_older_one_that_answers_late() = runVmTest { _ ->
         val vm = DummyLoadableViewModel()
-        val older = CompletableDeferred<Result<Int>>()
+        val older = CompletableDeferred<Int>()
         vm.read { older.await() }
-        vm.read { Result.success(2) }
+        vm.read { 2 }
         advanceUntilIdle()
-        older.complete(Result.success(1))
+        older.complete(1)
         advanceUntilIdle()
         assertEquals(2, vm.state.value.value)
         assertFalse(vm.state.value.loading)

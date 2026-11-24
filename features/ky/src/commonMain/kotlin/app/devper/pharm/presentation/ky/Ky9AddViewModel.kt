@@ -20,7 +20,7 @@ class Ky9AddViewModel(
     fun onSeller(v: String) = patch { copy(seller = v) }
     fun onInvoiceNo(v: String) = patch { copy(invoiceNo = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val d = current.draft
         val param = buildKy9Draft(
             date = d.date,
@@ -31,9 +31,8 @@ class Ky9AddViewModel(
             pricePerUnit = d.pricePerUnit,
             seller = d.seller,
             invoiceNo = d.invoiceNo,
-        ).getOrElse { return Result.failure(it) }
+        ).getOrThrow()
         ky.addKy9(param)
-        return Result.success(Unit)
     }
 
     private fun patch(transform: Ky9Draft.() -> Ky9Draft) {

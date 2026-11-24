@@ -115,7 +115,7 @@ features/<feat>/src/commonMain/kotlin/app/devper/pharm/
   presentation/<feat>/
     <X>UiState.kt            data class : BaseUiState — loading + errorState + fields + derived gets
     <X>Callbacks.kt          data class of lambdas, each defaulted to {}
-    <X>ViewModel.kt          class : BaseViewModel<<X>UiState> — use cases only
+    <X>ViewModel.kt          class : BaseViewModel<<X>UiState> — domain dependencies only
     <X>Content.kt            stateless @Composable(state, callbacks) + ≥3 @Preview
     <X>Screen.kt             stateful @Composable wiring koinViewModel() → Content
     <X>Table.kt / <X>Toolbar.kt / …            further stateless splits
@@ -133,7 +133,7 @@ Key rules:
   UiState} is a defect.
 - `di/<Feat>Module.kt` imports only ViewModel types (A23 fails the build if it
   imports a use case, observer or parser).
-- ViewModels depend on use cases only — never repositories, APIs or `:core:data`
+- ViewModels depend on a use case where there is a rule or more than one repository to coordinate, otherwise the repository interface from `:core:domain` (ADR-0018) — never APIs or `:core:data`
   (A20).
 - Screens use `collectAsStateWithLifecycle()`, never `collectAsState()`.
 - List/dashboard Screens call `ReloadOnResume(vm::reload)`.

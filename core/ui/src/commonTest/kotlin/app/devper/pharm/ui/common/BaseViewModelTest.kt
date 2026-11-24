@@ -2,6 +2,9 @@
 
 package app.devper.pharm.ui.common
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,6 +32,25 @@ private class CounterViewModel : BaseViewModel<CounterState>(CounterState()) {
             onFailure = { e -> setState { copy(loading = false, message = e.message) } },
         )
     }
+
+    fun loadCatching(value: Int, fail: Boolean = false) {
+        setState { copy(loading = true) }
+        launchCatching(
+            block = { if (fail) throw IllegalStateException("nope") else value },
+            onSuccess = { setState { copy(loading = false, count = it) } },
+            onFailure = { e -> setState { copy(loading = false, message = e.message) } },
+        )
+    }
+
+    fun awaitCatching(gate: CompletableDeferred<Int>) {
+        launchCatching(
+            block = { gate.await() },
+            onSuccess = { setState { copy(count = it) } },
+            onFailure = { e -> setState { copy(message = e.message) } },
+        )
+    }
+
+    fun cancelScope() = viewModelScope.cancel()
 
     fun loadThrowingBlock() {
         setState { copy(loading = true) }
@@ -85,6 +107,34 @@ class BaseViewModelTest {
         advanceUntilIdle()
         assertFalse(vm.state.value.loading)
         assertEquals("kaboom", vm.state.value.message)
+    }
+
+    @Test
+    fun launchCatching_onSuccess_writes_value() = runVmTest { _ ->
+        val vm = CounterViewModel()
+        vm.loadCatching(value = 42)
+        advanceUntilIdle()
+        assertEquals(42, vm.state.value.count)
+        assertNull(vm.state.value.message)
+    }
+
+    @Test
+    fun launchCatching_routes_a_thrown_exception_to_onFailure() = runVmTest { _ ->
+        val vm = CounterViewModel()
+        vm.loadCatching(value = 0, fail = true)
+        advanceUntilIdle()
+        assertFalse(vm.state.value.loading)
+        assertEquals("nope", vm.state.value.message)
+    }
+
+    @Test
+    fun launchCatching_does_not_report_cancellation() = runVmTest { _ ->
+        val vm = CounterViewModel()
+        vm.awaitCatching(CompletableDeferred())
+        advanceUntilIdle()
+        vm.cancelScope()
+        advanceUntilIdle()
+        assertNull(vm.state.value.message)
     }
 
     @Test

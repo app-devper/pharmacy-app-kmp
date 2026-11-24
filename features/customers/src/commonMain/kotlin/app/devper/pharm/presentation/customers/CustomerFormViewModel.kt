@@ -19,13 +19,12 @@ class CustomerFormViewModel(
     fun onAllergyNote(v: String) = patch { copy(allergyNote = v) }
     fun onPriceTier(v: String) = patch { copy(priceTier = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val input = current.form.toInput()
         when (val mode = current.mode) {
             is CustomerFormMode.Add  -> customers.add(input)
             is CustomerFormMode.Edit -> customers.update(mode.customerId, input)
         }
-        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(id: String) = hydrate(

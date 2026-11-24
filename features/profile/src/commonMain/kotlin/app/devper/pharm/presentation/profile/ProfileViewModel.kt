@@ -65,22 +65,23 @@ class ProfileViewModel(
         )
     }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val f = current.form
-        return updateProfile(
+        val user = updateProfile(
             UpdateProfileParam(
                 firstName = f.firstName.trim(),
                 lastName = f.lastName.trim(),
                 phone = f.phone.trim(),
                 email = f.email.trim(),
             ),
-        ).onSuccess { user -> hydrate(user) }.map { Unit }
+        ).getOrThrow()
+        hydrate(user)
     }
 
     private fun load() {
         setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(signedInUser.load()) },
+        launchCatching(
+            block = { signedInUser.load() },
             onSuccess = { user ->
                 hydrate(user)
                 setState { copy(loading = false) }

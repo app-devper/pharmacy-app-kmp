@@ -29,8 +29,8 @@ class CustomerPickerViewModel(
 
     private fun load() {
         setState { copy(loading = true) }
-        launchResult(
-            block = { Result.success(customers.list()) },
+        launchCatching(
+            block = { customers.list() },
             onSuccess = { list -> setState { copy(loading = false, customers = list) } },
             onFailure = { e -> setState { copy(loading = false, errorState = CustomerPickerUiStateError.LoadCustomersFailed(e)) } },
         )

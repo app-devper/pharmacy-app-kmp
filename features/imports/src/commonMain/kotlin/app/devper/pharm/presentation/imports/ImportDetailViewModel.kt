@@ -19,8 +19,8 @@ class ImportDetailViewModel(
     fun reload() {
         val id = importId ?: return
         setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(purchaseOrders.get(id)) },
+        launchCatching(
+            block = { purchaseOrders.get(id) },
             onSuccess = { po -> setState { copy(loading = false, po = po) } },
             onFailure = { e -> setState { copy(loading = false, errorState = ImportsUiStateError.LoadOrderFailed(e)) } },
         )
@@ -35,8 +35,8 @@ class ImportDetailViewModel(
     fun confirmNow() {
         val id = importId ?: return
         setState { copy(confirmDialog = false, confirming = true, errorState = null) }
-        launchResult(
-            block = { Result.success(purchaseOrders.confirm(id)) },
+        launchCatching(
+            block = { purchaseOrders.confirm(id) },
             onSuccess = { po -> setState { copy(confirming = false, po = po) } },
             onFailure = { e -> setState { copy(confirming = false, errorState = ImportsUiStateError.ConfirmFailed(e)) } },
         )
@@ -45,8 +45,8 @@ class ImportDetailViewModel(
     fun deleteNow() {
         val id = importId ?: return
         setState { copy(deleteDialog = false, deleting = true, errorState = null) }
-        launchResult(
-            block = { Result.success(purchaseOrders.delete(id)) },
+        launchCatching(
+            block = { purchaseOrders.delete(id) },
             onSuccess = { setState { copy(deleting = false, closed = true) } },
             onFailure = { e -> setState { copy(deleting = false, errorState = CommonUiStateError.DeleteFailed(e)) } },
         )

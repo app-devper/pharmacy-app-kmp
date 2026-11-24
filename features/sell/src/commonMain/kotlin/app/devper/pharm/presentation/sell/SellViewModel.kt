@@ -46,8 +46,8 @@ class SellViewModel(
             .onEach { s -> setState { copy(settings = s) } }
             .launchIn(viewModelScope)
 
-        launchResult(
-            block = { Result.success(storeSettings.refresh()) },
+        launchCatching(
+            block = { storeSettings.refresh() },
             onSuccess = { },
             onFailure = { },
         )

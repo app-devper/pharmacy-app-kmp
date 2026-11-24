@@ -77,7 +77,7 @@ class ImportFormViewModel(
     fun onLineCost(index: Int, v: String) = patchLine(index) { copy(costPrice = v.filterMoney()) }
     fun onLineSell(index: Int, v: String) = patchLine(index) { copy(sellPrice = v.filterMoney()) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val f = current.form
 
         val itemInputs = f.items.map { line ->
@@ -90,7 +90,7 @@ class ImportFormViewModel(
                 costPrice = line.costPrice,
                 sellPrice = line.sellPrice,
             ).getOrElse { e ->
-                return Result.failure(ValidationException(message = "ตรวจสอบข้อมูลไม่ผ่าน: ${e.message}", cause = e))
+                throw ValidationException(message = "ตรวจสอบข้อมูลไม่ผ่าน: ${e.message}", cause = e)
             }
         }
         when (val mode = current.mode) {
@@ -115,20 +115,19 @@ class ImportFormViewModel(
                 ),
             )
         }
-        return Result.success(Unit)
     }
 
     private fun loadDrugs() {
-        launchResult(
-            block = { Result.success(drugs.list()) },
+        launchCatching(
+            block = { drugs.list() },
             onSuccess = { list -> setState { copy(drugs = list) } },
             onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadDrugsFailed(e)) } },
         )
     }
 
     private fun loadSuppliers() {
-        launchResult(
-            block = { Result.success(suppliers.list()) },
+        launchCatching(
+            block = { suppliers.list() },
             onSuccess = { list -> setState { copy(suppliers = list) } },
             onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadSuppliersFailed(e)) } },
         )

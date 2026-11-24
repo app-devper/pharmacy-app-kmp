@@ -46,7 +46,7 @@ private class EditViewModel : BaseEditFormViewModel<EditState, String>(EditState
 
     fun type(v: String) = setState { copy(form = v) }
 
-    override suspend fun persist(): Result<Unit> = Result.success(Unit)
+    override suspend fun persist() = Unit
 }
 
 class BaseEditFormViewModelTest {

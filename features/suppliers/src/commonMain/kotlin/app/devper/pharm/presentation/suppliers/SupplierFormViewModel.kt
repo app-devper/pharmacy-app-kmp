@@ -21,13 +21,12 @@ class SupplierFormViewModel(
     fun onTaxId(v: String) = patch { copy(taxId = v) }
     fun onNotes(v: String) = patch { copy(notes = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val input = current.form.toInput()
         when (val mode = current.mode) {
             is SupplierFormMode.Add  -> suppliers.add(input)
             is SupplierFormMode.Edit -> suppliers.update(mode.supplierId, input)
         }
-        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(id: String) = hydrate(

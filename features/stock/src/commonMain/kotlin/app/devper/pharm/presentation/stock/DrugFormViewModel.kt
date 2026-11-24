@@ -58,13 +58,12 @@ class DrugFormViewModel(
     fun onAltUnitBarcode(index: Int, v: String) = updateAltUnit(index) { copy(barcode = v) }
     fun onAltUnitHidden(index: Int, v: Boolean) = updateAltUnit(index) { copy(hidden = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val s = current
         when (val mode = s.mode) {
             is DrugFormMode.Add  -> drugs.add(buildAddParam(s.form))
             is DrugFormMode.Edit -> drugs.update(buildUpdateParam(s.form, mode.drugId))
         }
-        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(drugId: String) = hydrate(

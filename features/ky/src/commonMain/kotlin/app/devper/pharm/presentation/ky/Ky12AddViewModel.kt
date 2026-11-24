@@ -20,7 +20,7 @@ class Ky12AddViewModel(
     fun onTotalValue(v: String) = patch { copy(totalValue = v.numericMoneyKy12()) }
     fun onStatus(v: String) = patch { copy(status = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val d = current.draft
         val form = buildKy12Draft(
             date = d.date,
@@ -34,9 +34,8 @@ class Ky12AddViewModel(
             hospital = d.hospital,
             totalValue = d.totalValue,
             status = d.status,
-        ).getOrElse { return Result.failure(it) }
+        ).getOrThrow()
         ky.submitKy12(form)
-        return Result.success(Unit)
     }
 
     private fun patch(transform: Ky12Draft.() -> Ky12Draft) {

@@ -68,7 +68,7 @@ or equivalent to know the exact IDs). Use the project's IDs in your output when 
 
 ```bash
 ./gradlew :composeApp:auditArchitecture \
-          :composeApp:testDebugUnitTest \
+          :androidApp:testDebugUnitTest \
           :composeApp:compileTestKotlinIosSimulatorArm64 \
           :composeApp:compileTestKotlinWasmJs \
           :features:<changed>:jvmTest :core:domain:jvmTest :core:common:jvmTest :core:ui:jvmTest
@@ -146,9 +146,9 @@ grep -rnE '\b(throw|Result\.failure\()\s*(IllegalStateException|IllegalArgumentE
 
 ### MVVM contracts
 
-- **ViewModels** extend `BaseViewModel<S>(initial)` and depend on **use cases only** — never repositories, APIs, or `:core:data`. No `dispatchers: AppDispatchers` or `logger: Logger` in VM constructors (use cases own IO).
-- **State updates** via `setState { copy(...) }`; background work via `launchResult(block, onSuccess, onFailure)`.
-- **Forms** extend `BaseFormViewModel<S>` over `BaseFormUiState<S>`; override `persist(): Result<Unit>` only; `submit()` is provided.
+- **ViewModels** extend `BaseViewModel<S>(initial)` and depend on a use case where there is a rule or more than one repository, otherwise on the repository interface from `:core:domain` (ADR-0018) — never APIs or `:core:data`. No `dispatchers: AppDispatchers` or `logger: Logger` in VM constructors (use cases own IO).
+- **State updates** via `setState { copy(...) }`; background work via `launchCatching(block, onSuccess, onFailure)`; `launchResult` only for a use case that returns `Result`; no `Result.success(...)` in a ViewModel (A31).
+- **Forms** extend `BaseFormViewModel<S>` over `BaseFormUiState<S>`; override `persist()` only (returns `Unit`, throws to fail); `submit()` is provided.
 - **UiState** is an immutable `data class : BaseUiState`; derived values are read-only `get()` properties.
 - **Callbacks**: a `data class` of lambdas with no-op defaults — passed to `<X>Content(state, callbacks)`. No sealed `Event` sink.
 - **`Screen` always uses `collectAsStateWithLifecycle()`** (not `collectAsState`). List/dashboard screens call `ReloadOnResume(vm::reload)`.

@@ -84,7 +84,7 @@ license headers required by upstream libraries.
 
 - **Test verify** (canonical sweep):
   ```bash
-  ./gradlew :composeApp:auditArchitecture :composeApp:testDebugUnitTest \
+  ./gradlew :composeApp:auditArchitecture :androidApp:testDebugUnitTest \
             :composeApp:compileTestKotlinIosSimulatorArm64 \
             :composeApp:compileTestKotlinWasmJs \
             :core:{common,domain,ui,data}:jvmTest \
@@ -105,7 +105,7 @@ license headers required by upstream libraries.
   whenever you add tests that push coverage up.**
 
 - **Forbidden imports** (enforced by `auditArchitecture` — A10 / A17 /
-  A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28 / A29 / A30). Full rule list in
+  A19 / A20 / A23 / A24 / A25 / A26 / A27 / A28 / A29 / A30 / A31). Full rule list in
   [MODULE_GRAPH.md § Forbidden imports](./MODULE_GRAPH.md#forbidden-imports-p0).
   Headline: `:core:*` ห้าม import จาก `:features:*`; `:features:<x>` ห้าม
   import จาก `:core:data` หรือ feature `<y>` อื่น; platform source folders

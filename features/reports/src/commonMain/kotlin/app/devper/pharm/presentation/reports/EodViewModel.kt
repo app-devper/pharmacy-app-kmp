@@ -116,7 +116,7 @@ class EodViewModel(
     fun reload() {
         val s = current
         load(
-            fetch = { Result.success(reports.eod(EodReportParam(date = s.date.toLocalDateOrNull()))) },
+            fetch = { reports.eod(EodReportParam(date = s.date.toLocalDateOrNull())) },
             failure = { e -> EodUiStateError.LoadReportFailed(e) },
             onLoaded = { rep ->
                 val closedResult = rep.close?.let {

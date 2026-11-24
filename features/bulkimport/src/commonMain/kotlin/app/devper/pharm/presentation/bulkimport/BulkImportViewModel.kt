@@ -61,8 +61,8 @@ class BulkImportViewModel(
         }
         setState { copy(parsed = parsed, previewCount = parsed.size, result = null) }
         setState { copy(submitting = true, errorState = null) }
-        launchResult(
-            block = { Result.success(drugs.bulkImport(parsed)) },
+        launchCatching(
+            block = { drugs.bulkImport(parsed) },
             onSuccess = { res -> setState { copy(submitting = false, result = res) } },
             onFailure = { e -> setState { copy(submitting = false, errorState = BulkImportUiStateError.ImportFailed(e)) } },
         )

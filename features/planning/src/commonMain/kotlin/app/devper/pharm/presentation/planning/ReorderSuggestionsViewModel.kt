@@ -55,7 +55,7 @@ class ReorderSuggestionsViewModel(
 
     fun reload() {
         load(
-            fetch = { getReorderSuggestions() },
+            fetch = { getReorderSuggestions().getOrThrow() },
             failure = { e -> ReorderSuggestionsUiStateError.LoadFailed(e) },
             onLoaded = { list -> copy(suggestions = list) },
         )

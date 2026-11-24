@@ -37,12 +37,12 @@ class StockAdjustmentsViewModel(
         if (current.drugId.isBlank()) return
         val id = current.drugId
         load(
-            fetch = { Result.success(adjustments.list(id)) },
+            fetch = { adjustments.list(id) },
             failure = { e -> StockUiStateError.LoadHistoryFailed(e) },
             onLoaded = { list -> copy(history = list) },
         )
-        launchResult(
-            block = { Result.success(lots.listLots(id)) },
+        launchCatching(
+            block = { lots.listLots(id) },
             onSuccess = { lots -> setState { copy(lot = LotChoice.forIncrease(lots), lotsUnknown = false) } },
             onFailure = { e -> setState { copy(lotsUnknown = true, errorState = DrugLotsUiStateError.LoadLotsFailed(e)) } },
         )
@@ -67,17 +67,15 @@ class StockAdjustmentsViewModel(
         val signed = s.signedDelta()
         if (signed == 0) return
         setState { copy(saving = true, errorState = null) }
-        launchResult(
+        launchCatching(
             block = {
-                Result.success(
-                    adjustments.add(
-                        AddStockAdjustmentParam(
-                            drugId = s.drugId,
-                            delta = signed,
-                            reason = s.draft.reason,
-                            note = s.draft.note,
-                            lot = s.lotTarget(),
-                        ),
+                adjustments.add(
+                    AddStockAdjustmentParam(
+                        drugId = s.drugId,
+                        delta = signed,
+                        reason = s.draft.reason,
+                        note = s.draft.note,
+                        lot = s.lotTarget(),
                     ),
                 )
             },

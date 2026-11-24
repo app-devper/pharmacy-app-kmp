@@ -36,8 +36,8 @@ class DrugPickerViewModel(
 
     fun load() {
         setState { copy(drugsLoading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(drugs.list()) },
+        launchCatching(
+            block = { drugs.list() },
             onSuccess = { list ->
                 setState {
                     copy(

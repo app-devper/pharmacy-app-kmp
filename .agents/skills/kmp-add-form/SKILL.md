@@ -34,7 +34,7 @@ interface BaseFormUiState<S : BaseFormUiState<S>> : BaseUiState {
 abstract class BaseFormViewModel<S : BaseFormUiState<S>>(initial: S) : BaseViewModel<S>(initial) {
     protected open fun mapSaveError(cause: Throwable): AppException =
         cause as? AppException ?: CommonUiStateError.SaveFailed(cause)
-    protected abstract suspend fun persist(): Result<Unit>
+    protected abstract suspend fun persist()   // returns Unit; throw to fail (a Result from a use case: .getOrThrow())
     fun submit() { … }        // no-ops when !canSubmit; saving → saved | domainError
     fun dismissError() = setState { withDomainError(null) }
     fun resetSaved() = setState { withSaved(false) }
@@ -94,9 +94,7 @@ not a number.
 
 ```kotlin
 class CustomerFormViewModel(
-    private val getCustomers: GetCustomersUseCase,
-    private val addCustomer: AddCustomerUseCase,
-    private val updateCustomer: UpdateCustomerUseCase,
+    private val customers: CustomerRepository,
 ) : BaseFormViewModel<CustomerFormUiState>(CustomerFormUiState()) {
 
     fun init(mode: CustomerFormMode) {
@@ -107,11 +105,11 @@ class CustomerFormViewModel(
     fun onName(v: String) = patch { copy(name = v) }
     fun onPhone(v: String) = patch { copy(phone = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val input = current.form.toInput()
-        return when (val mode = current.mode) {
-            is CustomerFormMode.Add  -> addCustomer(input).map { Unit }
-            is CustomerFormMode.Edit -> updateCustomer(UpdateCustomerParam(mode.customerId, input))
+        when (val mode = current.mode) {
+            is CustomerFormMode.Add  -> customers.add(input)
+            is CustomerFormMode.Edit -> customers.update(mode.customerId, input)
         }
     }
 
@@ -121,8 +119,8 @@ class CustomerFormViewModel(
 }
 ```
 
-Edit forms hydrate through `launchResult(block = { … }, onSuccess = …,
-onFailure = …)` and set **both** `form` and `baselineForm` so the page doesn't
+Edit forms extend `BaseEditFormViewModel` and hydrate through
+`hydrate(fetch, notFound, failure, toForm)`, which sets **both** `form` and `baselineForm` so the page doesn't
 open already claiming unsaved changes.
 
 ## 4. Screen

@@ -40,13 +40,11 @@ class SalesHistoryViewModel(
         val s = current
         load(
             fetch = {
-                Result.success(
-                    history.list(
-                        SaleHistoryFilterParam(
-                            from = s.dateRange.fromDate,
-                            to = s.dateRange.toDate,
-                            query = s.query.takeIf { it.isNotBlank() },
-                        ),
+                history.list(
+                    SaleHistoryFilterParam(
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
+                        query = s.query.takeIf { it.isNotBlank() },
                     ),
                 )
             },
@@ -58,14 +56,14 @@ class SalesHistoryViewModel(
     fun onSelectSale(sale: SaleSummary) {
         val targetId = sale.id
         setState { copy(selected = sale, items = emptyList(), itemsLoading = true) }
-        launchResult(
-            block = { Result.success(history.getItems(targetId)) },
+        launchCatching(
+            block = { history.getItems(targetId) },
             onSuccess = { items ->
-                if (current.selected?.id != targetId) return@launchResult
+                if (current.selected?.id != targetId) return@launchCatching
                 setState { copy(itemsLoading = false, items = items) }
             },
             onFailure = { e ->
-                if (current.selected?.id != targetId) return@launchResult
+                if (current.selected?.id != targetId) return@launchCatching
                 setState { copy(itemsLoading = false, errorState = SalesHistoryUiStateError.LoadItemsFailed(e)) }
             },
         )
@@ -91,10 +89,10 @@ class SalesHistoryViewModel(
                 returnReason = "",
             )
         }
-        launchResult(
-            block = { Result.success(history.getItems(targetId)) },
+        launchCatching(
+            block = { history.getItems(targetId) },
             onSuccess = { items ->
-                if (current.selected?.id != targetId) return@launchResult
+                if (current.selected?.id != targetId) return@launchCatching
                 val zero = items.associate { it.id to 0 }
                 setState {
                     copy(
@@ -107,7 +105,7 @@ class SalesHistoryViewModel(
                 }
             },
             onFailure = { e ->
-                if (current.selected?.id != targetId) return@launchResult
+                if (current.selected?.id != targetId) return@launchCatching
                 setState {
                     copy(
                         itemsLoading = false,

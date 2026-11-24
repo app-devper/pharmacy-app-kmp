@@ -68,7 +68,8 @@ convention below.
   repository impl or a use case `execute()` → `[HIGH]`.
 - **State**: immutable `data class` implementing `BaseUiState` /
   `LoadableUiState` / `BaseFormUiState`; mutations via `setState { copy(…) }`;
-  async via `launchResult(...)`; forms extend `BaseFormViewModel` and gate on
+  async via `launchCatching(...)` (`launchResult(...)` only for a use case that
+  returns `Result`; never `Result.success(...)` in a ViewModel — A31); forms extend `BaseFormViewModel` and gate on
   `canSubmit`.
 - **State collection**: `collectAsStateWithLifecycle()`, never
   `collectAsState()` → `[HIGH]`.

@@ -16,7 +16,7 @@ class SuppliersListViewModel(
 
     fun reload() {
         load(
-            fetch = { Result.success(suppliers.list()) },
+            fetch = { suppliers.list() },
             failure = { e -> SuppliersListUiStateError.LoadSuppliersFailed(e) },
             onLoaded = { list -> copy(suppliers = list) },
         )
@@ -28,8 +28,8 @@ class SuppliersListViewModel(
     fun deleteConfirmed() {
         val target = current.pendingDelete ?: return
         setState { copy(deleting = true, errorState = null) }
-        launchResult(
-            block = { Result.success(suppliers.delete(target.id)) },
+        launchCatching(
+            block = { suppliers.delete(target.id) },
             onSuccess = {
                 setState {
                     copy(

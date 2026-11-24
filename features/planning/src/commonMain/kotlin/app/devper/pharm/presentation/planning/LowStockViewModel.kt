@@ -26,7 +26,7 @@ class LowStockViewModel(
 
     fun reload() {
         load(
-            fetch = { Result.success(drugs.lowStock()) },
+            fetch = { drugs.lowStock() },
             failure = { e -> LowStockUiStateError.LoadFailed(e) },
             onLoaded = { list -> copy(drugs = list) },
         )
