@@ -61,8 +61,8 @@ class SettingsEditorViewModel(
             .launchIn(viewModelScope)
 
         setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(storeSettings.refresh()) },
+        launchCatching(
+            block = { storeSettings.refresh() },
             onSuccess = { fresh ->
                 hydrated = true
                 val fields = fresh.toForm()
@@ -74,8 +74,8 @@ class SettingsEditorViewModel(
 
     fun reload() {
         if (current.saving) return
-        launchResult(
-            block = { Result.success(storeSettings.refresh()) },
+        launchCatching(
+            block = { storeSettings.refresh() },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
                 setState { copy(baseline = fields, form = if (dirty) form else fields) }
@@ -142,8 +142,8 @@ class SettingsEditorViewModel(
         if (!current.canSave) return
         val f = current.form
         setState { copy(saving = true, errorState = null, messageState = null) }
-        launchResult(
-            block = { Result.success(storeSettings.update(f.toParam())) },
+        launchCatching(
+            block = { storeSettings.update(f.toParam()) },
             onSuccess = { fresh ->
                 val fields = fresh.toForm()
                 setState { copy(saving = false, baseline = fields, form = fields, messageState = CommonUiStateMessage.Saved) }

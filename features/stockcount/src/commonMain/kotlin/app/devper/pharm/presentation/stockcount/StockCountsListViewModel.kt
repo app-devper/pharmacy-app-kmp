@@ -14,8 +14,8 @@ class StockCountsListViewModel(
 
     fun reload() {
         setState { copy(loading = counts.isEmpty(), errorState = null) }
-        launchResult(
-            block = { Result.success(stockCounts.list()) },
+        launchCatching(
+            block = { stockCounts.list() },
             onSuccess = { list -> setState { copy(loading = false, counts = list) } },
             onFailure = { e -> setState { copy(loading = false, errorState = StockCountUiStateError.LoadRoundsFailed(e)) } },
         )

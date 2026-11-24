@@ -119,16 +119,16 @@ class ImportFormViewModel(
     }
 
     private fun loadDrugs() {
-        launchResult(
-            block = { Result.success(drugs.list()) },
+        launchCatching(
+            block = { drugs.list() },
             onSuccess = { list -> setState { copy(drugs = list) } },
             onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadDrugsFailed(e)) } },
         )
     }
 
     private fun loadSuppliers() {
-        launchResult(
-            block = { Result.success(suppliers.list()) },
+        launchCatching(
+            block = { suppliers.list() },
             onSuccess = { list -> setState { copy(suppliers = list) } },
             onFailure = { e -> setState { copy(errorState = ImportFormUiStateError.LoadSuppliersFailed(e)) } },
         )

@@ -28,8 +28,8 @@ class UsersListViewModel(
             failure = { e -> UsersUiStateError.LoadUsersFailed(e) },
             onLoaded = { list -> copy(users = list) },
         )
-        launchResult(
-            block = { Result.success(users.rules()) },
+        launchCatching(
+            block = { users.rules() },
             onSuccess = { rules -> setState { copy(creatableRoles = rules.creatableRoles) } },
             onFailure = { setState { copy(creatableRoles = emptyList()) } },
         )
@@ -46,8 +46,8 @@ class UsersListViewModel(
     fun confirmDelete() {
         val target = current.actionTarget ?: return
         setState { copy(actionBusy = true) }
-        launchResult(
-            block = { Result.success(users.delete(target.id)) },
+        launchCatching(
+            block = { users.delete(target.id) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -62,8 +62,8 @@ class UsersListViewModel(
         val target = current.actionTarget ?: return
         if (role == Role.UNKNOWN) return
         setState { copy(actionBusy = true) }
-        launchResult(
-            block = { Result.success(users.setRole(SetUserRoleParam(target.id, role))) },
+        launchCatching(
+            block = { users.setRole(SetUserRoleParam(target.id, role)) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -78,8 +78,8 @@ class UsersListViewModel(
         val target = current.actionTarget ?: return
         val next = if (target.status.isActive) UmStatus.INACTIVE else UmStatus.ACTIVE
         setState { copy(actionBusy = true) }
-        launchResult(
-            block = { Result.success(users.setStatus(SetUserStatusParam(target.id, next))) },
+        launchCatching(
+            block = { users.setStatus(SetUserStatusParam(target.id, next)) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -94,8 +94,8 @@ class UsersListViewModel(
         val target = current.actionTarget ?: return
         if (newPassword.isBlank()) return
         setState { copy(actionBusy = true) }
-        launchResult(
-            block = { Result.success(users.setPassword(SetUserPasswordParam(target.id, newPassword))) },
+        launchCatching(
+            block = { users.setPassword(SetUserPasswordParam(target.id, newPassword)) },
             onSuccess = {
                 dismissAction()
                 reload()
@@ -107,8 +107,8 @@ class UsersListViewModel(
     }
 
     private fun loadProfile() {
-        launchResult(
-            block = { Result.success(signedInUser.get()) },
+        launchCatching(
+            block = { signedInUser.get() },
             onSuccess = { me -> setState { copy(currentUserId = me.id, currentUserRole = me.role) } },
             onFailure = {  },
         )

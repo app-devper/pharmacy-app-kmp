@@ -11,8 +11,8 @@ class DrugHistoryViewModel(
 
     fun load(drugName: String) {
         setState { copy(drugName = drugName, loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(movements.list(MovementsFilterParam(drugName = drugName, limit = 200))) },
+        launchCatching(
+            block = { movements.list(MovementsFilterParam(drugName = drugName, limit = 200)) },
             onSuccess = { page -> setState { copy(loading = false, items = page.items) } },
             onFailure = { e -> setState { copy(loading = false, errorState = StockUiStateError.LoadHistoryFailed(e)) } },
         )

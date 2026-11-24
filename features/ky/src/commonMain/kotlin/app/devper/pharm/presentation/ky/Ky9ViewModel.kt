@@ -21,8 +21,8 @@ class Ky9ViewModel(
     fun exportPdf() {
         val s = current
         setState { copy(exporting = true, errorState = null, messageState = null) }
-        launchResult(
-            block = { Result.success(export.exportKyForm(ExportKyFormParam(form = "ky9", month = s.month))) },
+        launchCatching(
+            block = { export.exportKyForm(ExportKyFormParam(form = "ky9", month = s.month)) },
             onSuccess = { msg -> setState { copy(exporting = false, messageState = CommonUiStateMessage.ExportDone(msg)) } },
             onFailure = { e -> setState { copy(exporting = false, errorState = KyUiStateError.DownloadPdfFailed(e)) } },
         )

@@ -32,8 +32,8 @@ class ImportsListViewModel(
     fun confirmConfirmed() {
         val target = current.pendingConfirm ?: return
         setState { copy(busy = true, errorState = null) }
-        launchResult(
-            block = { Result.success(purchaseOrders.confirm(target.id)) },
+        launchCatching(
+            block = { purchaseOrders.confirm(target.id) },
             onSuccess = {
                 setState { copy(busy = false, pendingConfirm = null) }
                 reload()
@@ -59,8 +59,8 @@ class ImportsListViewModel(
     fun deleteConfirmed() {
         val target = current.pendingDelete ?: return
         setState { copy(busy = true, errorState = null) }
-        launchResult(
-            block = { Result.success(purchaseOrders.delete(target.id)) },
+        launchCatching(
+            block = { purchaseOrders.delete(target.id) },
             onSuccess = {
                 setState {
                     copy(

@@ -60,8 +60,8 @@ class AppViewModel(
     }
 
     private fun loadUser() {
-        launchResult(
-            block = { Result.success(signedInUser.load()) },
+        launchCatching(
+            block = { signedInUser.load() },
             onSuccess = { },
             onFailure = { signedInUser.clear() },
         )
@@ -72,8 +72,8 @@ class AppViewModel(
     }
 
     fun signOut() {
-        launchResult(
-            block = { Result.success(auth.logout()) },
+        launchCatching(
+            block = { auth.logout() },
             onSuccess = {  },
             onFailure = { e -> setState { copy(errorState = AppUiStateError.LogoutFailed(e)) } },
         )

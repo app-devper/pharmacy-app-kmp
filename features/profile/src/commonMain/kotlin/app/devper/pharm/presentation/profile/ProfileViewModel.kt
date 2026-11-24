@@ -79,8 +79,8 @@ class ProfileViewModel(
 
     private fun load() {
         setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { Result.success(signedInUser.load()) },
+        launchCatching(
+            block = { signedInUser.load() },
             onSuccess = { user ->
                 hydrate(user)
                 setState { copy(loading = false) }

@@ -31,8 +31,8 @@ class StockViewModel(
             failure = { e -> StockUiStateError.LoadStockFailed(e) },
             onLoaded = { list -> copy(drugs = list) },
         )
-        launchResult(
-            block = { Result.success(expiringLots.list(ExpiringLotsFilterParam(daysAhead = EXPIRING_SOON_DAYS))) },
+        launchCatching(
+            block = { expiringLots.list(ExpiringLotsFilterParam(daysAhead = EXPIRING_SOON_DAYS)) },
             onSuccess = { lots -> setState { copy(expiringSoonCount = lots.size) } },
             onFailure = { setState { copy(expiringSoonCount = null) } },
         )

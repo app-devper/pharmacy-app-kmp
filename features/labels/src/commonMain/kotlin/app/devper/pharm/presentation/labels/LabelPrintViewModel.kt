@@ -96,8 +96,8 @@ class LabelPrintViewModel(
 
     fun reload() {
         setState { copy(loading = drugs.isEmpty(), errorState = null) }
-        launchResult(
-            block = { Result.success(drugs.list()) },
+        launchCatching(
+            block = { drugs.list() },
             onSuccess = { list -> setState { copy(loading = false, drugs = list) } },
             onFailure = { e ->
                 setState { copy(loading = false, errorState = LabelPrintUiStateError.LoadDrugsFailed(e)) }

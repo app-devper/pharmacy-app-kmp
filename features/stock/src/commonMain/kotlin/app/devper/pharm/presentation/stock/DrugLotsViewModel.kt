@@ -71,8 +71,8 @@ class DrugLotsViewModel(
             sellPrice = s.draft.sellPrice.toDoubleOrNull()?.let(::Money),
             quantity = Quantity(s.draft.quantity.toIntOrNull() ?: 0),
         )
-        launchResult(
-            block = { Result.success(lots.addLot(param)) },
+        launchCatching(
+            block = { lots.addLot(param) },
             onSuccess = {
                 setState { copy(saving = false, addFormOpen = false, draft = LotDraft()) }
                 reload()
@@ -87,8 +87,8 @@ class DrugLotsViewModel(
         val s = current
         val lot = s.pendingDelete ?: return
         setState { copy(pendingDelete = null, saving = true) }
-        launchResult(
-            block = { Result.success(lots.deleteLot(DeleteLotParam(drugId = s.drugId, lotId = lot.id))) },
+        launchCatching(
+            block = { lots.deleteLot(DeleteLotParam(drugId = s.drugId, lotId = lot.id)) },
             onSuccess = {
                 setState { copy(saving = false) }
                 reload()

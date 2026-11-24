@@ -47,8 +47,8 @@ class ExpiryViewModel(
         val s = current
         if (s.selected.isEmpty()) return
         setState { copy(confirmDialog = false, writingOff = true, errorState = null, writeoffResult = null) }
-        launchResult(
-            block = { Result.success(expiringLots.writeoff(WriteoffLotsParam(lotIds = s.selected.toList()))) },
+        launchCatching(
+            block = { expiringLots.writeoff(WriteoffLotsParam(lotIds = s.selected.toList())) },
             onSuccess = { result ->
                 setState {
                     copy(writingOff = false, writeoffResult = result, selected = emptySet())
