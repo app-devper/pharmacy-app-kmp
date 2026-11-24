@@ -17,7 +17,7 @@ class Ky11AddViewModel(
     fun onPurpose(v: String) = patch { copy(purpose = v) }
     fun onPharmacist(v: String) = patch { copy(pharmacist = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val d = current.draft
         val form = buildKy11Draft(
             date = d.date,
@@ -28,9 +28,8 @@ class Ky11AddViewModel(
             buyerName = d.buyerName,
             purpose = d.purpose,
             pharmacist = d.pharmacist,
-        ).getOrElse { return Result.failure(it) }
+        ).getOrThrow()
         ky.submitKy11(form)
-        return Result.success(Unit)
     }
 
     private fun patch(transform: Ky11Draft.() -> Ky11Draft) {

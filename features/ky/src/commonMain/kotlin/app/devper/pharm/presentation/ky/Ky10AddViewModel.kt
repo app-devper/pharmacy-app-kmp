@@ -19,7 +19,7 @@ class Ky10AddViewModel(
     fun onDoctor(v: String) = patch { copy(doctor = v) }
     fun onBalance(v: String) = patch { copy(balance = v.filter { it.isDigit() }) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val d = current.draft
         val form = buildKy10Draft(
             date = d.date,
@@ -32,9 +32,8 @@ class Ky10AddViewModel(
             rxNo = d.rxNo,
             doctor = d.doctor,
             balance = d.balance,
-        ).getOrElse { return Result.failure(it) }
+        ).getOrThrow()
         ky.submitKy10(form)
-        return Result.success(Unit)
     }
 
     private fun patch(transform: Ky10Draft.() -> Ky10Draft) {

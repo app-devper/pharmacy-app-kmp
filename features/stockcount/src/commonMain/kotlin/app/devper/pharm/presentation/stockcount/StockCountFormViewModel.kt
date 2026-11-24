@@ -156,13 +156,12 @@ class StockCountFormViewModel(
         )
     }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val s = current
         val lines = buildStockCountInput(s.counts).map { it.copy(lot = s.chosenLots[it.drugId]) }
         stockCounts.add(CreateStockCountParam(note = s.note.trim(), items = lines))
         drafts.clear()
         setState { copy(counts = emptyMap(), note = "", chosenLots = emptyMap()) }
-        return Result.success(Unit)
     }
 
     private fun hydrate() {

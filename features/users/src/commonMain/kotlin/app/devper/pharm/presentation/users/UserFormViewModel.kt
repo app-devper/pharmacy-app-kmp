@@ -23,7 +23,7 @@ class UserFormViewModel(
     fun onPhone(v: String) = patch { copy(phone = v) }
     fun onEmail(v: String) = patch { copy(email = v) }
 
-    override suspend fun persist(): Result<Unit> {
+    override suspend fun persist() {
         val f = current.form
         when (val mode = current.mode) {
             is UserFormMode.Add -> users.create(
@@ -46,7 +46,6 @@ class UserFormViewModel(
                 ),
             )
         }
-        return Result.success(Unit)
     }
 
     private fun hydrateForEdit(id: String) = hydrate(
