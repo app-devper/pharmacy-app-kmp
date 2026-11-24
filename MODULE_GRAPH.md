@@ -282,7 +282,7 @@ to check them.
 | Production code | `throw IllegalStateException` / `RuntimeException` / etc. | ❌ A28 (excludes `:features:test-fixtures/`) |
 | Production UI code (`:core:ui` / `:features` / `:composeApp` commonMain) | Thai string literal (must go through `PharmStrings`) | ❌ A29 (excludes i18n tables, `ui/print/`, previews/sample blocks, `.contains(` data tokens, small allow-list) |
 | Any Kotlin source (`core` / `features` / `composeApp`, production and tests) | A line comment or block comment (`//`, `/* */`, KDoc) — see CLAUDE.md § NO COMMENTS | ❌ A30 |
-| `*ViewModel.kt` in `:features` / `:composeApp` commonMain | `Result.success(` — the ViewModel bases own the wrap (`launchCatching`, `load`, `persist`); see ADR-0018 | ❌ A31 |
+| `*ViewModel.kt` in `:features` / `:composeApp` commonMain | `Result.success(`, `Result.failure(` or a `block` / `fetch` that starts with `runCatching` — the ViewModel bases own the wrap (`launchCatching`, `load`, `persist`); see ADR-0018 | ❌ A31 |
 
 ## Test layout
 
