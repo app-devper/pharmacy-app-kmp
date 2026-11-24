@@ -81,13 +81,13 @@ That is the **only** place a `Result` is created — never wrap again downstream
 
 | Base | For | Gives you |
 |---|---|---|
-| `BaseViewModel<S : BaseUiState>` | anything | `state`, `current`, `setState { copy(…) }`, `launchResult(block, onSuccess, onFailure, withLoading)` |
-| `BaseLoadableViewModel<S : LoadableUiState<S>>` | list / detail pages | `+ dismissError()` |
+| `BaseViewModel<S : BaseUiState>` | anything | `state`, `current`, `setState { copy(…) }`, `launchCatching(block, onSuccess, onFailure)` for a block that throws (repository calls); `launchResult(…)` for a use case that returns `Result`; `catching { }` for parallel reads |
+| `BaseLoadableViewModel<S : LoadableUiState<S>>` | list / detail pages | `+ load(fetch, failure, onLoaded)` (throwing `fetch`, newest load wins), `dismissError()` |
 | `BaseFormViewModel<S : BaseFormUiState<S>>` | forms | `+ submit()`, `dismissError()`, `resetSaved()`, `mapSaveError()` |
 
 ```kotlin
 class CustomersListViewModel(
-    private val getCustomers: GetCustomersUseCase,
+    private val customers: CustomerRepository,
 ) : BaseLoadableViewModel<CustomersListUiState>(CustomersListUiState()) {
 
     init { reload() }
@@ -96,8 +96,8 @@ class CustomersListViewModel(
 
     fun reload() {
         setState { copy(loading = true, errorState = null) }
-        launchResult(
-            block = { getCustomers() },
+        launchCatching(
+            block = { customers.list() },
             onSuccess = { list -> setState { copy(loading = false, customers = list) } },
             onFailure = { e ->
                 setState { copy(loading = false, errorState = CustomersListUiStateError.LoadCustomersFailed(e)) }

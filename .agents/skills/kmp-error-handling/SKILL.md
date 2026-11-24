@@ -14,10 +14,11 @@ HTTP failure
    │ HttpResponseValidator (:core:data/network/HttpClient.kt) throws a typed AppException
    ▼
 [ Repository ] ──→ throws AppException (bare T return, no runCatching)
-   │ BaseUseCase.invoke wraps once → Result<R>
+   │ a use case, where there is one, throws too or returns Result<R>
    ▼
-[ UseCase ] ──→ Result<R>
-   │ ViewModel.launchResult { onFailure = { setState { copy(errorState = <Feature>Error.X(it)) } } }
+[ ViewModel base ] ──→ the one place a failure becomes state (ADR-0018, audit A31)
+   │ launchCatching / load / persist take a throwing block; launchResult takes a Result
+   │ onFailure = { setState { copy(errorState = <Feature>Error.X(it)) } }
    ▼
 [ UiState ] ──→ errorState: AppException?
    │ Content: state.errorState?.localize<X>(pharmStrings)
@@ -111,8 +112,8 @@ The message is a dotted key for logs; the user-facing text lives in
 ```kotlin
 fun reload() {
     setState { copy(loading = true, errorState = null) }
-    launchResult(
-        block = { getCustomers() },
+    launchCatching(
+        block = { customers.list() },
         onSuccess = { list -> setState { copy(loading = false, customers = list) } },
         onFailure = { e -> setState { copy(loading = false, errorState = CustomersListUiStateError.LoadCustomersFailed(e)) } },
     )
