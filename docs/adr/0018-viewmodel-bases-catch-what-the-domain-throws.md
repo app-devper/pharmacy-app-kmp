@@ -14,6 +14,6 @@ All of them rethrow `CancellationException`. A `Result` met inside a throwing bl
 
 A ViewModel calls a use case when there is a rule to apply or more than one repository to coordinate. A plain read or write calls the repository interface in `:core:domain`. A use case that only forwards to one repository method is not written.
 
-Audit rule A31 fails the build on `Result.success(` in a `*ViewModel.kt` under `:features` or `:composeApp` commonMain.
+Audit rule A31 fails the build on `Result.success(`, `Result.failure(` or a `block` / `fetch` lambda that starts with `runCatching` in a `*ViewModel.kt` under `:features` or `:composeApp` commonMain. `runCatching` in a suspend block also swallows cancellation, which the bases do not.
 
 We did not move the boundary into the domain (every repository returning `Result`, or a use case in front of every repository call). It would change every repository interface and every fake for the same behaviour, and the typed exceptions already carry what the UI needs.

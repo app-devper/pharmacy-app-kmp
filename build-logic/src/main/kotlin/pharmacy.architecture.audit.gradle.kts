@@ -1,6 +1,6 @@
 tasks.register("auditArchitecture") {
     group = "verification"
-    description = "Audits inward-only module rules (A10/A17/A19/A20/A23) + DTO conventions (A24 @SerialName, A25 camelCase) + platform-folder ownership (A26 only :composeApp) + no expect/actual (A27 interfaces only) + typed errors (A28 no generic exceptions in production) + localized UI copy (A29 no Thai literals in production UI code) + no comments in Kotlin sources (A30) + ViewModel bases own the Result wrap (A31 no Result.success in a ViewModel)."
+    description = "Audits inward-only module rules (A10/A17/A19/A20/A23) + DTO conventions (A24 @SerialName, A25 camelCase) + platform-folder ownership (A26 only :composeApp) + no expect/actual (A27 interfaces only) + typed errors (A28 no generic exceptions in production) + localized UI copy (A29 no Thai literals in production UI code) + no comments in Kotlin sources (A30) + ViewModel bases own the Result wrap (A31 no Result.success / Result.failure / runCatching block in a ViewModel)."
 
     val projectRoot = rootProject.projectDir
     val outputFile = layout.buildDirectory.file("reports/architecture-audit.txt")
@@ -238,7 +238,7 @@ tasks.register("auditArchitecture") {
                 }
         }
 
-        val resultSuccessRe = Regex("""Result\.success\(""")
+        val resultSuccessRe = Regex("""Result\.(success|failure)\(|(block|fetch) = \{ runCatching""")
         listOf("features", "composeApp/src/commonMain").forEach { topDir ->
             val root = projectRoot.resolve(topDir)
             if (!root.exists()) return@forEach
@@ -250,7 +250,7 @@ tasks.register("auditArchitecture") {
                     f.useLines { lines ->
                         lines.forEachIndexed { i, line ->
                             if (resultSuccessRe.containsMatchIn(line)) {
-                                violations += "A31 Result.success in a ViewModel    ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
+                                violations += "A31 hand-made Result in a ViewModel    ${f.relativeTo(projectRoot)}:${i + 1}  ${line.trim()}"
                             }
                         }
                     }
