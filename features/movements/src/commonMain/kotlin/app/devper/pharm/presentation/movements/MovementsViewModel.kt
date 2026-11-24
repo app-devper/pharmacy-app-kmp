@@ -61,16 +61,14 @@ class MovementsViewModel(
         val s = current
         load(
             fetch = {
-                Result.success(
-                    movements.list(
-                        MovementsFilterParam(
-                            from = s.dateRange.fromDate,
-                            to = s.dateRange.toDate,
-                            drugName = s.drugName.takeIf { it.isNotBlank() },
-                            types = MovementsTypeCatalog.toEnumSet(s.activeTypeIds),
-                            limit = 200,
-                            offset = 0,
-                        ),
+                movements.list(
+                    MovementsFilterParam(
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
+                        drugName = s.drugName.takeIf { it.isNotBlank() },
+                        types = MovementsTypeCatalog.toEnumSet(s.activeTypeIds),
+                        limit = 200,
+                        offset = 0,
                     ),
                 )
             },

@@ -27,7 +27,7 @@ class StockViewModel(
 
     fun reload() {
         load(
-            fetch = { Result.success(drugs.list()) },
+            fetch = { drugs.list() },
             failure = { e -> StockUiStateError.LoadStockFailed(e) },
             onLoaded = { list -> copy(drugs = list) },
         )

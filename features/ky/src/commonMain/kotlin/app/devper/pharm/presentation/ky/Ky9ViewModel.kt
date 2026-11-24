@@ -33,7 +33,7 @@ class Ky9ViewModel(
     fun reload() {
         val s = current
         load(
-            fetch = { Result.success(ky.listKy9(KyMonthFilterParam(month = s.month))) },
+            fetch = { ky.listKy9(KyMonthFilterParam(month = s.month)) },
             failure = { e -> KyUiStateError.LoadEntriesFailed(e) },
             onLoaded = { list -> copy(entries = list) },
         )

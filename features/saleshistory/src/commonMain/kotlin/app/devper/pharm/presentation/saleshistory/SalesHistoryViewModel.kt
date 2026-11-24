@@ -40,13 +40,11 @@ class SalesHistoryViewModel(
         val s = current
         load(
             fetch = {
-                Result.success(
-                    history.list(
-                        SaleHistoryFilterParam(
-                            from = s.dateRange.fromDate,
-                            to = s.dateRange.toDate,
-                            query = s.query.takeIf { it.isNotBlank() },
-                        ),
+                history.list(
+                    SaleHistoryFilterParam(
+                        from = s.dateRange.fromDate,
+                        to = s.dateRange.toDate,
+                        query = s.query.takeIf { it.isNotBlank() },
                     ),
                 )
             },

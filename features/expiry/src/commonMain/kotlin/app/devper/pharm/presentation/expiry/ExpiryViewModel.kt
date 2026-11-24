@@ -65,10 +65,8 @@ class ExpiryViewModel(
         val s = current
         load(
             fetch = {
-                Result.success(
-                    expiringLots.list(
-                        ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
-                    ),
+                expiringLots.list(
+                    ExpiringLotsFilterParam(daysAhead = s.window.daysAhead, expiredOnly = s.window.expiredOnly),
                 )
             },
             failure = { e -> ExpiryUiStateError.LoadLotsFailed(e) },

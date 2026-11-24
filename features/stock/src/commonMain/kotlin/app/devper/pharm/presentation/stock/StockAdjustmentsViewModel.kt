@@ -37,7 +37,7 @@ class StockAdjustmentsViewModel(
         if (current.drugId.isBlank()) return
         val id = current.drugId
         load(
-            fetch = { Result.success(adjustments.list(id)) },
+            fetch = { adjustments.list(id) },
             failure = { e -> StockUiStateError.LoadHistoryFailed(e) },
             onLoaded = { list -> copy(history = list) },
         )

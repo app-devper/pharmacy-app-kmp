@@ -39,10 +39,10 @@ class KyListViewModel(
         load(
             fetch = {
                 when (s.formType) {
-                    KyFormType.Ky10 -> Result.success(ky.listKy10(filter).map(KyRow::Ky10))
-                    KyFormType.Ky11 -> Result.success(ky.listKy11(filter).map(KyRow::Ky11))
-                    KyFormType.Ky12 -> Result.success(ky.listKy12(filter).map(KyRow::Ky12))
-                    KyFormType.Ky9  -> Result.success(emptyList())
+                    KyFormType.Ky10 -> ky.listKy10(filter).map(KyRow::Ky10)
+                    KyFormType.Ky11 -> ky.listKy11(filter).map(KyRow::Ky11)
+                    KyFormType.Ky12 -> ky.listKy12(filter).map(KyRow::Ky12)
+                    KyFormType.Ky9  -> emptyList()
                 }
             },
             failure = { e -> KyUiStateError.LoadEntriesFailed(e) },

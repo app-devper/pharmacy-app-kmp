@@ -16,7 +16,7 @@ class SuppliersListViewModel(
 
     fun reload() {
         load(
-            fetch = { Result.success(suppliers.list()) },
+            fetch = { suppliers.list() },
             failure = { e -> SuppliersListUiStateError.LoadSuppliersFailed(e) },
             onLoaded = { list -> copy(suppliers = list) },
         )

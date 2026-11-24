@@ -17,7 +17,7 @@ class ImportsListViewModel(
 
     fun reload() {
         load(
-            fetch = { Result.success(purchaseOrders.list()) },
+            fetch = { purchaseOrders.list() },
             failure = { e -> ImportsUiStateError.LoadOrdersFailed(e) },
             onLoaded = { list -> copy(orders = list) },
         )

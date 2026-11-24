@@ -38,7 +38,7 @@ class DrugLotsViewModel(
         if (current.drugId.isBlank()) return
         val id = current.drugId
         load(
-            fetch = { Result.success(lots.listLots(id)) },
+            fetch = { lots.listLots(id) },
             failure = { e -> DrugLotsUiStateError.LoadLotsFailed(e) },
             onLoaded = { lots -> copy(lots = lots) },
         )

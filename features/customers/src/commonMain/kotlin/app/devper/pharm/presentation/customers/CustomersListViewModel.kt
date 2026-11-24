@@ -14,7 +14,7 @@ class CustomersListViewModel(
 
     fun reload() {
         load(
-            fetch = { Result.success(customers.list()) },
+            fetch = { customers.list() },
             failure = { e -> CustomersListUiStateError.LoadCustomersFailed(e) },
             onLoaded = { list -> copy(customers = list) },
         )

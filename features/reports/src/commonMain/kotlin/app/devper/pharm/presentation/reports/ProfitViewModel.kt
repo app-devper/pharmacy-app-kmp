@@ -55,7 +55,7 @@ class ProfitViewModel(
     fun reload() {
         val s = current
         load(
-            fetch = { Result.success(reports.profit(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate))) },
+            fetch = { reports.profit(ReportRangeParam(from = s.dateRange.fromDate, to = s.dateRange.toDate)) },
             failure = { e -> ProfitUiStateError.LoadReportFailed(e) },
             onLoaded = { rep -> copy(report = rep) },
         )
