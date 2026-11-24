@@ -75,7 +75,8 @@ class GetCustomersUseCase(
 ```
 
 `invoke()` does `withContext(dispatchers.io) { runCatching { execute(param) } }`.
-That is the **only** place a `Result` is created — never wrap again downstream.
+A use case is the only domain code that creates a `Result`. A ViewModel never
+wraps one itself (audit A31): the bases catch what a repository throws.
 
 ### ViewModel bases — `:core:ui/ui/common/`
 
@@ -95,19 +96,16 @@ class CustomersListViewModel(
     fun onQueryChange(value: String) = setState { copy(query = value) }
 
     fun reload() {
-        setState { copy(loading = true, errorState = null) }
-        launchCatching(
-            block = { customers.list() },
-            onSuccess = { list -> setState { copy(loading = false, customers = list) } },
-            onFailure = { e ->
-                setState { copy(loading = false, errorState = CustomersListUiStateError.LoadCustomersFailed(e)) }
-            },
+        load(
+            fetch = { customers.list() },
+            failure = { e -> CustomersListUiStateError.LoadCustomersFailed(e) },
+            onLoaded = { list -> copy(customers = list) },
         )
     }
 }
 ```
 
-ViewModels take **use cases only** — never repositories, APIs or `:core:data`.
+ViewModels take a use case where there is a rule or more than one repository to coordinate, otherwise the repository interface from `:core:domain` (ADR-0018) — never APIs or `:core:data`.
 They do not take `AppDispatchers` (that's the use case's job) and they never
 localize (that happens at render).
 
@@ -135,7 +133,7 @@ Immutable data class, derived values computed in the constructor body or as
 
 ## 4. Errors
 
-Repos throw typed → `BaseUseCase` wraps once → the VM stores a typed
+Repos throw typed → a use case returns `Result`, a repository call is caught by the ViewModel base → the VM stores a typed
 `errorState` → the Content localizes at render with `localize<X>(pharmStrings)`
 → `ErrorBottomSheet`. Full detail in `kmp-error-handling`.
 

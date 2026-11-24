@@ -119,8 +119,8 @@ class CustomerFormViewModel(
 }
 ```
 
-Edit forms hydrate through `launchCatching(block = { … }, onSuccess = …,
-onFailure = …)` and set **both** `form` and `baselineForm` so the page doesn't
+Edit forms extend `BaseEditFormViewModel` and hydrate through
+`hydrate(fetch, notFound, failure, toForm)`, which sets **both** `form` and `baselineForm` so the page doesn't
 open already claiming unsaved changes.
 
 ## 4. Screen

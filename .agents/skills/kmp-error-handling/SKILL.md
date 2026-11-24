@@ -1,6 +1,6 @@
 ---
 name: kmp-error-handling
-description: The typed-error pattern of the pharmacy app end-to-end — AppException in :core:common, HttpClient response validator translates HTTP, BaseUseCase wraps once, the UiState carries a typed errorState, and localization happens at render. Use when adding an error case, mapping a status code, or auditing for swallowed exceptions.
+description: The typed-error pattern of the pharmacy app end-to-end — AppException in :core:common, HttpClient response validator translates HTTP, a use case returns Result and the ViewModel bases catch what a repository throws, the UiState carries a typed errorState, and localization happens at render. Use when adding an error case, mapping a status code, or auditing for swallowed exceptions.
 ---
 
 # kmp-error-handling
@@ -14,7 +14,7 @@ HTTP failure
    │ HttpResponseValidator (:core:data/network/HttpClient.kt) throws a typed AppException
    ▼
 [ Repository ] ──→ throws AppException (bare T return, no runCatching)
-   │ a use case, where there is one, throws too or returns Result<R>
+   │ a use case (BaseUseCase), where there is one, wraps once → Result<R>
    ▼
 [ ViewModel base ] ──→ the one place a failure becomes state (ADR-0018, audit A31)
    │ launchCatching / load / persist take a throwing block; launchResult takes a Result
