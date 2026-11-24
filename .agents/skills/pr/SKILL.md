@@ -34,6 +34,9 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
    gh pr checks <number> --required                         # "Linux (JVM + Android + WasmJs + audit)" pass?
    gh pr merge <number> --squash --delete-branch
    ```
+   - Right after a push the first command can exit at once with "no checks
+     reported": the run has not registered yet. Run it again after a few
+     seconds.
    - Required check failed → stop, do not merge, and show the failing step:
      `gh run list --branch <headRefName> -L 1 --json databaseId -q '.[0].databaseId'`
      gives the run id for `gh run view <id> --log-failed`.
@@ -61,7 +64,8 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
 
 7. **Report**: merged PR number + URL, the squash commit SHA on the base
    branch (`git log --oneline -1`), branch deleted local + remote, and for
-   `main` landings the deploy/tag result.
+   `main` landings the back-merge result and that tag, deploy and check
+   (`dev-flow` stage 8 steps 6–8) are still to do.
 
 ## Notes
 
@@ -70,4 +74,4 @@ This repo follows **git flow** (see the `git-flow` skill): feature PRs target
 - A merge into `main` is a release, tagged and deployed by hand right
   after — confirm the release/hotfix PR bumped `app-version` and
   `app-versionCode` before landing.
-- Run from inside `/Users/admin/ProjectPos/pharmacy-app/app-kmp`.
+- Run from inside `/Users/admin/ProjectPos/Pharmacy/pharmacy-app-kmp`.
