@@ -1,10 +1,10 @@
 [versions]
-agp = "9.3.1"
+agp = "9.5.3"
 
 app-version = "3.15.0"
 app-versionCode = "17"
 
-buildkonfig = "0.17.0"
+buildkonfig = "0.24.1"
 
 android-compileSdk = "37"
 android-minSdk = "24"
@@ -13,23 +13,23 @@ android-targetSdk = "37"
 androidx-lifecycle = "2.11.0"
 androidx-savedstate = "1.4.0"
 androidx-navigationCompose = "2.10.0"
-androidx-core-ktx = "1.18.0"
+androidx-core-ktx = "1.19.1"
 androidx-activityCompose = "1.13.0"
 
 compose-multiplatform = "1.12.2"
 
-koin = "4.2.1"
-ktor = "3.5.0"
+koin = "4.2.2"
+ktor = "3.6.2"
 
 kotlin = "2.4.21"
 kover = "0.9.11"
-kotlinx-serialization-json = "1.11.0"
-kotlinx-datetime = "0.7.1"
+kotlinx-serialization-json = "1.13.0"
+kotlinx-datetime = "0.8.0"
 coroutines = "1.11.0"
 
 multiplatform-settings = "1.3.0"
-kermit = "2.1.0"
-kotlinx-browser = "0.4"
+kermit = "2.2.0"
+kotlinx-browser = "0.6.1"
 
 [libraries]
 # Lifecycle / Compose runtime
